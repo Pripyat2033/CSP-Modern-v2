@@ -8,6 +8,7 @@ import com.ben.csp.block.model.VertushkaBlockEntityModel;
 import com.ben.csp.block.render.VertushkaBlockEntityRenderer;
 import com.ben.csp.entity.ModEntities;
 import com.ben.csp.entity.model.MasterEntityModel;
+import com.ben.csp.entity.model.NachalnikSnabzheniyaEntityModel;
 import com.ben.csp.entity.model.BrigadierEntityModel;
 import com.ben.csp.entity.model.StroitelEntityModel;
 import com.ben.csp.entity.model.ProrabEntityModel;
@@ -17,6 +18,7 @@ import com.ben.csp.entity.render.BrigadierEntityRenderer;
 import com.ben.csp.entity.render.StroitelEntityRenderer;
 import com.ben.csp.entity.render.MasterEntityRenderer;
 import com.ben.csp.entity.render.ProrabEntityRenderer;
+import com.ben.csp.entity.render.NachalnikSnabzheniyaEntityRenderer;
 import com.ben.csp.entity.render.GeodezistEntityRenderer;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -35,6 +37,7 @@ public class CSPModClient implements ClientModInitializer {
     public static final EntityModelLayer MODEL_MASTER_LAYER = new EntityModelLayer(new Identifier(CSPMod.MOD_ID, "master"), "main");
     public static final EntityModelLayer MODEL_STROITEL_LAYER = new EntityModelLayer(new Identifier(CSPMod.MOD_ID, "stroitel"), "main");
     public static final EntityModelLayer MODEL_BRIGADIER_LAYER = new EntityModelLayer(new Identifier(CSPMod.MOD_ID, "brigadier"), "main");
+    public static final EntityModelLayer MODEL_NACHALNIK_SNABZHENIYA_LAYER = new EntityModelLayer(new Identifier(CSPMod.MOD_ID, "nachalnik_snabzheniya"), "main");
 
     // Block Entity Model Layers
     public static final EntityModelLayer MODEL_VERTUSHKA_LAYER = new EntityModelLayer(new Identifier(CSPMod.MOD_ID, "vertushka"), "main");
@@ -49,6 +52,7 @@ public class CSPModClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.MASTER, MasterEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.STROITEL, StroitelEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.BRIGADIER, BrigadierEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.NACHALNIK_SNABZHENIYA, NachalnikSnabzheniyaEntityRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(MODEL_BARGE_LAYER, BargeEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(MODEL_GEODEZIST_LAYER, GeodezistEntityModel::getTexturedModelData);
@@ -56,6 +60,7 @@ public class CSPModClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(MODEL_MASTER_LAYER, BipedEntityModel::getModelData);
         EntityModelLayerRegistry.registerModelLayer(MODEL_STROITEL_LAYER, BipedEntityModel::getModelData);
         EntityModelLayerRegistry.registerModelLayer(MODEL_BRIGADIER_LAYER, BipedEntityModel::getModelData);
+        EntityModelLayerRegistry.registerModelLayer(MODEL_NACHALNIK_SNABZHENIYA_LAYER, BipedEntityModel::getModelData);
 
         // Block Entity Renderers
         BlockEntityRendererRegistry.register(ModBlocks.VERTUSHKA_BLOCK_ENTITY, VertushkaBlockEntityRenderer::new);
