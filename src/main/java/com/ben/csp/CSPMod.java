@@ -2,6 +2,7 @@ package com.ben.csp;
 
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.command.BuildCommand;
+import com.ben.csp.command.DialogueCommand;
 import com.ben.csp.entity.ModEntities;
 import com.ben.csp.item.ModItems;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -24,5 +25,6 @@ public class CSPMod implements ModInitializer {
 		ModEntities.registerModEntities();
 
 		CommandRegistrationCallback.EVENT.register(BuildCommand::register);
+		CommandRegistrationCallback.EVENT.register(DialogueCommand::register);
 	}
 }
