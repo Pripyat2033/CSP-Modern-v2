@@ -36,6 +36,12 @@ public class ModEntities {
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, GlavnyInzhenerEntity::new)
                     .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
 
+    public static final EntityType<MasterEntity> MASTER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(CSPMod.MOD_ID, "master"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, MasterEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
+
 
 
 
@@ -45,5 +51,6 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(GEODEZIST, GeodezistEntity.createGeodezistAttributes());
         FabricDefaultAttributeRegistry.register(PRORAB, ProrabEntity.createProrabAttributes());
         FabricDefaultAttributeRegistry.register(GLAVNY_INZHENER, GlavnyInzhenerEntity.createGlavnyInzhenerAttributes());
+        FabricDefaultAttributeRegistry.register(MASTER, MasterEntity.createMasterAttributes());
     }
 }

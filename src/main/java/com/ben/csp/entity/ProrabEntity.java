@@ -1,6 +1,7 @@
 package com.ben.csp.entity;
 
 import com.ben.csp.personnel.PersonnelRecord;
+import com.ben.csp.radiology.PsychologicalState;
 import com.ben.csp.entity.ai.ProrabReportToGlavnyInzhenerGoal;
 import com.ben.csp.entity.ai.ReviewProrabReportsGoal;
 import com.google.common.collect.Lists;
