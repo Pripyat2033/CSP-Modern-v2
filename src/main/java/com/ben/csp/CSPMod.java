@@ -1,8 +1,10 @@
 package com.ben.csp;
 
 import com.ben.csp.block.ModBlocks;
+import com.ben.csp.command.BuildCommand;
 import com.ben.csp.entity.ModEntities;
 import com.ben.csp.item.ModItems;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,5 +22,7 @@ public class CSPMod implements ModInitializer {
 		ModBlocks.registerModBlocks();
 		ModItems.registerModItems();
 		ModEntities.registerModEntities();
+
+		CommandRegistrationCallback.EVENT.register(BuildCommand::register);
 	}
 }

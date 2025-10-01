@@ -24,10 +24,18 @@ public class ModEntities {
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, GeodezistEntity::new)
                     .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
 
+    public static final EntityType<ProrabEntity> PRORAB = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(CSPMod.MOD_ID, "prorab"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, ProrabEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
+
+
 
     public static void registerModEntities() {
         CSPMod.LOGGER.info("Registering Mod Entities for " + CSPMod.MOD_ID);
         FabricDefaultAttributeRegistry.register(BARGE, BargeEntity.createBargeAttributes());
         FabricDefaultAttributeRegistry.register(GEODEZIST, GeodezistEntity.createGeodezistAttributes());
+        FabricDefaultAttributeRegistry.register(PRORAB, ProrabEntity.createProrabAttributes());
     }
 }
