@@ -1,6 +1,9 @@
 package com.ben.csp.entity;
 
 import com.ben.csp.build.BuildTask;
+import com.ben.csp.entity.ai.GoToBuildSiteGoal;
+import com.ben.csp.entity.ai.PerformWorkPackageGoal;
+import com.ben.csp.entity.ai.ReportToProrabGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -38,7 +41,8 @@ public class MasterEntity extends PathAwareEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        // AI Goals like PerformWorkPackageGoal and ReportToProrabGoal will be restored next.
+        this.goalSelector.add(2, new PerformWorkPackageGoal(this));
+        this.goalSelector.add(3, new ReportToProrabGoal(this));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
     }
 
