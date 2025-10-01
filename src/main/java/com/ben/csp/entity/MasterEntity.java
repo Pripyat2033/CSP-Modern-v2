@@ -12,6 +12,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +42,7 @@ public class MasterEntity extends PathAwareEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
+        this.goalSelector.add(1, new GoToBuildSiteGoal(this));
         this.goalSelector.add(2, new PerformWorkPackageGoal(this));
         this.goalSelector.add(3, new ReportToProrabGoal(this));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
@@ -51,6 +53,10 @@ public class MasterEntity extends PathAwareEntity {
 
     @Nullable public BuildTask getCurrentTask() { return currentTask; }
     public void setCurrentTask(@Nullable BuildTask task) { this.currentTask = task; }
+
+    public void acceptReportFromStroitel(StroitelEntity stroitel) {
+        this.sendMessage(Text.literal("Master received report from Stroitel " + stroitel.getName().getString()));
+    }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
