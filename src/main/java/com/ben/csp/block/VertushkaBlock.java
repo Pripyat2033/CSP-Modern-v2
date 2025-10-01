@@ -29,6 +29,6 @@ public class VertushkaBlock extends Block implements BlockEntityProvider {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         // This will be implemented when we restore the VertushkaBlockEntity file.
-        return null; // For now, we return null. This will be the next error to fix.
+        return new VertushkaBlockEntity(pos, state);
     }
 }

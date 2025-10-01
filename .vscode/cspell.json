@@ -1,0 +1,54 @@
+{
+    // Version of the configuration file.
+    "version": "0.2",
+    // The language to use for spell checking.
+    "language": "en",
+    // A list of words to be considered correct.
+    // This is our custom dictionary for the Chernobyl Scientific Project.
+    "words": [
+        "Anatoly",
+        "Bondarenko",
+        "Brigadier",
+        "Cooldown",
+        "ChSZO",
+        "Dispetcher",
+        "Dmitri",
+        "Dosye",
+        "Geodezist",
+        "Geolog",
+        "Glavny",
+        "Gosplan",
+        "Gosstroy",
+        "Inzhener",
+        "Ivan",
+        "Ivanov",
+        "Ivanovich",
+        "KazSSR",
+        "Kharakteristika",
+        "Kommutator",
+        "Kompromat",
+        "Komsomol",
+        "Kovalenko",
+        "Mykola",
+        "Nachalnik",
+        "Petrenko",
+        "Planerka",
+        "Prorab",
+        "pathfinding",
+        "samovar",
+        "Sekretar",
+        "Shifrovka",
+        "Semikhody",
+        "Sergei",
+        "Sostavitel",
+        "Stantsii",
+        "Stroitel",
+        "Uchetchik",
+        "UkSSR",
+        "Vasily",
+        "Vertushka",
+        "Viktor"
+    ],
+    // A list of file paths to ignore when spell checking.
+    "ignorePaths": []
+}
