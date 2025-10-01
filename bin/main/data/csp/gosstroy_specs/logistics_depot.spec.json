@@ -1,0 +1,23 @@
+{
+  "type": "PROCEDURAL",
+  "category": "LOGISTICS",
+  "scale": "BLOCK",
+  "modules": [
+    {
+      "width": 16,
+      "height": 8,
+      "depth": 24,
+      "fill_char": "c"
+    }
+  ],
+  "palette": [
+    {
+      "key": "c",
+      "block": "minecraft:cobblestone"
+    },
+    {
+      "key": "f",
+      "block": "minecraft:stone_bricks"
+    }
+  ]
+}

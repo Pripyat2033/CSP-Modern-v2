@@ -1,0 +1,29 @@
+{
+  "type": "PROCEDURAL",
+  "category": "COMMUNICATIONS",
+  "scale": "BLOCK",
+  "modules": [
+    {
+      "width": 12,
+      "height": 6,
+      "depth": 10,
+      "wall_char": "w",
+      "floor_char": "f",
+      "roof_char": "r",
+      "doorways": [
+        { "face": "SOUTH", "position": 4, "width": 3, "height": 4 }
+      ]
+    }
+  ],
+  "rooms": [
+    {
+      "type": "SECURE_COMMS_ROOM",
+      "box": [ [1, 1, 1], [10, 4, 8] ]
+    }
+  ],
+  "palette": [
+    { "key": "w", "block": "minecraft:iron_block" },
+    { "key": "f", "block": "minecraft:stone" },
+    { "key": "r", "block": "minecraft:iron_block" }
+  ]
+}

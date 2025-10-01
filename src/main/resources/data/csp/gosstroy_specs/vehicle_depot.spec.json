@@ -1,0 +1,19 @@
+{
+  "type": "PROCEDURAL",
+  "category": "LOGISTICS",
+  "scale": "BLOCK",
+  "modules": [
+    {
+      "width": 30,
+      "height": 6,
+      "depth": 20,
+      "fill_char": "p"
+    }
+  ],
+  "palette": [
+    {
+      "key": "p",
+      "block": "minecraft:polished_andesite"
+    }
+  ]
+}

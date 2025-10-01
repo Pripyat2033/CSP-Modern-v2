@@ -1,0 +1,5 @@
+{
+	// Workspace-specific settings.
+	// Java home is configured in .devcontainer/devcontainer.json to ensure
+	// it's correctly set for the containerized environment.
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "csp-modern",
+  "version": "${version}",
+  "name": "Chernobyl Scientific Project",
+  "description": "A full-fidelity, 'Science Grade Or Better' simulation of the Chernobyl Nuclear Power Plant and its surrounding Exclusion Zone.",
+  "authors": [
+    "Ben"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+  "license": "MIT",
+  "icon": "assets/csp-modern/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.ben.csp.CSPMod"
+    ],
+    "client": [
+      "com.ben.csp.CSPModClient"
+    ],
+    "server": [
+      "com.ben.csp.CSPModServer"
+    ]
+  },
+  "mixins": [
+    "csp-modern.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "fabric-api": ">=0.91.0+1.20.1"
+  }
+}

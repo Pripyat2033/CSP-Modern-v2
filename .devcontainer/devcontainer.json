@@ -1,0 +1,57 @@
+{
+	"name": "Chernobyl Scientific Project (CSP-Modern)",
+	// Use the Dockerfile to build the container image.
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	// Define the VS Code extensions that should be installed in the container.
+	// This ensures the Joy-Ride extension for the buttons is always present.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"vscjava.vscode-java-pack",
+				"redhat.java",
+				"vscjava.vscode-gradle",
+				"vscjava.vscode-maven",
+				"vscjava.vscode-java-dependency",
+				"vscjava.vscode-java-test",
+				"shengchen.vscode-checkstyle",
+				"ms-vscode.cpptools-extension-pack",
+				"joyride-vscode.joyride",
+				"streetsidesoftware.code-spell-checker",
+				"googlecloudtools.cloudcode"
+			],
+			// Settings to apply inside the container.
+			// Placing the Joy-Ride button settings here ensures they are applied
+			// after the extension is ready, avoiding the "Unknown Configuration" error.
+			"settings": {
+				"joyride.statusBarButtons": [
+					{
+						"text": "$(debug-start) Start Engine",
+						"tooltip": "Start the AECS Engine",
+						"command": "workbench.action.tasks.runTask",
+						"args": "Start AECS Engine"
+					},
+					{
+						"text": "$(debug-stop) Stop AECS",
+						"tooltip": "Stop all AECS processes",
+						"command": "workbench.action.tasks.runTask",
+						"args": "Stop AECS"
+					}
+				]
+			}
+		}
+	},
+	// Forward any necessary ports.
+	"forwardPorts": [],
+	// The command to run after the container is created.
+	// This points to our existing setup script.
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
+	// Tell VS Code to wait until the postCreateCommand is finished before
+	// fully opening. This is crucial to prevent extensions from starting
+	// before the environment is ready (e.g., before Gradle is downloaded).
+	"waitFor": "postCreateCommand",
+	// Set the workspace folder.
+	"workspaceFolder": "/workspaces/CSP-Modern"
+	// The AECS Bridge is now started manually via the status bar button.
+}

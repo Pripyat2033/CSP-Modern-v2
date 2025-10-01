@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- This file is intentionally left blank to include all checks by default. -->
+    <!-- You can add <Match> rules here to ONLY include specific checks if you prefer an opt-in approach. -->
+</FindBugsFilter>

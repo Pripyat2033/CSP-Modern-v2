@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!--
+        This file is for excluding specific warnings that are not relevant to the project.
+        For example, to ignore a specific bug pattern in a specific class, you could add:
+        <Match>
+            <Class name="com.ben.csp.ExampleClass" />
+            <Bug pattern="EXAMPLE_BUG_CODE" />
+        </Match>
+    -->
+</FindBugsFilter>

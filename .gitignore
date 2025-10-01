@@ -1,0 +1,36 @@
+# Gradle
+.gradle/
+build/
+
+# Fabric/Minecraft
+/run/
+/logs/
+.fabric/
+
+# IDE-specific files
+.idea/
+.vscode/
+!.vscode/launch.json
+!.vscode/tasks.json
+*.iml
+*.ipr
+*.iws
+
+# AECS (Automated Error Correction System)
+# The .aecs directory is for runtime state and should not be versioned.
+.aecs/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Build artifacts
+*.jar
+*.zip
+*.tar.gz
+
+# Local properties
+local.properties
