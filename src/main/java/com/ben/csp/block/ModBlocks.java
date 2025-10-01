@@ -21,10 +21,12 @@ public class ModBlocks {
 
     // --- Block Definitions ---
     public static Block VERTUSHKA_BLOCK;
-    public static Block ARCHIVE_FILING_CABINET_BLOCK;
+    public static Block ARCHIVE_FILING_CABINET_BLOCK; // This will be a BlockWithEntity
 
     // --- Block Entity Type Definitions ---
     public static BlockEntityType<VertushkaBlockEntity> VERTUSHKA_BLOCK_ENTITY;
+    public static BlockEntityType<ArchiveFilingCabinetBlockEntity> ARCHIVE_FILING_CABINET_BLOCK_ENTITY;
+
 
 
     /**
@@ -54,11 +56,15 @@ public class ModBlocks {
 
         VERTUSHKA_BLOCK = registerBlock("vertushka_block",
                 new VertushkaBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).nonOpaque()));
-        ARCHIVE_FILING_CABINET_BLOCK = registerBlock("archive_filing_cabinet_block",
-                new Block(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
 
         VERTUSHKA_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE,
                 new Identifier(CSPMod.MOD_ID, "vertushka_block_entity"),
                 FabricBlockEntityTypeBuilder.create(VertushkaBlockEntity::new, VERTUSHKA_BLOCK).build());
+
+        ARCHIVE_FILING_CABINET_BLOCK = registerBlock("archive_filing_cabinet_block",
+                new ArchiveFilingCabinetBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
+        ARCHIVE_FILING_CABINET_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE,
+                new Identifier(CSPMod.MOD_ID, "archive_filing_cabinet_block_entity"),
+                FabricBlockEntityTypeBuilder.create(ArchiveFilingCabinetBlockEntity::new, ARCHIVE_FILING_CABINET_BLOCK).build());
     }
 }
