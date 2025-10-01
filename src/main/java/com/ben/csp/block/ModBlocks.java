@@ -22,6 +22,7 @@ public class ModBlocks {
     // --- Block Definitions ---
     public static Block VERTUSHKA_BLOCK;
     public static Block ARCHIVE_FILING_CABINET_BLOCK; // This will be a BlockWithEntity
+    public static Block GEODETIC_MARKER_BLOCK;
 
     // --- Block Entity Type Definitions ---
     public static BlockEntityType<VertushkaBlockEntity> VERTUSHKA_BLOCK_ENTITY;
@@ -66,5 +67,8 @@ public class ModBlocks {
         ARCHIVE_FILING_CABINET_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE,
                 new Identifier(CSPMod.MOD_ID, "archive_filing_cabinet_block_entity"),
                 FabricBlockEntityTypeBuilder.create(ArchiveFilingCabinetBlockEntity::new, ARCHIVE_FILING_CABINET_BLOCK).build());
+
+        GEODETIC_MARKER_BLOCK = registerBlock("geodetic_marker_block",
+                new GeodeticMarkerBlock(FabricBlockSettings.copyOf(Blocks.OAK_FENCE).nonOpaque()));
     }
 }
