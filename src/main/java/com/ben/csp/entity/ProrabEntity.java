@@ -1,6 +1,8 @@
 package com.ben.csp.entity;
 
 import com.ben.csp.personnel.PersonnelRecord;
+import com.ben.csp.entity.ai.ProrabReportToGlavnyInzhenerGoal;
+import com.ben.csp.entity.ai.ReviewProrabReportsGoal;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -15,16 +17,21 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Science Grade: A "Prorab" (Прораб) - a works foreman or site supervisor.
  * This NPC is responsible for direct oversight of construction tasks and personnel.
  */
 public class ProrabEntity extends PathAwareEntity {
-
+    @Nullable
+    private UUID glavnyInzhenerUuid;
     private final PsychologicalState psychologicalState = new PsychologicalState();
     private final List<NbtCompound> documentQueue = Lists.newArrayList();
+    private final List<NbtCompound> highLevelReports = Lists.newArrayList();
 
     public ProrabEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -39,7 +46,8 @@ public class ProrabEntity extends PathAwareEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        // AI Goals like ReviewProrabReportsGoal and ProrabReportToGlavnyInzhenerGoal will be restored next.
+        this.goalSelector.add(1, new ReviewProrabReportsGoal(this));
+        this.goalSelector.add(2, new ProrabReportToGlavnyInzhenerGoal(this));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
     }
 
@@ -53,14 +61,31 @@ public class ProrabEntity extends PathAwareEntity {
         this.documentQueue.add(document);
     }
 
+    public int getDocumentQueueSize() {
+        return this.documentQueue.size();
+    }
+
+    public boolean hasPendingReports() {
+        return !this.highLevelReports.isEmpty();
+    }
+
+    public void addHighLevelReport(NbtCompound report) {
+        this.highLevelReports.add(report);
+    }
+
+    @Nullable
+    public NbtCompound getNextReport() {
+        return this.highLevelReports.isEmpty() ? null : this.highLevelReports.remove(0);
+    }
+
+    @Nullable public UUID getGlavnyInzhenerUuid() { return glavnyInzhenerUuid; }
+    public void setGlavnyInzhenerUuid(@Nullable UUID uuid) { this.glavnyInzhenerUuid = uuid; }
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         psychologicalState.writeToNbt(nbt);
 
-        NbtList documents = new NbtList();
-        documents.addAll(documentQueue);
-        nbt.put("DocumentQueue", documents);
     }
 
     @Override
@@ -68,10 +93,5 @@ public class ProrabEntity extends PathAwareEntity {
         super.readCustomDataFromNbt(nbt);
         psychologicalState.readFromNbt(nbt);
 
-        if (nbt.contains("DocumentQueue", 9)) { // 9 = List type
-            documentQueue.clear();
-            NbtList documents = nbt.getList("DocumentQueue", 10); // 10 = Compound type
-            documents.forEach(doc -> documentQueue.add((NbtCompound) doc));
-        }
     }
 }

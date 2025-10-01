@@ -29,6 +29,13 @@ public class ModEntities {
             new Identifier(CSPMod.MOD_ID, "prorab"),
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, ProrabEntity::new)
                     .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
+    
+    public static final EntityType<GlavnyInzhenerEntity> GLAVNY_INZHENER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(CSPMod.MOD_ID, "glavny_inzhener"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, GlavnyInzhenerEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
+
 
 
 
@@ -37,5 +44,6 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(BARGE, BargeEntity.createBargeAttributes());
         FabricDefaultAttributeRegistry.register(GEODEZIST, GeodezistEntity.createGeodezistAttributes());
         FabricDefaultAttributeRegistry.register(PRORAB, ProrabEntity.createProrabAttributes());
+        FabricDefaultAttributeRegistry.register(GLAVNY_INZHENER, GlavnyInzhenerEntity.createGlavnyInzhenerAttributes());
     }
 }
