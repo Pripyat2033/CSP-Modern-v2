@@ -2,6 +2,8 @@ package com.ben.csp;
 
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.command.BuildCommand;
+import com.ben.csp.command.DialogueManager;
+import com.ben.csp.command.topic.ProrabStatusTopic;
 import com.ben.csp.command.DialogueCommand;
 import com.ben.csp.entity.ModEntities;
 import com.ben.csp.item.ModItems;
@@ -26,5 +28,8 @@ public class CSPMod implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register(BuildCommand::register);
 		CommandRegistrationCallback.EVENT.register(DialogueCommand::register);
+
+		// Register dialogue topics
+		DialogueManager.getInstance().registerTopic(new ProrabStatusTopic());
 	}
 }
