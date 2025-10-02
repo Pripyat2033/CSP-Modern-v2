@@ -60,6 +60,12 @@ public class ModEntities {
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, NachalnikSnabzheniyaEntity::new)
                     .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
 
+    public static final EntityType<UchetchikEntity> UCHETCHIK = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(CSPMod.MOD_ID, "uchetchik"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, UchetchikEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
+
 
 
 
@@ -73,5 +79,6 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(STROITEL, StroitelEntity.createStroitelAttributes());
         FabricDefaultAttributeRegistry.register(BRIGADIER, BrigadierEntity.createBrigadierAttributes());
         FabricDefaultAttributeRegistry.register(NACHALNIK_SNABZHENIYA, NachalnikSnabzheniyaEntity.createNachalnikSnabzheniyaAttributes());
+        FabricDefaultAttributeRegistry.register(UCHETCHIK, UchetchikEntity.createUchetchikAttributes());
     }
 }
