@@ -3,13 +3,12 @@ package com.ben.csp.entity.ai;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * An interface for entities that have a specific garrison point.
- * This allows the GarrisonGoal to be more flexible and decoupled from specific entity types.
+ * An interface for entities that can be "garrisoned" at a specific location.
+ * This is used to make NPCs return to their post when idle.
  */
 public interface Garrisonable {
     /**
-     * Gets the position of the garrison point for this entity.
-     * This could be a main HQ, a site office, or a temporary bytovka.
+     * @return The position where this entity should be garrisoned.
      */
     BlockPos getGarrisonPos();
     int getGarrisonRadius();

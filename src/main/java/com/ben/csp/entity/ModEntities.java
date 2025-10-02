@@ -66,6 +66,12 @@ public class ModEntities {
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, UchetchikEntity::new)
                     .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
 
+    public static final EntityType<IndustrialWorkerEntity> INDUSTRIAL_WORKER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(CSPMod.MOD_ID, "industrial_worker"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, IndustrialWorkerEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.8f)).build());
+
 
 
 
@@ -80,5 +86,6 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(BRIGADIER, BrigadierEntity.createBrigadierAttributes());
         FabricDefaultAttributeRegistry.register(NACHALNIK_SNABZHENIYA, NachalnikSnabzheniyaEntity.createNachalnikSnabzheniyaAttributes());
         FabricDefaultAttributeRegistry.register(UCHETCHIK, UchetchikEntity.createUchetchikAttributes());
+        FabricDefaultAttributeRegistry.register(INDUSTRIAL_WORKER, IndustrialWorkerEntity.createIndustrialWorkerAttributes());
     }
 }
