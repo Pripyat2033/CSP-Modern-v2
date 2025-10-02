@@ -1,5 +1,6 @@
 package com.ben.csp.entity;
 
+import com.ben.csp.entity.ai.FileDocumentsGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -9,6 +10,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Science Grade: An "Uchetchik" (Учётчик) - an accountant, clerk, or record-keeper.
@@ -17,6 +19,8 @@ import net.minecraft.world.World;
 public class UchetchikEntity extends PathAwareEntity implements EnterprisePersonnel {
 
     private String enterpriseName = "";
+    @Nullable
+    private NbtCompound carriedDocument;
 
     public UchetchikEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -31,7 +35,7 @@ public class UchetchikEntity extends PathAwareEntity implements EnterprisePerson
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        // AI Goal FileDocumentsGoal will be restored next.
+        this.goalSelector.add(1, new FileDocumentsGoal(this));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
     }
 
@@ -41,15 +45,28 @@ public class UchetchikEntity extends PathAwareEntity implements EnterprisePerson
     @Override
     public void setEnterpriseName(String name) { this.enterpriseName = name; }
 
+    public boolean isCarryingDocuments() {
+        return this.carriedDocument != null;
+    }
+
+    @Nullable public NbtCompound getCarriedDocument() { return carriedDocument; }
+    public void setCarriedDocument(@Nullable NbtCompound document) { this.carriedDocument = document; }
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putString("EnterpriseName", this.enterpriseName);
+        if (carriedDocument != null) {
+            nbt.put("CarriedDocument", carriedDocument);
+        }
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.enterpriseName = nbt.getString("EnterpriseName");
+        if (nbt.contains("CarriedDocument")) {
+            this.carriedDocument = nbt.getCompound("CarriedDocument");
+        }
     }
 }
