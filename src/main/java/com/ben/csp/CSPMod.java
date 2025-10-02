@@ -6,6 +6,7 @@ import com.ben.csp.build.InfrastructureRequirementLoader;
 import com.ben.csp.command.DialogueManager;
 import com.ben.csp.command.topic.ProrabStatusTopic;
 import com.ben.csp.command.DialogueCommand;
+import com.ben.csp.opb.OPB82RuleLoader;
 import com.ben.csp.entity.ModEntities;
 import com.ben.csp.item.ModItems;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -37,5 +38,6 @@ public class CSPMod implements ModInitializer {
 
 		// Register resource loaders
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new InfrastructureRequirementLoader());
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new OPB82RuleLoader());
 	}
 }
