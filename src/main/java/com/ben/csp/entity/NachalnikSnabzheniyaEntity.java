@@ -1,5 +1,6 @@
 package com.ben.csp.entity;
 
+import com.ben.csp.entity.ai.ManageSupplyChainGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -31,7 +32,7 @@ public class NachalnikSnabzheniyaEntity extends PathAwareEntity implements Enter
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        // AI Goal ManageSupplyChainGoal will be restored next.
+        this.goalSelector.add(1, new ManageSupplyChainGoal(this));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
     }
 
