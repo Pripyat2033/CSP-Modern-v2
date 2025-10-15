@@ -48,7 +48,7 @@ public class ReportToProrabGoal extends Goal {
             // We've reached the Prorab.
             this.targetProrab.acceptReportFromMaster(this.master, "Task '" + this.master.getCurrentTask().getDescription() + "' complete.");
             this.master.getCurrentTask().setStatus("Reported");
-            this.master.setCurrentTask(null); // Master is now free for a new task.
+            this.master.resetTask(); // Master is now free for a new task.
             this.master.getNavigation().stop();
         }
     }

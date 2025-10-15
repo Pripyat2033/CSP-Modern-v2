@@ -1,0 +1,21 @@
+# Base image with Ubuntu and VS Code devcontainer tooling
+FROM mcr.microsoft.com/devcontainers/base:ubuntu
+
+# Install Java 17 (Fabric requires this)
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    unzip \
+    curl \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install Gradle (8.x series)
+ARG GRADLE_VERSION=8.7
+RUN curl -sLo gradle.zip https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
+ && unzip gradle.zip -d /opt \
+ && rm gradle.zip \
+ && ln -s /opt/gradle-${GRADLE_VERSION}/bin/gradle /usr/bin/gradle
+
+# Default to vscode user
+USER vscode
+WORKDIR /workspace

@@ -11,6 +11,9 @@ build/
 .idea/
 !.vscode/launch.json
 !.vscode/tasks.json
+*.classpath
+*.project
+*.settings
 *.iml
 *.ipr
 *.iws

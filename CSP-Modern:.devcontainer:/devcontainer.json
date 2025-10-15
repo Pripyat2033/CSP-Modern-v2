@@ -1,0 +1,20 @@
+{
+  "name": "CSP Minecraft Mod Dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "java.home": "/usr/lib/jvm/java-17-openjdk-amd64"
+      },
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}

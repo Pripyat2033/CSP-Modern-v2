@@ -22,7 +22,7 @@ public class ReviewProrabReportsGoal extends Goal {
     @Override
     public boolean canStart() {
         // Can start if the document queue is getting full and the Prorab is not already busy.
-        return this.prorab.getDocumentQueueSize() > 5 && !this.prorab.getNavigation().isFollowing();
+        return this.prorab.getDocumentQueueSize() > 5 && this.prorab.getNavigation().isIdle();
     }
 
     @Override

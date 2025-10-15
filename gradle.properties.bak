@@ -1,0 +1,31 @@
+# Gradle Properties
+# Sets the maximum memory heap size for the Gradle Daemon to 2GB to improve build performance.
+org.gradle.jvmargs=-Xmx2G
+ 
+# Fabric Properties
+# The target version of Minecraft for the mod.
+minecraft_version=1.20.1
+# The version of Yarn mappings used to deobfuscate Minecraft's code. Must match the Minecraft version.
+yarn_mappings=1.20.1+build.10
+# The version of the Fabric Loader, which loads the mod into the game.
+loader_version=0.15.11
+ 
+# Chernobyl Scientific Project (CSP) Properties
+# The semantic version of our mod. This is injected into fabric.mod.json.
+mod_version = 0.1.0
+# The Maven group ID used when publishing the mod to a repository.
+maven_group = com.ben.csp
+# The base name for the output JAR file (e.g., csp-modern-0.1.0.jar).
+archives_base_name = csp-modern
+ 
+# Fabric API
+# The version of the Fabric API dependency.
+fabric_version=0.91.0+1.20.1
+
+# Static Analysis Tool Versions
+checkstyle_version=10.12.7
+pmd_version=6.55.0
+spotbugs_version=4.8.3
+
+# AST Parser
+javaparser_version=3.25.10

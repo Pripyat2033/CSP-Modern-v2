@@ -1,7 +1,5 @@
 package com.ben.csp.entity;
 
-import com.ben.csp.personnel.PersonnelRecord;
-import com.ben.csp.radiology.PsychologicalState;
 import com.ben.csp.entity.ai.ProrabReportToGlavnyInzhenerGoal;
 import com.ben.csp.entity.ai.ReviewProrabReportsGoal;
 import com.google.common.collect.Lists;
@@ -13,8 +11,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
@@ -27,12 +23,14 @@ import java.util.UUID;
  * Science Grade: A "Prorab" (Прораб) - a works foreman or site supervisor.
  * This NPC is responsible for direct oversight of construction tasks and personnel.
  */
-public class ProrabEntity extends PathAwareEntity {
+public class ProrabEntity extends PathAwareEntity implements EnterprisePersonnel {
     @Nullable
     private UUID glavnyInzhenerUuid;
     private final PsychologicalState psychologicalState = new PsychologicalState();
     private final List<NbtCompound> documentQueue = Lists.newArrayList();
     private final List<NbtCompound> highLevelReports = Lists.newArrayList();
+    
+    private String enterpriseName = "";
 
     public ProrabEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -83,16 +81,24 @@ public class ProrabEntity extends PathAwareEntity {
     public void setGlavnyInzhenerUuid(@Nullable UUID uuid) { this.glavnyInzhenerUuid = uuid; }
 
     @Override
+    public String getEnterpriseName() { return this.enterpriseName; }
+
+    @Override
+    public void setEnterpriseName(String name) { this.enterpriseName = name; }
+
+    @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         psychologicalState.writeToNbt(nbt);
-
+        nbt.putString("EnterpriseName", this.enterpriseName);
+        if (glavnyInzhenerUuid != null) { nbt.putUuid("GlavnyInzhenerUUID", glavnyInzhenerUuid); }
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         psychologicalState.readFromNbt(nbt);
-
+        this.enterpriseName = nbt.getString("EnterpriseName");
+        if (nbt.contains("GlavnyInzhenerUUID")) { this.glavnyInzhenerUuid = nbt.getUuid("GlavnyInzhenerUUID"); }
     }
 }

@@ -1,83 +1,43 @@
-# Dev Container Post-Creation Setup (`post-create.sh`)
+# Project Environment Setup
 
-This document explains the steps performed by the `post-create.sh` script. This script is configured in `devcontainer.json` to run automatically after the development container is created, ensuring the environment is fully prepared for development.
+This document explains how to set up a native development environment for the Chernobyl Scientific Project on macOS. We have moved away from a Docker-based workflow to improve performance and simplify the setup process.
 
 ## Purpose
 
-The primary goal of this script is to prepare the development environment by installing and configuring necessary tools that are not part of the base Docker image. It is designed to be robust and idempotent, meaning it can be run multiple times without causing issues.
+The primary goal is to install the correct versions of Java and Gradle directly on your machine. Due to challenges with Homebrew on older versions of macOS, the recommended approach is a manual installation.
 
-## Execution Flow
+## Native Setup Process
 
-The script follows a specific sequence of operations:
+The setup involves two main parts: manually installing the required SDKs and then running a script to verify and configure the environment.
 
-### 1. Caching Mechanism
+### 1. Manual Installation
 
-To dramatically speed up container rebuilds (e.g., after changing the `Dockerfile`), the script first checks for a marker file.
+#### Java (OpenJDK 17)
+1.  Download a Java 17 installer from a trusted provider. For Intel Macs, Azul Zulu is recommended.
+    *   **Download Link (Intel Mac):** [Azul Zulu JDK 17 DMG](https://cdn.azul.com/zulu/bin/zulu17.48.15-ca-jdk17.0.10-macosx_x64.dmg)
+2.  Open the downloaded `.dmg` file and run the `.pkg` installer inside.
 
-*   **File:** `~/.csp_setup_complete`
-*   **Logic:** If this file exists, it signifies that the one-time setup has already been completed. The script will print a confirmation message and exit immediately, skipping all subsequent steps.
+#### Gradle (Version 8.7)
+1.  Download the "binary-only" `.zip` file for Gradle 8.7 from the official releases page:
+    *   **Download Link:** Gradle 8.7 Binary-Only ZIP
+2.  Create a directory for your SDKs in your home folder: `mkdir -p ~/sdks`
+3.  Unzip the Gradle file into that directory. You can do this from the terminal (after moving the file from Downloads) or using the Finder.
+    *   `unzip ~/gradle-8.7-bin.zip -d ~/sdks/`
 
-```bash
-if [ -f "$HOME/.csp_setup_complete" ]; then
-    echo "Project environment already set up. Skipping installation."
-    exit 0
-fi
-```
+### 2. Run Verification Script
 
-### 2. Leiningen Initialization
+After manually installing Java and Gradle, a script will verify the setup and configure your shell.
 
-This step prepares the Leiningen build tool, which is required for the Clojure-based AECS-II "Moonshot" project.
+1.  **Open your Terminal** and navigate to the project directory.
+2.  **Run the script:** `./scripts/setup-native-env.sh`
 
-*   **Action:** The script runs the `lein version` command.
-*   **Purpose:** Although the `lein` script itself is placed in the container by the `Dockerfile`, the first time it is executed, it triggers a self-installation process to download its own standalone JAR file. We run it here to ensure it's ready before the developer starts working. The output is redirected to `/dev/null` to keep the setup log clean.
+#### What the Script Does
 
-```bash
-echo "1. Initializing Leiningen..."
-export PATH=$PATH:$HOME/bin && lein version > /dev/null
-echo "Leiningen is ready."
-```
+1.  **Verifies Java:** Confirms that a Java 17 JDK is installed and available.
+2.  **Verifies Gradle:** Confirms that Gradle 8.7 is located in the `~/sdks/` directory.
+3.  **Configures Shell:** Adds the path to your Gradle installation to your `.zshrc` file so the `gradle` command works correctly from anywhere.
+4.  **Sets Permissions:** Makes the core Gradle wrapper (`gradlew`) and other utility scripts executable.
 
-### 3. Gradle Wrapper Pre-warming
+After running the script, **restart your terminal** or run `source ~/.zshrc`. You will now have a fully functional native Java and Gradle environment, and you can build the project by simply running `./gradlew build` from the integrated terminal.
 
-This is a critical step to prevent common and frustrating issues with VS Code's Java and Gradle extensions.
-
-*   **Problem:** The extensions can be unreliable when downloading the large Gradle distribution for the first time. This can lead to corrupted downloads, checksum failures, and file-locking timeouts.
-*   **Solution:** The script forces the download in this controlled, robust environment *before* the VS Code extensions initialize.
-
-The process includes:
-1.  Making the Gradle wrapper script executable (`chmod +x ./gradlew`).
-2.  Attempting to download and verify the distribution by running `./gradlew --version`.
-3.  **Retry Logic:** If the download fails (e.g., due to a network hiccup leading to a corrupted file), the script will:
-    *   Delete the entire download directory (`~/.gradle/wrapper/dists/`) to ensure a clean slate.
-    *   Wait for 5 seconds.
-    *   Retry the download.
-    *   This loop will run up to 3 times before aborting the setup to prevent an infinite loop.
-
-```bash
-echo "2. Pre-warming Gradle wrapper to prevent extension download issues..."
-cd "${WORKSPACE_FOLDER:-/workspaces/CSP-Modern}"
-
-chmod +x ./gradlew
-
-MAX_RETRIES=3
-RETRY_COUNT=0
-until ./gradlew --version; do
-    # ... retry logic ...
-done
-echo "Gradle is ready."
-```
-
-### 4. Finalization
-
-Once all setup steps are complete, the script performs final cleanup and creates the marker file.
-
-1.  **Stop Gradle Daemon:** The pre-warming command may leave a Gradle daemon process running in the background. `./gradlew --stop` is called to terminate it, freeing up system resources.
-2.  **Create Marker File:** The script creates the empty `~/.csp_setup_complete` file. This is the signal that all future container startups can skip this entire process.
-
-```bash
-# The pre-warming command may leave a Gradle daemon running. We stop it to free up resources.
-./gradlew --stop
-
-# This file signals that the setup is complete and can be skipped on subsequent rebuilds.
-touch "$HOME/.csp_setup_complete"
-```
+The `.devcontainer` directory can remain for now, as it's a useful reference, but it is no longer the primary way to develop.

@@ -1,6 +1,8 @@
 package com.ben.csp.block;
 
 import com.ben.csp.CSPMod;
+import com.ben.csp.block.entity.ArchiveFilingCabinetBlockEntity;
+import com.ben.csp.block.entity.VertushkaBlockEntity;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;

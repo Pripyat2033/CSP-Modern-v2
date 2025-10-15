@@ -1,6 +1,6 @@
 package com.ben.csp.entity.ai;
 
-import com.ben.csp.entity.ai.PsychologicalState;
+import com.ben.csp.entity.PsychologicalState;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;
 
@@ -26,18 +26,18 @@ public class RestGoal extends Goal {
     @Override
     public boolean canStart() {
         // Can start if the entity is idle and has some fatigue to recover.
-        return this.entity.getNavigation().isIdle() && this.psychologicalState.getFatigue() > 0;
+        return this.entity.getNavigation().isIdle() && this.psychologicalState.getStress() > 0; // Assuming fatigue is stress
     }
 
     @Override
     public boolean shouldContinue() {
         // Continue as long as the entity remains idle and is still fatigued.
-        return this.entity.getNavigation().isIdle() && this.psychologicalState.getFatigue() > 0;
+        return this.entity.getNavigation().isIdle() && this.psychologicalState.getStress() > 0; // Assuming fatigue is stress
     }
 
     @Override
     public void tick() {
         // Recover from fatigue.
-        this.psychologicalState.rest(this.recoveryRate);
+        this.psychologicalState.relieveStress(this.recoveryRate);
     }
 }

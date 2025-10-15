@@ -2,9 +2,9 @@ package com.ben.csp.entity.ai;
 
 import com.ben.csp.entity.BargeEntity;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 /**
@@ -44,7 +44,7 @@ public class DeliverToPortGoal extends Goal {
         // If we've reached the destination (or are very close)
         if (this.destination != null && this.barge.getBlockPos().isWithinDistance(this.destination, 4.0)) {
             // "Unload" cargo and clear the barge's destination to signal completion.
-            this.barge.loadCargo(ItemStack.EMPTY); // Placeholder for unloading logic
+            this.barge.loadCargo(Collections.emptyList()); // Placeholder for unloading logic
             this.barge.setDestination(null);
         }
     }

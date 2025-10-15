@@ -29,13 +29,18 @@ public class ArchiveFilingCabinetBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        nbt.put("FiledDocuments", new NbtList().addAll(filedDocuments));
+        NbtList nbtList = new NbtList();
+        nbtList.addAll(this.filedDocuments);
+        nbt.put("FiledDocuments", nbtList);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         this.filedDocuments.clear();
-        this.filedDocuments.addAll(nbt.getList("FiledDocuments", NbtElement.COMPOUND_TYPE));
+        if (nbt.contains("FiledDocuments", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList("FiledDocuments", NbtElement.COMPOUND_TYPE);
+            nbtList.forEach(element -> this.filedDocuments.add((NbtCompound) element));
+        }
     }
 }

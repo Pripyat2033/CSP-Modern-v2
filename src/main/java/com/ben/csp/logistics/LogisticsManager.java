@@ -3,18 +3,16 @@ package com.ben.csp.logistics;
 import com.ben.csp.CSPMod;
 import com.ben.csp.build.BuildTask;
 import com.ben.csp.entity.BargeEntity;
-import com.ben.csp.entity.ModEntities;
 import com.ben.csp.world.LocationType;
-import com.google.common.collect.Lists;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.util.math.Box;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Science Grade: A central singleton managing the project's supply chain.
@@ -22,7 +20,7 @@ import java.util.Optional;
  */
 public class LogisticsManager {
     private static final LogisticsManager INSTANCE = new LogisticsManager();
-    private final List<DispatchOrder> completedOrders = Lists.newArrayList();
+    private final Queue<DispatchOrder> completedOrders = new ConcurrentLinkedQueue<>();
 
     private LogisticsManager() {}
 
@@ -38,18 +36,40 @@ public class LogisticsManager {
      * @param world The world to operate in.
      */
     public void fulfillResourceRequest(BuildTask task, ServerWorld world) {
-        // In a real implementation, this would get materials from the task definition.
-        Map<String, Integer> materials = Map.of("minecraft:cobblestone", 64, "minecraft:iron_ingot", 32);
-        DispatchOrder order = new DispatchOrder(task.getDestination(), materials);
+        Map<String, Integer> requiredMaterials = task.getRequiredMaterials();
+        if (requiredMaterials == null || requiredMaterials.isEmpty()) {
+            CSPMod.LOGGER.info("No materials required for task '{}'. Skipping logistics.", task.getDescription());
+            return;
+        }
+
+        DispatchOrder order = new DispatchOrder(task.getDestination(), requiredMaterials);
+
+        // Decouple from DirectorateManager by getting the location here.
+        BlockPos portPos = com.ben.csp.build.DirectorateManager.getLocation(LocationType.PORT_AUTHORITY);
+        if (portPos == null) {
+            CSPMod.LOGGER.warn("Could not fulfill resource request for task '{}': Port Authority location is not defined.", task.getDescription());
+            return;
+        }
 
         // Find an available barge to carry out the order.
-        Optional<BargeEntity> availableBarge = findAvailableBarge(world);
+        Optional<BargeEntity> availableBarge = findAvailableBarge(world, portPos);
 
         if (availableBarge.isPresent()) {
             BargeEntity barge = availableBarge.get();
             barge.setDestination(order.destination());
-            // For now, just represent the cargo with a single item stack.
-            barge.loadCargo(new ItemStack(Items.IRON_BLOCK, 1));
+
+            // Convert the material map into a list of ItemStacks for the cargo.
+            List<ItemStack> cargo = order.materials().entrySet().stream()
+                    .map(entry -> {
+                        Identifier itemId = new Identifier(entry.getKey());
+                        if (!Registries.ITEM.containsId(itemId)) {
+                            CSPMod.LOGGER.error("Logistics Error: Invalid item ID '{}' in resource request for task '{}'.", itemId, task.getDescription());
+                            return null; // Or return ItemStack.EMPTY
+                        }
+                        return new ItemStack(Registries.ITEM.get(itemId), entry.getValue());
+                    })
+                    .filter(Objects::nonNull).toList();
+            barge.loadCargo(cargo);
             CSPMod.LOGGER.info("LogisticsManager dispatched Barge {} to {} for task '{}'", barge.getUuid(), order.destination(), task.getDescription());
         } else {
             CSPMod.LOGGER.warn("Could not fulfill resource request for task '{}': No available barges.", task.getDescription());
@@ -57,16 +77,11 @@ public class LogisticsManager {
         }
     }
 
-    private Optional<BargeEntity> findAvailableBarge(ServerWorld world) {
-        BlockPos portPos = com.ben.csp.build.DirectorateManager.getLocation(LocationType.PORT_AUTHORITY);
-        if (portPos == null) {
-            return Optional.empty();
-        }
-
+    private Optional<BargeEntity> findAvailableBarge(ServerWorld world, BlockPos portLocation) {
         // Find barges that are idle (no destination) near the port.
-        return world.getEntitiesByType(ModEntities.BARGE, barge -> barge.getDestination() == null && barge.getBlockPos().isWithinDistance(portPos, 32))
+        return world.getEntitiesByClass(BargeEntity.class, new Box(portLocation).expand(32), barge -> barge.getDestination() == null)
                 .stream()
-                .findFirst();
+                .findFirst(); 
     }
 
     /**
@@ -74,13 +89,18 @@ public class LogisticsManager {
      * @param order The completed dispatch order.
      */
     public void reportOrderComplete(DispatchOrder order) {
-        completedOrders.add(order);
+        this.completedOrders.add(order);
     }
 
     public List<DispatchOrder> drainCompletedOrders() {
-        if (completedOrders.isEmpty()) return Collections.emptyList();
-        List<DispatchOrder> drained = List.copyOf(completedOrders);
-        completedOrders.clear();
+        // Atomically drain the queue to prevent race conditions.
+        // This is safer than iterating and then clearing.
+        List<DispatchOrder> drained = new ArrayList<>();
+        DispatchOrder order;
+        while ((order = completedOrders.poll()) != null) {
+            drained.add(order);
+        }
         return drained;
     }
+
 }

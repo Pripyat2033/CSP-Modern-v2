@@ -1,13 +1,12 @@
 package com.ben.csp.entity.ai;
 
-import com.ben.csp.block.ArchiveFilingCabinetBlockEntity;
+import com.ben.csp.block.entity.ArchiveFilingCabinetBlockEntity;
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.entity.ProrabEntity;
 import com.ben.csp.entity.UchetchikEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.EnumSet;
@@ -97,7 +96,7 @@ public class FileDocumentsGoal extends Goal {
     }
 
     private Optional<ProrabEntity> findProrabWithReports() {
-        return this.uchetchik.getWorld().getEntitiesByClass(ProrabEntity.class, this.uchetchik.getBoundingBox().expand(32),
+        return this.uchetchik.getWorld().getEntitiesByClass(ProrabEntity.class, this.uchetchik.getBoundingBox().expand(32), 
                 prorab -> prorab.hasPendingReports() && this.uchetchik.getEnterpriseName().equals(prorab.getEnterpriseName())).stream().findFirst();
     }
 
