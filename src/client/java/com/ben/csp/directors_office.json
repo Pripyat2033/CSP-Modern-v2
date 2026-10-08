@@ -1,0 +1,19 @@
+{
+  "id": "csp-modern:directors_office",
+  "description": "A standard-issue office for a Directorate-level manager.",
+  "workPackages": [
+    { "type": "BLOCK", "pos": [0, 0, 0], "state": "minecraft:oak_planks" },
+    { "type": "BLOCK", "pos": [1, 0, 0], "state": "minecraft:oak_planks" },
+    { "type": "BLOCK", "pos": [2, 0, 0], "state": "minecraft:oak_planks" },
+    { "type": "BLOCK", "pos": [3, 0, 0], "state": "minecraft:oak_planks" },
+    { "type": "BLOCK", "pos": [4, 0, 0], "state": "minecraft:oak_planks" },
+
+    { "type": "BLOCK", "pos": [1, 1, 0], "state": "minecraft:bookshelf" },
+    { "type": "BLOCK", "pos": [3, 1, 0], "state": "minecraft:iron_block" }
+  ],
+  "pois": [
+    { "pos": [3, 1, 1], "type": "SEKRETAR_SPAWN" },
+    { "pos": [3, 1, 0], "type": "VERTUSHKA_PHONE" },
+    { "pos": [1, 1, 4], "type": "DIRECTOR_DESK" }
+  ]
+}

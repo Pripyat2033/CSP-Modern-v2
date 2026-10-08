@@ -3,11 +3,14 @@
   "id": "csp-modern",
   "version": "${version}",
   "name": "Chernobyl Scientific Project - Modern",
-  "description": "A full-fidelity, science-grade reconstruction of the Chernobyl Nuclear Power Plant and the events leading to the 1986 disaster.",
+  "description": "A full-fidelity simulation of the Chernobyl Nuclear Power Plant and its surrounding Exclusion Zone.",
   "authors": [
     "Ben"
   ],
-  "contact": {},
+  "contact": {
+    "homepage": "https://github.com/Ben-CA-Warner/ChernobylScientificProject",
+    "sources": "https://github.com/Ben-CA-Warner/ChernobylScientificProject"
+  },
   "license": "MIT",
   "icon": "assets/csp-modern/icon.png",
   "environment": "*",
@@ -24,6 +27,8 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.11",
-    "minecraft": "~1.20.1"
+    "minecraft": "~1.20.1",
+    "java": ">=21",
+    "fabric-api": "*"
   }
 }

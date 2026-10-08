@@ -13,6 +13,8 @@
 @rem See the License for the specific language governing permissions and
 @rem limitations under the License.
 @rem
+@rem SPDX-License-Identifier: Apache-2.0
+@rem
 
 @if "%DEBUG%"=="" @echo off
 @rem ##########################################################################
@@ -55,6 +57,10 @@ goto fail
 set JAVA_HOME=%JAVA_HOME:"=%
 set JAVA_EXE=%JAVA_HOME%/bin/java.exe
 
+if exist "%JAVA_EXE%" goto execute
+
+@rem Check for JRE structure for consistency with POSIX gradlew
+set JAVA_EXE=%JAVA_HOME%/jre/bin/java.exe
 if exist "%JAVA_EXE%" goto execute
 
 echo. 1>&2

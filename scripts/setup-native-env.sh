@@ -43,9 +43,10 @@ echo "✅ Gradle ${GRADLE_VERSION} found."
 echo "⚙️ Configuring shell environment..."
 {
     echo ''
-    echo '# Manual SDK paths for CSP-Modern'
+    echo '# Chernobyl Scientific Project - SDK paths'
+    echo 'export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"'
     echo "export GRADLE_HOME=\"\$HOME/sdks/gradle-${GRADLE_VERSION}\""
-    echo 'export PATH="$GRADLE_HOME/bin:$PATH"'
+    echo 'export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$PATH"'
 } >> ~/.zshrc
 
 # --- 4. Final Steps ---

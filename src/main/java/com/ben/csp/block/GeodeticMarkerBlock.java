@@ -1,5 +1,6 @@
 package com.ben.csp.block;
 
+import com.ben.csp.util.BlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -12,8 +13,8 @@ import net.minecraft.world.BlockView;
  * Science Grade: A simple, non-collidable marker block placed by a Geodezist to lay out a construction site.
  */
 public class GeodeticMarkerBlock extends Block {
-    public GeodeticMarkerBlock(Settings settings) {
-        super(settings);
+    public GeodeticMarkerBlock() {
+        super(BlockSettings.create());
     }
 
     @Override

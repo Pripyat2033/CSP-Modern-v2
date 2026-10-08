@@ -1,0 +1,15 @@
+{
+    "java.project.sourcePaths": [
+        "src/main/java",
+        "src/client/java",
+        "src/main/resources",
+        "src/generated/resources"
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic",
+    // Increase the timeout for resolving the shell environment.
+    // This helps prevent the "Unable to resolve shell environment" error on macOS
+    // if the .zshrc file has slow-to-initialize tools (like nvm, pyenv, etc.).
+    // The default is 10 seconds. We'll set it to 30.
+    "terminal.integrated.shellIntegration.resolveTimeout": 30000,
+    "java.compile.nullAnalysis.mode": "automatic"
+}

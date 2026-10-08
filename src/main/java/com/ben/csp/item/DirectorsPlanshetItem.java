@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 
 /**
  * The "Planshet" (Планшет), a map case or clipboard used by high-level project management.
- * This item provides an interface to the DirectorateManager for viewing project status.
  */
 public class DirectorsPlanshetItem extends Item {
 
@@ -21,8 +20,6 @@ public class DirectorsPlanshetItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient()) {
-            // In a full implementation, this would query the DirectorateManager
-            // for the status of active construction projects, upcoming Planerkas, etc.
             user.sendMessage(Text.literal("Directorate Status: All systems nominal."), false);
         }
         return TypedActionResult.success(user.getStackInHand(hand));

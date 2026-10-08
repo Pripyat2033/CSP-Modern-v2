@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.6.11'
+    id 'fabric-loom' version '1.6-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -45,7 +45,7 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the publish task
     // if it is present.

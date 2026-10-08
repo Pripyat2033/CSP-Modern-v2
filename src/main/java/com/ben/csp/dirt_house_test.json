@@ -1,0 +1,17 @@
+{
+  "id": "dirt_house_test",
+  "description": "Construct a test structure (dirt house).",
+  "requiredEnterprises": {
+    "Stroy-Trust-1": "CONSTRUCTION"
+  },
+  "initialBuildTasks": [
+    {
+      "description": "Construct test house from blueprint",
+      "locationType": "PROMBAZA",
+      "rotation": 1,
+      "blueprintId": "csp-modern:dirt_house",
+      "assignedTeamName": "Stroy-Trust-1"
+    }
+  ],
+  "followUpActions": []
+}

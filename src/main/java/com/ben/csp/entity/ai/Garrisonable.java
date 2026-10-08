@@ -1,15 +1,28 @@
 package com.ben.csp.entity.ai;
 
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * An interface for entities that can be "garrisoned" at a specific location.
- * This is used to make NPCs return to their post when idle.
+ * An interface for entities that can be "garrisoned" or posted to a specific location.
+ * This is used by AI goals like GarrisonGoal and items like the Director's Planshet.
  */
 public interface Garrisonable {
+
     /**
-     * @return The position where this entity should be garrisoned.
+     * Sets the entity's garrison position. This is their "post" or home base.
+     * @param pos The position to garrison at. Can be null to clear the post.
      */
+    void setGarrisonPos(@Nullable BlockPos pos);
+
+    /**
+     * Gets the entity's current garrison position.
+     * @return The garrison position, or null if not set.
+     */
+    @Nullable
     BlockPos getGarrisonPos();
-    int getGarrisonRadius();
+
+    void setSitting(boolean sitting);
+
+    boolean isSitting();
 }

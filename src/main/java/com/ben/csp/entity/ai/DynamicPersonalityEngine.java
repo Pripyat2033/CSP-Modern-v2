@@ -1,5 +1,7 @@
 package com.ben.csp.entity.ai;
 
+import com.ben.csp.entity.ai.dosye.Dosye;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
