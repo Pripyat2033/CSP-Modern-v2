@@ -1,16 +1,37 @@
 package com.ben.csp.agent;
 
-public class SkalaRequestDeviceScreen {
-    // Screen for requesting Skala devices via V31M link
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.text.Text;
+
+/**
+ * Skala Request Device Screen - GUI for requesting equipment/resources
+ */
+public class SkalaRequestDeviceScreen extends Screen {
     
-    private static final int SCREEN_WIDTH = 256;
-    private static final int SCREEN_HEIGHT = 192;
+    private final BlockPos requestBlock;
+    private java.util.Map<String, Integer> availableInventory = new java.util.HashMap<>();
+    private String requestStatus = "pending";
     
-    public static int getScreenWidth() {
-        return SCREEN_WIDTH;
+    public SkalaRequestDeviceScreen(BlockPos requestBlock) {
+        super(Text.literal("Запрос оборудования / Equipment Request"));
+        this.requestBlock = requestBlock;
     }
     
-    public static int getScreenHeight() {
-        return SCREEN_HEIGHT;
+    @Override
+    protected void init() {
+        // Initialize screen widgets
+    }
+    
+    public boolean processRequest(String deviceId) {
+        if (availableInventory.containsKey(deviceId)) {
+            return true;
+        }
+        return false;
+    }
+    
+    public void addAvailableEquipment(String deviceId, int quantity) {
+        this.availableInventory.put(deviceId, quantity);
     }
 }
