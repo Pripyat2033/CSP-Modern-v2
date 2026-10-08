@@ -1,10 +1,7 @@
 package com.ben.csp.agent.goals;
 
-import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.Mob;
-
-public class ProrabReportToGlavnyInzhenerGoal extends Behavior<Mob> {
+public class ProrabReportToGlavnyInzhenerGoal {
     // Agent goal for behavior
     
-    public ProrabReportToGlavnyInzhenerGoal(Mob mob) {}
+    public void execute() {}
 }

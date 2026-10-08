@@ -19,15 +19,6 @@ public class ModBlocks {
     public static final Block GRAPHITE_BLOCK = new GraphiteBlock();
     public static final Block STOCKPILE_BLOCK = new StockpileBlock();
 
-    public static final com.ben.csp.skala.SkalaCoreBlock SKALA_CORE_BLOCK = new com.ben.csp.skala.SkalaCoreBlock();
-    public static final com.ben.csp.skala.SkalaIoCabinetBlock SKALA_IO_BLOCK = new com.ben.csp.skala.SkalaIoCabinetBlock();
-    public static final com.ben.csp.skala.SkalaReactorInterfaceBlock SKALA_V31M_LINK_BLOCK = new com.ben.csp.skala.SkalaReactorInterfaceBlock();
-    public static final com.ben.csp.skala.SkalaRequestDeviceBlock SKALA_REQUEST_DEVICE_BLOCK = new com.ben.csp.skala.SkalaRequestDeviceBlock();
-    public static final com.ben.csp.skala.SkalaTapeDriveBlock SKALA_TAPE_DRIVE_BLOCK = new com.ben.csp.skala.SkalaTapeDriveBlock();
-
-    public static final com.ben.csp.rbmk.SimulationConductorBlock SIMULATION_CONDUCTOR = new com.ben.csp.rbmk.SimulationConductorBlock();
-    public static final com.ben.csp.rbmk.ControlRodBlock CONTROL_ROD = new com.ben.csp.rbmk.ControlRodBlock();
-
     public static void register() {
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "vertushka"), VERTUSHKA_BLOCK);
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "archive_filing_cabinet"), ARCHIVE_FILING_CABINET_BLOCK);
@@ -41,15 +32,6 @@ public class ModBlocks {
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "fuel_channel"), FUEL_CHANNEL_BLOCK);
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "graphite"), GRAPHITE_BLOCK);
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "stockpile"), STOCKPILE_BLOCK);
-
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "skala_core"), SKALA_CORE_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "skala_io_cabinet"), SKALA_IO_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "skala_v31m_link"), SKALA_V31M_LINK_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "skala_request_device"), SKALA_REQUEST_DEVICE_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "skala_tape_drive"), SKALA_TAPE_DRIVE_BLOCK);
-
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "simulation_conductor"), SIMULATION_CONDUCTOR);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "control_rod"), CONTROL_ROD);
     }
 
     public static void registerModBlocks() {
@@ -57,7 +39,6 @@ public class ModBlocks {
     }
 
     public static void registerItemGroups() {
-        Identifier mainGroup = Identifier.of("csp_modern", "CSP Modern");
-        Identifier toolsGroup = Identifier.of("csp_modern", "Construction Tools");
+        // Item groups registration can be added here when needed
     }
 }

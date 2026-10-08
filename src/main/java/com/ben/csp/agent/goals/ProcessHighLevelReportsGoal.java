@@ -1,10 +1,7 @@
 package com.ben.csp.agent.goals;
 
-import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.Mob;
-
-public class ProcessHighLevelReportsGoal extends Behavior<Mob> {
+public class ProcessHighLevelReportsGoal {
     // Agent goal for behavior
     
-    public ProcessHighLevelReportsGoal(Mob mob) {}
+    public void execute() {}
 }

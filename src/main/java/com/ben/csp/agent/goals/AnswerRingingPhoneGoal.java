@@ -1,10 +1,7 @@
 package com.ben.csp.agent.goals;
 
-import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.Mob;
-
-public class AnswerRingingPhoneGoal extends Behavior<Mob> {
+public class AnswerRingingPhoneGoal {
     // Agent goal for behavior
     
-    public AnswerRingingPhoneGoal(Mob mob) {}
+    public void execute() {}
 }

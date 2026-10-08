@@ -1,10 +1,7 @@
 package com.ben.csp.agent.goals;
 
-import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.Mob;
-
-public class RequisitionMaterialsGoal extends Behavior<Mob> {
+public class RequisitionMaterialsGoal {
     // Agent goal for behavior
     
-    public RequisitionMaterialsGoal(Mob mob) {}
+    public void execute() {}
 }

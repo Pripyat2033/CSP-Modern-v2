@@ -1,10 +1,7 @@
 package com.ben.csp.agent.goals;
 
-import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.Mob;
-
-public class PerformGeodeticSurveyGoal extends Behavior<Mob> {
+public class PerformGeodeticSurveyGoal {
     // Agent goal for behavior
     
-    public PerformGeodeticSurveyGoal(Mob mob) {}
+    public void execute() {}
 }

@@ -1,11 +1,11 @@
 package com.ben.csp.agent;
 
-public class GlavnyInzhener extends net.minecraft.world.entity.Entity {
-    // Chief engineer agent for construction site management
+public class GlavnyInzhener {
+    // Chief engineer agent - manages construction site operations
     
-    public GlavnyInzhener() {}
+    private static final String AGENT_NAME = "Glavny Inzhener";
     
-    public GlavnyInzhener(net.minecraft.world.entity.EntityType<GlavnyInzhener> type, net.minecraft.world.level.Level world) {
-        super(type, world);
+    public static String getAgentName() {
+        return AGENT_NAME;
     }
 }

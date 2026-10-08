@@ -1,11 +1,11 @@
 package com.ben.csp.agent;
 
-public class Prorab extends net.minecraft.world.entity.Entity {
-    // Chief engineer agent
+public class Prorab {
+    // Chief engineer agent - oversees construction projects
     
-    public Prorab() {}
+    private static final String AGENT_NAME = "Prorab";
     
-    public Prorab(net.minecraft.world.entity.EntityType<Prorab> type, net.minecraft.world.level.Level world) {
-        super(type, world);
+    public static String getAgentName() {
+        return AGENT_NAME;
     }
 }

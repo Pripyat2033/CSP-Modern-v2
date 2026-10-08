@@ -1,10 +1,7 @@
 package com.ben.csp.agent.goals;
 
-import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.Mob;
-
-public class SignDosyeGoal extends Behavior<Mob> {
+public class SignDosyeGoal {
     // Agent goal for behavior
     
-    public SignDosyeGoal(Mob mob) {}
+    public void execute() {}
 }

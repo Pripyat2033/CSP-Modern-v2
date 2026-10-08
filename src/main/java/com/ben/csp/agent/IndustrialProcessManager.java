@@ -1,7 +1,7 @@
 package com.ben.csp.agent;
 
 public class IndustrialProcessManager {
-    // Manages industrial processing
+    // Manages industrial processing and material handling
     
     private static final int PROCESSING_CYCLE_TIME = 20;
     
