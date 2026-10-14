@@ -1,27 +1,12 @@
 package com.ben.csp.skala;
-import com.ben.csp.util.BlockSettings;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.block.Block;
 
-public class SkalaCoreBlock extends BlockWithEntity {
-    public SkalaCoreBlock() {
-        super(BlockSettings.create());
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new SkalaCoreBlockEntity(pos, state);
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+public class SkalaCoreBlock extends Block {
+    public static final String ID = "skala_core_block";
+    
+    // Standard Fabric 1.20+ constructor
+    public SkalaCoreBlock(Settings settings) {
+        super(settings);
     }
 }

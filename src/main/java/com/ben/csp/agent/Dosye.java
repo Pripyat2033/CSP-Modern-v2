@@ -1,7 +1,6 @@
 package com.ben.csp.agent;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
 import java.util.*;
 
 /**

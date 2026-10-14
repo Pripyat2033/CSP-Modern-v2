@@ -5,7 +5,7 @@ public class IndustrialProcessManager {
     public static class ProcessRecord {
         public final String processId;
         public final String processType;
-        private int stage;
+        private int stage = 1;
         public double completionPercentage;
         public boolean qualityVerified;
         
@@ -14,7 +14,30 @@ public class IndustrialProcessManager {
             this.processType = type;
             this.completionPercentage = 0.0;
             this.qualityVerified = false;
-            this.stage = 1;
+            this.stage = 1; // Process always starts at stage 1
+        }
+        
+        /**
+         * Get current process stage number (used for progress tracking)
+         */
+        public int getStage() {
+            return this.stage;
+        }
+        
+        /**
+         * Set process to a specific stage (used when advancing through workflow)
+         */
+        public void setStage(int newStage) {
+            if (newStage >= 1 && newStage <= 10) {
+                this.stage = newStage;
+            }
+        }
+        
+        /**
+         * Get completion percentage for current stage
+         */
+        public double getProgressForCurrentStage() {
+            return this.completionPercentage;
         }
     }
     
@@ -38,11 +61,22 @@ public class IndustrialProcessManager {
     public static void markStageComplete(String processId, int stage) {
         ProcessRecord record = activeProcesses.get(processId);
         if (record != null && stage >= 1 && stage <= 10) {
-            record.stage = stage;
+            // Update the process to advance to new stage
+            record.setStage(stage); // Use setStage() method
+            record.stage = stage;    // Direct assignment also works
+            
+            // Advance stage and check for milestone triggers at each stage
             if (stage % 3 == 0) {
                 record.qualityVerified = true;
             }
         }
+    }
+    
+    /**
+     * Get current stage information for a process
+     */
+    public static ProcessRecord getCurrentStageInfo(String processId) {
+        return activeProcesses.get(processId);
     }
     
     public static java.util.Map<String, ProcessRecord> getActiveProcesses() {

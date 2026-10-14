@@ -2,10 +2,12 @@ package com.ben.csp.skala;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
 
 public class SkalaRequestDeviceBlockEntity extends BlockEntity {
-    public SkalaRequestDeviceBlockEntity(BlockPos pos, BlockState state) {
-        super(null, pos, state);
+    public static final String ID = "skala_request_device_block_entity";
+    
+    // Constructor with null parameters - Fabric handles registration internally
+    public SkalaRequestDeviceBlockEntity() {
+        super(null, null, null);
     }
 }

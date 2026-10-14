@@ -37,3 +37,12 @@ When you are asked to remove a feature, refactor code, or clean up the project:
 # WORKFLOW ENFORCEMENT
 
 Before executing any shell command or file operation, cross-reference it against the ZERO DELETION POLICY. Prioritize preserving the user's work and ensuring the mod continues to compile successfully.
+
+# DESIGN PHILOSOPHY: SAFETY THROUGH EDUCATION
+
+When designing systems, generating code, or balancing mechanics (especially regarding nuclear physics, radiation, or hazardous materials), you must strictly adhere to the "Safety Through Education" principle.
+
+1. **Scientific Fidelity Over Abstraction:** Do not invent arbitrary, simplified "game mechanics" for hazardous systems. Implement scientifically accurate simulations (e.g., real-world decay mechanics, realistic radiation propagation, thermal limits) to the maximum extent the Java/Minecraft engine allows without crashing.
+2. **No False Safety Nets:** Do not implement "fake" safety features that exist in other mods but violate real-world physics. If a reactor design would melt down in the real world due to bad cooling physics, it MUST melt down in the mod.
+3. **Educational Intent:** The primary goal of these systems is to educate the player on real-world physics and the actual consequences of mishandling complex energy systems. Misinformation through simplified game design is considered dangerous.
+4. **Implementation:** When writing logic for these systems, always prioritize real-world formulas and verify your physics logic before generating the Java code.

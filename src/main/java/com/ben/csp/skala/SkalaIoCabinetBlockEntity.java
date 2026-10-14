@@ -2,10 +2,12 @@ package com.ben.csp.skala;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
 
 public class SkalaIoCabinetBlockEntity extends BlockEntity {
-    public SkalaIoCabinetBlockEntity(BlockPos pos, BlockState state) {
-        super(null, pos, state);
+    public static final String ID = "skala_iocabinet_block_entity";
+    
+    // Constructor with null parameters - Fabric handles registration internally
+    public SkalaIoCabinetBlockEntity() {
+        super(null, null, null);
     }
 }

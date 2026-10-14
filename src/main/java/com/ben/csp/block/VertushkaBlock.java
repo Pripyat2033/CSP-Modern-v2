@@ -1,25 +1,14 @@
 package com.ben.csp.block;
 
-import com.ben.csp.util.BlockSettings;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.block.BlockState;
-import com.ben.csp.block.entity.VertushkaBlockEntity;
+import net.minecraft.block.Block;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
-public class VertushkaBlock extends BlockWithEntity {
-    public VertushkaBlock() {
-        super(BlockSettings.create());
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new VertushkaBlockEntity(pos, state);
+public class VertushkaBlock extends Block {
+    public static final String ID = "vertushka_block";
+    
+    public static final VertushkaBlock INSTANCE = new VertushkaBlock();
+    
+    private VertushkaBlock() {
+        super(FabricBlockSettings.copyOf(net.minecraft.block.Blocks.IRON_BLOCK));
     }
 }

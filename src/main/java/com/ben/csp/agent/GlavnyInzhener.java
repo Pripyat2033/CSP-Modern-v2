@@ -20,7 +20,6 @@ public class GlavnyInzhener {
     private static final String AGENT_NAME = "Главный инженер"; // Chief Engineer in Cyrillic
     
     // Enterprise management state
-    private double strategicPriority = 1.0;     // Weight of current strategic focus
     private java.util.Set<String> oversightDepartments = new java.util.HashSet<>();
     private java.util.Map<String, Integer> departmentReadiness = new java.util.HashMap<>();
     
@@ -28,7 +27,6 @@ public class GlavnyInzhener {
      * Initialize Chief Engineer agent with default values
      */
     public GlavnyInzhener() {
-        this.strategicPriority = 1.0;
         // Initial oversight of core departments
         oversightDepartments.add("construction");
         oversightDepartments.add("logistics");

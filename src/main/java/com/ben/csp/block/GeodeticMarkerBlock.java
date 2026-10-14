@@ -1,6 +1,7 @@
 package com.ben.csp.block;
 
 import com.ben.csp.util.BlockSettings;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -20,5 +21,14 @@ public class GeodeticMarkerBlock extends Block {
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return VoxelShapes.cuboid(0.4, 0.0, 0.4, 0.6, 1.0, 0.6); // A simple post shape
+    }
+
+    /**
+     * Get the block identity of this GeodeticMarkerBlock.
+     * Used for registry lookup and compatibility with other systems.
+     * @return The Block instance representing this marker
+     */
+    public Block getBlockIdentity() {
+        return this;
     }
 }

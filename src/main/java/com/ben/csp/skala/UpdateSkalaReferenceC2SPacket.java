@@ -1,4 +1,4 @@
-package com.ben.csp.networking.packet;
+package com.ben.csp.skala;
 
 import net.minecraft.util.math.BlockPos;
 

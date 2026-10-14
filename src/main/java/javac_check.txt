@@ -1,0 +1,250 @@
+com\ben\csp\entity\ModEntities.java:17: error: cannot find symbol
+    public static final EntityType<TolkachEntity> TOLKACH = Registry.register(
+                                   ^
+  symbol:   class TolkachEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:26: error: cannot find symbol
+    public static final EntityType<StroitelEntity> STROITEL = Registry.register(
+                                   ^
+  symbol:   class StroitelEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:35: error: cannot find symbol
+    public static final EntityType<ProrabEntity> PRORAB = Registry.register(
+                                   ^
+  symbol:   class ProrabEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:44: error: cannot find symbol
+    public static final EntityType<SekretarEntity> SEKRETAR = Registry.register(
+                                   ^
+  symbol:   class SekretarEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:53: error: cannot find symbol
+    public static final EntityType<GlavnyInzhenerEntity> GLAVNY_INZHENIER = Registry.register(
+                                   ^
+  symbol:   class GlavnyInzhenerEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:62: error: cannot find symbol
+    public static final EntityType<NachalnikSnabzheniyaEntity> NACHALNIK_SNABZHENIYA = Registry.register(
+                                   ^
+  symbol:   class NachalnikSnabzheniyaEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:71: error: cannot find symbol
+    public static final EntityType<UchetchikEntity> UCHETCHIK = Registry.register(
+                                   ^
+  symbol:   class UchetchikEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:80: error: cannot find symbol
+    public static final EntityType<GeodezistEntity> GEODEZIST = Registry.register(
+                                   ^
+  symbol:   class GeodezistEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:89: error: cannot find symbol
+    public static final EntityType<EnterpriseDirectorEntity> ENTERPRISE_DIRECTOR = Registry.register(
+                                   ^
+  symbol:   class EnterpriseDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:98: error: cannot find symbol
+    public static final EntityType<FacilityDirectorEntity> FACILITY_DIRECTOR = Registry.register(
+                                   ^
+  symbol:   class FacilityDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:107: error: cannot find symbol
+    public static final EntityType<BrigadierEntity> BRIGADIER = Registry.register(
+                                   ^
+  symbol:   class BrigadierEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:116: error: cannot find symbol
+    public static final EntityType<BargeEntity> BARGE = Registry.register(
+                                   ^
+  symbol:   class BargeEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:125: error: cannot find symbol
+    public static final EntityType<MasterEntity> MASTER = Registry.register(
+                                   ^
+  symbol:   class MasterEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:17: error: cannot access Keyable
+    public static final EntityType<TolkachEntity> TOLKACH = Registry.register(
+                                                                    ^
+  class file for com.mojang.serialization.Keyable not found
+com\ben\csp\entity\ModEntities.java:30: error: cannot find symbol
+            (EntityType.EntityFactory<StroitelEntity>) ((EntityType<StroitelEntity> type, World world) -> new StroitelEntity(type, world)),
+                                      ^
+  symbol:   class StroitelEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:30: error: cannot find symbol
+            (EntityType.EntityFactory<StroitelEntity>) ((EntityType<StroitelEntity> type, World world) -> new StroitelEntity(type, world)),
+                                                                    ^
+  symbol:   class StroitelEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:30: error: cannot find symbol
+            (EntityType.EntityFactory<StroitelEntity>) ((EntityType<StroitelEntity> type, World world) -> new StroitelEntity(type, world)),
+                                                                                                              ^
+  symbol:   class StroitelEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:39: error: cannot find symbol
+            (EntityType.EntityFactory<ProrabEntity>) ((EntityType<ProrabEntity> type, World world) -> new ProrabEntity(type, world)),
+                                      ^
+  symbol:   class ProrabEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:39: error: cannot find symbol
+            (EntityType.EntityFactory<ProrabEntity>) ((EntityType<ProrabEntity> type, World world) -> new ProrabEntity(type, world)),
+                                                                  ^
+  symbol:   class ProrabEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:39: error: cannot find symbol
+            (EntityType.EntityFactory<ProrabEntity>) ((EntityType<ProrabEntity> type, World world) -> new ProrabEntity(type, world)),
+                                                                                                          ^
+  symbol:   class ProrabEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:48: error: cannot find symbol
+            (EntityType.EntityFactory<SekretarEntity>) ((EntityType<SekretarEntity> type, World world) -> new SekretarEntity(type, world)),
+                                      ^
+  symbol:   class SekretarEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:48: error: cannot find symbol
+            (EntityType.EntityFactory<SekretarEntity>) ((EntityType<SekretarEntity> type, World world) -> new SekretarEntity(type, world)),
+                                                                    ^
+  symbol:   class SekretarEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:48: error: cannot find symbol
+            (EntityType.EntityFactory<SekretarEntity>) ((EntityType<SekretarEntity> type, World world) -> new SekretarEntity(type, world)),
+                                                                                                              ^
+  symbol:   class SekretarEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:57: error: cannot find symbol
+            (EntityType.EntityFactory<GlavnyInzhenerEntity>) ((EntityType<GlavnyInzhenerEntity> type, World world) -> new GlavnyInzhenerEntity(type, world)),
+                                      ^
+  symbol:   class GlavnyInzhenerEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:57: error: cannot find symbol
+            (EntityType.EntityFactory<GlavnyInzhenerEntity>) ((EntityType<GlavnyInzhenerEntity> type, World world) -> new GlavnyInzhenerEntity(type, world)),
+                                                                          ^
+  symbol:   class GlavnyInzhenerEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:57: error: cannot find symbol
+            (EntityType.EntityFactory<GlavnyInzhenerEntity>) ((EntityType<GlavnyInzhenerEntity> type, World world) -> new GlavnyInzhenerEntity(type, world)),
+                                                                                                                          ^
+  symbol:   class GlavnyInzhenerEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:66: error: cannot find symbol
+            (EntityType.EntityFactory<NachalnikSnabzheniyaEntity>) ((EntityType<NachalnikSnabzheniyaEntity> type, World world) -> new NachalnikSnabzheniyaEntity(type, world)),
+                                      ^
+  symbol:   class NachalnikSnabzheniyaEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:66: error: cannot find symbol
+            (EntityType.EntityFactory<NachalnikSnabzheniyaEntity>) ((EntityType<NachalnikSnabzheniyaEntity> type, World world) -> new NachalnikSnabzheniyaEntity(type, world)),
+                                                                                ^
+  symbol:   class NachalnikSnabzheniyaEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:66: error: cannot find symbol
+            (EntityType.EntityFactory<NachalnikSnabzheniyaEntity>) ((EntityType<NachalnikSnabzheniyaEntity> type, World world) -> new NachalnikSnabzheniyaEntity(type, world)),
+                                                                                                                                      ^
+  symbol:   class NachalnikSnabzheniyaEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:75: error: cannot find symbol
+            (EntityType.EntityFactory<UchetchikEntity>) ((EntityType<UchetchikEntity> type, World world) -> new UchetchikEntity(type, world)),
+                                      ^
+  symbol:   class UchetchikEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:75: error: cannot find symbol
+            (EntityType.EntityFactory<UchetchikEntity>) ((EntityType<UchetchikEntity> type, World world) -> new UchetchikEntity(type, world)),
+                                                                     ^
+  symbol:   class UchetchikEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:75: error: cannot find symbol
+            (EntityType.EntityFactory<UchetchikEntity>) ((EntityType<UchetchikEntity> type, World world) -> new UchetchikEntity(type, world)),
+                                                                                                                ^
+  symbol:   class UchetchikEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:84: error: cannot find symbol
+            (EntityType.EntityFactory<GeodezistEntity>) ((EntityType<GeodezistEntity> type, World world) -> new GeodezistEntity(type, world)),
+                                      ^
+  symbol:   class GeodezistEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:84: error: cannot find symbol
+            (EntityType.EntityFactory<GeodezistEntity>) ((EntityType<GeodezistEntity> type, World world) -> new GeodezistEntity(type, world)),
+                                                                     ^
+  symbol:   class GeodezistEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:84: error: cannot find symbol
+            (EntityType.EntityFactory<GeodezistEntity>) ((EntityType<GeodezistEntity> type, World world) -> new GeodezistEntity(type, world)),
+                                                                                                                ^
+  symbol:   class GeodezistEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:93: error: cannot find symbol
+            (EntityType.EntityFactory<EnterpriseDirectorEntity>) ((EntityType<EnterpriseDirectorEntity> type, World world) -> new EnterpriseDirectorEntity(type, world)),
+                                      ^
+  symbol:   class EnterpriseDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:93: error: cannot find symbol
+            (EntityType.EntityFactory<EnterpriseDirectorEntity>) ((EntityType<EnterpriseDirectorEntity> type, World world) -> new EnterpriseDirectorEntity(type, world)),
+                                                                              ^
+  symbol:   class EnterpriseDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:93: error: cannot find symbol
+            (EntityType.EntityFactory<EnterpriseDirectorEntity>) ((EntityType<EnterpriseDirectorEntity> type, World world) -> new EnterpriseDirectorEntity(type, world)),
+                                                                                                                                  ^
+  symbol:   class EnterpriseDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:102: error: cannot find symbol
+            (EntityType.EntityFactory<FacilityDirectorEntity>) ((EntityType<FacilityDirectorEntity> type, World world) -> new FacilityDirectorEntity(type, world)),
+                                      ^
+  symbol:   class FacilityDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:102: error: cannot find symbol
+            (EntityType.EntityFactory<FacilityDirectorEntity>) ((EntityType<FacilityDirectorEntity> type, World world) -> new FacilityDirectorEntity(type, world)),
+                                                                            ^
+  symbol:   class FacilityDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:102: error: cannot find symbol
+            (EntityType.EntityFactory<FacilityDirectorEntity>) ((EntityType<FacilityDirectorEntity> type, World world) -> new FacilityDirectorEntity(type, world)),
+                                                                                                                              ^
+  symbol:   class FacilityDirectorEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:111: error: cannot find symbol
+            (EntityType.EntityFactory<BrigadierEntity>) ((EntityType<BrigadierEntity> type, World world) -> new BrigadierEntity(type, world)),
+                                      ^
+  symbol:   class BrigadierEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:111: error: cannot find symbol
+            (EntityType.EntityFactory<BrigadierEntity>) ((EntityType<BrigadierEntity> type, World world) -> new BrigadierEntity(type, world)),
+                                                                     ^
+  symbol:   class BrigadierEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:111: error: cannot find symbol
+            (EntityType.EntityFactory<BrigadierEntity>) ((EntityType<BrigadierEntity> type, World world) -> new BrigadierEntity(type, world)),
+                                                                                                                ^
+  symbol:   class BrigadierEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:120: error: cannot find symbol
+            (EntityType.EntityFactory<BargeEntity>) ((EntityType<BargeEntity> type, World world) -> new BargeEntity(type, world)),
+                                      ^
+  symbol:   class BargeEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:120: error: cannot find symbol
+            (EntityType.EntityFactory<BargeEntity>) ((EntityType<BargeEntity> type, World world) -> new BargeEntity(type, world)),
+                                                                 ^
+  symbol:   class BargeEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:120: error: cannot find symbol
+            (EntityType.EntityFactory<BargeEntity>) ((EntityType<BargeEntity> type, World world) -> new BargeEntity(type, world)),
+                                                                                                        ^
+  symbol:   class BargeEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:129: error: cannot find symbol
+            (EntityType.EntityFactory<MasterEntity>) ((EntityType<MasterEntity> type, World world) -> new MasterEntity(type, world)),
+                                      ^
+  symbol:   class MasterEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:129: error: cannot find symbol
+            (EntityType.EntityFactory<MasterEntity>) ((EntityType<MasterEntity> type, World world) -> new MasterEntity(type, world)),
+                                                                  ^
+  symbol:   class MasterEntity
+  location: class ModEntities
+com\ben\csp\entity\ModEntities.java:129: error: cannot find symbol
+            (EntityType.EntityFactory<MasterEntity>) ((EntityType<MasterEntity> type, World world) -> new MasterEntity(type, world)),
+                                                                                                          ^
+  symbol:   class MasterEntity
+  location: class ModEntities
+50 errors

@@ -1,4 +1,4 @@
-package com.ben.csp.block;
+package com.ben.csp.skala;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;

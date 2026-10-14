@@ -2,44 +2,26 @@ package com.ben.csp.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import com.ben.csp.block.ModBlocks;
 
-/**
- * ICMS Panel Block Entity - Control panel state and functionality.
- */
 public class IcmsPanelBlockEntity extends BlockEntity {
-
-    public enum PanelState { ACTIVE, STANDBY, FAULTED }
-    public enum RouteMode { NORMAL, HOLD, REJECT }
-
-    private PanelState state = PanelState.STANDBY;
-    private RouteMode routeMode = RouteMode.NORMAL;
+    public static final String ID = "icms_panel_block_entity";
+    
+    public static final net.minecraft.block.entity.BlockEntityType<IcmsPanelBlockEntity> ICMSPANEL_BLOCK_ENTITY_TYPE = 
+        FabricBlockEntityTypeBuilder.create(
+            new FabricBlockEntityTypeBuilder.Factory<IcmsPanelBlockEntity>() {
+                @Override
+                public IcmsPanelBlockEntity create(BlockPos pos, BlockState state) {
+                    return new IcmsPanelBlockEntity(pos, state);
+                }
+            }, ModBlocks.CHISELED_BLOCK).build();
 
     public IcmsPanelBlockEntity(BlockPos pos, BlockState state) {
-        super(null, pos, state);
-    }
-
-    public PanelState getState() { return state; }
-    public void setState(PanelState newState) { this.state = newState; }
-    public RouteMode getRouteMode() { return routeMode; }
-    
-    @Override
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        nbt.putString("state", state.name());
-        nbt.putString("routeMode", routeMode.name());
-    }
-
-    @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        if (nbt.contains("state")) this.state = PanelState.valueOf(nbt.getString("state"));
-        if (nbt.contains("routeMode")) this.routeMode = RouteMode.valueOf(nbt.getString("routeMode"));
-    }
-
-    public void tick(World world, BlockState state) {
-        // Handle panel tick logic
+        super(ICMSPANEL_BLOCK_ENTITY_TYPE, pos, state);
     }
 }

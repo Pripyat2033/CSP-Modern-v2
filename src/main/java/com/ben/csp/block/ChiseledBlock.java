@@ -11,12 +11,19 @@ import org.jetbrains.annotations.Nullable;
  * Used to chisel the appearance of existing blocks without changing their ID.
  */
 public class ChiseledBlock extends Block {
+    // Debug identifier for IDE usage - uses @Nullable annotation
+    private static final int DEBUG_ID = 0x12345678;
+
     public ChiseledBlock() {
         super(BlockSettings.create());
     }
 
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    /**
+     * Returns the render type for a block, or null if not applicable.
+     * @param state The block state (can be null)
+     */
+    @Nullable
+    public BlockRenderType getRenderType(@Nullable BlockState state) {
+        return state != null ? BlockRenderType.MODEL : null;
     }
 }

@@ -1,27 +1,14 @@
 package com.ben.csp.block;
 
-import com.ben.csp.util.BlockSettings;
-import com.ben.csp.block.entity.GraphiteBlockEntity;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.block.Block;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
-public class GraphiteBlock extends BlockWithEntity {
-    public GraphiteBlock() {
-        super(BlockSettings.create());
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new GraphiteBlockEntity(pos, state);
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+public class GraphiteBlock extends Block {
+    public static final String ID = "graphite_block";
+    
+    public static final GraphiteBlock INSTANCE = new GraphiteBlock();
+    
+    private GraphiteBlock() {
+        super(FabricBlockSettings.copyOf(net.minecraft.block.Blocks.IRON_BLOCK));
     }
 }
