@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "csp-modern",
+  "version": "${version}",
+  "name": "Chernobyl Scientific Project - Modern",
+  "description": "A full-fidelity simulation of the Chernobyl Nuclear Power Plant and its surrounding Exclusion Zone.",
+  "authors": [
+    "Ben"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Ben-CA-Warner/ChernobylScientificProject",
+    "sources": "https://github.com/Ben-CA-Warner/ChernobylScientificProject"
+  },
+  "license": "MIT",
+  "icon": "assets/csp-modern/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.ben.csp.CSPMod"
+    ],
+    "client": [
+      "com.ben.csp.CSPModClient"
+    ]
+  },
+  "mixins": [
+    "csp-modern.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "minecraft": "~1.20.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

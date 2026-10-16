@@ -1,0 +1,14 @@
+{
+  "id": "foundations_phase_1",
+  "description": "Initiate Phase 1: Reactor Foundation Construction",
+  "required_enterprises": {
+    "Stroy-Trust": "CONSTRUCTION"
+  },
+  "raw_task_templates": [
+    {
+      "description": "Survey Reactor Site",
+      "locationType": "REACTOR_SITE",
+      "assignedTeamName": "Stroy-Trust"
+    }
+  ]
+}

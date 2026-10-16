@@ -1,0 +1,69 @@
+{
+  "process_id": "csp:concrete_plant_process",
+  "initial_state": "IDLE",
+  "states": {
+    "IDLE": {
+      "type": "PASSIVE",
+      "description": "Awaiting production order.",
+      "transitions": [
+        {
+          "condition": "HAS_ORDER",
+          "target_state": "AWAITING_GRAVEL"
+        }
+      ]
+    },
+    "AWAITING_GRAVEL": {
+      "type": "ACTION_REQUIRED",
+      "description": "Requires gravel to be loaded into the primary hopper.",
+      "action": {
+        "id": "load_gravel",
+        "hmi_type": "gravel_hopper_controls"
+      },
+      "transitions": [
+        {
+          "condition": "ACTION_COMPLETE",
+          "target_state": "AWAITING_CEMENT"
+        }
+      ]
+    },
+    "AWAITING_CEMENT": {
+      "type": "ACTION_REQUIRED",
+      "description": "Requires cement to be released from the silo.",
+      "action": {
+        "id": "load_cement",
+        "hmi_type": "cement_silo_valve"
+      },
+      "transitions": [
+        {
+          "condition": "ACTION_COMPLETE",
+          "target_state": "AWAITING_WATER"
+        }
+      ]
+    },
+    "AWAITING_WATER": {
+      "type": "ACTION_REQUIRED",
+      "description": "Requires water valve to be opened.",
+      "action": {
+        "id": "open_water_valve",
+        "hmi_type": "water_pump_switch"
+      },
+      "transitions": [
+        {
+          "condition": "ACTION_COMPLETE",
+          "target_state": "MIXING"
+        }
+      ]
+    },
+    "MIXING": {
+      "type": "TIMED",
+      "description": "Automated mixing cycle in progress.",
+      "duration_ticks": 600,
+      "transitions": [
+        {
+          "condition": "TIMER_COMPLETE",
+          "target_state": "IDLE"
+        }
+      ]
+    }
+  }
+}

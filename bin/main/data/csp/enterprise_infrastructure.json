@@ -1,0 +1,29 @@
+{
+  "requirements": [
+    {
+      "type": "CIVIL_WORKS",
+      "blueprints": [
+        "concrete_plant",
+        "rebar_storage_yard",
+        "vehicle_motor_pool",
+        "materials_depot"
+      ]
+    },
+    {
+      "type": "SITE_SERVICES",
+      "blueprints": [
+        "small_office"
+      ]
+    },
+    {
+      "type": "COMMUNICATIONS",
+      "blueprints": [
+        "phone_company_hq",
+        "telephone_exchange",
+        "telegraph_office",
+        "radio_broadcast_center",
+        "secure_telefax_facility"
+      ]
+    }
+  ]
+}

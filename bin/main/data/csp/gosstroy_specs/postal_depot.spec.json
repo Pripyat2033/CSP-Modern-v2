@@ -1,0 +1,29 @@
+{
+  "type": "PROCEDURAL",
+  "category": "LOGISTICS",
+  "scale": "BLOCK",
+  "modules": [
+    {
+      "width": 25,
+      "height": 7,
+      "depth": 15,
+      "wall_char": "w",
+      "floor_char": "f",
+      "roof_char": "r",
+      "doorways": [
+        { "face": "SOUTH", "position": 11, "width": 3, "height": 4 }
+      ]
+    }
+  ],
+  "rooms": [
+    {
+      "type": "SORTING_ROOM",
+      "box": [ [1, 1, 1], [23, 5, 13] ]
+    }
+  ],
+  "palette": [
+    { "key": "w", "block": "minecraft:terracotta" },
+    { "key": "f", "block": "minecraft:stripped_oak_wood" },
+    { "key": "r", "block": "minecraft:terracotta" }
+  ]
+}

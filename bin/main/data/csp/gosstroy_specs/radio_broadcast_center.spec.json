@@ -1,0 +1,29 @@
+{
+  "type": "PROCEDURAL",
+  "category": "COMMUNICATIONS",
+  "scale": "BLOCK",
+  "modules": [
+    {
+      "width": 18,
+      "height": 10,
+      "depth": 18,
+      "wall_char": "w",
+      "floor_char": "f",
+      "roof_char": "r",
+      "doorways": [
+        { "face": "SOUTH", "position": 7, "width": 4, "height": 4 }
+      ]
+    }
+  ],
+  "rooms": [
+    {
+      "type": "BROADCAST_STUDIO",
+      "box": [ [1, 1, 1], [16, 8, 16] ]
+    }
+  ],
+  "palette": [
+    { "key": "w", "block": "minecraft:smooth_stone" },
+    { "key": "f", "block": "minecraft:polished_andesite" },
+    { "key": "r", "block": "minecraft:smooth_stone_slab" }
+  ]
+}

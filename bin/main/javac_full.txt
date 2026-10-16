@@ -1,0 +1,50 @@
+com\ben\csp\entity\BargeEntity.java:12: error: BargeEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class BargeEntity extends LivingEntity {
+^
+com\ben\csp\entity\BrigadierEntity.java:12: error: BrigadierEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class BrigadierEntity extends LivingEntity {
+^
+com\ben\csp\entity\CspEntity.java:12: error: CspEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class CspEntity extends LivingEntity {
+^
+com\ben\csp\entity\EnterpriseDirectorEntity.java:12: error: EnterpriseDirectorEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class EnterpriseDirectorEntity extends LivingEntity {
+^
+com\ben\csp\entity\EntityDirectorEntity.java:12: error: EntityDirectorEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class EntityDirectorEntity extends LivingEntity {
+^
+com\ben\csp\entity\FacilityDirectorEntity.java:12: error: FacilityDirectorEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class FacilityDirectorEntity extends LivingEntity {
+^
+com\ben\csp\entity\GeodezistEntity.java:12: error: GeodezistEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class GeodezistEntity extends LivingEntity {
+^
+com\ben\csp\entity\GlavnyInzhenerEntity.java:12: error: GlavnyInzhenerEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class GlavnyInzhenerEntity extends LivingEntity {
+^
+com\ben\csp\entity\MasterEntity.java:12: error: MasterEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class MasterEntity extends LivingEntity {
+^
+com\ben\csp\entity\ModEntities.java:17: error: cannot access Keyable
+    public static final EntityType<TolkachEntity> TOLKACH = Registry.register(
+                                                                    ^
+  class file for com.mojang.serialization.Keyable not found
+com\ben\csp\entity\TolkachEntity.java:12: error: TolkachEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class TolkachEntity extends LivingEntity {
+^
+com\ben\csp\entity\StroitelEntity.java:12: error: StroitelEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class StroitelEntity extends LivingEntity {
+^
+com\ben\csp\entity\ProrabEntity.java:12: error: ProrabEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class ProrabEntity extends LivingEntity {
+^
+com\ben\csp\entity\SekretarEntity.java:12: error: SekretarEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class SekretarEntity extends LivingEntity {
+^
+com\ben\csp\entity\NachalnikSnabzheniyaEntity.java:12: error: NachalnikSnabzheniyaEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class NachalnikSnabzheniyaEntity extends LivingEntity {
+^
+com\ben\csp\entity\UchetchikEntity.java:12: error: UchetchikEntity is not abstract and does not override abstract method getMainArm() in LivingEntity
+class UchetchikEntity extends LivingEntity {
+^
+16 errors

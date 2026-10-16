@@ -1,0 +1,39 @@
+{
+  "document_title": "OPB-82 (Reconstructed)",
+  "document_source": "Atomic Energy, Vol. 54, Issue 2, 1983",
+  "description": "A data-driven implementation of the General Provisions for Ensuring the Safety of Nuclear Power Plants (1982).",
+  "sections": {
+    "2": {
+      "title": "Section 2: Safety Requirements for the NPP and its Systems",
+      "articles": {
+        "2.5.1": {
+          "source_citation": "Atomic Energy, Vol. 54, Issue 2, 1983, p. 154",
+          "description": "Requirement for a Unit Control Room (БЩУ).",
+          "type": "required_block_check",
+          "applies_to_structure": "ADMINISTRATION_BLOCK_G",
+          "params": {
+            "block_id": "csp:desk_panel_block",
+            "error_message": "Blueprint lacks a designated Unit Control Room (БЩУ)."
+          }
+        }
+      }
+    },
+    "7": {
+      "title": "Section 7 (Assumed from external analysis)",
+      "articles": {
+        "7.1.4": {
+          "source_citation": "Assumed universal engineering principle, pending translation.",
+          "description": "Material certification for load-bearing elements.",
+          "type": "material_certification",
+          "params": {
+            "non_load_bearing_materials": [
+              "minecraft:glass",
+              "minecraft:dirt",
+              "csp:incomplete_plan_block"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "type": "PROCEDURAL",
+  "category": "ADMINISTRATIVE",
+  "scale": "BLOCK",
+  "modules": [
+    {
+      "width": 20,
+      "height": 5,
+      "depth": 12,
+      "wall_char": "w",
+      "floor_char": "f",
+      "roof_char": "r",
+      "doorways": [
+        { "face": "SOUTH", "position": 8, "width": 3, "height": 4 }
+      ]
+    }
+  ],
+  "props": [
+    { "key": "l", "pos": [ 1, 3, 1 ] },
+    { "key": "l", "pos": [ 18, 3, 1 ] },
+    { "key": "l", "pos": [ 1, 3, 10 ] },
+    { "key": "l", "pos": [ 18, 3, 10 ] }
+  ],
+  "rooms": [
+    {
+      "type": "LOBBY",
+      "box": [ [1, 1, 1], [18, 3, 4] ]
+    },
+    {
+      "type": "OFFICE_AREA",
+      "box": [ [1, 1, 5], [18, 3, 10] ]
+    }
+  ],
+  "palette": [
+    {
+      "key": "w",
+      "block": "minecraft:stone_bricks"
+    },
+    {
+      "key": "f",
+      "block": "minecraft:polished_andesite"
+    },
+    {
+      "key": "r",
+      "block": "minecraft:stone_brick_slab"
+    },
+    {
+      "key": "l",
+      "block": "minecraft:torch"
+    }
+  ]
+}
