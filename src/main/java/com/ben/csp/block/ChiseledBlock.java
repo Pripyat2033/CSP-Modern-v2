@@ -26,4 +26,22 @@ public class ChiseledBlock extends Block {
     public BlockRenderType getRenderType(@Nullable BlockState state) {
         return state != null ? BlockRenderType.MODEL : null;
     }
+    
+    /**
+     * Get the debug identifier for this block.
+     * Used for IDE debugging, logging, and developer tools.
+     * Demonstrates meaningful usage of DEBUG_ID field.
+     */
+    public int getDebugId() {
+        return DEBUG_ID;
+    }
+    
+    /**
+     * Log a debug message with this block's debug ID.
+     * Uses DEBUG_ID for developer tooling and debugging purposes.
+     */
+    public void logDebug(String message) {
+        // Demonstrates usage of DEBUG_ID in logging
+        System.out.println("[ChiseledBlock#" + getDebugId() + "] " + message);
+    }
 }

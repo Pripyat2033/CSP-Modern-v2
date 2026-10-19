@@ -18,6 +18,9 @@ public class ModBlocks {
     public static final Block FUEL_CHANNEL_BLOCK = FuelChannelBlock.INSTANCE;
     public static final Block GRAPHITE_BLOCK = GraphiteBlock.INSTANCE;
     public static final Block STOCKPILE_BLOCK = new StockpileBlock();
+    public static final Block ICMS_MESSAGE_INPUT_BLOCK = new IcmsMessageInputBlock();
+    public static final Block ICMS_MESSAGE_OUTPUT_BLOCK = new IcmsMessageOutputBlock();
+    public static final Block ICMS_CONTROL_PANEL_BLOCK = new IcmsControlPanelBlock();
 
     public static void register() {
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "vertushka"), VERTUSHKA_BLOCK);
@@ -32,5 +35,8 @@ public class ModBlocks {
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "fuel_channel"), FUEL_CHANNEL_BLOCK);
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "graphite"), GRAPHITE_BLOCK);
         Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "stockpile"), STOCKPILE_BLOCK);
+        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "icms_message_input"), ICMS_MESSAGE_INPUT_BLOCK);
+        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "icms_message_output"), ICMS_MESSAGE_OUTPUT_BLOCK);
+        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "control_panel"), ICMS_CONTROL_PANEL_BLOCK);
     }
 }

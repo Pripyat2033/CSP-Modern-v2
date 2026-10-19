@@ -1,0 +1,1 @@
+{"nodes": [{"id": "backup_entity_checkpoint", "label": "Entity Backup State", "file_type": "rationale", "source_file": "backup_entity.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null, "rationale": "Checkpoint of fixed vs remaining entity classes as of 2026-10-12.", "_origin": "semantic"}], "edges": [], "hyperedges": []}

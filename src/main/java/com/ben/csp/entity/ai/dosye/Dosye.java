@@ -92,6 +92,44 @@ public class Dosye {
         return dosye;
     }
 
+    /**
+     * Get the full name of this personnel.
+     * Directly accesses firstName, patronymic, and lastName fields.
+     */
+    public String getFullName() {
+        return firstName + " " + patronymic + " " + lastName;
+    }
+
+    /**
+     * Get a personality profile string using all Dosye fields.
+     * Directly accesses trait, partyStatus, and workHistory fields.
+     */
+    public String getPersonalityProfile() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== DOSYЕ: ").append(firstName).append(" ")
+          .append(patronymic).append(" ").append(lastName).append("\n");
+        if (trait != null) {
+            sb.append("Trait:").append(trait.name()).append("\n");
+        }
+        if (partyStatus != null) {
+            sb.append("Party Status:").append(partyStatus.name()).append("\n");
+        }
+        if (!workHistory.isEmpty()) {
+            sb.append("Work History:\n");
+            for (WorkRecord record : workHistory) {
+                sb.append("  - ")
+                  .append(record.enterprise())
+                  .append(" as ").append(record.position())
+                  .append(" (Г/ ")
+                  .append(record.startYear())
+                  .append("-Г/ ")
+                  .append(record.endYear())
+                  .append(")\n");
+            }
+        }
+        return sb.toString();
+    }
+
     // Authentic Soviet hometowns for the Dynamic Personality Engine
     public static final String[] HOMETOWNS = {
         "Pripyat", "Chernobyl", "Kiev", "Minsk", "Moscow", 

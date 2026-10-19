@@ -1,0 +1,1 @@
+{"nodes": [{"id": "memory_cspmod", "label": "CSPMod.java", "file_type": "code", "source_file": "MEMORY.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null, "rationale": "Main ModInitializer implementation for Fabric.", "_origin": "semantic"}], "edges": [], "hyperedges": []}

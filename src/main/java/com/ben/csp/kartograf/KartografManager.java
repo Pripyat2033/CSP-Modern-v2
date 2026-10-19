@@ -29,15 +29,8 @@ public class KartografManager extends PersistentState {
      * @return NBT compound containing serialized block box coordinates
      */
     public static NbtCompound serializeBlockBox(BlockBox box) {
-        if (box == null) {
-            return new NbtCompound();
-        }
-        NbtCompound nbt = new NbtCompound();
-        // Store bounds directly in NBT compound for persistent storage
-        net.minecraft.nbt.NbtList minXList = new net.minecraft.nbt.NbtList(net.minecraft.nbt.NbtTypes.INT);
-        net.minecraft.nbt.NbtList minYList = new net.minecraft.nbt.NbtList(net.minecraft.nbt.NbtTypes.INT);
-        // Placeholder implementation - actual BlockBox serialization
-        return nbt;
+        // Store BlockBox as string representation for now - placeholder implementation
+        return new NbtCompound();
     }
 
     /**
@@ -67,10 +60,31 @@ public class KartografManager extends PersistentState {
     public static KartografManager fromNbt(NbtCompound nbt) {
         // Load lastScanBounds from NBT for persistent state restoration
         KartografManager manager = new KartografManager();
-        if (nbt.contains("lastScanBounds", net.minecraft.nbt.NbtType.INT_ARRAY)) {
-            BlockBox savedBox = deserializeBlockBox(nbt.get("lastScanBounds"));
-            manager.lastScanBounds = savedBox;
-            System.out.println("[Kartograf] Loaded scan bounds: " + savedBox.toString());
+        if (nbt.contains("lastScanBounds")) {
+            try {
+                String boundsStr = nbt.getString("lastScanBounds");
+                // For now, use simple string parsing since proper deserialization is placeholder
+                if (boundsStr != null && !boundsStr.isEmpty()) {
+                    try {
+                        String[] parts = boundsStr.split(",");
+                        if (parts.length >= 6) {
+                            int minX = Integer.parseInt(parts[0]);
+                            int minY = Integer.parseInt(parts[1]);
+                            int minZ = Integer.parseInt(parts[2]);
+                            int maxX = Integer.parseInt(parts[3]);
+                            int maxY = Integer.parseInt(parts[4]);
+                            int maxZ = Integer.parseInt(parts[5]);
+                            BlockBox savedBox = new BlockBox(minX, minY, minZ, maxX, maxY, maxZ);
+                            manager.lastScanBounds = savedBox;
+                            System.out.println("[Kartograf] Loaded scan bounds: " + savedBox.toString());
+                        }
+                    } catch (NumberFormatException e) {
+                        // Invalid format, continue without loaded bounds
+                    }
+                }
+            } catch (Exception e) {
+                // Failed to read string, continue without loaded bounds
+            }
         }
         return manager;
     }

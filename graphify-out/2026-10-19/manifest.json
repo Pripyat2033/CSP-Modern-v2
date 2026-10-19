@@ -1,0 +1,1970 @@
+{
+  ".devcontainer/devcontainer.json": {
+    "mtime": 1791439361.4419966,
+    "seen": 1792392892.9579132,
+    "ast_hash": "dcb9515e65b5d76a38877a33d4d13c86",
+    "semantic_hash": "dcb9515e65b5d76a38877a33d4d13c86"
+  },
+  ".devcontainer/post-create.sh": {
+    "mtime": 1791439361.4419966,
+    "seen": 1792392892.9579167,
+    "ast_hash": "5f55bf7a30f360880e36cd8e1b2620c4",
+    "semantic_hash": "5f55bf7a30f360880e36cd8e1b2620c4"
+  },
+  ".devcontainer/settings.json": {
+    "mtime": 1791439361.4424965,
+    "seen": 1792392892.9579186,
+    "ast_hash": "72fc9439386c8f2c8b6884f019840da4",
+    "semantic_hash": "72fc9439386c8f2c8b6884f019840da4"
+  },
+  ".vscode/launch.json": {
+    "mtime": 1791439361.445202,
+    "seen": 1792392892.9579198,
+    "ast_hash": "734921c06da35618cc1493993a2aea18",
+    "semantic_hash": "734921c06da35618cc1493993a2aea18"
+  },
+  ".vscode/settings.json": {
+    "mtime": 1791698467.5455978,
+    "seen": 1792392892.9579208,
+    "ast_hash": "74b14ce92d4ca4466c63bc0bedd73ed8",
+    "semantic_hash": "74b14ce92d4ca4466c63bc0bedd73ed8"
+  },
+  "AstParser.java": {
+    "mtime": 1791439361.446702,
+    "seen": 1792392892.9579215,
+    "ast_hash": "645cb4957b590b39257f40b6d5f912cb",
+    "semantic_hash": "645cb4957b590b39257f40b6d5f912cb"
+  },
+  "CSP-Modern\uf022.devcontainer\uf022/._devcontainer.json": {
+    "mtime": 1791439361.4483013,
+    "seen": 1792392892.9579237,
+    "ast_hash": "e12c08801991846a46a3f693468f59ca",
+    "semantic_hash": "e12c08801991846a46a3f693468f59ca"
+  },
+  "CSP-Modern\uf022.devcontainer\uf022/devcontainer.json": {
+    "mtime": 1791439361.448808,
+    "seen": 1792392892.9579246,
+    "ast_hash": "773c32206cc33e8daf01e9700bfe4c5b",
+    "semantic_hash": "773c32206cc33e8daf01e9700bfe4c5b"
+  },
+  "bin/main/assets/csp-modern/blockstates/geodetic_marker_block.json": {
+    "mtime": 1791439361.575,
+    "seen": 1792392892.9579253,
+    "ast_hash": "e8426e47bc42ef5b486b6d7dd0290c33",
+    "semantic_hash": "e8426e47bc42ef5b486b6d7dd0290c33"
+  },
+  "bin/main/assets/csp-modern/models/block/geodetic_marker_block.json": {
+    "mtime": 1791439361.576,
+    "seen": 1792392892.957926,
+    "ast_hash": "5bde2f379e865a1a3f1c046773f9249b",
+    "semantic_hash": "5bde2f379e865a1a3f1c046773f9249b"
+  },
+  "bin/main/assets/csp-modern/models/item/geodetic_marker_block.json": {
+    "mtime": 1791439361.576,
+    "seen": 1792392892.9579272,
+    "ast_hash": "ad6c0560dde1dc22a9addf8277d6fcbf",
+    "semantic_hash": "ad6c0560dde1dc22a9addf8277d6fcbf"
+  },
+  "bin/main/com/ben/csp/block/entity/bakelite_plastic.json": {
+    "mtime": 1791439361.516,
+    "seen": 1792392892.9579282,
+    "ast_hash": "4797294922725812aa3f556cacd2ca6d",
+    "semantic_hash": "4797294922725812aa3f556cacd2ca6d"
+  },
+  "bin/main/com/ben/csp/concrete.json": {
+    "mtime": 1791439361.519,
+    "seen": 1792392892.957929,
+    "ast_hash": "21b355a3af55fb35d56aa3eea23f06c8",
+    "semantic_hash": "21b355a3af55fb35d56aa3eea23f06c8"
+  },
+  "bin/main/com/ben/csp/dirt.json": {
+    "mtime": 1791439361.52,
+    "seen": 1792392892.9579296,
+    "ast_hash": "04e7f0561dc4467d2543d889e3ea850d",
+    "semantic_hash": "04e7f0561dc4467d2543d889e3ea850d"
+  },
+  "bin/main/com/ben/csp/dirt_house_test.json": {
+    "mtime": 1791439361.521,
+    "seen": 1792392892.9579308,
+    "ast_hash": "84f32c432c6098431988aaeec0016d35",
+    "semantic_hash": "84f32c432c6098431988aaeec0016d35"
+  },
+  "bin/main/com/ben/csp/entity/ai/concrete_plant.proc.json": {
+    "mtime": 1791439361.526,
+    "seen": 1792392892.9579315,
+    "ast_hash": "27e99f82f875be93959dd07b9fc5277c",
+    "semantic_hash": "27e99f82f875be93959dd07b9fc5277c"
+  },
+  "bin/main/com/ben/csp/entity/ai/geodetic_marker_block.json": {
+    "mtime": 1791439361.527,
+    "seen": 1792392892.9579322,
+    "ast_hash": "224230bbec770dcbc021068e0ee4b2c6",
+    "semantic_hash": "224230bbec770dcbc021068e0ee4b2c6"
+  },
+  "bin/main/com/ben/csp/entity/foundations_phase_1.json": {
+    "mtime": 1791439361.527,
+    "seen": 1792392892.957933,
+    "ast_hash": "5a3523dd935f76b67574d3ce4fb968c7",
+    "semantic_hash": "5a3523dd935f76b67574d3ce4fb968c7"
+  },
+  "bin/main/com/ben/csp/entity/soviet_lexicon.json": {
+    "mtime": 1791439361.527,
+    "seen": 1792392892.9579341,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "bin/main/com/ben/csp/rbmk/rbmk_solver.c": {
+    "mtime": 1791439361.55,
+    "seen": 1792392892.9579349,
+    "ast_hash": "968fc3fde00602f81d357cdb3c6ca524",
+    "semantic_hash": "968fc3fde00602f81d357cdb3c6ca524"
+  },
+  "bin/main/com/ben/csp/rebar.json": {
+    "mtime": 1791439361.551,
+    "seen": 1792392892.9579356,
+    "ast_hash": "a61a24bb021dd3b62c221c61f1dc518a",
+    "semantic_hash": "a61a24bb021dd3b62c221c61f1dc518a"
+  },
+  "bin/main/csp-modern.mixins.json": {
+    "mtime": 1791439361.577,
+    "seen": 1792392892.9579365,
+    "ast_hash": "f1106db45d5d3b12192aca3d0bec031c",
+    "semantic_hash": "f1106db45d5d3b12192aca3d0bec031c"
+  },
+  "bin/main/csp.mixins.json": {
+    "mtime": 1791439361.578,
+    "seen": 1792392892.957938,
+    "ast_hash": "3a576450434aaa004279a3341c6ef7ba",
+    "semantic_hash": "3a576450434aaa004279a3341c6ef7ba"
+  },
+  "bin/main/data/csp/enterprise_infrastructure.json": {
+    "mtime": 1791439361.578,
+    "seen": 1792392892.9579387,
+    "ast_hash": "6c10ab541822c3e32dd1c124a79aa62f",
+    "semantic_hash": "6c10ab541822c3e32dd1c124a79aa62f"
+  },
+  "bin/main/data/csp/gosstroy_specs/initial_hq.spec.json": {
+    "mtime": 1791439361.579,
+    "seen": 1792392892.9579394,
+    "ast_hash": "747a467ac8c4fb7de2930e4a42878477",
+    "semantic_hash": "747a467ac8c4fb7de2930e4a42878477"
+  },
+  "bin/main/data/csp/gosstroy_specs/logistics_depot.spec.json": {
+    "mtime": 1791439361.58,
+    "seen": 1792392892.9579406,
+    "ast_hash": "bc02872da51494ef5d4c7cd0dd141402",
+    "semantic_hash": "bc02872da51494ef5d4c7cd0dd141402"
+  },
+  "bin/main/data/csp/gosstroy_specs/phone_company_hq.spec.json": {
+    "mtime": 1791439361.58,
+    "seen": 1792392892.9579413,
+    "ast_hash": "a64344fbf876e8d1eaa5e79e86e35e3d",
+    "semantic_hash": "a64344fbf876e8d1eaa5e79e86e35e3d"
+  },
+  "bin/main/data/csp/gosstroy_specs/postal_depot.spec.json": {
+    "mtime": 1791439361.58,
+    "seen": 1792392892.957942,
+    "ast_hash": "224be4e8486e4fce83422995f053cfb0",
+    "semantic_hash": "224be4e8486e4fce83422995f053cfb0"
+  },
+  "bin/main/data/csp/gosstroy_specs/radio_broadcast_center.spec.json": {
+    "mtime": 1791439361.581,
+    "seen": 1792392892.957943,
+    "ast_hash": "e4b00285cd1de450b8d1bc944172419d",
+    "semantic_hash": "e4b00285cd1de450b8d1bc944172419d"
+  },
+  "bin/main/data/csp/gosstroy_specs/secure_telefax_facility.spec.json": {
+    "mtime": 1791439361.581,
+    "seen": 1792392892.957944,
+    "ast_hash": "469b32ae2b9ec6970d57f01c4089411a",
+    "semantic_hash": "469b32ae2b9ec6970d57f01c4089411a"
+  },
+  "bin/main/data/csp/gosstroy_specs/telegraph_office.spec.json": {
+    "mtime": 1791439361.582,
+    "seen": 1792392892.9579446,
+    "ast_hash": "e7e86635ffe82fb49573dff10c1fc597",
+    "semantic_hash": "e7e86635ffe82fb49573dff10c1fc597"
+  },
+  "bin/main/data/csp/gosstroy_specs/telephone_exchange.spec.json": {
+    "mtime": 1791439361.582,
+    "seen": 1792392892.9579456,
+    "ast_hash": "66c5bf9ea5a6df9714585bddc4e3a4fd",
+    "semantic_hash": "66c5bf9ea5a6df9714585bddc4e3a4fd"
+  },
+  "bin/main/data/csp/gosstroy_specs/vehicle_depot.spec.json": {
+    "mtime": 1791439361.582,
+    "seen": 1792392892.9579463,
+    "ast_hash": "7d8c03d6e583f78f78f2f8e53bb1cacb",
+    "semantic_hash": "7d8c03d6e583f78f78f2f8e53bb1cacb"
+  },
+  "bin/main/data/csp/opb82_rules.json": {
+    "mtime": 1791439361.582,
+    "seen": 1792392892.9579473,
+    "ast_hash": "3df528e84f51df325e790d7c7d6f6809",
+    "semantic_hash": "3df528e84f51df325e790d7c7d6f6809"
+  },
+  "bin/main/fabric.mod.json": {
+    "mtime": 1791439361.583,
+    "seen": 1792392892.957948,
+    "ast_hash": "224500beb8e46b73d2ce7dd1413b3879",
+    "semantic_hash": "224500beb8e46b73d2ce7dd1413b3879"
+  },
+  "build.gradle": {
+    "mtime": 1791704901.7057364,
+    "seen": 1792392892.957949,
+    "ast_hash": "a8324b83b69f5d5620b93414543bf86f",
+    "semantic_hash": "a8324b83b69f5d5620b93414543bf86f"
+  },
+  "gradlew": {
+    "mtime": 1791439361.4606166,
+    "seen": 1792392892.9579496,
+    "ast_hash": "8bba63fe18699a3085bd8d15f5def236",
+    "semantic_hash": "8bba63fe18699a3085bd8d15f5def236"
+  },
+  "gradlew.sh": {
+    "mtime": 1791439361.4621165,
+    "seen": 1792392892.9579504,
+    "ast_hash": "0fb133c8176db0109f03cd19b23a31c2",
+    "semantic_hash": "0fb133c8176db0109f03cd19b23a31c2"
+  },
+  "install-java25.ps1": {
+    "mtime": 1791439361.4626172,
+    "seen": 1792392892.9579513,
+    "ast_hash": "61246b9800560d5e95a5c695e482c1c8",
+    "semantic_hash": "61246b9800560d5e95a5c695e482c1c8"
+  },
+  "scripts/find-missing-files.sh": {
+    "mtime": 1791439361.4631164,
+    "seen": 1792392892.9579523,
+    "ast_hash": "0e14536036f99d7356278386926923bb",
+    "semantic_hash": "0e14536036f99d7356278386926923bb"
+  },
+  "scripts/scrape_docs.py": {
+    "mtime": 1791698598.0334206,
+    "seen": 1792392892.957953,
+    "ast_hash": "8454b110055a46106d529852c13eac4c",
+    "semantic_hash": "8454b110055a46106d529852c13eac4c"
+  },
+  "scripts/setup-native-env.sh": {
+    "mtime": 1791439361.4641192,
+    "seen": 1792392892.957954,
+    "ast_hash": "ed478213f591204e8a0d59bde2ef4e99",
+    "semantic_hash": "ed478213f591204e8a0d59bde2ef4e99"
+  },
+  "scripts/shelved/._aecs-bridge.sh": {
+    "mtime": 1791439361.4646225,
+    "seen": 1792392892.957955,
+    "ast_hash": "740065d97bdc6b0292e62be487f912bc",
+    "semantic_hash": "740065d97bdc6b0292e62be487f912bc"
+  },
+  "scripts/shelved/._aecs.sh": {
+    "mtime": 1791439361.465123,
+    "seen": 1792392892.957956,
+    "ast_hash": "740065d97bdc6b0292e62be487f912bc",
+    "semantic_hash": "740065d97bdc6b0292e62be487f912bc"
+  },
+  "scripts/shelved/._stop-aecs.sh": {
+    "mtime": 1791439361.465624,
+    "seen": 1792392892.957957,
+    "ast_hash": "740065d97bdc6b0292e62be487f912bc",
+    "semantic_hash": "740065d97bdc6b0292e62be487f912bc"
+  },
+  "scripts/shelved/aeca.sh": {
+    "mtime": 1791439361.4661243,
+    "seen": 1792392892.957958,
+    "ast_hash": "1ddb8c8510c5bca2cd8aff6ba6b8ebe4",
+    "semantic_hash": "1ddb8c8510c5bca2cd8aff6ba6b8ebe4"
+  },
+  "scripts/shelved/aecs-bridge.sh": {
+    "mtime": 1791439361.4666274,
+    "seen": 1792392892.9579587,
+    "ast_hash": "78d35da56db85734815e4af356fc567a",
+    "semantic_hash": "78d35da56db85734815e4af356fc567a"
+  },
+  "scripts/shelved/aecs.sh": {
+    "mtime": 1791439361.4671266,
+    "seen": 1792392892.9579597,
+    "ast_hash": "4ce241f7723fa74e8e00159846fb4b5a",
+    "semantic_hash": "4ce241f7723fa74e8e00159846fb4b5a"
+  },
+  "scripts/shelved/stop-aecs.sh": {
+    "mtime": 1791439361.4676268,
+    "seen": 1792392892.9579604,
+    "ast_hash": "01badbb54ead056335427e922fc0af81",
+    "semantic_hash": "01badbb54ead056335427e922fc0af81"
+  },
+  "settings.gradle": {
+    "mtime": 1791705045.9300735,
+    "seen": 1792392892.9579613,
+    "ast_hash": "6fd9e634c137b9da8245a35872b05f3f",
+    "semantic_hash": "6fd9e634c137b9da8245a35872b05f3f"
+  },
+  "src/aecs/java/com/ben/csp/aecs/AstParser.java": {
+    "mtime": 1791439361.470629,
+    "seen": 1792392892.957962,
+    "ast_hash": "56dcdaa923e348e57d164a245c053f99",
+    "semantic_hash": "56dcdaa923e348e57d164a245c053f99"
+  },
+  "src/client/java/com/ben/csp/CSPModClient.java": {
+    "mtime": 1791439361.4718807,
+    "seen": 1792392892.957963,
+    "ast_hash": "61d21149e48b16efe91314a35c28553c",
+    "semantic_hash": "61d21149e48b16efe91314a35c28553c"
+  },
+  "src/client/java/com/ben/csp/Skala/SendSkalaRequestC2SPacket.java": {
+    "mtime": 1791439361.472386,
+    "seen": 1792392892.9579637,
+    "ast_hash": "5f43106fb17b6ccb620c0fa8d6ce955f",
+    "semantic_hash": "5f43106fb17b6ccb620c0fa8d6ce955f"
+  },
+  "src/client/java/com/ben/csp/Skala/SkalaRequestDeviceScreen.java": {
+    "mtime": 1791439361.472386,
+    "seen": 1792392892.9579647,
+    "ast_hash": "d366eae7bfae6915e3fc0487b0b13b22",
+    "semantic_hash": "d366eae7bfae6915e3fc0487b0b13b22"
+  },
+  "src/client/java/com/ben/csp/Skala/UpdateSkalaReferenceC2SPacket.java": {
+    "mtime": 1791439361.4731555,
+    "seen": 1792392892.9579654,
+    "ast_hash": "223ae4161d10454cf9bb3910a66380a9",
+    "semantic_hash": "223ae4161d10454cf9bb3910a66380a9"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/BargeEntityRenderer.java": {
+    "mtime": 1791439361.4741588,
+    "seen": 1792392892.957966,
+    "ast_hash": "efee3e6d633bef54194dd5e050709f6c",
+    "semantic_hash": "efee3e6d633bef54194dd5e050709f6c"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/BrigadierEntityRenderer.java": {
+    "mtime": 1791439361.4746628,
+    "seen": 1792392892.957967,
+    "ast_hash": "47ab8c6dba1512d4e3016cf3532bb55a",
+    "semantic_hash": "47ab8c6dba1512d4e3016cf3532bb55a"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/EnterpriseDirectorEntityRenderer.java": {
+    "mtime": 1791439361.4751635,
+    "seen": 1792392892.9579678,
+    "ast_hash": "0ea111aaee2cb34b14d1532cf97246e6",
+    "semantic_hash": "0ea111aaee2cb34b14d1532cf97246e6"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/FacilityDirectorEntityRenderer.java": {
+    "mtime": 1791439361.4756632,
+    "seen": 1792392892.9579687,
+    "ast_hash": "50835cd12723eea912c6144c6635ae14",
+    "semantic_hash": "50835cd12723eea912c6144c6635ae14"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/GeodezistEntityRenderer.java": {
+    "mtime": 1791439361.475973,
+    "seen": 1792392892.9579694,
+    "ast_hash": "e47dc878dfe99bacf2a5c07105372602",
+    "semantic_hash": "e47dc878dfe99bacf2a5c07105372602"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/GlavnyInzhenerEntityRenderer.java": {
+    "mtime": 1791439361.475973,
+    "seen": 1792392892.9579701,
+    "ast_hash": "526453ea0c589aef9d5ec69c0573ce26",
+    "semantic_hash": "526453ea0c589aef9d5ec69c0573ce26"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/MasterEntityRenderer.java": {
+    "mtime": 1791439361.4766665,
+    "seen": 1792392892.957971,
+    "ast_hash": "2f6ac67d48cbd9119d82f1c8eddf9865",
+    "semantic_hash": "2f6ac67d48cbd9119d82f1c8eddf9865"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/NachalnikSnabzheniyaEntityRenderer.java": {
+    "mtime": 1791439361.47717,
+    "seen": 1792392892.957972,
+    "ast_hash": "354abe7cde2fc9774a9a6fa566c3a7e9",
+    "semantic_hash": "354abe7cde2fc9774a9a6fa566c3a7e9"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/ProrabEntityRenderer.java": {
+    "mtime": 1791439361.4776719,
+    "seen": 1792392892.9579728,
+    "ast_hash": "b2142fe85f8917a4f6e9e6e923272dc9",
+    "semantic_hash": "b2142fe85f8917a4f6e9e6e923272dc9"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/SekretarEntityRenderer.java": {
+    "mtime": 1791439361.4781704,
+    "seen": 1792392892.9579735,
+    "ast_hash": "395a827eef546b7d2c3e1029777f81db",
+    "semantic_hash": "395a827eef546b7d2c3e1029777f81db"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/StroitelEntityRenderer.java": {
+    "mtime": 1791439361.4781704,
+    "seen": 1792392892.9579744,
+    "ast_hash": "12d4d1f97af733d62f6112d8346a9b38",
+    "semantic_hash": "12d4d1f97af733d62f6112d8346a9b38"
+  },
+  "src/client/java/com/ben/csp/client/render/entity/UchetchikEntityRenderer.java": {
+    "mtime": 1791439361.4786706,
+    "seen": 1792392892.9579754,
+    "ast_hash": "f66afbc55a9757a689e73132a75c81c3",
+    "semantic_hash": "f66afbc55a9757a689e73132a75c81c3"
+  },
+  "src/client/java/com/ben/csp/client/render/model/block/VertushkaBlockModel.java": {
+    "mtime": 1791439361.479672,
+    "seen": 1792392892.957976,
+    "ast_hash": "69aa8acb80ae37edc6bcbccd11d5a676",
+    "semantic_hash": "69aa8acb80ae37edc6bcbccd11d5a676"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/BargeEntityModel.java": {
+    "mtime": 1791439361.4801698,
+    "seen": 1792392892.9579768,
+    "ast_hash": "5ca80d8e61f92bbe9a8187ca6a6fe4ab",
+    "semantic_hash": "5ca80d8e61f92bbe9a8187ca6a6fe4ab"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/BrigadierEntityModel.java": {
+    "mtime": 1791439361.4806707,
+    "seen": 1792392892.9579775,
+    "ast_hash": "c9fb74476877c90197df3c296893e3f8",
+    "semantic_hash": "c9fb74476877c90197df3c296893e3f8"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/EnterpriseDirectorEntityModel.java": {
+    "mtime": 1791439361.4811702,
+    "seen": 1792392892.9579787,
+    "ast_hash": "d48cb3540c5170f0798d1229ccc8840f",
+    "semantic_hash": "d48cb3540c5170f0798d1229ccc8840f"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/FacilityDirectorEntityModel.java": {
+    "mtime": 1791439361.4811702,
+    "seen": 1792392892.9579794,
+    "ast_hash": "9cdc69281bc967c6ca9250f22c2caf05",
+    "semantic_hash": "9cdc69281bc967c6ca9250f22c2caf05"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/GeodezistEntityModel.java": {
+    "mtime": 1791439361.481672,
+    "seen": 1792392892.9579802,
+    "ast_hash": "38748412fe2558378812d8e6a3d2d1d3",
+    "semantic_hash": "38748412fe2558378812d8e6a3d2d1d3"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/GlavnyInzhenerEntityModel.java": {
+    "mtime": 1791439361.4821706,
+    "seen": 1792392892.9579809,
+    "ast_hash": "e8ee01ec3299705ba6afd7825275b19f",
+    "semantic_hash": "e8ee01ec3299705ba6afd7825275b19f"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/MasterEntityModel.java": {
+    "mtime": 1791439361.4826708,
+    "seen": 1792392892.9579816,
+    "ast_hash": "9c9001f8c73e7fa396df618102db63f1",
+    "semantic_hash": "9c9001f8c73e7fa396df618102db63f1"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/NachalnikSnabzheniyaEntityModel.java": {
+    "mtime": 1791439361.4826708,
+    "seen": 1792392892.9579828,
+    "ast_hash": "9f676870127b8b064f36808d6a2e4f59",
+    "semantic_hash": "9f676870127b8b064f36808d6a2e4f59"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/ProrabEntityModel.java": {
+    "mtime": 1791439361.4831705,
+    "seen": 1792392892.9579835,
+    "ast_hash": "42407a63875f5d76c362029f69e169f1",
+    "semantic_hash": "42407a63875f5d76c362029f69e169f1"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/SekretarEntityModel.java": {
+    "mtime": 1791439361.4831705,
+    "seen": 1792392892.9579842,
+    "ast_hash": "2cb8a03e7fbbf8d1c577d26a9397b1e2",
+    "semantic_hash": "2cb8a03e7fbbf8d1c577d26a9397b1e2"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/StroitelEntityModel.java": {
+    "mtime": 1791439361.484174,
+    "seen": 1792392892.9579852,
+    "ast_hash": "3433f64a5000899bbf41e42dcd9d82a0",
+    "semantic_hash": "3433f64a5000899bbf41e42dcd9d82a0"
+  },
+  "src/client/java/com/ben/csp/client/render/model/entity/UchetchikEntityModel.java": {
+    "mtime": 1791439361.484174,
+    "seen": 1792392892.957986,
+    "ast_hash": "3f03be941fc932253bfd2ed0a173afe6",
+    "semantic_hash": "3f03be941fc932253bfd2ed0a173afe6"
+  },
+  "src/client/java/com/ben/csp/directors_office.json": {
+    "mtime": 1791439361.485178,
+    "seen": 1792392892.9579868,
+    "ast_hash": "390fc89e7c85b28036342a65d7523841",
+    "semantic_hash": "390fc89e7c85b28036342a65d7523841"
+  },
+  "src/main/java/com/ben/csp/CSPMod.java": {
+    "mtime": 1791778729.5607245,
+    "seen": 1792392892.9579875,
+    "ast_hash": "d6cf525709119202f004ae82362a4995",
+    "semantic_hash": "d6cf525709119202f004ae82362a4995"
+  },
+  "src/main/java/com/ben/csp/CSPModClient.java": {
+    "mtime": 1791440817.667013,
+    "seen": 1792392892.9579885,
+    "ast_hash": "5f81520fe5ded24487c5fa363aac0f09",
+    "semantic_hash": "5f81520fe5ded24487c5fa363aac0f09"
+  },
+  "src/main/java/com/ben/csp/CSPModServer.java": {
+    "mtime": 1791439361.488682,
+    "seen": 1792392892.9579895,
+    "ast_hash": "939d3fa6093a79260e32e29270c54ba4",
+    "semantic_hash": "939d3fa6093a79260e32e29270c54ba4"
+  },
+  "src/main/java/com/ben/csp/DirectorsPlanshetItem.java": {
+    "mtime": 1791691721.0255687,
+    "seen": 1792392892.9579904,
+    "ast_hash": "1cdb277c4d2f62112c907a3aee97ed09",
+    "semantic_hash": "1cdb277c4d2f62112c907a3aee97ed09"
+  },
+  "src/main/java/com/ben/csp/Dosye.java": {
+    "mtime": 1791448669.3955865,
+    "seen": 1792392892.9579911,
+    "ast_hash": "fa446348c59b3001722d1ef28549ccf6",
+    "semantic_hash": "fa446348c59b3001722d1ef28549ccf6"
+  },
+  "src/main/java/com/ben/csp/MagneticTapeItem.java": {
+    "mtime": 1791691778.328541,
+    "seen": 1792392892.9579926,
+    "ast_hash": "270b129076de119434daf892d8584c55",
+    "semantic_hash": "270b129076de119434daf892d8584c55"
+  },
+  "src/main/java/com/ben/csp/ModMessages.java": {
+    "mtime": 1791439361.489182,
+    "seen": 1792392892.9579935,
+    "ast_hash": "83cbeaf10f662fc0d355112d6415423f",
+    "semantic_hash": "83cbeaf10f662fc0d355112d6415423f"
+  },
+  "src/main/java/com/ben/csp/ModSounds.java": {
+    "mtime": 1791439361.4896812,
+    "seen": 1792392892.9579942,
+    "ast_hash": "2653ca0c38039cb1715d61f59c2bc475",
+    "semantic_hash": "2653ca0c38039cb1715d61f59c2bc475"
+  },
+  "src/main/java/com/ben/csp/SkalaLinkerTool.java": {
+    "mtime": 1791691775.1224957,
+    "seen": 1792392892.957995,
+    "ast_hash": "43a6a510f5e8b8307dd5b3d89ce2cab5",
+    "semantic_hash": "43a6a510f5e8b8307dd5b3d89ce2cab5"
+  },
+  "src/main/java/com/ben/csp/TelefonistToolItem.java": {
+    "mtime": 1791691772.378748,
+    "seen": 1792392892.9579961,
+    "ast_hash": "38ff93eaa4534cf992b069fd129e0d7b",
+    "semantic_hash": "38ff93eaa4534cf992b069fd129e0d7b"
+  },
+  "src/main/java/com/ben/csp/agent/DirectorateManager.java": {
+    "mtime": 1791443847.218451,
+    "seen": 1792392892.9579968,
+    "ast_hash": "58029a2e19367812fcf39164bb829f51",
+    "semantic_hash": "58029a2e19367812fcf39164bb829f51"
+  },
+  "src/main/java/com/ben/csp/agent/DirectorsPlanshetBlockEntity.java": {
+    "mtime": 1791444804.8117335,
+    "seen": 1792392892.9579978,
+    "ast_hash": "62847a8067eca1bf8e95d40c664206a9",
+    "semantic_hash": "62847a8067eca1bf8e95d40c664206a9"
+  },
+  "src/main/java/com/ben/csp/agent/DirectorsPlanshetItem.java": {
+    "mtime": 1791966551.4196372,
+    "seen": 1792392892.9579985,
+    "ast_hash": "abed2d631178994141c6c1dc25ea4af8",
+    "semantic_hash": "abed2d631178994141c6c1dc25ea4af8"
+  },
+  "src/main/java/com/ben/csp/agent/Dosye.java": {
+    "mtime": 1792145918.9413366,
+    "seen": 1792392892.9579995,
+    "ast_hash": "7d185b90bf110983051a1a7ce129748f",
+    "semantic_hash": "7d185b90bf110983051a1a7ce129748f"
+  },
+  "src/main/java/com/ben/csp/agent/GlavnyInzhener.java": {
+    "mtime": 1791965534.9018302,
+    "seen": 1792392892.9580002,
+    "ast_hash": "0906c8fc8264a072fc45149ef7e2ab2f",
+    "semantic_hash": "0906c8fc8264a072fc45149ef7e2ab2f"
+  },
+  "src/main/java/com/ben/csp/agent/GlavnyInzhenerEntity.java": {
+    "mtime": 1791965620.2501254,
+    "seen": 1792392892.9580011,
+    "ast_hash": "92151b78baec4ff06ee7f45b02784dc0",
+    "semantic_hash": "92151b78baec4ff06ee7f45b02784dc0"
+  },
+  "src/main/java/com/ben/csp/agent/IndustrialProcessManager.java": {
+    "mtime": 1791969846.8918931,
+    "seen": 1792392892.9580019,
+    "ast_hash": "01a2ea47ac4f70456dab025f926ea11e",
+    "semantic_hash": "01a2ea47ac4f70456dab025f926ea11e"
+  },
+  "src/main/java/com/ben/csp/agent/IndustrialWorkerEntity.java": {
+    "mtime": 1791965705.50153,
+    "seen": 1792392892.9580028,
+    "ast_hash": "0cc43621cb6fca6fb929828fc92406a7",
+    "semantic_hash": "0cc43621cb6fca6fb929828fc92406a7"
+  },
+  "src/main/java/com/ben/csp/agent/LogisticsManager.java": {
+    "mtime": 1791443455.6506276,
+    "seen": 1792392892.9580038,
+    "ast_hash": "51ad6f0104a9542909684e7c93beb40f",
+    "semantic_hash": "51ad6f0104a9542909684e7c93beb40f"
+  },
+  "src/main/java/com/ben/csp/agent/NachalnikSnabzheniya.java": {
+    "mtime": 1791443635.300181,
+    "seen": 1792392892.9580045,
+    "ast_hash": "c497eefb3c1659faeae56ab3a802795e",
+    "semantic_hash": "c497eefb3c1659faeae56ab3a802795e"
+  },
+  "src/main/java/com/ben/csp/agent/NachalnikSnabzheniyaEntity.java": {
+    "mtime": 1791965711.9329174,
+    "seen": 1792392892.9580052,
+    "ast_hash": "1eb8e10e49b6688ebba88f25bc11f8b3",
+    "semantic_hash": "1eb8e10e49b6688ebba88f25bc11f8b3"
+  },
+  "src/main/java/com/ben/csp/agent/NamingManager.java": {
+    "mtime": 1791443465.4781096,
+    "seen": 1792392892.958006,
+    "ast_hash": "a3be4f1ef4faa234debac4487ac11d5a",
+    "semantic_hash": "a3be4f1ef4faa234debac4487ac11d5a"
+  },
+  "src/main/java/com/ben/csp/agent/PlanerkaSession.java": {
+    "mtime": 1791443478.1651306,
+    "seen": 1792392892.9580069,
+    "ast_hash": "a0032338e08a1937503bcbbd35899a81",
+    "semantic_hash": "a0032338e08a1937503bcbbd35899a81"
+  },
+  "src/main/java/com/ben/csp/agent/Prorab.java": {
+    "mtime": 1791443788.0918324,
+    "seen": 1792392892.9580078,
+    "ast_hash": "0249cdb524e2423915d2416bf785e7e2",
+    "semantic_hash": "0249cdb524e2423915d2416bf785e7e2"
+  },
+  "src/main/java/com/ben/csp/agent/Sekretar.java": {
+    "mtime": 1791969797.9045212,
+    "seen": 1792392892.9580085,
+    "ast_hash": "be75503d5e8dac48efdeb25ae8556776",
+    "semantic_hash": "be75503d5e8dac48efdeb25ae8556776"
+  },
+  "src/main/java/com/ben/csp/agent/SkalaCodeRegistry.java": {
+    "mtime": 1791443487.3491676,
+    "seen": 1792392892.9580092,
+    "ast_hash": "bb2f24ca3b933eae81c9ac8059097afa",
+    "semantic_hash": "bb2f24ca3b933eae81c9ac8059097afa"
+  },
+  "src/main/java/com/ben/csp/agent/SkalaRequestDeviceScreen.java": {
+    "mtime": 1791976141.8735278,
+    "seen": 1792392892.9580104,
+    "ast_hash": "0db8bd3d28fa2b885fde15021e58d2f7",
+    "semantic_hash": "0db8bd3d28fa2b885fde15021e58d2f7"
+  },
+  "src/main/java/com/ben/csp/agent/goals/AnswerRingingPhoneGoal.java": {
+    "mtime": 1791439361.49569,
+    "seen": 1792392892.9580112,
+    "ast_hash": "b87adbc4588a72350e376aea4f7b10a7",
+    "semantic_hash": "b87adbc4588a72350e376aea4f7b10a7"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ArchiveCompletedDocumentsGoal.java": {
+    "mtime": 1791439361.4961903,
+    "seen": 1792392892.9580119,
+    "ast_hash": "31faf84c36d29882bdb3fd863b320008",
+    "semantic_hash": "31faf84c36d29882bdb3fd863b320008"
+  },
+  "src/main/java/com/ben/csp/agent/goals/DeliverToPortGoal.java": {
+    "mtime": 1791439361.49669,
+    "seen": 1792392892.9580128,
+    "ast_hash": "ff1417f1b351df6b0a753bb498c14060",
+    "semantic_hash": "ff1417f1b351df6b0a753bb498c14060"
+  },
+  "src/main/java/com/ben/csp/agent/goals/DistributeWorkGoal.java": {
+    "mtime": 1791439361.4971893,
+    "seen": 1792392892.9580138,
+    "ast_hash": "961bd5f40c1aa574794ac2772497f2f3",
+    "semantic_hash": "961bd5f40c1aa574794ac2772497f2f3"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ExecuteWorkGoal.java": {
+    "mtime": 1791439361.4971893,
+    "seen": 1792392892.9580145,
+    "ast_hash": "dbf6e5126e40a728cf5148629711abd5",
+    "semantic_hash": "dbf6e5126e40a728cf5148629711abd5"
+  },
+  "src/main/java/com/ben/csp/agent/goals/FileDocumentsGoal.java": {
+    "mtime": 1791439361.4976902,
+    "seen": 1792392892.9580152,
+    "ast_hash": "c310e0fc16d4f1ce99d4c4dcd5dd2722",
+    "semantic_hash": "c310e0fc16d4f1ce99d4c4dcd5dd2722"
+  },
+  "src/main/java/com/ben/csp/agent/goals/FollowMasterToBuildSiteGoal.java": {
+    "mtime": 1791439361.4981902,
+    "seen": 1792392892.958016,
+    "ast_hash": "d3b360460c66aaa19c74f2aff3d05712",
+    "semantic_hash": "d3b360460c66aaa19c74f2aff3d05712"
+  },
+  "src/main/java/com/ben/csp/agent/goals/GarrisonGoal.java": {
+    "mtime": 1792395659.5635977,
+    "seen": 1792396147.1160636,
+    "ast_hash": "0bf13def6915c1b704f8341947594d33",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/agent/goals/GeodeticSurveyGoal.java": {
+    "mtime": 1791439361.4986904,
+    "seen": 1792392892.9580178,
+    "ast_hash": "dc159268ab4c7f145c4b1c10e4d6b690",
+    "semantic_hash": "dc159268ab4c7f145c4b1c10e4d6b690"
+  },
+  "src/main/java/com/ben/csp/agent/goals/GoToBuildSiteGoal.java": {
+    "mtime": 1791439361.4986904,
+    "seen": 1792392892.9580185,
+    "ast_hash": "f6672ca6661b78fb83729536bd8cdf20",
+    "semantic_hash": "f6672ca6661b78fb83729536bd8cdf20"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ManageBrigadeGoal.java": {
+    "mtime": 1791439361.4991903,
+    "seen": 1792392892.9580193,
+    "ast_hash": "ddff448bd200b6beca6d3d89f9fb57ab",
+    "semantic_hash": "ddff448bd200b6beca6d3d89f9fb57ab"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ManageSupplyChainGoal.java": {
+    "mtime": 1791439361.4996896,
+    "seen": 1792392892.9580202,
+    "ast_hash": "b3eb58b6bd5c6f745f86934b7a789452",
+    "semantic_hash": "b3eb58b6bd5c6f745f86934b7a789452"
+  },
+  "src/main/java/com/ben/csp/agent/goals/OperateMachineryGoal.java": {
+    "mtime": 1791439361.4996896,
+    "seen": 1792392892.9580212,
+    "ast_hash": "e70ca8e646a483aea781fc8b32cb158d",
+    "semantic_hash": "e70ca8e646a483aea781fc8b32cb158d"
+  },
+  "src/main/java/com/ben/csp/agent/goals/OrganizeArchiveGoal.java": {
+    "mtime": 1791439361.50019,
+    "seen": 1792392892.9580219,
+    "ast_hash": "150c70605cb0c85d021c5b02e3e58347",
+    "semantic_hash": "150c70605cb0c85d021c5b02e3e58347"
+  },
+  "src/main/java/com/ben/csp/agent/goals/PerformConstructionGoal.java": {
+    "mtime": 1791439361.5006902,
+    "seen": 1792392892.9580226,
+    "ast_hash": "c91f4c5db887c7862996273d7a195f77",
+    "semantic_hash": "c91f4c5db887c7862996273d7a195f77"
+  },
+  "src/main/java/com/ben/csp/agent/goals/PerformGeodeticSurveyGoal.java": {
+    "mtime": 1791439361.5009553,
+    "seen": 1792392892.9580233,
+    "ast_hash": "a8abe7f02f80a91999bddff88e5b9f17",
+    "semantic_hash": "a8abe7f02f80a91999bddff88e5b9f17"
+  },
+  "src/main/java/com/ben/csp/agent/goals/PerformWorkPackageGoal.java": {
+    "mtime": 1791439361.5009553,
+    "seen": 1792392892.9580243,
+    "ast_hash": "c972b6c8f0ee39590e86c8d4bcfac74d",
+    "semantic_hash": "c972b6c8f0ee39590e86c8d4bcfac74d"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ProcessHighLevelReportsGoal.java": {
+    "mtime": 1791439361.5014591,
+    "seen": 1792392892.9580252,
+    "ast_hash": "a8abde68b697b6e2bd7c6c9bf24eb1f2",
+    "semantic_hash": "a8abde68b697b6e2bd7c6c9bf24eb1f2"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ProrabReportToGlavnyInzhenerGoal.java": {
+    "mtime": 1791439361.501959,
+    "seen": 1792392892.958026,
+    "ast_hash": "f0ac55d695cfac811f2717a0d92d96a2",
+    "semantic_hash": "f0ac55d695cfac811f2717a0d92d96a2"
+  },
+  "src/main/java/com/ben/csp/agent/goals/RecruitSubordinatesGoal.java": {
+    "mtime": 1791439361.5022728,
+    "seen": 1792392892.9580266,
+    "ast_hash": "0346402336fbb4b4ba3a5cd03dce9c0b",
+    "semantic_hash": "0346402336fbb4b4ba3a5cd03dce9c0b"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ReportToMasterGoal.java": {
+    "mtime": 1791439361.5022728,
+    "seen": 1792392892.9580276,
+    "ast_hash": "97b10dc4e5e8fc9a17c5a45f561a8f15",
+    "semantic_hash": "97b10dc4e5e8fc9a17c5a45f561a8f15"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ReportToProrabGoal.java": {
+    "mtime": 1791439361.502777,
+    "seen": 1792392892.9580286,
+    "ast_hash": "ac297b664f2f5d7128dbf926417a01c3",
+    "semantic_hash": "ac297b664f2f5d7128dbf926417a01c3"
+  },
+  "src/main/java/com/ben/csp/agent/goals/RequisitionMaterialsGoal.java": {
+    "mtime": 1791439361.503277,
+    "seen": 1792392892.9580293,
+    "ast_hash": "a5b9facec3ff6795f26867eef0d6d915",
+    "semantic_hash": "a5b9facec3ff6795f26867eef0d6d915"
+  },
+  "src/main/java/com/ben/csp/agent/goals/RestGoal.java": {
+    "mtime": 1791439361.5036354,
+    "seen": 1792392892.95803,
+    "ast_hash": "349ad93eaba3882c742daf08dd7b9be9",
+    "semantic_hash": "349ad93eaba3882c742daf08dd7b9be9"
+  },
+  "src/main/java/com/ben/csp/agent/goals/ReviewProrabReportsGoal.java": {
+    "mtime": 1791439361.5041385,
+    "seen": 1792392892.9580312,
+    "ast_hash": "17f2093c5e24efa7b2dec5fb194b47e6",
+    "semantic_hash": "17f2093c5e24efa7b2dec5fb194b47e6"
+  },
+  "src/main/java/com/ben/csp/agent/goals/SignDosyeGoal.java": {
+    "mtime": 1791439361.5041385,
+    "seen": 1792392892.958032,
+    "ast_hash": "5cd86cd88cadb024f6852e6271b0b028",
+    "semantic_hash": "5cd86cd88cadb024f6852e6271b0b028"
+  },
+  "src/main/java/com/ben/csp/block/ArchiveFilingCabinetBlock.java": {
+    "mtime": 1791439361.5048604,
+    "seen": 1792392892.9580326,
+    "ast_hash": "9de893e97173b55f9fa9ccaa0915676d",
+    "semantic_hash": "9de893e97173b55f9fa9ccaa0915676d"
+  },
+  "src/main/java/com/ben/csp/block/ChiseledBlock.java": {
+    "mtime": 1791774755.2646832,
+    "seen": 1792392892.9580333,
+    "ast_hash": "88dfe17aba683f6aee927f74586cbd39",
+    "semantic_hash": "88dfe17aba683f6aee927f74586cbd39"
+  },
+  "src/main/java/com/ben/csp/block/FuelChannelBlock.java": {
+    "mtime": 1791695269.636166,
+    "seen": 1792392892.9580343,
+    "ast_hash": "2a5b295c196fe79ee768819beaaa68c4",
+    "semantic_hash": "2a5b295c196fe79ee768819beaaa68c4"
+  },
+  "src/main/java/com/ben/csp/block/GeodeticMarkerBlock.java": {
+    "mtime": 1791975894.6730657,
+    "seen": 1792392892.9580352,
+    "ast_hash": "f0845ed9456f0ed9784e9fded79fb212",
+    "semantic_hash": "f0845ed9456f0ed9784e9fded79fb212"
+  },
+  "src/main/java/com/ben/csp/block/GraphiteBlock.java": {
+    "mtime": 1791695269.9657142,
+    "seen": 1792392892.958036,
+    "ast_hash": "ceca73c4131f249dd0d0cd7128c31e47",
+    "semantic_hash": "ceca73c4131f249dd0d0cd7128c31e47"
+  },
+  "src/main/java/com/ben/csp/block/IcmsBlock.java": {
+    "mtime": 1791439361.5063684,
+    "seen": 1792392892.9580367,
+    "ast_hash": "985832c39dbc1d2ba8c0c732d80edd06",
+    "semantic_hash": "985832c39dbc1d2ba8c0c732d80edd06"
+  },
+  "src/main/java/com/ben/csp/block/IcmsPanelBlock.java": {
+    "mtime": 1791439361.5068686,
+    "seen": 1792392892.9580376,
+    "ast_hash": "c0b5288226f849cf0704fc76cae911ce",
+    "semantic_hash": "c0b5288226f849cf0704fc76cae911ce"
+  },
+  "src/main/java/com/ben/csp/block/IndustrialControlBlock.java": {
+    "mtime": 1791695270.2972758,
+    "seen": 1792392892.9580386,
+    "ast_hash": "83c5c497484b3e1099e2e9a418d4cef2",
+    "semantic_hash": "83c5c497484b3e1099e2e9a418d4cef2"
+  },
+  "src/main/java/com/ben/csp/block/ModBlocks.java": {
+    "mtime": 1791695216.4940307,
+    "seen": 1792392892.9580393,
+    "ast_hash": "ea0010ef96a79c02efc1068d18499d81",
+    "semantic_hash": "ea0010ef96a79c02efc1068d18499d81"
+  },
+  "src/main/java/com/ben/csp/block/MtkDisplayBlock.java": {
+    "mtime": 1791695270.5808187,
+    "seen": 1792392892.95804,
+    "ast_hash": "ab311e7bd4e4ff562944cc882157779d",
+    "semantic_hash": "ab311e7bd4e4ff562944cc882157779d"
+  },
+  "src/main/java/com/ben/csp/block/PlanshetBlock.java": {
+    "mtime": 1791439361.5083687,
+    "seen": 1792392892.9580407,
+    "ast_hash": "7773a6b04e8c4ceb3184e1d0dcf87ab1",
+    "semantic_hash": "7773a6b04e8c4ceb3184e1d0dcf87ab1"
+  },
+  "src/main/java/com/ben/csp/block/PlanshetPartBlock.java": {
+    "mtime": 1791439361.5088687,
+    "seen": 1792392892.9580417,
+    "ast_hash": "972967b5ba7400d60d7b71b58d617457",
+    "semantic_hash": "972967b5ba7400d60d7b71b58d617457"
+  },
+  "src/main/java/com/ben/csp/block/StockpileBlock.java": {
+    "mtime": 1791439361.509369,
+    "seen": 1792392892.9580426,
+    "ast_hash": "b6fc3b82d7b976f822a5209132ef043a",
+    "semantic_hash": "b6fc3b82d7b976f822a5209132ef043a"
+  },
+  "src/main/java/com/ben/csp/block/TeletypePrinterBlock.java": {
+    "mtime": 1791439361.5098684,
+    "seen": 1792392892.9580433,
+    "ast_hash": "a870d80d5e800588bf9124d0e77004f5",
+    "semantic_hash": "a870d80d5e800588bf9124d0e77004f5"
+  },
+  "src/main/java/com/ben/csp/block/VertushkaBlock.java": {
+    "mtime": 1791695270.860851,
+    "seen": 1792392892.9580445,
+    "ast_hash": "e6c70118d2eff315b59aa52da217906f",
+    "semantic_hash": "e6c70118d2eff315b59aa52da217906f"
+  },
+  "src/main/java/com/ben/csp/block/entity/BitMaterial.java": {
+    "mtime": 1791439361.5103686,
+    "seen": 1792392892.9580452,
+    "ast_hash": "4ad868358658b1cca4711e5611fd6f12",
+    "semantic_hash": "4ad868358658b1cca4711e5611fd6f12"
+  },
+  "src/main/java/com/ben/csp/block/entity/BitMaterialRegistry.java": {
+    "mtime": 1791439361.5108685,
+    "seen": 1792392892.958046,
+    "ast_hash": "53d5b41c1ffc76c53996e1661443f3ea",
+    "semantic_hash": "53d5b41c1ffc76c53996e1661443f3ea"
+  },
+  "src/main/java/com/ben/csp/block/entity/ChannelType.java": {
+    "mtime": 1791439361.511368,
+    "seen": 1792392892.9580467,
+    "ast_hash": "9f7e62a05ce01121955493fd010ca4e4",
+    "semantic_hash": "9f7e62a05ce01121955493fd010ca4e4"
+  },
+  "src/main/java/com/ben/csp/block/entity/ChiseledBlockEntity.java": {
+    "mtime": 1792145918.9423366,
+    "seen": 1792392892.9580474,
+    "ast_hash": "25331090d1d85b9681aad9e583dd573e",
+    "semantic_hash": "25331090d1d85b9681aad9e583dd573e"
+  },
+  "src/main/java/com/ben/csp/block/entity/ControlRodBlockEntity.java": {
+    "mtime": 1791968435.9229321,
+    "seen": 1792392892.9580486,
+    "ast_hash": "03c93768d65a2a95660342d24db38131",
+    "semantic_hash": "03c93768d65a2a95660342d24db38131"
+  },
+  "src/main/java/com/ben/csp/block/entity/GraphiteBlock.java": {
+    "mtime": 1791439361.512368,
+    "seen": 1792392892.9580493,
+    "ast_hash": "4e1e8110ab1818a667275ae8ad9e7481",
+    "semantic_hash": "4e1e8110ab1818a667275ae8ad9e7481"
+  },
+  "src/main/java/com/ben/csp/block/entity/GraphiteBlockEntity.java": {
+    "mtime": 1792145918.942836,
+    "seen": 1792392892.95805,
+    "ast_hash": "b2e936b05fddb2313a40f0425b4d181d",
+    "semantic_hash": "b2e936b05fddb2313a40f0425b4d181d"
+  },
+  "src/main/java/com/ben/csp/block/entity/IcmsBlockEntity.java": {
+    "mtime": 1792145918.943336,
+    "seen": 1792392892.9580507,
+    "ast_hash": "59e8034491c4cb25a8ffc864b65eb58e",
+    "semantic_hash": "59e8034491c4cb25a8ffc864b65eb58e"
+  },
+  "src/main/java/com/ben/csp/block/entity/IcmsPanelBlockEntity.java": {
+    "mtime": 1792397127.6540434,
+    "seen": 1792397146.586373,
+    "ast_hash": "500d8c45adf94fcb641d038907df4754",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/block/entity/IndustrialControlBlockEntity.java": {
+    "mtime": 1792145918.9443352,
+    "seen": 1792392892.9580526,
+    "ast_hash": "431196cf0b6471f02c87a3580f571854",
+    "semantic_hash": "431196cf0b6471f02c87a3580f571854"
+  },
+  "src/main/java/com/ben/csp/block/entity/ModBlockEntities.java": {
+    "mtime": 1791702490.7722332,
+    "seen": 1792392892.9580534,
+    "ast_hash": "bded6ef22f200bb941289eca5a618c86",
+    "semantic_hash": "bded6ef22f200bb941289eca5a618c86"
+  },
+  "src/main/java/com/ben/csp/block/entity/MtkDisplayBlockEntity.java": {
+    "mtime": 1792145918.9448361,
+    "seen": 1792392892.9580543,
+    "ast_hash": "1c2d8c609b3e550b71034f3d0f13bc39",
+    "semantic_hash": "1c2d8c609b3e550b71034f3d0f13bc39"
+  },
+  "src/main/java/com/ben/csp/block/entity/RbmkConstants.java": {
+    "mtime": 1791439361.514881,
+    "seen": 1792392892.9580553,
+    "ast_hash": "cdcffb2694c3cd840878bfe98c7e49cf",
+    "semantic_hash": "cdcffb2694c3cd840878bfe98c7e49cf"
+  },
+  "src/main/java/com/ben/csp/block/entity/ReactorChannel.java": {
+    "mtime": 1792145918.9462621,
+    "seen": 1792392892.958056,
+    "ast_hash": "1611b3368aca0c44786ae0b418a4f3c9",
+    "semantic_hash": "1611b3368aca0c44786ae0b418a4f3c9"
+  },
+  "src/main/java/com/ben/csp/block/entity/TelefonistToolItem.java": {
+    "mtime": 1791439361.5158803,
+    "seen": 1792392892.9580567,
+    "ast_hash": "034c23143dd85f5b35ce7878ba8196a0",
+    "semantic_hash": "034c23143dd85f5b35ce7878ba8196a0"
+  },
+  "src/main/java/com/ben/csp/block/entity/TeletypePrinterBlock.java": {
+    "mtime": 1791439361.5158803,
+    "seen": 1792392892.9580574,
+    "ast_hash": "4d9f27d2223ce0c599fa2f8fc4b18668",
+    "semantic_hash": "4d9f27d2223ce0c599fa2f8fc4b18668"
+  },
+  "src/main/java/com/ben/csp/block/entity/VertushkaBlockEntity.java": {
+    "mtime": 1792145918.9467719,
+    "seen": 1792392892.9580586,
+    "ast_hash": "84e2d6c53543c1a7f2c4ee54656b3fa4",
+    "semantic_hash": "84e2d6c53543c1a7f2c4ee54656b3fa4"
+  },
+  "src/main/java/com/ben/csp/block/entity/bakelite_plastic.json": {
+    "mtime": 1791439361.5168839,
+    "seen": 1792392892.9580593,
+    "ast_hash": "4797294922725812aa3f556cacd2ca6d",
+    "semantic_hash": "4797294922725812aa3f556cacd2ca6d"
+  },
+  "src/main/java/com/ben/csp/client/CSPModClient.java": {
+    "mtime": 1791439361.5173843,
+    "seen": 1792392892.95806,
+    "ast_hash": "8218e1453fea2f84e5a6642951b46714",
+    "semantic_hash": "8218e1453fea2f84e5a6642951b46714"
+  },
+  "src/main/java/com/ben/csp/client/render/block/MtkDisplayBlockEntityRenderer.java": {
+    "mtime": 1791439361.5183845,
+    "seen": 1792392892.9580607,
+    "ast_hash": "13d3b9dae712e2f91b0279c4829124b5",
+    "semantic_hash": "13d3b9dae712e2f91b0279c4829124b5"
+  },
+  "src/main/java/com/ben/csp/client/render/block/VertushkaBlockEntityRenderer.java": {
+    "mtime": 1791439361.5188844,
+    "seen": 1792392892.958062,
+    "ast_hash": "08089113a5dd630153d3677408e8d936",
+    "semantic_hash": "08089113a5dd630153d3677408e8d936"
+  },
+  "src/main/java/com/ben/csp/client/render/entity/BitWorkPackage.java": {
+    "mtime": 1792145918.9477706,
+    "seen": 1792392892.9580626,
+    "ast_hash": "f580bcc166493cd56164b9c39cabd8a8",
+    "semantic_hash": "f580bcc166493cd56164b9c39cabd8a8"
+  },
+  "src/main/java/com/ben/csp/concrete.json": {
+    "mtime": 1791439361.5198846,
+    "seen": 1792392892.9580643,
+    "ast_hash": "21b355a3af55fb35d56aa3eea23f06c8",
+    "semantic_hash": "21b355a3af55fb35d56aa3eea23f06c8"
+  },
+  "src/main/java/com/ben/csp/data/InfrastructureRequirementLoader.java": {
+    "mtime": 1791439361.5203843,
+    "seen": 1792392892.9580655,
+    "ast_hash": "59d4298b0373a3143ac6567537894fde",
+    "semantic_hash": "59d4298b0373a3143ac6567537894fde"
+  },
+  "src/main/java/com/ben/csp/dirt.json": {
+    "mtime": 1791439361.520884,
+    "seen": 1792392892.9580662,
+    "ast_hash": "04e7f0561dc4467d2543d889e3ea850d",
+    "semantic_hash": "04e7f0561dc4467d2543d889e3ea850d"
+  },
+  "src/main/java/com/ben/csp/dirt_house_test.json": {
+    "mtime": 1791439361.5213845,
+    "seen": 1792392892.958067,
+    "ast_hash": "84f32c432c6098431988aaeec0016d35",
+    "semantic_hash": "84f32c432c6098431988aaeec0016d35"
+  },
+  "src/main/java/com/ben/csp/entity/BargeEntity.java": {
+    "mtime": 1791962353.7845614,
+    "seen": 1792392892.958068,
+    "ast_hash": "cb73f36d3dc32ac2cde47a4d8fb97b67",
+    "semantic_hash": "cb73f36d3dc32ac2cde47a4d8fb97b67"
+  },
+  "src/main/java/com/ben/csp/entity/BrigadierEntity.java": {
+    "mtime": 1791962342.9103043,
+    "seen": 1792392892.9580688,
+    "ast_hash": "af2ab08d979bf9e1579933ec38142038",
+    "semantic_hash": "af2ab08d979bf9e1579933ec38142038"
+  },
+  "src/main/java/com/ben/csp/entity/CspEntity.java": {
+    "mtime": 1791962375.6349835,
+    "seen": 1792392892.9580696,
+    "ast_hash": "b3300aa6601c6358cc704e36d5f4772d",
+    "semantic_hash": "b3300aa6601c6358cc704e36d5f4772d"
+  },
+  "src/main/java/com/ben/csp/entity/EnterpriseDirectorEntity.java": {
+    "mtime": 1791962320.7438252,
+    "seen": 1792392892.9580703,
+    "ast_hash": "def447d654d167be4f144a1def7b962d",
+    "semantic_hash": "def447d654d167be4f144a1def7b962d"
+  },
+  "src/main/java/com/ben/csp/entity/EntityDirectorEntity.java": {
+    "mtime": 1791962386.592028,
+    "seen": 1792392892.9580712,
+    "ast_hash": "4dd1c46f654d06771ca31206b398f59a",
+    "semantic_hash": "4dd1c46f654d06771ca31206b398f59a"
+  },
+  "src/main/java/com/ben/csp/entity/FacilityDirectorEntity.java": {
+    "mtime": 1791962331.8148723,
+    "seen": 1792392892.958072,
+    "ast_hash": "4c1b270c92092d641b4ee6a0b4b30632",
+    "semantic_hash": "4c1b270c92092d641b4ee6a0b4b30632"
+  },
+  "src/main/java/com/ben/csp/entity/GeodezistEntity.java": {
+    "mtime": 1791962309.7106502,
+    "seen": 1792392892.958073,
+    "ast_hash": "8f4eddf4762c77d1bfe9f4788b2ce3a1",
+    "semantic_hash": "8f4eddf4762c77d1bfe9f4788b2ce3a1"
+  },
+  "src/main/java/com/ben/csp/entity/GlavnyInzhenerEntity.java": {
+    "mtime": 1791962273.3040483,
+    "seen": 1792392892.9580736,
+    "ast_hash": "8f62b88299cb06800cd11c9335e5d9a3",
+    "semantic_hash": "8f62b88299cb06800cd11c9335e5d9a3"
+  },
+  "src/main/java/com/ben/csp/entity/MasterEntity.java": {
+    "mtime": 1791962364.2576213,
+    "seen": 1792392892.9580743,
+    "ast_hash": "c819129332b7ab7d12e0882c8b7c7453",
+    "semantic_hash": "c819129332b7ab7d12e0882c8b7c7453"
+  },
+  "src/main/java/com/ben/csp/entity/ModEntities.java": {
+    "mtime": 1791971939.0036488,
+    "seen": 1792392892.9580753,
+    "ast_hash": "77d300b82cd3de44dabf8f5083d577e6",
+    "semantic_hash": "77d300b82cd3de44dabf8f5083d577e6"
+  },
+  "src/main/java/com/ben/csp/entity/NachalnikSnabzheniyaEntity.java": {
+    "mtime": 1791968313.2523117,
+    "seen": 1792392892.9580765,
+    "ast_hash": "b64bb3e5f6a3d94cdc8c67ea4758a976",
+    "semantic_hash": "b64bb3e5f6a3d94cdc8c67ea4758a976"
+  },
+  "src/main/java/com/ben/csp/entity/ProrabEntity.java": {
+    "mtime": 1791962250.0135682,
+    "seen": 1792392892.9580774,
+    "ast_hash": "6ac58ac4bd2332d2bdbaeef82ca578ab",
+    "semantic_hash": "6ac58ac4bd2332d2bdbaeef82ca578ab"
+  },
+  "src/main/java/com/ben/csp/entity/SekretarEntity.java": {
+    "mtime": 1791962260.9470909,
+    "seen": 1792392892.9580781,
+    "ast_hash": "61489be98f1d448998c8c0079d64a95b",
+    "semantic_hash": "61489be98f1d448998c8c0079d64a95b"
+  },
+  "src/main/java/com/ben/csp/entity/StroitelEntity.java": {
+    "mtime": 1791962238.0918088,
+    "seen": 1792392892.9580793,
+    "ast_hash": "926c9a029074436b77a9b4952c28537f",
+    "semantic_hash": "926c9a029074436b77a9b4952c28537f"
+  },
+  "src/main/java/com/ben/csp/entity/TolkachEntity.java": {
+    "mtime": 1791962582.1682968,
+    "seen": 1792392892.9580803,
+    "ast_hash": "daf6d00eca0c1cfc4d2ca45b65aec21f",
+    "semantic_hash": "daf6d00eca0c1cfc4d2ca45b65aec21f"
+  },
+  "src/main/java/com/ben/csp/entity/UchetchikEntity.java": {
+    "mtime": 1791962298.0270326,
+    "seen": 1792392892.958081,
+    "ast_hash": "9848dbc09df6306938a990110c0565c5",
+    "semantic_hash": "9848dbc09df6306938a990110c0565c5"
+  },
+  "src/main/java/com/ben/csp/entity/ai/DynamicPersonalityEngine.java": {
+    "mtime": 1792396572.5847437,
+    "seen": 1792396985.614191,
+    "ast_hash": "dcb065103d0b88cbf5d46da694ab6101",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/entity/ai/Garrisonable.java": {
+    "mtime": 1791706866.435354,
+    "seen": 1792392892.958083,
+    "ast_hash": "723245ee24e57d9257c488537cec0b74",
+    "semantic_hash": "723245ee24e57d9257c488537cec0b74"
+  },
+  "src/main/java/com/ben/csp/entity/ai/MeetingRequest.java": {
+    "mtime": 1792145918.9482706,
+    "seen": 1792392892.9580836,
+    "ast_hash": "d8904011d8eb33185055f58eeb56ac4d",
+    "semantic_hash": "d8904011d8eb33185055f58eeb56ac4d"
+  },
+  "src/main/java/com/ben/csp/entity/ai/PoiDefinition.java": {
+    "mtime": 1791706866.5204742,
+    "seen": 1792392892.9580846,
+    "ast_hash": "39fd03de5638e3ca7e707ad544d459e6",
+    "semantic_hash": "39fd03de5638e3ca7e707ad544d459e6"
+  },
+  "src/main/java/com/ben/csp/entity/ai/ZoneType.java": {
+    "mtime": 1791706866.5649629,
+    "seen": 1792392892.9580853,
+    "ast_hash": "e7f5fbfa7919fb27df0a3b7488a0cfd4",
+    "semantic_hash": "e7f5fbfa7919fb27df0a3b7488a0cfd4"
+  },
+  "src/main/java/com/ben/csp/entity/ai/concrete_plant.proc.json": {
+    "mtime": 1791439361.526394,
+    "seen": 1792392892.9580863,
+    "ast_hash": "27e99f82f875be93959dd07b9fc5277c",
+    "semantic_hash": "27e99f82f875be93959dd07b9fc5277c"
+  },
+  "src/main/java/com/ben/csp/entity/ai/dosye/Dosye.java": {
+    "mtime": 1792145918.9492705,
+    "seen": 1792392892.9580872,
+    "ast_hash": "b21a501591739706e5a2dd779b4aff2e",
+    "semantic_hash": "b21a501591739706e5a2dd779b4aff2e"
+  },
+  "src/main/java/com/ben/csp/entity/ai/geodetic_marker_block.json": {
+    "mtime": 1791439361.5273945,
+    "seen": 1792392892.958088,
+    "ast_hash": "224230bbec770dcbc021068e0ee4b2c6",
+    "semantic_hash": "224230bbec770dcbc021068e0ee4b2c6"
+  },
+  "src/main/java/com/ben/csp/entity/foundations_phase_1.json": {
+    "mtime": 1791439361.5278955,
+    "seen": 1792392892.9580886,
+    "ast_hash": "5a3523dd935f76b67574d3ce4fb968c7",
+    "semantic_hash": "5a3523dd935f76b67574d3ce4fb968c7"
+  },
+  "src/main/java/com/ben/csp/entity/soviet_lexicon.json": {
+    "mtime": 1791439361.5278955,
+    "seen": 1792392892.9580898,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/ben/csp/geology/GeologicalReport.java": {
+    "mtime": 1791439361.5283937,
+    "seen": 1792392892.9580905,
+    "ast_hash": "815302848b5b360a46f7c9db668f5d5e",
+    "semantic_hash": "815302848b5b360a46f7c9db668f5d5e"
+  },
+  "src/main/java/com/ben/csp/infra/InfrastructureRequirements.java": {
+    "mtime": 1791439361.5293934,
+    "seen": 1792392892.9580913,
+    "ast_hash": "55caff7f679eb209d91be2eaa00089df",
+    "semantic_hash": "55caff7f679eb209d91be2eaa00089df"
+  },
+  "src/main/java/com/ben/csp/item/ChiselItem.java": {
+    "mtime": 1791692331.4520252,
+    "seen": 1792392892.958092,
+    "ast_hash": "db35948480e6359f68f00a98457c64f9",
+    "semantic_hash": "db35948480e6359f68f00a98457c64f9"
+  },
+  "src/main/java/com/ben/csp/item/DirectorsPlanshetItem.java": {
+    "mtime": 1791691766.8104303,
+    "seen": 1792392892.9580927,
+    "ast_hash": "1f409d387525773452999389c5376acd",
+    "semantic_hash": "1f409d387525773452999389c5376acd"
+  },
+  "src/main/java/com/ben/csp/item/MagneticTapeItem.java": {
+    "mtime": 1791691822.3678758,
+    "seen": 1792392892.958094,
+    "ast_hash": "25d42e2571a725500d7d89787a64d6dd",
+    "semantic_hash": "25d42e2571a725500d7d89787a64d6dd"
+  },
+  "src/main/java/com/ben/csp/item/ModItems.java": {
+    "mtime": 1791691714.3385575,
+    "seen": 1792392892.9580946,
+    "ast_hash": "2a40e655c3e2e9965faa1980dba0f20e",
+    "semantic_hash": "2a40e655c3e2e9965faa1980dba0f20e"
+  },
+  "src/main/java/com/ben/csp/item/ModItemsSpawnEggs.java": {
+    "mtime": 1791976295.5713534,
+    "seen": 1792392892.9580956,
+    "ast_hash": "a01080c7fc0703dfe433bc6c60e09960",
+    "semantic_hash": "a01080c7fc0703dfe433bc6c60e09960"
+  },
+  "src/main/java/com/ben/csp/item/SkalaLinkerTool.java": {
+    "mtime": 1791691769.621909,
+    "seen": 1792392892.9580963,
+    "ast_hash": "a539543b766fb350b76ad000d4764e85",
+    "semantic_hash": "a539543b766fb350b76ad000d4764e85"
+  },
+  "src/main/java/com/ben/csp/item/TelefonistToolItem.java": {
+    "mtime": 1791691806.7998433,
+    "seen": 1792392892.9580972,
+    "ast_hash": "546efb9495f4c9ad84a43cf5e3499a6e",
+    "semantic_hash": "546efb9495f4c9ad84a43cf5e3499a6e"
+  },
+  "src/main/java/com/ben/csp/kartograf/KartografManager.java": {
+    "mtime": 1792395493.529773,
+    "seen": 1792396147.123366,
+    "ast_hash": "2339dd8c2e8096f2e64615c1ffdc0c3c",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/logistics/DebugDispatchOrder.java": {
+    "mtime": 1791439361.5323937,
+    "seen": 1792392892.958099,
+    "ast_hash": "ede9d1cfb85c7e06314660d7ccc433f8",
+    "semantic_hash": "ede9d1cfb85c7e06314660d7ccc433f8"
+  },
+  "src/main/java/com/ben/csp/logistics/Defect.java": {
+    "mtime": 1792145918.9507709,
+    "seen": 1792392892.9580996,
+    "ast_hash": "a932a234bbc34f018d907cb0a5d0314d",
+    "semantic_hash": "a932a234bbc34f018d907cb0a5d0314d"
+  },
+  "src/main/java/com/ben/csp/logistics/DispatchOrder.java": {
+    "mtime": 1791439361.533393,
+    "seen": 1792392892.9581006,
+    "ast_hash": "59706388754b0f633276ed86b117b97d",
+    "semantic_hash": "59706388754b0f633276ed86b117b97d"
+  },
+  "src/main/java/com/ben/csp/logistics/MaterialBatch.java": {
+    "mtime": 1792145918.951771,
+    "seen": 1792392892.9581015,
+    "ast_hash": "620b3a97e1bab25c4735a1bba321d685",
+    "semantic_hash": "620b3a97e1bab25c4735a1bba321d685"
+  },
+  "src/main/java/com/ben/csp/logistics/RailTrafficManager.java": {
+    "mtime": 1791439361.5343962,
+    "seen": 1792392892.9581022,
+    "ast_hash": "044338f912f6b8186fa136dc8660c0e1",
+    "semantic_hash": "044338f912f6b8186fa136dc8660c0e1"
+  },
+  "src/main/java/com/ben/csp/opb/OPB82RuleLoader.java": {
+    "mtime": 1791439361.5349,
+    "seen": 1792392892.958103,
+    "ast_hash": "36499f031bdcb9e0a4a7db499f7a6ae8",
+    "semantic_hash": "36499f031bdcb9e0a4a7db499f7a6ae8"
+  },
+  "src/main/java/com/ben/csp/personnel/PersonnelRecord.java": {
+    "mtime": 1792145918.9527705,
+    "seen": 1792392892.958104,
+    "ast_hash": "70083db88042b76b0eece7bd66305158",
+    "semantic_hash": "70083db88042b76b0eece7bd66305158"
+  },
+  "src/main/java/com/ben/csp/personnel/PersonnelRosterManager.java": {
+    "mtime": 1792145918.953271,
+    "seen": 1792392892.9581046,
+    "ast_hash": "4ea586bea227c155ac0bdb9df1b100d8",
+    "semantic_hash": "4ea586bea227c155ac0bdb9df1b100d8"
+  },
+  "src/main/java/com/ben/csp/process/IndustrialProcess.java": {
+    "mtime": 1792145918.9542708,
+    "seen": 1792392892.9581056,
+    "ast_hash": "5506144b32666c01cd9094df904da4e4",
+    "semantic_hash": "5506144b32666c01cd9094df904da4e4"
+  },
+  "src/main/java/com/ben/csp/qc/EnvironmentalStressManager.java": {
+    "mtime": 1791439361.5369027,
+    "seen": 1792392892.9581063,
+    "ast_hash": "108f2d3fea6d6a62422eec0d0f7f9e7a",
+    "semantic_hash": "108f2d3fea6d6a62422eec0d0f7f9e7a"
+  },
+  "src/main/java/com/ben/csp/qc/StructuralData.java": {
+    "mtime": 1791439361.5374086,
+    "seen": 1792392892.9581072,
+    "ast_hash": "eba1aa76d94f5d02730b858a0bc59c4a",
+    "semantic_hash": "eba1aa76d94f5d02730b858a0bc59c4a"
+  },
+  "src/main/java/com/ben/csp/radiology/ContaminationPacket.java": {
+    "mtime": 1791439361.5379076,
+    "seen": 1792392892.9581082,
+    "ast_hash": "df27ec3635a03118682892ecb680de58",
+    "semantic_hash": "df27ec3635a03118682892ecb680de58"
+  },
+  "src/main/java/com/ben/csp/radiology/ContaminationSource.java": {
+    "mtime": 1791439361.5384073,
+    "seen": 1792392892.958109,
+    "ast_hash": "8fef7f037904a96b7102a21705f6a1e2",
+    "semantic_hash": "8fef7f037904a96b7102a21705f6a1e2"
+  },
+  "src/main/java/com/ben/csp/radiology/DepositionProperties.java": {
+    "mtime": 1791439361.5389068,
+    "seen": 1792392892.9581096,
+    "ast_hash": "2bfbc8150e2bf6be2f26d44a592233bb",
+    "semantic_hash": "2bfbc8150e2bf6be2f26d44a592233bb"
+  },
+  "src/main/java/com/ben/csp/radiology/DoseEffect.java": {
+    "mtime": 1791439361.5394075,
+    "seen": 1792392892.9581108,
+    "ast_hash": "0deb486f54afd5e411d7dea4bf754fb0",
+    "semantic_hash": "0deb486f54afd5e411d7dea4bf754fb0"
+  },
+  "src/main/java/com/ben/csp/radiology/GroundwaterPlume.java": {
+    "mtime": 1791439361.5394075,
+    "seen": 1792392892.9581115,
+    "ast_hash": "5c2bb430c4e006fd0eab31bddc5f4e27",
+    "semantic_hash": "5c2bb430c4e006fd0eab31bddc5f4e27"
+  },
+  "src/main/java/com/ben/csp/radiology/HotParticle.java": {
+    "mtime": 1791439361.539909,
+    "seen": 1792392892.9581122,
+    "ast_hash": "2744f8a01ec7cce9aee2348849a12f7f",
+    "semantic_hash": "2744f8a01ec7cce9aee2348849a12f7f"
+  },
+  "src/main/java/com/ben/csp/radiology/Isotope.java": {
+    "mtime": 1791439361.5404077,
+    "seen": 1792392892.958113,
+    "ast_hash": "8931ece5048fb91b4f7c19507ed51278",
+    "semantic_hash": "8931ece5048fb91b4f7c19507ed51278"
+  },
+  "src/main/java/com/ben/csp/radiology/IsotopeRegistry.java": {
+    "mtime": 1791439361.5409074,
+    "seen": 1792392892.958114,
+    "ast_hash": "f3850633b59903c3f8e23f9a2cb44bf5",
+    "semantic_hash": "f3850633b59903c3f8e23f9a2cb44bf5"
+  },
+  "src/main/java/com/ben/csp/radiology/PsychologicalState.java": {
+    "mtime": 1792145918.9552705,
+    "seen": 1792392892.9581149,
+    "ast_hash": "ae64a53f11f756d1a2d2976a75f0c3e0",
+    "semantic_hash": "ae64a53f11f756d1a2d2976a75f0c3e0"
+  },
+  "src/main/java/com/ben/csp/radiology/RadiationParticle.java": {
+    "mtime": 1791439361.541908,
+    "seen": 1792392892.9581156,
+    "ast_hash": "edcca55d83629d20750015c7b5e9481d",
+    "semantic_hash": "edcca55d83629d20750015c7b5e9481d"
+  },
+  "src/main/java/com/ben/csp/radiology/RadiationType.java": {
+    "mtime": 1791439361.5424075,
+    "seen": 1792392892.9581165,
+    "ast_hash": "259e6e35050eb41abc5efbd5e576312a",
+    "semantic_hash": "259e6e35050eb41abc5efbd5e576312a"
+  },
+  "src/main/java/com/ben/csp/radiology/RadiologicalEffectsRegistry.java": {
+    "mtime": 1791439361.542908,
+    "seen": 1792392892.9581175,
+    "ast_hash": "fe862e502c8f47fe2679153cbb3a312f",
+    "semantic_hash": "fe862e502c8f47fe2679153cbb3a312f"
+  },
+  "src/main/java/com/ben/csp/radiology/ShieldingMaterialRegistry.java": {
+    "mtime": 1791439361.542908,
+    "seen": 1792392892.9581182,
+    "ast_hash": "eb547fa03945692633bc636451f50cc6",
+    "semantic_hash": "eb547fa03945692633bc636451f50cc6"
+  },
+  "src/main/java/com/ben/csp/radiology/ShieldingProperties.java": {
+    "mtime": 1791439361.543407,
+    "seen": 1792392892.958119,
+    "ast_hash": "93d1394eff09d806de85f7763934b762",
+    "semantic_hash": "93d1394eff09d806de85f7763934b762"
+  },
+  "src/main/java/com/ben/csp/radiology/SourceTerm.java": {
+    "mtime": 1791439361.543407,
+    "seen": 1792392892.9581196,
+    "ast_hash": "52b326cf0e7d37487b64b6f4e55cb8b3",
+    "semantic_hash": "52b326cf0e7d37487b64b6f4e55cb8b3"
+  },
+  "src/main/java/com/ben/csp/radiology/SourceTermRegistry.java": {
+    "mtime": 1791439361.5444107,
+    "seen": 1792392892.9581208,
+    "ast_hash": "f6cb20d30707285abb7d27388ca50825",
+    "semantic_hash": "f6cb20d30707285abb7d27388ca50825"
+  },
+  "src/main/java/com/ben/csp/radiology/SurfaceContaminationLayer.java": {
+    "mtime": 1792145918.9560184,
+    "seen": 1792392892.9581215,
+    "ast_hash": "ca6b22e2f9fb28604b477c3c52bb1fba",
+    "semantic_hash": "ca6b22e2f9fb28604b477c3c52bb1fba"
+  },
+  "src/main/java/com/ben/csp/radiology/SurfaceDepositionRegistry.java": {
+    "mtime": 1791439361.545415,
+    "seen": 1792392892.9581223,
+    "ast_hash": "8770e8bae4b4504637f4250a4724597d",
+    "semantic_hash": "8770e8bae4b4504637f4250a4724597d"
+  },
+  "src/main/java/com/ben/csp/radiology/ZoneType.java": {
+    "mtime": 1791439361.545415,
+    "seen": 1792392892.958123,
+    "ast_hash": "2d853e25bea5b18600035521f1869c08",
+    "semantic_hash": "2d853e25bea5b18600035521f1869c08"
+  },
+  "src/main/java/com/ben/csp/rbmk/ControlRodBlock.java": {
+    "mtime": 1791439361.545915,
+    "seen": 1792392892.9581237,
+    "ast_hash": "a45d3679ebc6e7f78888233dcdb132c5",
+    "semantic_hash": "a45d3679ebc6e7f78888233dcdb132c5"
+  },
+  "src/main/java/com/ben/csp/rbmk/FuelChannelBlockEntity.java": {
+    "mtime": 1791694493.927988,
+    "seen": 1792392892.9581249,
+    "ast_hash": "8554286183cf40a04598524fa5bf03bd",
+    "semantic_hash": "8554286183cf40a04598524fa5bf03bd"
+  },
+  "src/main/java/com/ben/csp/rbmk/REKORDSolverLibrary.java": {
+    "mtime": 1791439361.5469186,
+    "seen": 1792392892.9581256,
+    "ast_hash": "ffe7cc86df861b92c4652506478bca1a",
+    "semantic_hash": "ffe7cc86df861b92c4652506478bca1a"
+  },
+  "src/main/java/com/ben/csp/rbmk/REKORDSolverManager.java": {
+    "mtime": 1791439361.5474193,
+    "seen": 1792392892.9581263,
+    "ast_hash": "5c88404a8a70273703f25cf2a08cbeed",
+    "semantic_hash": "5c88404a8a70273703f25cf2a08cbeed"
+  },
+  "src/main/java/com/ben/csp/rbmk/SimulationConductorBlock.java": {
+    "mtime": 1791694548.6450403,
+    "seen": 1792392892.958127,
+    "ast_hash": "c645dfa15d99d5b42b7a69918e626206",
+    "semantic_hash": "c645dfa15d99d5b42b7a69918e626206"
+  },
+  "src/main/java/com/ben/csp/rbmk/SimulationConductorBlockEntity.java": {
+    "mtime": 1791694494.1207426,
+    "seen": 1792392892.9581282,
+    "ast_hash": "bec94b24baba6dc2945fc7b766721f32",
+    "semantic_hash": "bec94b24baba6dc2945fc7b766721f32"
+  },
+  "src/main/java/com/ben/csp/rbmk/rbmk_solver.c": {
+    "mtime": 1791439361.5504186,
+    "seen": 1792392892.958129,
+    "ast_hash": "968fc3fde00602f81d357cdb3c6ca524",
+    "semantic_hash": "968fc3fde00602f81d357cdb3c6ca524"
+  },
+  "src/main/java/com/ben/csp/rebar.json": {
+    "mtime": 1791439361.551419,
+    "seen": 1792392892.95813,
+    "ast_hash": "a61a24bb021dd3b62c221c61f1dc518a",
+    "semantic_hash": "a61a24bb021dd3b62c221c61f1dc518a"
+  },
+  "src/main/java/com/ben/csp/skala/SendSkalaRequestC2SPacket.java": {
+    "mtime": 1791965323.2122629,
+    "seen": 1792392892.9581306,
+    "ast_hash": "9bbb193b5408e35cef72826306836078",
+    "semantic_hash": "9bbb193b5408e35cef72826306836078"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaAction.java": {
+    "mtime": 1791439361.552918,
+    "seen": 1792392892.9581318,
+    "ast_hash": "2e1d45aa268e4c2f52ec480affd0ef9a",
+    "semantic_hash": "2e1d45aa268e4c2f52ec480affd0ef9a"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaChannel.java": {
+    "mtime": 1791439361.5544267,
+    "seen": 1792392892.9581325,
+    "ast_hash": "a482cab5f0d903a815ca0f3bfc07e997",
+    "semantic_hash": "a482cab5f0d903a815ca0f3bfc07e997"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaCoreBlock.java": {
+    "mtime": 1791694621.365121,
+    "seen": 1792392892.9581332,
+    "ast_hash": "9ef0de73b0288230e53bbd21ce5fdf0b",
+    "semantic_hash": "9ef0de73b0288230e53bbd21ce5fdf0b"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaCoreBlockEntity.java": {
+    "mtime": 1791694511.7490969,
+    "seen": 1792392892.9581342,
+    "ast_hash": "38c278bd76e69cb3e96b4ffb66553e5c",
+    "semantic_hash": "38c278bd76e69cb3e96b4ffb66553e5c"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaIoBlock.java": {
+    "mtime": 1791965330.2142687,
+    "seen": 1792392892.9581351,
+    "ast_hash": "627319a5a8b4b36884fe37aa33fe9baf",
+    "semantic_hash": "627319a5a8b4b36884fe37aa33fe9baf"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaIoCabinetBlock.java": {
+    "mtime": 1791694621.6548536,
+    "seen": 1792392892.9581358,
+    "ast_hash": "75a47658a2b0f27142943ec67b411c79",
+    "semantic_hash": "75a47658a2b0f27142943ec67b411c79"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaIoCabinetBlockEntity.java": {
+    "mtime": 1791694512.0526438,
+    "seen": 1792392892.9581366,
+    "ast_hash": "6fd6f658f941e747fe568951550e508f",
+    "semantic_hash": "6fd6f658f941e747fe568951550e508f"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaProcessComputer.java": {
+    "mtime": 1791439361.5594268,
+    "seen": 1792392892.9581375,
+    "ast_hash": "ebc6eb86b5c1c074db2d2999f7c4f532",
+    "semantic_hash": "ebc6eb86b5c1c074db2d2999f7c4f532"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaReactorInterfaceBlock.java": {
+    "mtime": 1791694621.9633193,
+    "seen": 1792392892.9581385,
+    "ast_hash": "5623c0741fb1eb11a7cedb43c85fa71f",
+    "semantic_hash": "5623c0741fb1eb11a7cedb43c85fa71f"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaReactorInterfaceBlockEntity.java": {
+    "mtime": 1791694512.3883362,
+    "seen": 1792392892.9581392,
+    "ast_hash": "f1c6bf8afbbd20e3a99b85fbaf6b79f7",
+    "semantic_hash": "f1c6bf8afbbd20e3a99b85fbaf6b79f7"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaRequestDeviceBlock.java": {
+    "mtime": 1791694622.2572107,
+    "seen": 1792392892.95814,
+    "ast_hash": "a166b65d0fcc5bc2a0045c3459fd67df",
+    "semantic_hash": "a166b65d0fcc5bc2a0045c3459fd67df"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaRequestDeviceBlockEntity.java": {
+    "mtime": 1791694512.701436,
+    "seen": 1792392892.9581409,
+    "ast_hash": "3e4cc30d18252e26d10c34031603b496",
+    "semantic_hash": "3e4cc30d18252e26d10c34031603b496"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaTapeDriveBlock.java": {
+    "mtime": 1791694622.5405664,
+    "seen": 1792392892.9581418,
+    "ast_hash": "f33470c3853d7b60b5d0c3e8ad7e5a0b",
+    "semantic_hash": "f33470c3853d7b60b5d0c3e8ad7e5a0b"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaTapeDriveBlockEntity.java": {
+    "mtime": 1791694513.0058727,
+    "seen": 1792392892.9581425,
+    "ast_hash": "864b623cdfc20f973b9a1cc0a0b453a8",
+    "semantic_hash": "864b623cdfc20f973b9a1cc0a0b453a8"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaV31MLinkBlock.java": {
+    "mtime": 1791694622.8430753,
+    "seen": 1792392892.9581435,
+    "ast_hash": "448b927c9a9ff03d7ca09b707058fc24",
+    "semantic_hash": "448b927c9a9ff03d7ca09b707058fc24"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaV31MLinkBlockEntity.java": {
+    "mtime": 1791694513.343094,
+    "seen": 1792392892.9581442,
+    "ast_hash": "287c79efdc0bcce4657701a5c755c922",
+    "semantic_hash": "287c79efdc0bcce4657701a5c755c922"
+  },
+  "src/main/java/com/ben/csp/skala/SkalaValue.java": {
+    "mtime": 1791439361.5674353,
+    "seen": 1792392892.9581451,
+    "ast_hash": "3109c3dcb5924a674c8d10ee35e8f4b3",
+    "semantic_hash": "3109c3dcb5924a674c8d10ee35e8f4b3"
+  },
+  "src/main/java/com/ben/csp/skala/UpdateSkalaReferenceC2SPacket.java": {
+    "mtime": 1791965341.8126721,
+    "seen": 1792392892.9581459,
+    "ast_hash": "2f7113cc4c41b58d7896cf821b7ddf6d",
+    "semantic_hash": "2f7113cc4c41b58d7896cf821b7ddf6d"
+  },
+  "src/main/java/com/ben/csp/util/BlockPosUtil.java": {
+    "mtime": 1791439361.5694332,
+    "seen": 1792392892.9581468,
+    "ast_hash": "3dd81a314e231684f710d3409dc6e7da",
+    "semantic_hash": "3dd81a314e231684f710d3409dc6e7da"
+  },
+  "src/main/java/com/ben/csp/util/BlockSettings.java": {
+    "mtime": 1791439361.5704348,
+    "seen": 1792392892.9581475,
+    "ast_hash": "e985b150446c63cbb1a9086768036810",
+    "semantic_hash": "e985b150446c63cbb1a9086768036810"
+  },
+  "src/main/java/com/ben/csp/util/MeasuringTapeUtil.java": {
+    "mtime": 1791439361.5709343,
+    "seen": 1792392892.9581482,
+    "ast_hash": "068a1ddeb56ad81dcaba9400bdee2dab",
+    "semantic_hash": "068a1ddeb56ad81dcaba9400bdee2dab"
+  },
+  "src/main/java/com/ben/csp/util/SteamTableUtil.java": {
+    "mtime": 1791439361.5714345,
+    "seen": 1792392892.9581492,
+    "ast_hash": "8d3f8d78183a7deb3f797593050e2de9",
+    "semantic_hash": "8d3f8d78183a7deb3f797593050e2de9"
+  },
+  "src/main/java/com/ben/csp/world/AtmosphericStability.java": {
+    "mtime": 1791439361.5719345,
+    "seen": 1792392892.95815,
+    "ast_hash": "e39e07cb446f3a9ba244c4a2355e55bf",
+    "semantic_hash": "e39e07cb446f3a9ba244c4a2355e55bf"
+  },
+  "src/main/java/com/ben/csp/world/LocationType.java": {
+    "mtime": 1791439361.5724337,
+    "seen": 1792392892.9581509,
+    "ast_hash": "54534e55de1a046e03a3c51b7a0e6382",
+    "semantic_hash": "54534e55de1a046e03a3c51b7a0e6382"
+  },
+  "src/main/java/com/ben/csp/world/WeatherManager.java": {
+    "mtime": 1791439361.5729346,
+    "seen": 1792392892.9581516,
+    "ast_hash": "251dfd205b817f002d036d76d0ba3ab2",
+    "semantic_hash": "251dfd205b817f002d036d76d0ba3ab2"
+  },
+  "src/main/java/com/ben/csp/world/WeatherPattern.java": {
+    "mtime": 1791439361.5729346,
+    "seen": 1792392892.9581525,
+    "ast_hash": "50f05619e8d9ddf420a49c67739d8c74",
+    "semantic_hash": "50f05619e8d9ddf420a49c67739d8c74"
+  },
+  "src/main/resources/assets/csp-modern/blockstates/geodetic_marker_block.json": {
+    "mtime": 1791439361.5754418,
+    "seen": 1792392892.9581532,
+    "ast_hash": "e8426e47bc42ef5b486b6d7dd0290c33",
+    "semantic_hash": "e8426e47bc42ef5b486b6d7dd0290c33"
+  },
+  "src/main/resources/assets/csp-modern/models/block/geodetic_marker_block.json": {
+    "mtime": 1791439361.5764427,
+    "seen": 1792392892.958154,
+    "ast_hash": "5bde2f379e865a1a3f1c046773f9249b",
+    "semantic_hash": "5bde2f379e865a1a3f1c046773f9249b"
+  },
+  "src/main/resources/assets/csp-modern/models/item/geodetic_marker_block.json": {
+    "mtime": 1791439361.5769424,
+    "seen": 1792392892.958155,
+    "ast_hash": "ad6c0560dde1dc22a9addf8277d6fcbf",
+    "semantic_hash": "ad6c0560dde1dc22a9addf8277d6fcbf"
+  },
+  "src/main/resources/csp-modern.mixins.json": {
+    "mtime": 1791439361.577942,
+    "seen": 1792392892.9581559,
+    "ast_hash": "f1106db45d5d3b12192aca3d0bec031c",
+    "semantic_hash": "f1106db45d5d3b12192aca3d0bec031c"
+  },
+  "src/main/resources/csp.mixins.json": {
+    "mtime": 1791439361.5784428,
+    "seen": 1792392892.9581566,
+    "ast_hash": "3a576450434aaa004279a3341c6ef7ba",
+    "semantic_hash": "3a576450434aaa004279a3341c6ef7ba"
+  },
+  "src/main/resources/data/csp/enterprise_infrastructure.json": {
+    "mtime": 1791439361.5789428,
+    "seen": 1792392892.9581573,
+    "ast_hash": "6c10ab541822c3e32dd1c124a79aa62f",
+    "semantic_hash": "6c10ab541822c3e32dd1c124a79aa62f"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/initial_hq.spec.json": {
+    "mtime": 1791439361.579942,
+    "seen": 1792392892.9581592,
+    "ast_hash": "747a467ac8c4fb7de2930e4a42878477",
+    "semantic_hash": "747a467ac8c4fb7de2930e4a42878477"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/logistics_depot.spec.json": {
+    "mtime": 1791439361.5804427,
+    "seen": 1792392892.95816,
+    "ast_hash": "bc02872da51494ef5d4c7cd0dd141402",
+    "semantic_hash": "bc02872da51494ef5d4c7cd0dd141402"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/phone_company_hq.spec.json": {
+    "mtime": 1791439361.5809424,
+    "seen": 1792392892.9581606,
+    "ast_hash": "a64344fbf876e8d1eaa5e79e86e35e3d",
+    "semantic_hash": "a64344fbf876e8d1eaa5e79e86e35e3d"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/postal_depot.spec.json": {
+    "mtime": 1791439361.5809424,
+    "seen": 1792392892.9581616,
+    "ast_hash": "224be4e8486e4fce83422995f053cfb0",
+    "semantic_hash": "224be4e8486e4fce83422995f053cfb0"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/radio_broadcast_center.spec.json": {
+    "mtime": 1791439361.5814424,
+    "seen": 1792392892.9581625,
+    "ast_hash": "e4b00285cd1de450b8d1bc944172419d",
+    "semantic_hash": "e4b00285cd1de450b8d1bc944172419d"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/secure_telefax_facility.spec.json": {
+    "mtime": 1791439361.5819416,
+    "seen": 1792392892.9581633,
+    "ast_hash": "469b32ae2b9ec6970d57f01c4089411a",
+    "semantic_hash": "469b32ae2b9ec6970d57f01c4089411a"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/telegraph_office.spec.json": {
+    "mtime": 1791439361.5824447,
+    "seen": 1792392892.9581642,
+    "ast_hash": "e7e86635ffe82fb49573dff10c1fc597",
+    "semantic_hash": "e7e86635ffe82fb49573dff10c1fc597"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/telephone_exchange.spec.json": {
+    "mtime": 1791439361.5829425,
+    "seen": 1792392892.958165,
+    "ast_hash": "66c5bf9ea5a6df9714585bddc4e3a4fd",
+    "semantic_hash": "66c5bf9ea5a6df9714585bddc4e3a4fd"
+  },
+  "src/main/resources/data/csp/gosstroy_specs/vehicle_depot.spec.json": {
+    "mtime": 1791439361.5829425,
+    "seen": 1792392892.9581656,
+    "ast_hash": "7d8c03d6e583f78f78f2f8e53bb1cacb",
+    "semantic_hash": "7d8c03d6e583f78f78f2f8e53bb1cacb"
+  },
+  "src/main/resources/data/csp/opb82_rules.json": {
+    "mtime": 1791439361.5829425,
+    "seen": 1792392892.9581666,
+    "ast_hash": "3df528e84f51df325e790d7c7d6f6809",
+    "semantic_hash": "3df528e84f51df325e790d7c7d6f6809"
+  },
+  "src/main/resources/fabric.mod.json": {
+    "mtime": 1791439361.583946,
+    "seen": 1792392892.9581673,
+    "ast_hash": "224500beb8e46b73d2ce7dd1413b3879",
+    "semantic_hash": "224500beb8e46b73d2ce7dd1413b3879"
+  },
+  ".devcontainer/POST_CREATE_SETUP.md": {
+    "mtime": 1791439361.441496,
+    "seen": 1792392892.9581683,
+    "ast_hash": "6b5e2366ed0341bcfeabc81f4e5ea145",
+    "semantic_hash": "6b5e2366ed0341bcfeabc81f4e5ea145"
+  },
+  "AECS_TEST_PLAN.md": {
+    "mtime": 1791439361.4457028,
+    "seen": 1792392892.958169,
+    "ast_hash": "e1ee9dea1edc28d7da41026311f576d2",
+    "semantic_hash": "e1ee9dea1edc28d7da41026311f576d2"
+  },
+  "AGENTS.md": {
+    "mtime": 1791702457.4440775,
+    "seen": 1792392892.95817,
+    "ast_hash": "4ebdb9984022ad4d8925d86dabc47041",
+    "semantic_hash": "4ebdb9984022ad4d8925d86dabc47041"
+  },
+  "BUG_REPORT_ENTITY_ISSUES.md": {
+    "mtime": 1791701053.2415857,
+    "seen": 1792392892.9581707,
+    "ast_hash": "e3ebe5e690edc6a4b29096b0bf49c33a",
+    "semantic_hash": "e3ebe5e690edc6a4b29096b0bf49c33a"
+  },
+  "CSP-Modern-v2/SAFETY_GUIDE.md": {
+    "mtime": 1791531140.7859788,
+    "seen": 1792392892.9581716,
+    "ast_hash": "f5cd46ac94d130022e8f8e83530b3abf",
+    "semantic_hash": "f5cd46ac94d130022e8f8e83530b3abf"
+  },
+  "MEMORY.md": {
+    "mtime": 1791444558.744399,
+    "seen": 1792392892.9581723,
+    "ast_hash": "eb3bb0bc0bd970d771fad83866ebfbef",
+    "semantic_hash": "eb3bb0bc0bd970d771fad83866ebfbef"
+  },
+  "PROJECT_NOTES.md": {
+    "mtime": 1791439361.4501085,
+    "seen": 1792392892.9581733,
+    "ast_hash": "a1470fb22208b77058a2af81641975fd",
+    "semantic_hash": "a1470fb22208b77058a2af81641975fd"
+  },
+  "SQF-GDscript-Linter/GDSCRIPT-LINTER/GD-prototype.md": {
+    "mtime": 1791439361.4521122,
+    "seen": 1792392892.958174,
+    "ast_hash": "f7a7a7db238d9c4fce9bb244dd2a9475",
+    "semantic_hash": "f7a7a7db238d9c4fce9bb244dd2a9475"
+  },
+  "SQF-GDscript-Linter/README.md": {
+    "mtime": 1791439361.4521122,
+    "seen": 1792392892.958175,
+    "ast_hash": "0d78234f2a85180a517dd73ecb3a15b8",
+    "semantic_hash": "0d78234f2a85180a517dd73ecb3a15b8"
+  },
+  "SQF-GDscript-Linter/SQF-LINTER/prototype.md": {
+    "mtime": 1791439361.4531112,
+    "seen": 1792392892.9581757,
+    "ast_hash": "c7cb2835021b1686b8d485274ea047b9",
+    "semantic_hash": "c7cb2835021b1686b8d485274ea047b9"
+  },
+  "backup_entity.md": {
+    "mtime": 1791728694.5700717,
+    "seen": 1792392892.9581766,
+    "ast_hash": "77927444a34036ad5e91284838d3e4fa",
+    "semantic_hash": "77927444a34036ad5e91284838d3e4fa"
+  },
+  "bin/main/README_MIGRATION_1201.md": {
+    "mtime": 1791439361.573,
+    "seen": 1792392892.9581773,
+    "ast_hash": "9111cba0f770d898bd3559f20bca4567",
+    "semantic_hash": "9111cba0f770d898bd3559f20bca4567"
+  },
+  "bin/main/javac_check.txt": {
+    "mtime": 1791892836.519,
+    "seen": 1792392892.9581783,
+    "ast_hash": "2478fa77ee87cdac495dbc9797f7bf84",
+    "semantic_hash": "2478fa77ee87cdac495dbc9797f7bf84"
+  },
+  "bin/main/javac_full.txt": {
+    "mtime": 1791892963.085,
+    "seen": 1792392892.958179,
+    "ast_hash": "54dc3641b6c1181f0f2786aea715db9f",
+    "semantic_hash": "54dc3641b6c1181f0f2786aea715db9f"
+  },
+  "fabric_docs_combined.txt": {
+    "mtime": 1791698698.2813842,
+    "seen": 1792392892.95818,
+    "ast_hash": "72a3a3a1d4f230d9d50fd0fd4c4fa4bc",
+    "semantic_hash": "72a3a3a1d4f230d9d50fd0fd4c4fa4bc"
+  },
+  "pi-warden.md": {
+    "mtime": 1791448439.9121163,
+    "seen": 1792392892.9581807,
+    "ast_hash": "237616c63f8ccb18a26156739b34a612",
+    "semantic_hash": "237616c63f8ccb18a26156739b34a612"
+  },
+  "bin/main/assets/csp-modern/icon.png": {
+    "mtime": 1791439361.575,
+    "seen": 1792392892.9581814,
+    "ast_hash": "a75dbb23d32ddae27d446300c2152ff4",
+    "semantic_hash": "a75dbb23d32ddae27d446300c2152ff4"
+  },
+  "bin/main/assets/csp-modern/textures/block/geodetic_marker_block.png": {
+    "mtime": 1791439361.577,
+    "seen": 1792392892.9581823,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/ben/csp/entity/Enterprise.java": {
+    "mtime": 1792393894.4574852,
+    "seen": 1792396147.1207852,
+    "ast_hash": "4da45219d3c991ef1047bf3423f582f6",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/entity/EnterprisePersonnel.java": {
+    "mtime": 1792394127.149711,
+    "seen": 1792396147.1208622,
+    "ast_hash": "4a958940508df0a1dbe275bbf3d1a5d1",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/entity/KommutatorOperatorEntity.java": {
+    "mtime": 1792394635.8964286,
+    "seen": 1792396147.1213083,
+    "ast_hash": "8d94e2245976793cf36e2193487e7d08",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/entity/ai/Dosye.java": {
+    "mtime": 1792395787.4954946,
+    "seen": 1792396147.1219397,
+    "ast_hash": "694061c09060b992018b5ab40dca9cae",
+    "semantic_hash": ""
+  },
+  "src/main/java/com/ben/csp/entity/goals/WorkAtAssignedPostGoal.java": {
+    "mtime": 1792395681.0001795,
+    "seen": 1792396147.122572,
+    "ast_hash": "e99c65ed0d06c498694aa2d710aae127",
+    "semantic_hash": ""
+  },
+  "CSP-Modern\uf022.devcontainer\uf022/._Dockerfile .txt": {
+    "mtime": 1791439361.4477026,
+    "seen": 1792396147.1299968,
+    "ast_hash": "10044e2451c1bc14b4be26702c8812e6",
+    "semantic_hash": ""
+  },
+  "CSP-Modern\uf022.devcontainer\uf022/Dockerfile .txt": {
+    "mtime": 1791439361.448808,
+    "seen": 1792396147.1299987,
+    "ast_hash": "50226ff06cdc06834d265014eb78bd0a",
+    "semantic_hash": ""
+  },
+  "MIGRATION_COMPLETE.md": {
+    "mtime": 1791440866.814792,
+    "seen": 1792396147.1300755,
+    "ast_hash": "5ef4ae5ec8ef37d64f0d9b743dc035e9",
+    "semantic_hash": ""
+  },
+  "PROJECT_STRUCTURE.md": {
+    "mtime": 1791439361.4506118,
+    "seen": 1792396147.1301467,
+    "ast_hash": "59cf7aa97ad3e406baf4b478fa41ba44",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1791439361.4511123,
+    "seen": 1792396147.1301482,
+    "ast_hash": "d3f7c83df98080dc5035bdbc18bbd088",
+    "semantic_hash": ""
+  },
+  "SCRATCHPAD.md": {
+    "mtime": 1792395816.6703444,
+    "seen": 1792396147.1301491,
+    "ast_hash": "b65c9c3b83afe139ac0b87b383f14c45",
+    "semantic_hash": ""
+  },
+  "UPGRADE-INSTRUCTIONS.md": {
+    "mtime": 1791439361.4531112,
+    "seen": 1792396147.1303666,
+    "ast_hash": "43c68d9cc9f5cb82d45539fdc39632af",
+    "semantic_hash": ""
+  },
+  "src/main/java/javac_check.txt": {
+    "mtime": 1791892836.5194645,
+    "seen": 1792396147.1307926,
+    "ast_hash": "2478fa77ee87cdac495dbc9797f7bf84",
+    "semantic_hash": ""
+  },
+  "src/main/java/javac_full.txt": {
+    "mtime": 1791892963.0856526,
+    "seen": 1792396147.1307943,
+    "ast_hash": "54dc3641b6c1181f0f2786aea715db9f",
+    "semantic_hash": ""
+  },
+  "src/main/resources/README_MIGRATION_1201.md": {
+    "mtime": 1791439361.5739381,
+    "seen": 1792396147.1307955,
+    "ast_hash": "9111cba0f770d898bd3559f20bca4567",
+    "semantic_hash": ""
+  },
+  "src/main/resources/assets/csp-modern/icon.png": {
+    "mtime": 1791439361.5754418,
+    "seen": 1792396147.131032,
+    "ast_hash": "a75dbb23d32ddae27d446300c2152ff4",
+    "semantic_hash": ""
+  },
+  "src/main/resources/assets/csp-modern/textures/block/geodetic_marker_block.png": {
+    "mtime": 1791439361.5774424,
+    "seen": 1792396147.1310334,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  }
+}

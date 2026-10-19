@@ -1,0 +1,2034 @@
+{
+  "communities": {
+    "0": [
+      "envtype",
+      "hand",
+      "net_fabricmc_api_environment",
+      "net_minecraft_item_item",
+      "registrykeys",
+      "spawneggitem",
+      "src_main_java_com_ben_csp_block_entity_telefonisttoolitem",
+      "src_main_java_com_ben_csp_block_entity_telefonisttoolitem_java_settings",
+      "src_main_java_com_ben_csp_block_entity_telefonisttoolitem_telefonisttoolitem",
+      "src_main_java_com_ben_csp_block_entity_telefonisttoolitem_telefonisttoolitem_telefonisttoolitem",
+      "src_main_java_com_ben_csp_cspmodserver",
+      "src_main_java_com_ben_csp_cspmodserver_cspmodserver",
+      "src_main_java_com_ben_csp_cspmodserver_cspmodserver_init",
+      "src_main_java_com_ben_csp_directorsplanshetitem",
+      "src_main_java_com_ben_csp_directorsplanshetitem_directorsplanshetitem",
+      "src_main_java_com_ben_csp_directorsplanshetitem_directorsplanshetitem_directorsplanshetitem",
+      "src_main_java_com_ben_csp_item_chiselitem",
+      "src_main_java_com_ben_csp_item_chiselitem_chiselitem",
+      "src_main_java_com_ben_csp_item_chiselitem_chiselitem_chiselitem",
+      "src_main_java_com_ben_csp_item_directorsplanshetitem",
+      "src_main_java_com_ben_csp_item_directorsplanshetitem_directorsplanshetitem",
+      "src_main_java_com_ben_csp_item_directorsplanshetitem_directorsplanshetitem_directorsplanshetitem",
+      "src_main_java_com_ben_csp_item_magnetictapeitem",
+      "src_main_java_com_ben_csp_item_magnetictapeitem_magnetictapeitem",
+      "src_main_java_com_ben_csp_item_magnetictapeitem_magnetictapeitem_magnetictapeitem",
+      "src_main_java_com_ben_csp_item_moditemsspawneggs",
+      "src_main_java_com_ben_csp_item_moditemsspawneggs_spawneggcolorhelper",
+      "src_main_java_com_ben_csp_item_skalalinkertool",
+      "src_main_java_com_ben_csp_item_skalalinkertool_skalalinkertool",
+      "src_main_java_com_ben_csp_item_skalalinkertool_skalalinkertool_skalalinkertool",
+      "src_main_java_com_ben_csp_item_telefonisttoolitem",
+      "src_main_java_com_ben_csp_item_telefonisttoolitem_telefonisttoolitem",
+      "src_main_java_com_ben_csp_item_telefonisttoolitem_telefonisttoolitem_telefonisttoolitem",
+      "src_main_java_com_ben_csp_magnetictapeitem",
+      "src_main_java_com_ben_csp_magnetictapeitem_magnetictapeitem",
+      "src_main_java_com_ben_csp_magnetictapeitem_magnetictapeitem_magnetictapeitem",
+      "src_main_java_com_ben_csp_modmessages",
+      "src_main_java_com_ben_csp_modmessages_modmessages",
+      "src_main_java_com_ben_csp_modmessages_modmessages_getc2spacketid",
+      "src_main_java_com_ben_csp_skalalinkertool",
+      "src_main_java_com_ben_csp_skalalinkertool_skalalinkertool",
+      "src_main_java_com_ben_csp_skalalinkertool_skalalinkertool_skalalinkertool",
+      "src_main_java_com_ben_csp_telefonisttoolitem",
+      "src_main_java_com_ben_csp_telefonisttoolitem_telefonisttoolitem",
+      "src_main_java_com_ben_csp_telefonisttoolitem_telefonisttoolitem_telefonisttoolitem",
+      "world"
+    ],
+    "1": [
+      "collections",
+      "hashmap",
+      "map",
+      "optional",
+      "src_main_java_com_ben_csp_block_entity_bitmaterialregistry",
+      "src_main_java_com_ben_csp_block_entity_bitmaterialregistry_bitmaterialregistry",
+      "src_main_java_com_ben_csp_block_entity_bitmaterialregistry_bitmaterialregistry_getmaterialproperties",
+      "src_main_java_com_ben_csp_block_entity_bitmaterialregistry_bitmaterialregistry_hasmaterial",
+      "src_main_java_com_ben_csp_block_entity_bitmaterialregistry_bitmaterialregistry_registermaterial",
+      "src_main_java_com_ben_csp_block_entity_bitmaterialregistry_materialproperties",
+      "src_main_java_com_ben_csp_block_entity_bitmaterialregistry_materialproperties_materialproperties",
+      "src_main_java_com_ben_csp_infra_infrastructurerequirements",
+      "src_main_java_com_ben_csp_infra_infrastructurerequirements_infrastructurerequirements",
+      "src_main_java_com_ben_csp_infra_infrastructurerequirements_infrastructurerequirements_getinstance",
+      "src_main_java_com_ben_csp_infra_infrastructurerequirements_infrastructurerequirements_getrequiredblueprintsfortier",
+      "src_main_java_com_ben_csp_infra_infrastructurerequirements_infrastructurerequirements_infrastructurerequirements",
+      "src_main_java_com_ben_csp_infra_infrastructurerequirements_infrastructurerequirements_loadrequirements",
+      "src_main_java_com_ben_csp_radiology_isotope",
+      "src_main_java_com_ben_csp_radiology_isotope_decayproduct",
+      "src_main_java_com_ben_csp_radiology_isotope_emission",
+      "src_main_java_com_ben_csp_radiology_isotope_isotope",
+      "src_main_java_com_ben_csp_radiology_isotoperegistry",
+      "src_main_java_com_ben_csp_radiology_isotoperegistry_isotoperegistry",
+      "src_main_java_com_ben_csp_radiology_isotoperegistry_isotoperegistry_getinstance",
+      "src_main_java_com_ben_csp_radiology_isotoperegistry_isotoperegistry_getisotope",
+      "src_main_java_com_ben_csp_radiology_isotoperegistry_isotoperegistry_isotoperegistry",
+      "src_main_java_com_ben_csp_radiology_isotoperegistry_isotoperegistry_loadisotopes",
+      "src_main_java_com_ben_csp_radiology_shieldingmaterialregistry",
+      "src_main_java_com_ben_csp_radiology_sourceterm",
+      "src_main_java_com_ben_csp_radiology_sourceterm_sourceterm",
+      "src_main_java_com_ben_csp_radiology_sourcetermregistry",
+      "src_main_java_com_ben_csp_radiology_sourcetermregistry_sourcetermregistry",
+      "src_main_java_com_ben_csp_radiology_sourcetermregistry_sourcetermregistry_getinstance",
+      "src_main_java_com_ben_csp_radiology_sourcetermregistry_sourcetermregistry_getsourceterm",
+      "src_main_java_com_ben_csp_radiology_sourcetermregistry_sourcetermregistry_loadsourceterms",
+      "src_main_java_com_ben_csp_radiology_sourcetermregistry_sourcetermregistry_sourcetermregistry",
+      "src_main_java_com_ben_csp_radiology_surfacedepositionregistry"
+    ],
+    "2": [
+      "net_minecraft_entity_entitytype",
+      "net_minecraft_entity_livingentity",
+      "net_minecraft_world_world",
+      "src_main_java_com_ben_csp_entity_cspentity",
+      "src_main_java_com_ben_csp_entity_cspentity_cspentity",
+      "src_main_java_com_ben_csp_entity_cspentity_cspentity_cspentity",
+      "src_main_java_com_ben_csp_entity_enterprisedirectorentity",
+      "src_main_java_com_ben_csp_entity_enterprisedirectorentity_enterprisedirectorentity",
+      "src_main_java_com_ben_csp_entity_enterprisedirectorentity_enterprisedirectorentity_enterprisedirectorentity",
+      "src_main_java_com_ben_csp_entity_entitydirectorentity",
+      "src_main_java_com_ben_csp_entity_entitydirectorentity_entitydirectorentity",
+      "src_main_java_com_ben_csp_entity_entitydirectorentity_entitydirectorentity_entitydirectorentity",
+      "src_main_java_com_ben_csp_entity_facilitydirectorentity",
+      "src_main_java_com_ben_csp_entity_facilitydirectorentity_facilitydirectorentity",
+      "src_main_java_com_ben_csp_entity_facilitydirectorentity_facilitydirectorentity_facilitydirectorentity",
+      "src_main_java_com_ben_csp_entity_geodezistentity_geodezistentity_geodezistentity",
+      "src_main_java_com_ben_csp_entity_glavnyinzhenerentity_glavnyinzhenerentity_glavnyinzhenerentity",
+      "src_main_java_com_ben_csp_entity_masterentity",
+      "src_main_java_com_ben_csp_entity_masterentity_masterentity",
+      "src_main_java_com_ben_csp_entity_masterentity_masterentity_masterentity",
+      "src_main_java_com_ben_csp_entity_nachalniksnabzheniyaentity",
+      "src_main_java_com_ben_csp_entity_nachalniksnabzheniyaentity_nachalniksnabzheniyaentity",
+      "src_main_java_com_ben_csp_entity_nachalniksnabzheniyaentity_nachalniksnabzheniyaentity_nachalniksnabzheniyaentity",
+      "src_main_java_com_ben_csp_entity_prorabentity",
+      "src_main_java_com_ben_csp_entity_prorabentity_prorabentity",
+      "src_main_java_com_ben_csp_entity_prorabentity_prorabentity_prorabentity",
+      "src_main_java_com_ben_csp_entity_sekretarentity",
+      "src_main_java_com_ben_csp_entity_stroitelentity",
+      "src_main_java_com_ben_csp_entity_stroitelentity_stroitelentity",
+      "src_main_java_com_ben_csp_entity_stroitelentity_stroitelentity_stroitelentity",
+      "src_main_java_com_ben_csp_entity_tolkachentity",
+      "src_main_java_com_ben_csp_entity_tolkachentity_tolkachentity",
+      "src_main_java_com_ben_csp_entity_tolkachentity_tolkachentity_tolkachentity",
+      "src_main_java_com_ben_csp_entity_uchetchikentity",
+      "src_main_java_com_ben_csp_entity_uchetchikentity_uchetchikentity",
+      "src_main_java_com_ben_csp_entity_uchetchikentity_uchetchikentity_uchetchikentity",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_kommutatoroperatorentity"
+    ],
+    "3": [
+      "net_minecraft_util_math_vec3d",
+      "src_main_java_com_ben_csp_radiology_contaminationpacket",
+      "src_main_java_com_ben_csp_radiology_contaminationpacket_contaminationpacket",
+      "src_main_java_com_ben_csp_radiology_contaminationpacket_contaminationpacket_contaminationpacket",
+      "src_main_java_com_ben_csp_radiology_contaminationsource",
+      "src_main_java_com_ben_csp_radiology_contaminationsource_contaminationsource",
+      "src_main_java_com_ben_csp_radiology_hotparticle",
+      "src_main_java_com_ben_csp_radiology_hotparticle_hotparticle",
+      "src_main_java_com_ben_csp_radiology_hotparticle_hotparticle_hotparticle",
+      "src_main_java_com_ben_csp_radiology_radiationparticle",
+      "src_main_java_com_ben_csp_radiology_radiationparticle_radiationparticle",
+      "src_main_java_com_ben_csp_radiology_radiationparticle_radiationparticle_radiationparticle",
+      "src_main_java_com_ben_csp_radiology_radiationtype",
+      "src_main_java_com_ben_csp_radiology_radiationtype_radiationtype",
+      "src_main_java_com_ben_csp_radiology_radiationtype_radiationtype_alpha",
+      "src_main_java_com_ben_csp_radiology_radiationtype_radiationtype_beta",
+      "src_main_java_com_ben_csp_radiology_radiationtype_radiationtype_gamma",
+      "src_main_java_com_ben_csp_radiology_radiationtype_radiationtype_neutron",
+      "src_main_java_com_ben_csp_radiology_radiationtype_radiationtype_radiationtype",
+      "src_main_java_com_ben_csp_world_atmosphericstability",
+      "src_main_java_com_ben_csp_world_atmosphericstability_atmosphericstability",
+      "src_main_java_com_ben_csp_world_atmosphericstability_atmosphericstability_neutral",
+      "src_main_java_com_ben_csp_world_atmosphericstability_atmosphericstability_stable",
+      "src_main_java_com_ben_csp_world_atmosphericstability_atmosphericstability_unstable",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_applypattern",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_getatmosphericstability",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_getinstance",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_getprecipitationintensity",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_getwindvector",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_loadweathercycle",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_onservertick",
+      "src_main_java_com_ben_csp_world_weathermanager_weathermanager_weathermanager",
+      "src_main_java_com_ben_csp_world_weatherpattern",
+      "src_main_java_com_ben_csp_world_weatherpattern_weatherpattern"
+    ],
+    "4": [
+      "entityrendererfactory",
+      "modmodellayers",
+      "net_fabricmc_api_modinitializer",
+      "net_minecraft_client_render_entity_mobentityrenderer",
+      "net_minecraft_util_identifier",
+      "src_client_java_com_ben_csp_client_render_entity_bargeentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_brigadierentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_enterprisedirectorentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_enterprisedirectorentityrenderer_enterprisedirectorentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_enterprisedirectorentityrenderer_enterprisedirectorentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_enterprisedirectorentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_facilitydirectorentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_facilitydirectorentityrenderer_facilitydirectorentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_facilitydirectorentityrenderer_facilitydirectorentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_facilitydirectorentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_geodezistentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_glavnyinzhenerentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_masterentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_nachalniksnabzheniyaentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_nachalniksnabzheniyaentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_nachalniksnabzheniyaentityrenderer_nachalniksnabzheniyaentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_prorabentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_sekretarentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_stroitelentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_stroitelentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_stroitelentityrenderer_stroitelentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_stroitelentityrenderer_stroitelentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_uchetchikentityrenderer",
+      "src_main_java_com_ben_csp_cspmod",
+      "src_main_java_com_ben_csp_cspmod_cspmod",
+      "src_main_java_com_ben_csp_item_moditemsspawneggs_moditemsspawneggs",
+      "src_main_java_com_ben_csp_item_moditemsspawneggs_moditemsspawneggs_gettolkachspawneggid",
+      "src_main_java_com_ben_csp_item_moditemsspawneggs_moditemsspawneggs_isspawneggregistrationavailable"
+    ],
+    "5": [
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_addstress",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_dosye",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_fromnbt",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_getbirthyear",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_getcontent",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_gethometown",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_getrequiredsecurityclearance",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_getstresslevel",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_requirespartymembership",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_setcontent",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_setpartymember",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_setsecurityclearance",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_setstresslevel",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye_tonbt",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_partystatus",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_partystatus_candidate",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_partystatus_elite",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_partystatus_member",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_partystatus_non_member",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_personalitytrait",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_personalitytrait_anxious",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_personalitytrait_diligent",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_personalitytrait_questioning",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_personalitytrait_rebellious",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_personalitytrait_reliable",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_personalitytrait_stoic",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye_workrecord",
+      "src_main_java_com_ben_csp_entity_ai_dynamicpersonalityengine_dynamicpersonalityengine",
+      "src_main_java_com_ben_csp_entity_ai_dynamicpersonalityengine_dynamicpersonalityengine_dynamicpersonalityengine",
+      "src_main_java_com_ben_csp_entity_ai_dynamicpersonalityengine_dynamicpersonalityengine_generatedosye",
+      "src_main_java_com_ben_csp_entity_ai_dynamicpersonalityengine_dynamicpersonalityengine_getinstance"
+    ],
+    "6": [
+      "src_main_java_com_ben_csp_block_entity_channeltype",
+      "src_main_java_com_ben_csp_block_entity_channeltype_channeltype",
+      "src_main_java_com_ben_csp_block_entity_channeltype_channeltype_control_rod",
+      "src_main_java_com_ben_csp_block_entity_channeltype_channeltype_empty",
+      "src_main_java_com_ben_csp_block_entity_channeltype_channeltype_fuel",
+      "src_main_java_com_ben_csp_block_entity_channeltype_channeltype_graphite",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_fromnbt",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getcontrolrodinsertion",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getfuelburnup",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getgraphiteintegrity",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getiodine135",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getneutronflux",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getsteamquality",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_gettemperature",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_gettype",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getwaterflow",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_getxenon135",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_reactorchannel",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_readnbt",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setcontrolrodinsertion",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setfuelburnup",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setgraphiteintegrity",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setiodine135",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setneutronflux",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setsteamquality",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_settemperature",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setwaterflow",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_setxenon135",
+      "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel_writenbt"
+    ],
+    "7": [
+      "blockstate",
+      "net_minecraft_block_entity_blockentity",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen_skalarequestdevicescreen",
+      "src_main_java_com_ben_csp_block_entity_controlrodblockentity",
+      "src_main_java_com_ben_csp_block_entity_controlrodblockentity_controlrodblockentity",
+      "src_main_java_com_ben_csp_block_entity_controlrodblockentity_controlrodblockentity_controlrodblockentity",
+      "src_main_java_com_ben_csp_rbmk_fuelchannelblockentity",
+      "src_main_java_com_ben_csp_rbmk_fuelchannelblockentity_fuelchannelblockentity",
+      "src_main_java_com_ben_csp_rbmk_fuelchannelblockentity_fuelchannelblockentity_fuelchannelblockentity",
+      "src_main_java_com_ben_csp_rbmk_simulationconductorblockentity",
+      "src_main_java_com_ben_csp_rbmk_simulationconductorblockentity_simulationconductorblockentity",
+      "src_main_java_com_ben_csp_rbmk_simulationconductorblockentity_simulationconductorblockentity_simulationconductorblockentity",
+      "src_main_java_com_ben_csp_skala_skalacoreblockentity",
+      "src_main_java_com_ben_csp_skala_skalacoreblockentity_skalacoreblockentity",
+      "src_main_java_com_ben_csp_skala_skalacoreblockentity_skalacoreblockentity_skalacoreblockentity",
+      "src_main_java_com_ben_csp_skala_skalaiocabinetblockentity",
+      "src_main_java_com_ben_csp_skala_skalaiocabinetblockentity_skalaiocabinetblockentity",
+      "src_main_java_com_ben_csp_skala_skalaiocabinetblockentity_skalaiocabinetblockentity_skalaiocabinetblockentity",
+      "src_main_java_com_ben_csp_skala_skalareactorinterfaceblockentity",
+      "src_main_java_com_ben_csp_skala_skalareactorinterfaceblockentity_skalareactorinterfaceblockentity",
+      "src_main_java_com_ben_csp_skala_skalareactorinterfaceblockentity_skalareactorinterfaceblockentity_skalareactorinterfaceblockentity",
+      "src_main_java_com_ben_csp_skala_skalarequestdeviceblockentity",
+      "src_main_java_com_ben_csp_skala_skalarequestdeviceblockentity_skalarequestdeviceblockentity",
+      "src_main_java_com_ben_csp_skala_skalarequestdeviceblockentity_skalarequestdeviceblockentity_skalarequestdeviceblockentity",
+      "src_main_java_com_ben_csp_skala_skalatapedriveblockentity",
+      "src_main_java_com_ben_csp_skala_skalatapedriveblockentity_skalatapedriveblockentity",
+      "src_main_java_com_ben_csp_skala_skalatapedriveblockentity_skalatapedriveblockentity_skalatapedriveblockentity",
+      "src_main_java_com_ben_csp_skala_skalav31mlinkblockentity",
+      "src_main_java_com_ben_csp_skala_skalav31mlinkblockentity_skalav31mlinkblockentity",
+      "src_main_java_com_ben_csp_skala_skalav31mlinkblockentity_skalav31mlinkblockentity_skalav31mlinkblockentity"
+    ],
+    "8": [
+      "net_minecraft_block_block",
+      "src_main_java_com_ben_csp_block_archivefilingcabinetblock",
+      "src_main_java_com_ben_csp_block_archivefilingcabinetblock_archivefilingcabinetblock",
+      "src_main_java_com_ben_csp_block_archivefilingcabinetblock_archivefilingcabinetblock_archivefilingcabinetblock",
+      "src_main_java_com_ben_csp_block_mtkdisplayblock",
+      "src_main_java_com_ben_csp_block_mtkdisplayblock_mtkdisplayblock",
+      "src_main_java_com_ben_csp_block_mtkdisplayblock_mtkdisplayblock_mtkdisplayblock",
+      "src_main_java_com_ben_csp_block_planshetblock",
+      "src_main_java_com_ben_csp_block_planshetblock_planshetblock",
+      "src_main_java_com_ben_csp_block_planshetblock_planshetblock_planshetblock",
+      "src_main_java_com_ben_csp_block_stockpileblock",
+      "src_main_java_com_ben_csp_block_stockpileblock_stockpileblock",
+      "src_main_java_com_ben_csp_block_stockpileblock_stockpileblock_stockpileblock",
+      "src_main_java_com_ben_csp_block_teletypeprinterblock",
+      "src_main_java_com_ben_csp_block_teletypeprinterblock_teletypeprinterblock",
+      "src_main_java_com_ben_csp_block_teletypeprinterblock_teletypeprinterblock_teletypeprinterblock",
+      "src_main_java_com_ben_csp_block_vertushkablock",
+      "src_main_java_com_ben_csp_block_vertushkablock_vertushkablock",
+      "src_main_java_com_ben_csp_block_vertushkablock_vertushkablock_vertushkablock",
+      "src_main_java_com_ben_csp_rbmk_simulationconductorblock",
+      "src_main_java_com_ben_csp_rbmk_simulationconductorblock_java_settings",
+      "src_main_java_com_ben_csp_rbmk_simulationconductorblock_simulationconductorblock",
+      "src_main_java_com_ben_csp_rbmk_simulationconductorblock_simulationconductorblock_simulationconductorblock",
+      "src_main_java_com_ben_csp_skala_skalaiocabinetblock",
+      "src_main_java_com_ben_csp_skala_skalaiocabinetblock_java_settings",
+      "src_main_java_com_ben_csp_skala_skalaiocabinetblock_skalaiocabinetblock",
+      "src_main_java_com_ben_csp_skala_skalaiocabinetblock_skalaiocabinetblock_skalaiocabinetblock"
+    ],
+    "9": [
+      "arraylist",
+      "collectors",
+      "comparator",
+      "enumset",
+      "heightmap",
+      "list",
+      "net_minecraft_server_minecraftserver",
+      "net_minecraft_server_world_serverworld",
+      "net_minecraft_world_persistentstate",
+      "persistentstatemanager",
+      "random",
+      "src_main_java_com_ben_csp_entity_ai_dosye_dosye",
+      "src_main_java_com_ben_csp_entity_ai_dynamicpersonalityengine",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_get",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_personnelrostermanager_get",
+      "src_main_java_com_ben_csp_qc_environmentalstressmanager",
+      "src_main_java_com_ben_csp_qc_environmentalstressmanager_environmentalstressmanager",
+      "src_main_java_com_ben_csp_qc_environmentalstressmanager_environmentalstressmanager_environmentalstressmanager",
+      "src_main_java_com_ben_csp_qc_environmentalstressmanager_environmentalstressmanager_getenvironmentalstress",
+      "src_main_java_com_ben_csp_qc_environmentalstressmanager_environmentalstressmanager_getinstance",
+      "src_main_java_com_ben_csp_radiology_radiologicaleffectsregistry",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_get",
+      "src_main_java_com_ben_csp_world_weathermanager"
+    ],
+    "10": [
+      "concurrenthashmap",
+      "nbtdouble",
+      "nbtlist",
+      "net_minecraft_nbt_nbtcompound",
+      "src_main_java_com_ben_csp_client_render_entity_bitworkpackage",
+      "src_main_java_com_ben_csp_client_render_entity_bitworkpackage_bitworkpackage",
+      "src_main_java_com_ben_csp_client_render_entity_bitworkpackage_bitworkpackage_fromnbt",
+      "src_main_java_com_ben_csp_client_render_entity_bitworkpackage_bitworkpackage_tostring",
+      "src_main_java_com_ben_csp_client_render_entity_bitworkpackage_java_override",
+      "src_main_java_com_ben_csp_entity_ai_meetingrequest",
+      "src_main_java_com_ben_csp_entity_ai_meetingrequest_meetingrequest",
+      "src_main_java_com_ben_csp_entity_ai_meetingrequest_meetingrequest_fromnbt",
+      "src_main_java_com_ben_csp_entity_ai_meetingrequest_meetingrequest_tonbt",
+      "src_main_java_com_ben_csp_logistics_defect",
+      "src_main_java_com_ben_csp_logistics_materialbatch",
+      "src_main_java_com_ben_csp_personnel_personnelrecord",
+      "src_main_java_com_ben_csp_radiology_surfacecontaminationlayer",
+      "src_main_java_com_ben_csp_radiology_surfacecontaminationlayer_surfacecontaminationlayer",
+      "src_main_java_com_ben_csp_radiology_surfacecontaminationlayer_surfacecontaminationlayer_adddeposition",
+      "src_main_java_com_ben_csp_radiology_surfacecontaminationlayer_surfacecontaminationlayer_gettotalactivity",
+      "src_main_java_com_ben_csp_radiology_surfacecontaminationlayer_surfacecontaminationlayer_tick",
+      "src_main_java_com_ben_csp_radiology_surfacecontaminationlayer_surfacecontaminationlayer_tonbt",
+      "uuid",
+      "vec3d"
+    ],
+    "11": [
+      "blockentityrendererfactory",
+      "net_minecraft_client_render_block_entity_blockentityrenderer",
+      "net_minecraft_client_render_vertexconsumerprovider",
+      "net_minecraft_client_util_math_matrixstack",
+      "src_main_java_com_ben_csp_block_entity_mtkdisplayblockentity_java_blockentitytype",
+      "src_main_java_com_ben_csp_block_entity_mtkdisplayblockentity_mtkdisplayblockentity",
+      "src_main_java_com_ben_csp_block_entity_mtkdisplayblockentity_mtkdisplayblockentity_mtkdisplayblockentity",
+      "src_main_java_com_ben_csp_block_entity_vertushkablockentity_java_blockentitytype",
+      "src_main_java_com_ben_csp_block_entity_vertushkablockentity_vertushkablockentity",
+      "src_main_java_com_ben_csp_block_entity_vertushkablockentity_vertushkablockentity_vertushkablockentity",
+      "src_main_java_com_ben_csp_client_render_block_mtkdisplayblockentityrenderer",
+      "src_main_java_com_ben_csp_client_render_block_mtkdisplayblockentityrenderer_java_context",
+      "src_main_java_com_ben_csp_client_render_block_mtkdisplayblockentityrenderer_java_override",
+      "src_main_java_com_ben_csp_client_render_block_mtkdisplayblockentityrenderer_mtkdisplayblockentityrenderer",
+      "src_main_java_com_ben_csp_client_render_block_mtkdisplayblockentityrenderer_mtkdisplayblockentityrenderer_mtkdisplayblockentityrenderer",
+      "src_main_java_com_ben_csp_client_render_block_mtkdisplayblockentityrenderer_mtkdisplayblockentityrenderer_render",
+      "src_main_java_com_ben_csp_client_render_block_vertushkablockentityrenderer",
+      "src_main_java_com_ben_csp_client_render_block_vertushkablockentityrenderer_java_context",
+      "src_main_java_com_ben_csp_client_render_block_vertushkablockentityrenderer_java_override",
+      "src_main_java_com_ben_csp_client_render_block_vertushkablockentityrenderer_vertushkablockentityrenderer",
+      "src_main_java_com_ben_csp_client_render_block_vertushkablockentityrenderer_vertushkablockentityrenderer_render",
+      "src_main_java_com_ben_csp_client_render_block_vertushkablockentityrenderer_vertushkablockentityrenderer_vertushkablockentityrenderer"
+    ],
+    "12": [
+      "functionalinterface",
+      "net_minecraft_util_math_blockpos",
+      "src_main_java_com_ben_csp_entity_ai_poidefinition",
+      "src_main_java_com_ben_csp_entity_ai_poidefinition_poidefinition",
+      "src_main_java_com_ben_csp_logistics_dispatchorder",
+      "src_main_java_com_ben_csp_logistics_dispatchorder_dispatchorder",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager_findunoccupiedsiding",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager_getinstance",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager_occupysiding",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager_railtrafficmanager",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager_registersiding",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager_releasesiding",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager_railtrafficmanager_unregistersiding",
+      "src_main_java_com_ben_csp_skala_sendskalarequestc2spacket",
+      "src_main_java_com_ben_csp_skala_sendskalarequestc2spacket_sendskalarequestc2spacket",
+      "src_main_java_com_ben_csp_skala_skalaaction",
+      "src_main_java_com_ben_csp_skala_skalaaction_skalaaction",
+      "src_main_java_com_ben_csp_skala_skalaaction_skalaaction_execute",
+      "src_main_java_com_ben_csp_skala_updateskalareferencec2spacket",
+      "src_main_java_com_ben_csp_skala_updateskalareferencec2spacket_updateskalareferencec2spacket"
+    ],
+    "13": [
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_java_override",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_processorstate",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_processorstate_active",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_processorstate_halted",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_processorstate_standby",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_fromnbt",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_getsystemstate",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_rundiisscan",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_rundregscan",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_skalaprocesscomputer",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_startbootsequence",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_tick",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_writenbt",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_systemstate",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_systemstate_booting",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_systemstate_halted",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_systemstate_loading_program",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_systemstate_offline",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_systemstate_running",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_v3mprocessor"
+    ],
+    "14": [
+      "net_minecraft_client_gui_screen_screen",
+      "net_minecraft_server_network_serverplayerentity",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_java_override",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_addavailableequipment",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_getcurrentrequestcode",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_getrequestblockposition",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_getrequestblockstate",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_handlereferenceupdate",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_hasequipment",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_init",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_initregistrationlogging",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_isblockidentityverified",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_isverifiedasskaladevice",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_onplayerconnect",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_requestequipment",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_setverifiedasskala",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_skalarequestdevicescreen",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_verifyblockidentity"
+    ],
+    "15": [
+      "fabricblockentitytypebuilder",
+      "net_minecraft_block_blockstate",
+      "net_minecraft_registry_registry",
+      "registries",
+      "registrykey",
+      "src_main_java_com_ben_csp_block_entity_chiseledblockentity",
+      "src_main_java_com_ben_csp_block_entity_chiseledblockentity_chiseledblockentity",
+      "src_main_java_com_ben_csp_block_entity_chiseledblockentity_chiseledblockentity_chiseledblockentity",
+      "src_main_java_com_ben_csp_block_entity_chiseledblockentity_java_blockentitytype",
+      "src_main_java_com_ben_csp_block_entity_graphiteblockentity",
+      "src_main_java_com_ben_csp_block_entity_icmsblockentity",
+      "src_main_java_com_ben_csp_block_entity_icmspanelblockentity",
+      "src_main_java_com_ben_csp_block_entity_industrialcontrolblockentity",
+      "src_main_java_com_ben_csp_block_entity_mtkdisplayblockentity",
+      "src_main_java_com_ben_csp_block_entity_vertushkablockentity",
+      "src_main_java_com_ben_csp_block_modblocks",
+      "src_main_java_com_ben_csp_block_modblocks_java_block",
+      "src_main_java_com_ben_csp_block_modblocks_modblocks"
+    ],
+    "16": [
+      "net_minecraft_entity_player_playerentity",
+      "net_minecraft_util_math_direction",
+      "net_minecraft_world_worldaccess",
+      "properties",
+      "src_main_java_com_ben_csp_block_planshetpartblock",
+      "src_main_java_com_ben_csp_block_planshetpartblock_java_builder",
+      "src_main_java_com_ben_csp_block_planshetpartblock_java_override",
+      "src_main_java_com_ben_csp_block_planshetpartblock_planshetpartblock",
+      "src_main_java_com_ben_csp_block_planshetpartblock_planshetpartblock_appendproperties",
+      "src_main_java_com_ben_csp_block_planshetpartblock_planshetpartblock_getmainblockpos",
+      "src_main_java_com_ben_csp_block_planshetpartblock_planshetpartblock_getstateforneighborupdate",
+      "src_main_java_com_ben_csp_block_planshetpartblock_planshetpartblock_onbreak",
+      "src_main_java_com_ben_csp_block_planshetpartblock_planshetpartblock_planshetpartblock",
+      "src_main_java_com_ben_csp_util_blockposutil",
+      "src_main_java_com_ben_csp_util_blockposutil_blockposutil",
+      "src_main_java_com_ben_csp_util_blockposutil_blockposutil_decodetomainpos",
+      "src_main_java_com_ben_csp_util_blockposutil_blockposutil_encoderelativepos",
+      "statemanager"
+    ],
+    "17": [
+      "archivefilingcabinetblockentitymodel",
+      "block",
+      "blockentityrendererfactories",
+      "entitymodellayerregistry",
+      "entityrendererregistry",
+      "graphiteblockentityrenderer",
+      "net_minecraft_client_model_model",
+      "net_minecraft_client_render_vertexconsumer",
+      "renderlayer",
+      "skalatapedriveblockentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_block_vertushkablockmodel",
+      "src_client_java_com_ben_csp_client_render_model_block_vertushkablockmodel_java_override",
+      "src_client_java_com_ben_csp_client_render_model_block_vertushkablockmodel_vertushkablockmodel",
+      "src_client_java_com_ben_csp_client_render_model_block_vertushkablockmodel_vertushkablockmodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_block_vertushkablockmodel_vertushkablockmodel_render",
+      "src_client_java_com_ben_csp_client_render_model_block_vertushkablockmodel_vertushkablockmodel_vertushkablockmodel",
+      "src_client_java_com_ben_csp_cspmodclient"
+    ],
+    "18": [
+      "identifier",
+      "spawngroup",
+      "src_main_java_com_ben_csp_block_entity_bitmaterial",
+      "src_main_java_com_ben_csp_block_entity_bitmaterial_bitmaterial",
+      "src_main_java_com_ben_csp_block_entity_bitmaterial_bitmaterial_register",
+      "src_main_java_com_ben_csp_block_entity_graphiteblock",
+      "src_main_java_com_ben_csp_block_entity_graphiteblock_graphiteblock",
+      "src_main_java_com_ben_csp_block_entity_graphiteblock_graphiteblock_register",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock",
+      "src_main_java_com_ben_csp_block_icmsblock",
+      "src_main_java_com_ben_csp_block_icmsblock_icmsblock",
+      "src_main_java_com_ben_csp_block_icmsblock_icmsblock_register",
+      "src_main_java_com_ben_csp_block_icmspanelblock",
+      "src_main_java_com_ben_csp_block_icmspanelblock_icmspanelblock",
+      "src_main_java_com_ben_csp_block_icmspanelblock_icmspanelblock_register",
+      "src_main_java_com_ben_csp_entity_modentities",
+      "src_main_java_com_ben_csp_item_moditems"
+    ],
+    "19": [
+      "net_fabricmc_fabric_api_object_builder_v1_block_fabricblocksettings",
+      "src_main_java_com_ben_csp_block_chiseledblock",
+      "src_main_java_com_ben_csp_block_chiseledblock_chiseledblock",
+      "src_main_java_com_ben_csp_block_chiseledblock_chiseledblock_chiseledblock",
+      "src_main_java_com_ben_csp_block_chiseledblock_chiseledblock_getrendertype",
+      "src_main_java_com_ben_csp_block_fuelchannelblock",
+      "src_main_java_com_ben_csp_block_fuelchannelblock_fuelchannelblock",
+      "src_main_java_com_ben_csp_block_fuelchannelblock_fuelchannelblock_fuelchannelblock",
+      "src_main_java_com_ben_csp_block_geodeticmarkerblock_geodeticmarkerblock_geodeticmarkerblock",
+      "src_main_java_com_ben_csp_block_industrialcontrolblock",
+      "src_main_java_com_ben_csp_block_industrialcontrolblock_industrialcontrolblock",
+      "src_main_java_com_ben_csp_block_industrialcontrolblock_industrialcontrolblock_industrialcontrolblock",
+      "src_main_java_com_ben_csp_util_blocksettings",
+      "src_main_java_com_ben_csp_util_blocksettings_blocksettings",
+      "src_main_java_com_ben_csp_util_blocksettings_blocksettings_create",
+      "src_main_java_com_ben_csp_util_blocksettings_blocksettings_createnonsolid",
+      "src_main_java_com_ben_csp_util_blocksettings_blocksettings_createsolid"
+    ],
+    "20": [
+      "src_main_java_com_ben_csp_agent_dosye",
+      "src_main_java_com_ben_csp_agent_dosye_dosye",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_addattachment",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_archive",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_dosye",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_fromnbt",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_getattachment",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_getdosyeid",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_getnbtdata",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_getrelateddosyescount",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_gettitle",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_hasattachment",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_isarchived",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_linktodosye",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_tonbt",
+      "src_main_java_com_ben_csp_agent_dosye_dosye_updatenbtdata",
+      "util"
+    ],
+    "21": [
+      "src_main_java_com_ben_csp_logistics_defect_defect",
+      "src_main_java_com_ben_csp_logistics_defect_defect_fromnbt",
+      "src_main_java_com_ben_csp_logistics_defect_defect_tonbt",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_fromnbt",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_generatedefects",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_getdefects",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_getstatus",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_markdefectasfound",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_materialbatch",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_tonbt",
+      "src_main_java_com_ben_csp_logistics_materialbatch_materialbatch_wasdefectfound",
+      "src_main_java_com_ben_csp_logistics_materialbatch_qualitystatus",
+      "src_main_java_com_ben_csp_logistics_materialbatch_qualitystatus_defective",
+      "src_main_java_com_ben_csp_logistics_materialbatch_qualitystatus_passed",
+      "src_main_java_com_ben_csp_logistics_materialbatch_qualitystatus_pending",
+      "src_main_java_com_ben_csp_logistics_materialbatch_qualitystatus_quarantined"
+    ],
+    "22": [
+      "gamerenderer",
+      "net_minecraft_network_packetbytebuf",
+      "rendersystem",
+      "sendskalarequestc2spacket",
+      "src_client_java_com_ben_csp_skala_sendskalarequestc2spacket",
+      "src_client_java_com_ben_csp_skala_sendskalarequestc2spacket_sendskalarequestc2spacket",
+      "src_client_java_com_ben_csp_skala_sendskalarequestc2spacket_sendskalarequestc2spacket_sendskalarequestc2spacket",
+      "src_client_java_com_ben_csp_skala_sendskalarequestc2spacket_sendskalarequestc2spacket_tobuf",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen",
+      "src_client_java_com_ben_csp_skala_updateskalareferencec2spacket",
+      "src_client_java_com_ben_csp_skala_updateskalareferencec2spacket_updateskalareferencec2spacket",
+      "src_client_java_com_ben_csp_skala_updateskalareferencec2spacket_updateskalareferencec2spacket_tobuf",
+      "src_client_java_com_ben_csp_skala_updateskalareferencec2spacket_updateskalareferencec2spacket_updateskalareferencec2spacket",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_handleequipmentrequest",
+      "text",
+      "updateskalareferencec2spacket"
+    ],
+    "23": [
+      "gson",
+      "jsonobject",
+      "jsonparser",
+      "src_main_java_com_ben_csp_process_industrialprocess",
+      "src_main_java_com_ben_csp_process_industrialprocess_action",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_advancestate",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_fromjson",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_fromjson_object_com_google_gson_reflect_typetoken_map_string_state_l55",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_fromnbt",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_getcurrentstate",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_getcurrentstateid",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_getprocessid",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_industrialprocess",
+      "src_main_java_com_ben_csp_process_industrialprocess_industrialprocess_writetonbt",
+      "src_main_java_com_ben_csp_process_industrialprocess_state"
+    ],
+    "24": [
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_fromnbt",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_getassignedenterprise",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_getname",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_getrole",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_getuuid",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_personnelrecord",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_setassignedenterprise",
+      "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord_tonbt",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_java_override",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_personnelrostermanager",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_personnelrostermanager_addpersonnel",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_personnelrostermanager_fromnbt",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_personnelrostermanager_getpersonnel",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_personnelrostermanager_personnelrostermanager",
+      "src_main_java_com_ben_csp_personnel_personnelrostermanager_personnelrostermanager_writenbt"
+    ],
+    "25": [
+      "astparser",
+      "astparser_astparser",
+      "astparser_astparser_main",
+      "compilationunit",
+      "file",
+      "javaparserjsonserializer",
+      "json",
+      "jsongenerator",
+      "paths",
+      "src_aecs_java_com_ben_csp_aecs_astparser",
+      "src_aecs_java_com_ben_csp_aecs_astparser_astparser",
+      "src_aecs_java_com_ben_csp_aecs_astparser_astparser_main",
+      "staticjavaparser",
+      "stringwriter",
+      "yamlprinter"
+    ],
+    "26": [
+      "deprecated",
+      "src_main_java_com_ben_csp_block_entity_modblockentities",
+      "src_main_java_com_ben_csp_block_entity_modblockentities_modblockentities",
+      "src_main_java_com_ben_csp_block_entity_modblockentities_modblockentities_registerall",
+      "src_main_java_com_ben_csp_block_modblocks_modblocks_register",
+      "src_main_java_com_ben_csp_cspmod_cspmod_oninitialize",
+      "src_main_java_com_ben_csp_cspmod_java_override",
+      "src_main_java_com_ben_csp_entity_modentities_modentities",
+      "src_main_java_com_ben_csp_entity_modentities_modentities_getmodid",
+      "src_main_java_com_ben_csp_entity_modentities_modentities_getplaceholder",
+      "src_main_java_com_ben_csp_entity_modentities_modentities_init",
+      "src_main_java_com_ben_csp_item_moditems_moditems",
+      "src_main_java_com_ben_csp_item_moditems_moditems_registermoditems",
+      "src_main_java_com_ben_csp_item_moditemsspawneggs_moditemsspawneggs_registermodspawneggs"
+    ],
+    "27": [
+      "dilation",
+      "entity",
+      "modeldata",
+      "net_minecraft_client_model_texturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_entity_enterprisedirectorentityrenderer_enterprisedirectorentityrenderer_enterprisedirectorentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_enterprisedirectorentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_model_entity_enterprisedirectorentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_enterprisedirectorentitymodel_enterprisedirectorentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_enterprisedirectorentitymodel_enterprisedirectorentitymodel_enterprisedirectorentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_enterprisedirectorentitymodel_enterprisedirectorentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_geodezistentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_glavnyinzhenerentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_prorabentitymodel_prorabentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_sekretarentitymodel"
+    ],
+    "28": [
+      "enterprisepersonnel",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_java_builder",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_java_override",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_createkommutatoroperatorattributes",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_getenterprisename",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_getgarrisonpos",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_getgarrisonradius",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_getworkplacepos",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_initgoals",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_readcustomdatafromnbt",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_setenterprisename",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_setworkplacepos",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity_writecustomdatatonbt"
+    ],
+    "29": [
+      "com_ben_csp_entity_ai_dosye",
+      "defaultattributecontainer",
+      "enterprise",
+      "entityattributes",
+      "lookatentitygoal",
+      "net_minecraft_entity_mob_pathawareentity",
+      "src_main_java_com_ben_csp_agent_goals_garrisongoal",
+      "src_main_java_com_ben_csp_agent_goals_garrisongoal_garrisongoal",
+      "src_main_java_com_ben_csp_agent_goals_garrisongoal_garrisongoal_execute",
+      "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity",
+      "swimgoal",
+      "wanderaroundfargoal",
+      "workatassignedpostgoal"
+    ],
+    "30": [
+      "net_minecraft_client_render_entity_model_villagerresemblingmodel",
+      "src_client_java_com_ben_csp_client_render_entity_brigadierentityrenderer_brigadierentityrenderer_brigadierentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_brigadierentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_facilitydirectorentityrenderer_facilitydirectorentityrenderer_facilitydirectorentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_facilitydirectorentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_model_entity_brigadierentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_brigadierentitymodel_brigadierentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_brigadierentitymodel_brigadierentitymodel_brigadierentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_brigadierentitymodel_brigadierentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_facilitydirectorentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_facilitydirectorentitymodel_facilitydirectorentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_facilitydirectorentitymodel_facilitydirectorentitymodel_facilitydirectorentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_facilitydirectorentitymodel_facilitydirectorentitymodel_gettexturedmodeldata"
+    ],
+    "31": [
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_industrialprocessmanager",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_industrialprocessmanager_calculatetotalcompletion",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_industrialprocessmanager_getactiveprocesses",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_industrialprocessmanager_getcurrentstageinfo",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_industrialprocessmanager_markstagecomplete",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_industrialprocessmanager_registerprocess",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_industrialprocessmanager_updateprogress",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_processrecord",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_processrecord_getprogressforcurrentstage",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_processrecord_getstage",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_processrecord_processrecord",
+      "src_main_java_com_ben_csp_agent_industrialprocessmanager_processrecord_setstage"
+    ],
+    "32": [
+      "bin_main_com_ben_csp_rbmk_rbmk_solver",
+      "bin_main_com_ben_csp_rbmk_rbmk_solver_compute_control_rods",
+      "bin_main_com_ben_csp_rbmk_rbmk_solver_compute_isotopics",
+      "bin_main_com_ben_csp_rbmk_rbmk_solver_compute_laplacian",
+      "bin_main_com_ben_csp_rbmk_rbmk_solver_lookup_cross_sections",
+      "math",
+      "src_main_java_com_ben_csp_rbmk_rbmk_solver",
+      "src_main_java_com_ben_csp_rbmk_rbmk_solver_compute_control_rods",
+      "src_main_java_com_ben_csp_rbmk_rbmk_solver_compute_isotopics",
+      "src_main_java_com_ben_csp_rbmk_rbmk_solver_compute_laplacian",
+      "src_main_java_com_ben_csp_rbmk_rbmk_solver_lookup_cross_sections",
+      "stdint"
+    ],
+    "33": [
+      "formatting",
+      "nbtelement",
+      "net_minecraft_text_text",
+      "src_main_java_com_ben_csp_agent_prorab",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_getagentname",
+      "src_main_java_com_ben_csp_agent_sekretar",
+      "src_main_java_com_ben_csp_agent_sekretar_sekretar",
+      "src_main_java_com_ben_csp_agent_sekretar_sekretar_getcurrentworkload",
+      "src_main_java_com_ben_csp_agent_sekretar_sekretar_processfile",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_getdebuginfo",
+      "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen_getinventorystatus",
+      "src_main_java_com_ben_csp_dosye"
+    ],
+    "34": [
+      "java_util_function_doublesupplier",
+      "src_main_java_com_ben_csp_skala_skalachannel",
+      "src_main_java_com_ben_csp_skala_skalachannel_scantype",
+      "src_main_java_com_ben_csp_skala_skalachannel_scantype_diis",
+      "src_main_java_com_ben_csp_skala_skalachannel_scantype_dreg",
+      "src_main_java_com_ben_csp_skala_skalachannel_skalachannel",
+      "src_main_java_com_ben_csp_skala_skalachannel_skalachannel_getcode",
+      "src_main_java_com_ben_csp_skala_skalachannel_skalachannel_getvalue",
+      "src_main_java_com_ben_csp_skala_skalachannel_skalachannel_skalachannel",
+      "src_main_java_com_ben_csp_skala_skalachannel_skalachannel_update",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_getchannel",
+      "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer_registerchannel"
+    ],
+    "35": [
+      "modelpartbuilder",
+      "modeltransform",
+      "net_minecraft_client_render_entity_model_singlepartentitymodel",
+      "src_client_java_com_ben_csp_client_render_entity_bargeentityrenderer_bargeentityrenderer_bargeentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_bargeentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_model_entity_bargeentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_bargeentitymodel_bargeentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_bargeentitymodel_bargeentitymodel_bargeentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_bargeentitymodel_bargeentitymodel_getpart",
+      "src_client_java_com_ben_csp_client_render_model_entity_bargeentitymodel_bargeentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_bargeentitymodel_bargeentitymodel_setangles",
+      "src_client_java_com_ben_csp_client_render_model_entity_bargeentitymodel_java_override"
+    ],
+    "36": [
+      "net_fabricmc_fabric_api_resource_simplesynchronousresourcereloadlistener",
+      "net_minecraft_resource_resourcemanager",
+      "src_main_java_com_ben_csp_data_infrastructurerequirementloader",
+      "src_main_java_com_ben_csp_data_infrastructurerequirementloader_infrastructurerequirementloader",
+      "src_main_java_com_ben_csp_data_infrastructurerequirementloader_infrastructurerequirementloader_getfabricid",
+      "src_main_java_com_ben_csp_data_infrastructurerequirementloader_infrastructurerequirementloader_reload",
+      "src_main_java_com_ben_csp_data_infrastructurerequirementloader_java_override",
+      "src_main_java_com_ben_csp_opb_opb82ruleloader",
+      "src_main_java_com_ben_csp_opb_opb82ruleloader_java_override",
+      "src_main_java_com_ben_csp_opb_opb82ruleloader_opb82ruleloader",
+      "src_main_java_com_ben_csp_opb_opb82ruleloader_opb82ruleloader_getfabricid",
+      "src_main_java_com_ben_csp_opb_opb82ruleloader_opb82ruleloader_reload"
+    ],
+    "37": [
+      "net_minecraft_client_render_entity_model_bipedentitymodel",
+      "net_minecraft_client_render_entity_model_entitymodellayer",
+      "src_client_java_com_ben_csp_client_render_entity_geodezistentityrenderer_geodezistentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_geodezistentityrenderer_geodezistentityrenderer_geodezistentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_geodezistentityrenderer_geodezistentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_geodezistentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_geodezistentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_model_entity_geodezistentitymodel_geodezistentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_geodezistentitymodel_geodezistentitymodel_geodezistentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_geodezistentitymodel_geodezistentitymodel_gettexturedmodeldata",
+      "src_main_java_com_ben_csp_entity_geodezistentity",
+      "src_main_java_com_ben_csp_entity_geodezistentity_geodezistentity"
+    ],
+    "38": [
+      "net_minecraft_util_math_blockbox",
+      "src_main_java_com_ben_csp_geology_geologicalreport",
+      "src_main_java_com_ben_csp_geology_geologicalreport_geologicalreport",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_java_override",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_deserializeblockbox",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_fromnbt",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_getlastscanbounds",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_hasscanbounds",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_serializeblockbox",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_setscanbounds",
+      "src_main_java_com_ben_csp_kartograf_kartografmanager_kartografmanager_writenbt"
+    ],
+    "39": [
+      "src_client_java_com_ben_csp_client_render_entity_glavnyinzhenerentityrenderer_glavnyinzhenerentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_glavnyinzhenerentityrenderer_glavnyinzhenerentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_glavnyinzhenerentityrenderer_glavnyinzhenerentityrenderer_glavnyinzhenerentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_glavnyinzhenerentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_glavnyinzhenerentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_model_entity_glavnyinzhenerentitymodel_glavnyinzhenerentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_glavnyinzhenerentitymodel_glavnyinzhenerentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_glavnyinzhenerentitymodel_glavnyinzhenerentitymodel_glavnyinzhenerentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_glavnyinzhenerentitymodel_glavnyinzhenerentitymodel_setangles",
+      "src_client_java_com_ben_csp_client_render_model_entity_glavnyinzhenerentitymodel_java_override",
+      "src_main_java_com_ben_csp_entity_glavnyinzhenerentity",
+      "src_main_java_com_ben_csp_entity_glavnyinzhenerentity_glavnyinzhenerentity"
+    ],
+    "40": [
+      "src_client_java_com_ben_csp_client_render_entity_sekretarentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_sekretarentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_sekretarentityrenderer_sekretarentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_sekretarentityrenderer_sekretarentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_sekretarentityrenderer_sekretarentityrenderer_sekretarentityrenderer",
+      "src_client_java_com_ben_csp_client_render_model_entity_sekretarentitymodel_java_override",
+      "src_client_java_com_ben_csp_client_render_model_entity_sekretarentitymodel_sekretarentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_sekretarentitymodel_sekretarentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_sekretarentitymodel_sekretarentitymodel_sekretarentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_sekretarentitymodel_sekretarentitymodel_setangles",
+      "src_main_java_com_ben_csp_entity_sekretarentity_sekretarentity",
+      "src_main_java_com_ben_csp_entity_sekretarentity_sekretarentity_sekretarentity"
+    ],
+    "41": [
+      "src_main_java_com_ben_csp_agent_prorab_prorab",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_assignworkpackage",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_getassignedworkpackage",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_getdayswithoutincident",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_getmanagedsitescount",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_getstresslevel",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_iswithinsafelimits",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_prorab",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_recordincident",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_registersite",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_simulateinspection",
+      "src_main_java_com_ben_csp_agent_prorab_prorab_updatestresslevel"
+    ],
+    "42": [
+      "hashset",
+      "set",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate_addstress",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate_getstress",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate_hasdiscussedtopic",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate_logtopic",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate_readfromnbt",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate_relievestress",
+      "src_main_java_com_ben_csp_radiology_psychologicalstate_psychologicalstate_writetonbt"
+    ],
+    "43": [
+      "minecraftclient",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_computecontrolrods",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_computeisotopics",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_computelaplacian",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_computeneutronkinetics",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_computepowerdensity",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_computethermalhydraulics",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_loadlibrary",
+      "src_main_java_com_ben_csp_rbmk_rekordsolverlibrary_rekordsolverlibrary_lookupcrosssections"
+    ],
+    "44": [
+      "net_minecraft_client_model_modelpart",
+      "src_client_java_com_ben_csp_client_render_entity_prorabentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_prorabentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_prorabentityrenderer_prorabentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_prorabentityrenderer_prorabentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_prorabentityrenderer_prorabentityrenderer_prorabentityrenderer",
+      "src_client_java_com_ben_csp_client_render_model_entity_prorabentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_prorabentitymodel_java_override",
+      "src_client_java_com_ben_csp_client_render_model_entity_prorabentitymodel_prorabentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_prorabentitymodel_prorabentitymodel_prorabentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_prorabentitymodel_prorabentitymodel_setangles"
+    ],
+    "45": [
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_canperformtier",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_evaluatetierupgrade",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_getagentname",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_getenterprisetier",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_getoperationalreadiness",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_nachalniksnabzheniya",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_registerfacility",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_updatefacilitystatus",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniya_nachalniksnabzheniya_updatereadiness"
+    ],
+    "46": [
+      "lists",
+      "maps",
+      "org_jetbrains_annotations_nullable",
+      "src_main_java_com_ben_csp_entity_ai_garrisonable",
+      "src_main_java_com_ben_csp_entity_ai_garrisonable_garrisonable",
+      "src_main_java_com_ben_csp_entity_ai_garrisonable_garrisonable_getgarrisonpos",
+      "src_main_java_com_ben_csp_entity_ai_garrisonable_garrisonable_issitting",
+      "src_main_java_com_ben_csp_entity_ai_garrisonable_garrisonable_setgarrisonpos",
+      "src_main_java_com_ben_csp_entity_ai_garrisonable_garrisonable_setsitting",
+      "src_main_java_com_ben_csp_logistics_railtrafficmanager"
+    ],
+    "47": [
+      "net_fabricmc_api_clientmodinitializer",
+      "src_client_java_com_ben_csp_cspmodclient_cspmodclient",
+      "src_client_java_com_ben_csp_cspmodclient_cspmodclient_oninitializeclient",
+      "src_client_java_com_ben_csp_cspmodclient_cspmodclient_registerblockentityrenderers",
+      "src_client_java_com_ben_csp_cspmodclient_java_override",
+      "src_main_java_com_ben_csp_cspmodclient",
+      "src_main_java_com_ben_csp_cspmodclient_cspmodclient",
+      "src_main_java_com_ben_csp_cspmodclient_cspmodclient_oninitializeclient",
+      "src_main_java_com_ben_csp_cspmodclient_java_override",
+      "suppresswarnings"
+    ],
+    "48": [
+      "src_main_java_com_ben_csp_agent_logisticsmanager",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_logisticsmanager",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_logisticsmanager_calculatedeliveryschedule",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_logisticsmanager_logisticsmanager",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_logisticsmanager_registerroute",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_logisticsmanager_trackinventoryreceived",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_materialinventory",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_materialinventory_materialinventory",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_transportroute",
+      "src_main_java_com_ben_csp_agent_logisticsmanager_transportroute_transportroute"
+    ],
+    "49": [
+      "net_minecraft_block_shapecontext",
+      "net_minecraft_util_shape_voxelshape",
+      "net_minecraft_world_blockview",
+      "src_main_java_com_ben_csp_block_geodeticmarkerblock",
+      "src_main_java_com_ben_csp_block_geodeticmarkerblock_geodeticmarkerblock",
+      "src_main_java_com_ben_csp_block_geodeticmarkerblock_geodeticmarkerblock_getblockidentity",
+      "src_main_java_com_ben_csp_block_geodeticmarkerblock_geodeticmarkerblock_getoutlineshape",
+      "src_main_java_com_ben_csp_block_geodeticmarkerblock_java_override",
+      "voxelshapes"
+    ],
+    "50": [
+      "net_minecraft_client_gui_drawcontext",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_java_override",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen_isclickinbounds",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen_mouseclicked",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen_render",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen_renderbuttons",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen_renderkeypad",
+      "src_client_java_com_ben_csp_skala_skalarequestdevicescreen_skalarequestdevicescreen_shouldpause"
+    ],
+    "51": [
+      "src_main_java_com_ben_csp_agent_directoratemanager",
+      "src_main_java_com_ben_csp_agent_directoratemanager_directoratemanager",
+      "src_main_java_com_ben_csp_agent_directoratemanager_directoratemanager_canenterpriseperform",
+      "src_main_java_com_ben_csp_agent_directoratemanager_directoratemanager_getdirectors",
+      "src_main_java_com_ben_csp_agent_directoratemanager_directoratemanager_getplayerrole",
+      "src_main_java_com_ben_csp_agent_directoratemanager_directoratemanager_registerdirector",
+      "src_main_java_com_ben_csp_agent_directoratemanager_directoratemanager_updatedirectorreadiness",
+      "src_main_java_com_ben_csp_agent_directoratemanager_enterprisedirector",
+      "src_main_java_com_ben_csp_agent_directoratemanager_enterprisedirector_enterprisedirector"
+    ],
+    "52": [
+      "src_main_java_com_ben_csp_agent_glavnyinzhener",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener_adddepartment",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener_canhandlestrategicinitiative",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener_getagentname",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener_getaveragedepartmentreadiness",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener_getdepartmentreadiness",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener_glavnyinzhener",
+      "src_main_java_com_ben_csp_agent_glavnyinzhener_glavnyinzhener_updatedepartmentreadiness"
+    ],
+    "53": [
+      "net_minecraft_entity_effect_statuseffect",
+      "src_main_java_com_ben_csp_radiology_doseeffect",
+      "src_main_java_com_ben_csp_radiology_doseeffect_doseeffect",
+      "src_main_java_com_ben_csp_radiology_radiologicaleffectsregistry_radiologicaleffectsregistry",
+      "src_main_java_com_ben_csp_radiology_radiologicaleffectsregistry_radiologicaleffectsregistry_getapplicableeffects",
+      "src_main_java_com_ben_csp_radiology_radiologicaleffectsregistry_radiologicaleffectsregistry_getinstance",
+      "src_main_java_com_ben_csp_radiology_radiologicaleffectsregistry_radiologicaleffectsregistry_loadeffects",
+      "src_main_java_com_ben_csp_radiology_radiologicaleffectsregistry_radiologicaleffectsregistry_radiologicaleffectsregistry"
+    ],
+    "54": [
+      "net_minecraft_entity_entity",
+      "src_main_java_com_ben_csp_logistics_debugdispatchorder",
+      "src_main_java_com_ben_csp_logistics_debugdispatchorder_debugdispatchorder",
+      "src_main_java_com_ben_csp_logistics_debugdispatchorder_debugdispatchorder_debugdispatchorder",
+      "src_main_java_com_ben_csp_logistics_debugdispatchorder_debugdispatchorder_getdestination",
+      "src_main_java_com_ben_csp_logistics_debugdispatchorder_debugdispatchorder_getsource",
+      "src_main_java_com_ben_csp_logistics_debugdispatchorder_debugdispatchorder_gettaskid",
+      "src_main_java_com_ben_csp_logistics_debugdispatchorder_debugdispatchorder_materials"
+    ],
+    "55": [
+      "src_client_java_com_ben_csp_client_render_entity_brigadierentityrenderer_brigadierentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_brigadierentityrenderer_brigadierentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_brigadierentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_uchetchikentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_uchetchikentityrenderer_uchetchikentityrenderer_gettexture",
+      "src_main_java_com_ben_csp_entity_brigadierentity",
+      "src_main_java_com_ben_csp_entity_brigadierentity_brigadierentity",
+      "src_main_java_com_ben_csp_entity_brigadierentity_brigadierentity_brigadierentity"
+    ],
+    "56": [
+      "src_main_java_com_ben_csp_agent_planerkasession",
+      "src_main_java_com_ben_csp_agent_planerkasession_planerkasession",
+      "src_main_java_com_ben_csp_agent_planerkasession_planerkasession_completesession",
+      "src_main_java_com_ben_csp_agent_planerkasession_planerkasession_getsessiontypename",
+      "src_main_java_com_ben_csp_agent_planerkasession_planerkasession_planerkasession",
+      "src_main_java_com_ben_csp_agent_planerkasession_planerkasession_schedulesession",
+      "src_main_java_com_ben_csp_agent_planerkasession_sessionrecord",
+      "src_main_java_com_ben_csp_agent_planerkasession_sessionrecord_sessionrecord"
+    ],
+    "57": [
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_printerstate",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_printerstate_idle",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_printerstate_printing",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_printerstate_ready",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_printerstate_receiving",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_teletypeprinterblock",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_teletypeprinterblock_init",
+      "src_main_java_com_ben_csp_block_entity_teletypeprinterblock_teletypeprinterblock_register"
+    ],
+    "58": [
+      "src_main_java_com_ben_csp_dosye_dosye",
+      "src_main_java_com_ben_csp_dosye_dosye_addattachment",
+      "src_main_java_com_ben_csp_dosye_dosye_dosye",
+      "src_main_java_com_ben_csp_dosye_dosye_fromnbt",
+      "src_main_java_com_ben_csp_dosye_dosye_getattachments",
+      "src_main_java_com_ben_csp_dosye_dosye_getid",
+      "src_main_java_com_ben_csp_dosye_dosye_getsubjecttext",
+      "src_main_java_com_ben_csp_dosye_dosye_tonbt"
+    ],
+    "59": [
+      "aecs_test_plan_gradlew",
+      "aecs_test_plan_knowledge_base_json",
+      "aecs_test_plan_request_json",
+      "project_notes_aecs_ii",
+      "scripts_shelved_aecs_parse_build_issue",
+      "scripts_shelved_aecs_sh_scripts_shelved_aecs_6f2b28",
+      "scripts_shelved_aecs_sh_scripts_shelved_aecs_sh_entry_6f2b28"
+    ],
+    "60": [
+      "bs4",
+      "os",
+      "requests",
+      "scripts_scrape_docs",
+      "time",
+      "typing",
+      "urllib_parse"
+    ],
+    "61": [
+      "net_minecraft_block_blockrendertype",
+      "src_main_java_com_ben_csp_skala_skalaioblock",
+      "src_main_java_com_ben_csp_skala_skalaioblock_java_override",
+      "src_main_java_com_ben_csp_skala_skalaioblock_java_settings",
+      "src_main_java_com_ben_csp_skala_skalaioblock_skalaioblock",
+      "src_main_java_com_ben_csp_skala_skalaioblock_skalaioblock_getrendertype",
+      "src_main_java_com_ben_csp_skala_skalaioblock_skalaioblock_skalaioblock"
+    ],
+    "62": [
+      "src_client_java_com_ben_csp_client_render_entity_nachalniksnabzheniyaentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_nachalniksnabzheniyaentityrenderer_nachalniksnabzheniyaentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_nachalniksnabzheniyaentityrenderer_nachalniksnabzheniyaentityrenderer_nachalniksnabzheniyaentityrenderer",
+      "src_client_java_com_ben_csp_client_render_model_entity_nachalniksnabzheniyaentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_nachalniksnabzheniyaentitymodel_nachalniksnabzheniyaentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_nachalniksnabzheniyaentitymodel_nachalniksnabzheniyaentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_nachalniksnabzheniyaentitymodel_nachalniksnabzheniyaentitymodel_nachalniksnabzheniyaentitymodel"
+    ],
+    "63": [
+      "src_client_java_com_ben_csp_client_render_entity_uchetchikentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_uchetchikentityrenderer_uchetchikentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_uchetchikentityrenderer_uchetchikentityrenderer_uchetchikentityrenderer",
+      "src_client_java_com_ben_csp_client_render_model_entity_uchetchikentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_uchetchikentitymodel_uchetchikentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_uchetchikentitymodel_uchetchikentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_uchetchikentitymodel_uchetchikentitymodel_uchetchikentitymodel"
+    ],
+    "64": [
+      "src_main_java_com_ben_csp_agent_skalacoderegistry",
+      "src_main_java_com_ben_csp_agent_skalacoderegistry_operationcode",
+      "src_main_java_com_ben_csp_agent_skalacoderegistry_operationcode_operationcode",
+      "src_main_java_com_ben_csp_agent_skalacoderegistry_skalacoderegistry",
+      "src_main_java_com_ben_csp_agent_skalacoderegistry_skalacoderegistry_getoperationdescription",
+      "src_main_java_com_ben_csp_agent_skalacoderegistry_skalacoderegistry_registeroperationcode",
+      "src_main_java_com_ben_csp_agent_skalacoderegistry_skalacoderegistry_skalacoderegistry"
+    ],
+    "65": [
+      "src_main_java_com_ben_csp_radiology_depositionproperties",
+      "src_main_java_com_ben_csp_radiology_depositionproperties_depositionproperties",
+      "src_main_java_com_ben_csp_radiology_surfacedepositionregistry_surfacedepositionregistry",
+      "src_main_java_com_ben_csp_radiology_surfacedepositionregistry_surfacedepositionregistry_getinstance",
+      "src_main_java_com_ben_csp_radiology_surfacedepositionregistry_surfacedepositionregistry_getproperties",
+      "src_main_java_com_ben_csp_radiology_surfacedepositionregistry_surfacedepositionregistry_loadproperties",
+      "src_main_java_com_ben_csp_radiology_surfacedepositionregistry_surfacedepositionregistry_surfacedepositionregistry"
+    ],
+    "66": [
+      "src_main_java_com_ben_csp_radiology_shieldingmaterialregistry_shieldingmaterialregistry",
+      "src_main_java_com_ben_csp_radiology_shieldingmaterialregistry_shieldingmaterialregistry_getinstance",
+      "src_main_java_com_ben_csp_radiology_shieldingmaterialregistry_shieldingmaterialregistry_getproperties",
+      "src_main_java_com_ben_csp_radiology_shieldingmaterialregistry_shieldingmaterialregistry_loadproperties",
+      "src_main_java_com_ben_csp_radiology_shieldingmaterialregistry_shieldingmaterialregistry_shieldingmaterialregistry",
+      "src_main_java_com_ben_csp_radiology_shieldingproperties",
+      "src_main_java_com_ben_csp_radiology_shieldingproperties_shieldingproperties"
+    ],
+    "67": [
+      "src_main_java_com_ben_csp_util_steamtableutil",
+      "src_main_java_com_ben_csp_util_steamtableutil_steamtableutil",
+      "src_main_java_com_ben_csp_util_steamtableutil_steamtableutil_getlatentheat",
+      "src_main_java_com_ben_csp_util_steamtableutil_steamtableutil_getliquidenthalpy",
+      "src_main_java_com_ben_csp_util_steamtableutil_steamtableutil_getsaturatedliquidenthalpy",
+      "src_main_java_com_ben_csp_util_steamtableutil_steamtableutil_getsaturationtemperature",
+      "src_main_java_com_ben_csp_util_steamtableutil_steamtableutil_getspecificheat"
+    ],
+    "68": [
+      "src_client_java_com_ben_csp_client_render_entity_bargeentityrenderer_bargeentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_bargeentityrenderer_bargeentityrenderer_gettexture",
+      "src_client_java_com_ben_csp_client_render_entity_bargeentityrenderer_java_override",
+      "src_main_java_com_ben_csp_entity_bargeentity",
+      "src_main_java_com_ben_csp_entity_bargeentity_bargeentity",
+      "src_main_java_com_ben_csp_entity_bargeentity_bargeentity_bargeentity"
+    ],
+    "69": [
+      "src_client_java_com_ben_csp_client_render_entity_masterentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_masterentityrenderer_masterentityrenderer_masterentityrenderer",
+      "src_client_java_com_ben_csp_client_render_model_entity_masterentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_masterentitymodel_masterentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_masterentitymodel_masterentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_masterentitymodel_masterentitymodel_masterentitymodel"
+    ],
+    "70": [
+      "src_client_java_com_ben_csp_client_render_entity_stroitelentityrenderer_java_context",
+      "src_client_java_com_ben_csp_client_render_entity_stroitelentityrenderer_stroitelentityrenderer_stroitelentityrenderer",
+      "src_client_java_com_ben_csp_client_render_model_entity_stroitelentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_stroitelentitymodel_stroitelentitymodel",
+      "src_client_java_com_ben_csp_client_render_model_entity_stroitelentitymodel_stroitelentitymodel_gettexturedmodeldata",
+      "src_client_java_com_ben_csp_client_render_model_entity_stroitelentitymodel_stroitelentitymodel_stroitelentitymodel"
+    ],
+    "71": [
+      "src_main_java_com_ben_csp_block_entity_graphiteblockentity_graphiteblockentity",
+      "src_main_java_com_ben_csp_block_entity_graphiteblockentity_graphiteblockentity_graphiteblockentity",
+      "src_main_java_com_ben_csp_block_entity_graphiteblockentity_java_blockentitytype",
+      "src_main_java_com_ben_csp_block_entity_icmspanelblockentity_icmspanelblockentity",
+      "src_main_java_com_ben_csp_block_entity_icmspanelblockentity_icmspanelblockentity_icmspanelblockentity",
+      "src_main_java_com_ben_csp_block_entity_icmspanelblockentity_java_blockentitytype"
+    ],
+    "72": [
+      "src_main_java_com_ben_csp_entity_ai_zonetype",
+      "src_main_java_com_ben_csp_entity_ai_zonetype_zonetype",
+      "src_main_java_com_ben_csp_entity_ai_zonetype_zonetype_clean",
+      "src_main_java_com_ben_csp_entity_ai_zonetype_zonetype_contamination_area",
+      "src_main_java_com_ben_csp_entity_ai_zonetype_zonetype_controlled_access",
+      "src_main_java_com_ben_csp_entity_ai_zonetype_zonetype_high_radiation_area"
+    ],
+    "73": [
+      "src_main_java_com_ben_csp_radiology_zonetype",
+      "src_main_java_com_ben_csp_radiology_zonetype_zonetype",
+      "src_main_java_com_ben_csp_radiology_zonetype_zonetype_clean",
+      "src_main_java_com_ben_csp_radiology_zonetype_zonetype_contamination_area",
+      "src_main_java_com_ben_csp_radiology_zonetype_zonetype_controlled_access",
+      "src_main_java_com_ben_csp_radiology_zonetype_zonetype_high_radiation_area"
+    ],
+    "74": [
+      "src_main_java_com_ben_csp_rbmk_rekordsolvermanager",
+      "src_main_java_com_ben_csp_rbmk_rekordsolvermanager_rekordsolvermanager",
+      "src_main_java_com_ben_csp_rbmk_rekordsolvermanager_rekordsolvermanager_isloaded",
+      "src_main_java_com_ben_csp_rbmk_rekordsolvermanager_rekordsolvermanager_loadlibrary",
+      "src_main_java_com_ben_csp_rbmk_rekordsolvermanager_rekordsolvermanager_loadlibraryfromclasspath",
+      "src_main_java_com_ben_csp_rbmk_rekordsolvermanager_rekordsolvermanager_rekordsolvermanager"
+    ],
+    "75": [
+      "net_minecraft_util_math_vec2f",
+      "src_main_java_com_ben_csp_radiology_groundwaterplume",
+      "src_main_java_com_ben_csp_radiology_groundwaterplume_groundwaterplume",
+      "src_main_java_com_ben_csp_radiology_groundwaterplume_groundwaterplume_groundwaterplume",
+      "src_main_java_com_ben_csp_radiology_groundwaterplume_groundwaterplume_tick"
+    ],
+    "76": [
+      "src_main_java_com_ben_csp_world_locationtype",
+      "src_main_java_com_ben_csp_world_locationtype_locationtype",
+      "src_main_java_com_ben_csp_world_locationtype_locationtype_directorate_hq",
+      "src_main_java_com_ben_csp_world_locationtype_locationtype_port_authority",
+      "src_main_java_com_ben_csp_world_locationtype_locationtype_semikhody_station"
+    ],
+    "77": [
+      "fabric_docs_combined_attachmentregistry",
+      "fabric_docs_combined_codec",
+      "fabric_docs_combined_dynamicregistries",
+      "fabric_docs_combined_fabricdynamicregistryprovider"
+    ],
+    "78": [
+      "fabric_docs_combined_classtweakers",
+      "fabric_docs_combined_fabricloader",
+      "fabric_docs_combined_fabricloom",
+      "fabric_docs_combined_mixin"
+    ],
+    "79": [
+      "fabric_docs_combined_intellij_setup",
+      "fabric_docs_combined_key_mappings",
+      "fabric_docs_combined_networking",
+      "fabric_docs_combined_porting"
+    ],
+    "80": [
+      "fabric_docs_combined_minigolementity",
+      "fabric_docs_combined_minigolementitymodel",
+      "fabric_docs_combined_minigolementityrenderer",
+      "fabric_docs_combined_modentitytypes"
+    ],
+    "81": [
+      "gradlew__entry",
+      "gradlew_gradlew",
+      "gradlew_gradlew_die",
+      "gradlew_gradlew_warn"
+    ],
+    "82": [
+      "gradlew_sh__entry",
+      "gradlew_sh_gradlew",
+      "gradlew_sh_gradlew_die",
+      "gradlew_sh_gradlew_warn"
+    ],
+    "83": [
+      "src_main_java_com_ben_csp_agent_namingmanager",
+      "src_main_java_com_ben_csp_agent_namingmanager_namingmanager",
+      "src_main_java_com_ben_csp_agent_namingmanager_namingmanager_getofficialterm",
+      "src_main_java_com_ben_csp_agent_namingmanager_namingmanager_registerprojectcode"
+    ],
+    "84": [
+      "src_main_java_com_ben_csp_skala_skalacoreblock",
+      "src_main_java_com_ben_csp_skala_skalacoreblock_java_settings",
+      "src_main_java_com_ben_csp_skala_skalacoreblock_skalacoreblock",
+      "src_main_java_com_ben_csp_skala_skalacoreblock_skalacoreblock_skalacoreblock"
+    ],
+    "85": [
+      "src_main_java_com_ben_csp_skala_skalareactorinterfaceblock",
+      "src_main_java_com_ben_csp_skala_skalareactorinterfaceblock_java_settings",
+      "src_main_java_com_ben_csp_skala_skalareactorinterfaceblock_skalareactorinterfaceblock",
+      "src_main_java_com_ben_csp_skala_skalareactorinterfaceblock_skalareactorinterfaceblock_skalareactorinterfaceblock"
+    ],
+    "86": [
+      "src_main_java_com_ben_csp_skala_skalarequestdeviceblock",
+      "src_main_java_com_ben_csp_skala_skalarequestdeviceblock_java_settings",
+      "src_main_java_com_ben_csp_skala_skalarequestdeviceblock_skalarequestdeviceblock",
+      "src_main_java_com_ben_csp_skala_skalarequestdeviceblock_skalarequestdeviceblock_skalarequestdeviceblock"
+    ],
+    "87": [
+      "src_main_java_com_ben_csp_skala_skalatapedriveblock",
+      "src_main_java_com_ben_csp_skala_skalatapedriveblock_java_settings",
+      "src_main_java_com_ben_csp_skala_skalatapedriveblock_skalatapedriveblock",
+      "src_main_java_com_ben_csp_skala_skalatapedriveblock_skalatapedriveblock_skalatapedriveblock"
+    ],
+    "88": [
+      "src_main_java_com_ben_csp_skala_skalav31mlinkblock",
+      "src_main_java_com_ben_csp_skala_skalav31mlinkblock_java_settings",
+      "src_main_java_com_ben_csp_skala_skalav31mlinkblock_skalav31mlinkblock",
+      "src_main_java_com_ben_csp_skala_skalav31mlinkblock_skalav31mlinkblock_skalav31mlinkblock"
+    ],
+    "89": [
+      "src_main_java_com_ben_csp_skala_skalavalue",
+      "src_main_java_com_ben_csp_skala_skalavalue_skalavalue",
+      "src_main_java_com_ben_csp_skala_skalavalue_skalavalue_getrawvalue",
+      "src_main_java_com_ben_csp_skala_skalavalue_skalavalue_skalavalue"
+    ],
+    "90": [
+      "src_main_java_com_ben_csp_util_measuringtapeutil",
+      "src_main_java_com_ben_csp_util_measuringtapeutil_measuringtapeutil",
+      "src_main_java_com_ben_csp_util_measuringtapeutil_measuringtapeutil_isaxisalignedlineclear",
+      "src_main_java_com_ben_csp_util_measuringtapeutil_measuringtapeutil_measuringtapeutil"
+    ],
+    "91": [
+      "fabric_docs_combined_acidfluid",
+      "fabric_docs_combined_modblocks",
+      "fabric_docs_combined_modfluids"
+    ],
+    "92": [
+      "fabric_docs_combined_hottaterentity",
+      "fabric_docs_combined_hottateritem",
+      "fabric_docs_combined_moditems"
+    ],
+    "93": [
+      "sqf_gdscript_linter_gd_prototype",
+      "sqf_gdscript_linter_readme",
+      "sqf_gdscript_linter_sqf_prototype"
+    ],
+    "94": [
+      "src_client_java_com_ben_csp_client_render_entity_masterentityrenderer_java_override",
+      "src_client_java_com_ben_csp_client_render_entity_masterentityrenderer_masterentityrenderer",
+      "src_client_java_com_ben_csp_client_render_entity_masterentityrenderer_masterentityrenderer_gettexture"
+    ],
+    "95": [
+      "src_main_java_com_ben_csp_agent_directorsplanshetblockentity",
+      "src_main_java_com_ben_csp_agent_directorsplanshetblockentity_directorsplanshetblockentity",
+      "src_main_java_com_ben_csp_agent_directorsplanshetblockentity_directorsplanshetblockentity_getslotcount"
+    ],
+    "96": [
+      "src_main_java_com_ben_csp_agent_goals_answerringingphonegoal",
+      "src_main_java_com_ben_csp_agent_goals_answerringingphonegoal_answerringingphonegoal",
+      "src_main_java_com_ben_csp_agent_goals_answerringingphonegoal_answerringingphonegoal_execute"
+    ],
+    "97": [
+      "src_main_java_com_ben_csp_agent_goals_archivecompleteddocumentsgoal",
+      "src_main_java_com_ben_csp_agent_goals_archivecompleteddocumentsgoal_archivecompleteddocumentsgoal",
+      "src_main_java_com_ben_csp_agent_goals_archivecompleteddocumentsgoal_archivecompleteddocumentsgoal_execute"
+    ],
+    "98": [
+      "src_main_java_com_ben_csp_agent_goals_delivertoportgoal",
+      "src_main_java_com_ben_csp_agent_goals_delivertoportgoal_delivertoportgoal",
+      "src_main_java_com_ben_csp_agent_goals_delivertoportgoal_delivertoportgoal_execute"
+    ],
+    "99": [
+      "src_main_java_com_ben_csp_agent_goals_distributeworkgoal",
+      "src_main_java_com_ben_csp_agent_goals_distributeworkgoal_distributeworkgoal",
+      "src_main_java_com_ben_csp_agent_goals_distributeworkgoal_distributeworkgoal_execute"
+    ],
+    "100": [
+      "src_main_java_com_ben_csp_agent_goals_executeworkgoal",
+      "src_main_java_com_ben_csp_agent_goals_executeworkgoal_executeworkgoal",
+      "src_main_java_com_ben_csp_agent_goals_executeworkgoal_executeworkgoal_execute"
+    ],
+    "101": [
+      "src_main_java_com_ben_csp_agent_goals_filedocumentsgoal",
+      "src_main_java_com_ben_csp_agent_goals_filedocumentsgoal_filedocumentsgoal",
+      "src_main_java_com_ben_csp_agent_goals_filedocumentsgoal_filedocumentsgoal_execute"
+    ],
+    "102": [
+      "src_main_java_com_ben_csp_agent_goals_followmastertobuildsitegoal",
+      "src_main_java_com_ben_csp_agent_goals_followmastertobuildsitegoal_followmastertobuildsitegoal",
+      "src_main_java_com_ben_csp_agent_goals_followmastertobuildsitegoal_followmastertobuildsitegoal_execute"
+    ],
+    "103": [
+      "src_main_java_com_ben_csp_agent_goals_geodeticsurveygoal",
+      "src_main_java_com_ben_csp_agent_goals_geodeticsurveygoal_geodeticsurveygoal",
+      "src_main_java_com_ben_csp_agent_goals_geodeticsurveygoal_geodeticsurveygoal_execute"
+    ],
+    "104": [
+      "src_main_java_com_ben_csp_agent_goals_gotobuildsitegoal",
+      "src_main_java_com_ben_csp_agent_goals_gotobuildsitegoal_gotobuildsitegoal",
+      "src_main_java_com_ben_csp_agent_goals_gotobuildsitegoal_gotobuildsitegoal_execute"
+    ],
+    "105": [
+      "src_main_java_com_ben_csp_agent_goals_managebrigadegoal",
+      "src_main_java_com_ben_csp_agent_goals_managebrigadegoal_managebrigadegoal",
+      "src_main_java_com_ben_csp_agent_goals_managebrigadegoal_managebrigadegoal_execute"
+    ],
+    "106": [
+      "src_main_java_com_ben_csp_agent_goals_managesupplychaingoal",
+      "src_main_java_com_ben_csp_agent_goals_managesupplychaingoal_managesupplychaingoal",
+      "src_main_java_com_ben_csp_agent_goals_managesupplychaingoal_managesupplychaingoal_execute"
+    ],
+    "107": [
+      "src_main_java_com_ben_csp_agent_goals_operatemachinerygoal",
+      "src_main_java_com_ben_csp_agent_goals_operatemachinerygoal_operatemachinerygoal",
+      "src_main_java_com_ben_csp_agent_goals_operatemachinerygoal_operatemachinerygoal_execute"
+    ],
+    "108": [
+      "src_main_java_com_ben_csp_agent_goals_organizearchivegoal",
+      "src_main_java_com_ben_csp_agent_goals_organizearchivegoal_organizearchivegoal",
+      "src_main_java_com_ben_csp_agent_goals_organizearchivegoal_organizearchivegoal_execute"
+    ],
+    "109": [
+      "src_main_java_com_ben_csp_agent_goals_performconstructiongoal",
+      "src_main_java_com_ben_csp_agent_goals_performconstructiongoal_performconstructiongoal",
+      "src_main_java_com_ben_csp_agent_goals_performconstructiongoal_performconstructiongoal_execute"
+    ],
+    "110": [
+      "src_main_java_com_ben_csp_agent_goals_performgeodeticsurveygoal",
+      "src_main_java_com_ben_csp_agent_goals_performgeodeticsurveygoal_performgeodeticsurveygoal",
+      "src_main_java_com_ben_csp_agent_goals_performgeodeticsurveygoal_performgeodeticsurveygoal_execute"
+    ],
+    "111": [
+      "src_main_java_com_ben_csp_agent_goals_performworkpackagegoal",
+      "src_main_java_com_ben_csp_agent_goals_performworkpackagegoal_performworkpackagegoal",
+      "src_main_java_com_ben_csp_agent_goals_performworkpackagegoal_performworkpackagegoal_execute"
+    ],
+    "112": [
+      "src_main_java_com_ben_csp_agent_goals_processhighlevelreportsgoal",
+      "src_main_java_com_ben_csp_agent_goals_processhighlevelreportsgoal_processhighlevelreportsgoal",
+      "src_main_java_com_ben_csp_agent_goals_processhighlevelreportsgoal_processhighlevelreportsgoal_execute"
+    ],
+    "113": [
+      "src_main_java_com_ben_csp_agent_goals_prorabreporttoglavnyinzhenergoal",
+      "src_main_java_com_ben_csp_agent_goals_prorabreporttoglavnyinzhenergoal_prorabreporttoglavnyinzhenergoal",
+      "src_main_java_com_ben_csp_agent_goals_prorabreporttoglavnyinzhenergoal_prorabreporttoglavnyinzhenergoal_execute"
+    ],
+    "114": [
+      "src_main_java_com_ben_csp_agent_goals_recruitsubordinatesgoal",
+      "src_main_java_com_ben_csp_agent_goals_recruitsubordinatesgoal_recruitsubordinatesgoal",
+      "src_main_java_com_ben_csp_agent_goals_recruitsubordinatesgoal_recruitsubordinatesgoal_execute"
+    ],
+    "115": [
+      "src_main_java_com_ben_csp_agent_goals_reporttomastergoal",
+      "src_main_java_com_ben_csp_agent_goals_reporttomastergoal_reporttomastergoal",
+      "src_main_java_com_ben_csp_agent_goals_reporttomastergoal_reporttomastergoal_execute"
+    ],
+    "116": [
+      "src_main_java_com_ben_csp_agent_goals_reporttoprorabgoal",
+      "src_main_java_com_ben_csp_agent_goals_reporttoprorabgoal_reporttoprorabgoal",
+      "src_main_java_com_ben_csp_agent_goals_reporttoprorabgoal_reporttoprorabgoal_execute"
+    ],
+    "117": [
+      "src_main_java_com_ben_csp_agent_goals_requisitionmaterialsgoal",
+      "src_main_java_com_ben_csp_agent_goals_requisitionmaterialsgoal_requisitionmaterialsgoal",
+      "src_main_java_com_ben_csp_agent_goals_requisitionmaterialsgoal_requisitionmaterialsgoal_execute"
+    ],
+    "118": [
+      "src_main_java_com_ben_csp_agent_goals_restgoal",
+      "src_main_java_com_ben_csp_agent_goals_restgoal_restgoal",
+      "src_main_java_com_ben_csp_agent_goals_restgoal_restgoal_execute"
+    ],
+    "119": [
+      "src_main_java_com_ben_csp_agent_goals_reviewprorabreportsgoal",
+      "src_main_java_com_ben_csp_agent_goals_reviewprorabreportsgoal_reviewprorabreportsgoal",
+      "src_main_java_com_ben_csp_agent_goals_reviewprorabreportsgoal_reviewprorabreportsgoal_execute"
+    ],
+    "120": [
+      "src_main_java_com_ben_csp_agent_goals_signdosyegoal",
+      "src_main_java_com_ben_csp_agent_goals_signdosyegoal_signdosyegoal",
+      "src_main_java_com_ben_csp_agent_goals_signdosyegoal_signdosyegoal_execute"
+    ],
+    "121": [
+      "src_main_java_com_ben_csp_block_entity_icmsblockentity_icmsblockentity",
+      "src_main_java_com_ben_csp_block_entity_icmsblockentity_icmsblockentity_icmsblockentity",
+      "src_main_java_com_ben_csp_block_entity_icmsblockentity_java_blockentitytype"
+    ],
+    "122": [
+      "src_main_java_com_ben_csp_block_entity_industrialcontrolblockentity_industrialcontrolblockentity",
+      "src_main_java_com_ben_csp_block_entity_industrialcontrolblockentity_industrialcontrolblockentity_industrialcontrolblockentity",
+      "src_main_java_com_ben_csp_block_entity_industrialcontrolblockentity_java_blockentitytype"
+    ],
+    "123": [
+      "src_main_java_com_ben_csp_block_graphiteblock",
+      "src_main_java_com_ben_csp_block_graphiteblock_graphiteblock",
+      "src_main_java_com_ben_csp_block_graphiteblock_graphiteblock_graphiteblock"
+    ],
+    "124": [
+      "src_main_java_com_ben_csp_client_cspmodclient",
+      "src_main_java_com_ben_csp_client_cspmodclient_cspmodclient",
+      "src_main_java_com_ben_csp_client_cspmodclient_cspmodclient_init"
+    ],
+    "125": [
+      "src_main_java_com_ben_csp_modsounds",
+      "src_main_java_com_ben_csp_modsounds_modsounds",
+      "src_main_java_com_ben_csp_modsounds_modsounds_getreactorcooldownsound"
+    ],
+    "126": [
+      "src_main_java_com_ben_csp_rbmk_controlrodblock",
+      "src_main_java_com_ben_csp_rbmk_controlrodblock_controlrodblock",
+      "src_main_java_com_ben_csp_rbmk_controlrodblock_controlrodblock_controlrodblock"
+    ],
+    "127": [
+      "bin_main_javac_check",
+      "bin_main_readme_migration_1201"
+    ],
+    "128": [
+      "csp_modern_v2_safety_guide",
+      "pi_warden_zero_deletion"
+    ],
+    "129": [
+      "devcontainer_post_create",
+      "devcontainer_post_create_sh__entry"
+    ],
+    "130": [
+      "fabric_docs_combined_abstractdynamicsoundinstance",
+      "fabric_docs_combined_dynamicsoundmanager"
+    ],
+    "131": [
+      "fabric_docs_combined_examplemoddatagenerator",
+      "fabric_docs_combined_upgradingrecipe"
+    ],
+    "132": [
+      "fabric_docs_combined_fabricmodelprovider",
+      "fabric_docs_combined_itemmodelgenerators"
+    ],
+    "133": [
+      "project_notes_enterprise_system",
+      "project_notes_opb82"
+    ],
+    "134": [
+      "scripts_find_missing_files",
+      "scripts_find_missing_files_sh__entry"
+    ],
+    "135": [
+      "scripts_setup_native_env",
+      "scripts_setup_native_env_sh__entry"
+    ],
+    "136": [
+      "scripts_shelved_aeca",
+      "scripts_shelved_aeca_sh__entry"
+    ],
+    "137": [
+      "scripts_shelved_aecs_bridge_sh_scripts_shelved_aecs_bridge_09d807",
+      "scripts_shelved_aecs_bridge_sh_scripts_shelved_aecs_bridge_sh_entry_09d807"
+    ],
+    "138": [
+      "scripts_shelved_aecs_bridge_sh_scripts_shelved_aecs_bridge_6b19ed",
+      "scripts_shelved_aecs_bridge_sh_scripts_shelved_aecs_bridge_sh_entry_6b19ed"
+    ],
+    "139": [
+      "scripts_shelved_aecs_sh_scripts_shelved_aecs_ae0df3",
+      "scripts_shelved_aecs_sh_scripts_shelved_aecs_sh_entry_ae0df3"
+    ],
+    "140": [
+      "scripts_shelved_stop_aecs_sh_scripts_shelved_stop_aecs_61f072",
+      "scripts_shelved_stop_aecs_sh_scripts_shelved_stop_aecs_sh_entry_61f072"
+    ],
+    "141": [
+      "scripts_shelved_stop_aecs_sh_scripts_shelved_stop_aecs_f9ac59",
+      "scripts_shelved_stop_aecs_sh_scripts_shelved_stop_aecs_sh_entry_f9ac59"
+    ],
+    "142": [
+      "src_main_java_com_ben_csp_agent_directorsplanshetitem",
+      "src_main_java_com_ben_csp_agent_directorsplanshetitem_directorsplanshetitem"
+    ],
+    "143": [
+      "src_main_java_com_ben_csp_agent_glavnyinzhenerentity",
+      "src_main_java_com_ben_csp_agent_glavnyinzhenerentity_glavnyinzhenerentity"
+    ],
+    "144": [
+      "src_main_java_com_ben_csp_agent_industrialworkerentity",
+      "src_main_java_com_ben_csp_agent_industrialworkerentity_industrialworkerentity"
+    ],
+    "145": [
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniyaentity",
+      "src_main_java_com_ben_csp_agent_nachalniksnabzheniyaentity_nachalniksnabzheniyaentity"
+    ],
+    "146": [
+      "src_main_java_com_ben_csp_block_entity_rbmkconstants",
+      "src_main_java_com_ben_csp_block_entity_rbmkconstants_rbmkconstants"
+    ],
+    "147": [
+      "src_main_java_com_ben_csp_qc_structuraldata",
+      "src_main_java_com_ben_csp_qc_structuraldata_structuraldata"
+    ],
+    "148": [
+      "agents_zero_deletion_policy"
+    ],
+    "149": [
+      "backup_entity_checkpoint"
+    ],
+    "150": [
+      "bin_main_assets_csp_modern_icon"
+    ],
+    "151": [
+      "bin_main_assets_csp_modern_textures_block_geodetic_marker_block"
+    ],
+    "152": [
+      "bin_main_javac_full"
+    ],
+    "153": [
+      "build"
+    ],
+    "154": [
+      "devcontainer_post_create_setup"
+    ],
+    "155": [
+      "fabric_docs_combined_blockmodeldefinitiongenerator"
+    ],
+    "156": [
+      "fabric_docs_combined_commandregistrationcallback"
+    ],
+    "157": [
+      "fabric_docs_combined_customrenderpipeline"
+    ],
+    "158": [
+      "fabric_docs_combined_customsounds"
+    ],
+    "159": [
+      "fabric_docs_combined_events"
+    ],
+    "160": [
+      "fabric_docs_combined_fabricadvancementprovider"
+    ],
+    "161": [
+      "fabric_docs_combined_fabricblocklootsubprovider"
+    ],
+    "162": [
+      "fabric_docs_combined_fabricrecipeprovider"
+    ],
+    "163": [
+      "fabric_docs_combined_fabrictagsprovider"
+    ],
+    "164": [
+      "fabric_docs_combined_loottableevents"
+    ],
+    "165": [
+      "fabric_docs_combined_modattributes"
+    ],
+    "166": [
+      "fabric_docs_combined_resource_conditions"
+    ],
+    "167": [
+      "fabric_docs_combined_sheepshearcallback"
+    ],
+    "168": [
+      "fabric_docs_combined_simplecriteriontrigger"
+    ],
+    "169": [
+      "fabric_docs_combined_statistics"
+    ],
+    "170": [
+      "fabric_docs_combined_taterblock"
+    ],
+    "171": [
+      "fabric_docs_combined_tatereffect"
+    ],
+    "172": [
+      "fabric_docs_combined_text_translations"
+    ],
+    "173": [
+      "fabric_docs_combined_texturemapping"
+    ],
+    "174": [
+      "fabric_docs_combined_vscode_setup"
+    ],
+    "175": [
+      "install_java25"
+    ],
+    "176": [
+      "pi_warden_role"
+    ],
+    "177": [
+      "pi_warden_safety_education"
+    ],
+    "178": [
+      "project_notes_arl_standard"
+    ],
+    "179": [
+      "project_notes_sgb_standard"
+    ],
+    "180": [
+      "settings_gradle_settings"
+    ]
+  },
+  "cohesion": {
+    "0": 0.057971014492753624,
+    "1": 0.07207207207207207,
+    "2": 0.14864864864864866,
+    "3": 0.08571428571428572,
+    "4": 0.16098484848484848,
+    "5": 0.07459677419354839,
+    "6": 0.07311827956989247,
+    "7": 0.10344827586206896,
+    "8": 0.09686609686609686,
+    "9": 0.11076923076923077,
+    "10": 0.11594202898550725,
+    "11": 0.1471861471861472,
+    "12": 0.14285714285714285,
+    "13": 0.11428571428571428,
+    "14": 0.12105263157894737,
+    "15": 0.3790849673202614,
+    "16": 0.16339869281045752,
+    "17": 0.13970588235294118,
+    "18": 0.125,
+    "19": 0.15441176470588236,
+    "20": 0.14705882352941177,
+    "21": 0.19117647058823528,
+    "22": 0.16666666666666666,
+    "23": 0.16666666666666666,
+    "24": 0.19166666666666668,
+    "25": 0.1619047619047619,
+    "26": 0.15384615384615385,
+    "27": 0.21978021978021978,
+    "28": 0.2087912087912088,
+    "29": 0.15384615384615385,
+    "30": 0.1794871794871795,
+    "31": 0.21794871794871795,
+    "32": 0.21212121212121213,
+    "33": 0.18181818181818182,
+    "34": 0.22727272727272727,
+    "35": 0.19696969696969696,
+    "36": 0.2727272727272727,
+    "37": 0.21212121212121213,
+    "38": 0.2727272727272727,
+    "39": 0.22727272727272727,
+    "40": 0.22727272727272727,
+    "41": 0.18181818181818182,
+    "42": 0.18181818181818182,
+    "43": 0.18181818181818182,
+    "44": 0.23636363636363636,
+    "45": 0.18181818181818182,
+    "46": 0.2222222222222222,
+    "47": 0.24444444444444444,
+    "48": 0.2,
+    "49": 0.3055555555555556,
+    "50": 0.4722222222222222,
+    "51": 0.2777777777777778,
+    "52": 0.2777777777777778,
+    "53": 0.35714285714285715,
+    "54": 0.35714285714285715,
+    "55": 0.25,
+    "56": 0.32142857142857145,
+    "57": 0.25,
+    "58": 0.2857142857142857,
+    "59": 0.3333333333333333,
+    "60": 0.2857142857142857,
+    "61": 0.3333333333333333,
+    "62": 0.3333333333333333,
+    "63": 0.3333333333333333,
+    "64": 0.2857142857142857,
+    "65": 0.38095238095238093,
+    "66": 0.38095238095238093,
+    "67": 0.3333333333333333,
+    "68": 0.4,
+    "69": 0.3333333333333333,
+    "70": 0.3333333333333333,
+    "71": 0.26666666666666666,
+    "72": 0.3333333333333333,
+    "73": 0.3333333333333333,
+    "74": 0.4,
+    "75": 0.6,
+    "76": 0.4,
+    "77": 0.5,
+    "78": 0.5,
+    "79": 0.5,
+    "80": 0.5,
+    "81": 0.8333333333333334,
+    "82": 0.8333333333333334,
+    "83": 0.5,
+    "84": 0.5,
+    "85": 0.5,
+    "86": 0.5,
+    "87": 0.5,
+    "88": 0.5,
+    "89": 0.5,
+    "90": 0.5,
+    "91": 0.6666666666666666,
+    "92": 0.6666666666666666,
+    "93": 0.6666666666666666,
+    "94": 0.6666666666666666,
+    "95": 0.6666666666666666,
+    "96": 0.6666666666666666,
+    "97": 0.6666666666666666,
+    "98": 0.6666666666666666,
+    "99": 0.6666666666666666,
+    "100": 0.6666666666666666,
+    "101": 0.6666666666666666,
+    "102": 0.6666666666666666,
+    "103": 0.6666666666666666,
+    "104": 0.6666666666666666,
+    "105": 0.6666666666666666,
+    "106": 0.6666666666666666,
+    "107": 0.6666666666666666,
+    "108": 0.6666666666666666,
+    "109": 0.6666666666666666,
+    "110": 0.6666666666666666,
+    "111": 0.6666666666666666,
+    "112": 0.6666666666666666,
+    "113": 0.6666666666666666,
+    "114": 0.6666666666666666,
+    "115": 0.6666666666666666,
+    "116": 0.6666666666666666,
+    "117": 0.6666666666666666,
+    "118": 0.6666666666666666,
+    "119": 0.6666666666666666,
+    "120": 0.6666666666666666,
+    "121": 0.6666666666666666,
+    "122": 0.6666666666666666,
+    "123": 0.6666666666666666,
+    "124": 0.6666666666666666,
+    "125": 0.6666666666666666,
+    "126": 0.6666666666666666,
+    "127": 1.0,
+    "128": 1.0,
+    "129": 1.0,
+    "130": 1.0,
+    "131": 1.0,
+    "132": 1.0,
+    "133": 1.0,
+    "134": 1.0,
+    "135": 1.0,
+    "136": 1.0,
+    "137": 1.0,
+    "138": 1.0,
+    "139": 1.0,
+    "140": 1.0,
+    "141": 1.0,
+    "142": 1.0,
+    "143": 1.0,
+    "144": 1.0,
+    "145": 1.0,
+    "146": 1.0,
+    "147": 1.0,
+    "148": 1.0,
+    "149": 1.0,
+    "150": 1.0,
+    "151": 1.0,
+    "152": 1.0,
+    "153": 1.0,
+    "154": 1.0,
+    "155": 1.0,
+    "156": 1.0,
+    "157": 1.0,
+    "158": 1.0,
+    "159": 1.0,
+    "160": 1.0,
+    "161": 1.0,
+    "162": 1.0,
+    "163": 1.0,
+    "164": 1.0,
+    "165": 1.0,
+    "166": 1.0,
+    "167": 1.0,
+    "168": 1.0,
+    "169": 1.0,
+    "170": 1.0,
+    "171": 1.0,
+    "172": 1.0,
+    "173": 1.0,
+    "174": 1.0,
+    "175": 1.0,
+    "176": 1.0,
+    "177": 1.0,
+    "178": 1.0,
+    "179": 1.0,
+    "180": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_main_java_com_ben_csp_block_entity_reactorchannel_reactorchannel",
+      "label": "ReactorChannel",
+      "degree": 25
+    },
+    {
+      "id": "src_main_java_com_ben_csp_agent_skalarequestdevicescreen_skalarequestdevicescreen",
+      "label": "SkalaRequestDeviceScreen",
+      "degree": 22
+    },
+    {
+      "id": "src_main_java_com_ben_csp_entity_ai_dosye_dosye_dosye",
+      "label": "Dosye",
+      "degree": 20
+    },
+    {
+      "id": "src_main_java_com_ben_csp_skala_skalaprocesscomputer_skalaprocesscomputer",
+      "label": "SkalaProcessComputer",
+      "degree": 17
+    },
+    {
+      "id": "src_main_resources_data_csp_gosstroy_specs_kommutatoroperatorentity_kommutatoroperatorentity",
+      "label": "KommutatorOperatorEntity",
+      "degree": 17
+    },
+    {
+      "id": "src_main_java_com_ben_csp_agent_dosye_dosye",
+      "label": "Dosye",
+      "degree": 16
+    },
+    {
+      "id": "src_main_java_com_ben_csp_agent_prorab_prorab",
+      "label": "Prorab",
+      "degree": 13
+    },
+    {
+      "id": "src_main_java_com_ben_csp_personnel_personnelrecord_personnelrecord",
+      "label": "PersonnelRecord",
+      "degree": 12
+    },
+    {
+      "id": "src_main_java_com_ben_csp_world_weathermanager_weathermanager",
+      "label": "WeatherManager",
+      "degree": 12
+    },
+    {
+      "id": "src_main_java_com_ben_csp_block_modblocks_modblocks",
+      "label": "ModBlocks",
+      "degree": 11
+    }
+  ],
+  "surprises": [
+    {
+      "source": "CSP-Modern Safety Protocol",
+      "target": "Zero Deletion Policy",
+      "source_files": [
+        "CSP-Modern-v2/SAFETY_GUIDE.md",
+        "pi-warden.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "implements",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "HotParticle",
+      "target": "Isotope",
+      "source_files": [
+        "src/main/java/com/ben/csp/radiology/HotParticle.java",
+        "src/main/java/com/ben/csp/radiology/Isotope.java"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "SkalaProcessComputer",
+      "target": "SkalaChannel",
+      "source_files": [
+        "src/main/java/com/ben/csp/skala/SkalaProcessComputer.java",
+        "src/main/java/com/ben/csp/skala/SkalaChannel.java"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "EnterpriseDirectorEntityRenderer",
+      "target": "EnterpriseDirectorEntity",
+      "source_files": [
+        "src/client/java/com/ben/csp/client/render/entity/EnterpriseDirectorEntityRenderer.java",
+        "src/main/java/com/ben/csp/entity/EnterpriseDirectorEntity.java"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "FacilityDirectorEntityRenderer",
+      "target": "FacilityDirectorEntity",
+      "source_files": [
+        "src/client/java/com/ben/csp/client/render/entity/FacilityDirectorEntityRenderer.java",
+        "src/main/java/com/ben/csp/entity/FacilityDirectorEntity.java"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `SkalaRequestDeviceScreen` connect `Skala Request Screen` to `Agent Debug Information`, `Rail Traffic Management`, `Skala Network Packets`?",
+      "why": "High betweenness centrality (0.046) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `ACTIVE`, `HALTED`, `STANDBY` to the rest of the system?",
+      "why": "107 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Mod Server Initialization` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.057971014492753624 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Dosye` connect `Dossier Attachment Management` to `NBT Data Serialization`?",
+      "why": "High betweenness centrality (0.028) - this node is a cross-community bridge."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Material Registry Infrastructure` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07207207207207207 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `SkalaProcessComputer` connect `Skala Process Computer` to `Server World State Management`, `Skala Data Channels`?",
+      "why": "High betweenness centrality (0.020) - this node is a cross-community bridge."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Enterprise Entity Definitions` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.14864864864864866 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

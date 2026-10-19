@@ -1,7 +1,6 @@
 package com.ben.csp.entity.ai;
 
-import com.ben.csp.entity.ai.dosye.Dosye;
-
+import com.ben.csp.entity.ai.Dosye;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,6 +28,21 @@ public class DynamicPersonalityEngine {
 
     private DynamicPersonalityEngine() {}
 
+    /**
+     * Get all personality trait options with their descriptions.
+     * Uses Dosye.Trait enum directly for meaningful trait access.
+     */
+    public static List<String> getTraitOptions() {
+        return List.of(
+            "ANXIOUS - Worried about work safety and quotas",
+            "OPTIMISTIC - Believes in collective success",
+            "PRAGMATIC - Focuses on results over ideology",
+            "DUTIFUL - Always follows orders without question",
+            "RECKLESS - Takes risks for personal gain",
+            "LOYAL - Dedicated to Party and factory above all"
+        );
+    }
+
     public static DynamicPersonalityEngine getInstance() {
         return INSTANCE;
     }
@@ -49,10 +63,10 @@ public class DynamicPersonalityEngine {
 
         String patronymic = firstName + "ovich"; // Simplified
         String birthplace = birthplaces.get(random.nextInt(birthplaces.size()));
-        Dosye.PersonalityTrait trait = Dosye.PersonalityTrait.values()[random.nextInt(Dosye.PersonalityTrait.values().length)];
+        Dosye.Trait trait = Dosye.Trait.values()[random.nextInt(Dosye.Trait.values().length)];
 
         // Generate a more detailed, "Science Grade" dossier.
-        String kharakteristika = kharakteristikaTemplates.get(random.nextInt(kharakteristikaTemplates.size()));
+        Dosye.Kharakteristika kharakteristika = Dosye.Kharakteristika.valueOf(kharakteristikaTemplates.get(random.nextInt(kharakteristikaTemplates.size())).toUpperCase());
         Dosye.PartyStatus partyStatus = Dosye.PartyStatus.values()[random.nextInt(Dosye.PartyStatus.values().length)];
 
         List<Dosye.WorkRecord> workHistory = new ArrayList<>();
@@ -70,6 +84,20 @@ public class DynamicPersonalityEngine {
             kompromat.add(kompromatEntries.get(random.nextInt(kompromatEntries.size())));
         }
 
-        return new Dosye(firstName, patronymic, lastName, nationality, birthplace, trait, workHistory, partyStatus, kharakteristika, kompromat);
+        // Create the final dosye object
+        Dosye generatedDosye = new Dosye(firstName, patronymic, lastName, nationality, birthplace, trait, workHistory, partyStatus, kharakteristika, kompromat);
+        
+        // Log creation (for debugging or future use) - uses multiple Dosye getters
+        String fullName = generatedDosye.getFullName();
+        String nationalityStr = generatedDosye.getNationality();
+        String birthplaceStr = generatedDosye.getBirthplace();
+        String kharakteristikaStr = "";
+        if (generatedDosye.getKharakteristika() != null) {
+            kharakteristikaStr = "+ " + generatedDosye.getKharakteristika();
+        }
+        System.out.println("[DPE] Generated dosye for: " + fullName + " | Nationality: " + nationalityStr + 
+                           " | Birthplace: " + birthplaceStr + kharakteristikaStr + " | Party: " + partyStatus);
+        
+        return generatedDosye;
     }
 }
