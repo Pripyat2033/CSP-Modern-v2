@@ -50,6 +50,29 @@ public final class WorkerSpeech {
         }
     }
 
+    /** Carry out an order without speaking — used when many workers answer at once. */
+    public static void act(CspPersonEntity worker, PlayerEntity player, DialogueIntent intent) {
+        switch (intent) {
+            case COME -> worker.orderCome(player);
+            case FOLLOW -> worker.orderFollow(player);
+            case STAND_DOWN -> worker.orderStandDown();
+            case GO_POST -> worker.orderGoToPost();
+            default -> { }
+        }
+    }
+
+    /** One short summary of what a group did, for a mass order. */
+    public static String groupReply(DialogueIntent intent) {
+        return switch (intent) {
+            case COME -> "they come to you";
+            case FOLLOW -> "they fall in behind you";
+            case STAND_DOWN -> "they stand easy";
+            case GO_POST -> "they return to their posts";
+            case GREET -> "they answer the greeting";
+            default -> "they have nothing to add";
+        };
+    }
+
     private static String status(CspPersonEntity worker) {
         StringBuilder sb = new StringBuilder();
         if (worker.getWorkplacePos() != null) {
