@@ -29,62 +29,48 @@ public class KartografManager extends PersistentState {
      * @return NBT compound containing serialized block box coordinates
      */
     public static NbtCompound serializeBlockBox(BlockBox box) {
-        // Store BlockBox as string representation for now - placeholder implementation
-        return new NbtCompound();
+        NbtCompound nbt = new NbtCompound();
+        nbt.putInt("minX", box.getMinX());
+        nbt.putInt("minY", box.getMinY());
+        nbt.putInt("minZ", box.getMinZ());
+        nbt.putInt("maxX", box.getMaxX());
+        nbt.putInt("maxY", box.getMaxY());
+        nbt.putInt("maxZ", box.getMaxZ());
+        return nbt;
     }
 
     /**
      * Deserialize a BlockBox from NBT format for state restoration.
      * Used in fromNbt() to restore last scan bounds data.
-     * 
+     *
      * @param nbt The NBT compound containing serialized block box coordinates
      * @return Restored BlockBox or null if not found/invalid
      */
     @Nullable
     public static BlockBox deserializeBlockBox(NbtCompound nbt) {
-        // Placeholder implementation - actual deserialization would reconstruct BlockBox from NBT data
-        return null;
+        String[] keys = {"minX", "minY", "minZ", "maxX", "maxY", "maxZ"};
+        for (String key : keys) {
+            if (!nbt.contains(key)) {
+                return null;
+            }
+        }
+        return new BlockBox(
+            nbt.getInt("minX"), nbt.getInt("minY"), nbt.getInt("minZ"),
+            nbt.getInt("maxX"), nbt.getInt("maxY"), nbt.getInt("maxZ"));
     }
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
-        // Save lastScanBounds for persistent state recovery
         if (lastScanBounds != null) {
             nbt.put("lastScanBounds", serializeBlockBox(lastScanBounds));
         }
-        System.out.println("[Kartograf] Saved scan bounds: " + 
-                          (lastScanBounds != null ? lastScanBounds.toString() : "null"));
         return nbt;
     }
 
     public static KartografManager fromNbt(NbtCompound nbt) {
-        // Load lastScanBounds from NBT for persistent state restoration
         KartografManager manager = new KartografManager();
         if (nbt.contains("lastScanBounds")) {
-            try {
-                String boundsStr = nbt.getString("lastScanBounds");
-                // For now, use simple string parsing since proper deserialization is placeholder
-                if (boundsStr != null && !boundsStr.isEmpty()) {
-                    try {
-                        String[] parts = boundsStr.split(",");
-                        if (parts.length >= 6) {
-                            int minX = Integer.parseInt(parts[0]);
-                            int minY = Integer.parseInt(parts[1]);
-                            int minZ = Integer.parseInt(parts[2]);
-                            int maxX = Integer.parseInt(parts[3]);
-                            int maxY = Integer.parseInt(parts[4]);
-                            int maxZ = Integer.parseInt(parts[5]);
-                            BlockBox savedBox = new BlockBox(minX, minY, minZ, maxX, maxY, maxZ);
-                            manager.lastScanBounds = savedBox;
-                            System.out.println("[Kartograf] Loaded scan bounds: " + savedBox.toString());
-                        }
-                    } catch (NumberFormatException e) {
-                        // Invalid format, continue without loaded bounds
-                    }
-                }
-            } catch (Exception e) {
-                // Failed to read string, continue without loaded bounds
-            }
+            manager.lastScanBounds = deserializeBlockBox(nbt.getCompound("lastScanBounds"));
         }
         return manager;
     }

@@ -27,6 +27,13 @@ loom {
     }
 }
 
+// Standalone developer tooling (AECS-II AST parser). Not part of the mod jar.
+sourceSets {
+    aecs {
+        java.srcDir 'src/aecs/java'
+    }
+}
+
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -38,6 +45,9 @@ dependencies {
 
     // Add the MixinExtras library, which is often useful.
     modImplementation "io.github.llamalad7:mixinextras-fabric:0.3.5" // Includes the library in the mod jar
+
+    // AECS-II standalone AST parser tool (not shipped in the mod).
+    aecsImplementation "com.github.javaparser:javaparser-core:${project.javaparser_version}"
 }
 
 processResources {
