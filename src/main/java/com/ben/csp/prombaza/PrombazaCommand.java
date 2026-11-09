@@ -25,6 +25,16 @@ public final class PrombazaCommand {
     private static BlockPos pendingPos1;
     private static BlockPos pendingPos2;
 
+    /** The corners set with /prombaza pos1 and pos2, for the directorate to use. */
+    public static BlockPos pendingPos1() { return pendingPos1; }
+    public static BlockPos pendingPos2() { return pendingPos2; }
+
+    /** Clear the pending corners once a designation has been carried out. */
+    public static void clearPendingCorners() {
+        pendingPos1 = null;
+        pendingPos2 = null;
+    }
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("prombaza")
             .requires(source -> source.hasPermissionLevel(2))
@@ -78,18 +88,23 @@ public final class PrombazaCommand {
         String name = StringArgumentType.getString(ctx, "name");
         Area area = Area.of(pendingPos1.getX(), pendingPos1.getY(), pendingPos1.getZ(),
                             pendingPos2.getX(), pendingPos2.getY(), pendingPos2.getZ());
-        PrombazaState state = PrombazaState.get(source.getServer());
+        // The territory is not ours to take: it goes to the Director as a request.
+        String requestId = "prom-" + id;
         try {
-            Prombaza p = state.registry().designate(id, name, area, day(source), source.getName());
-            state.markDirty();
-            pendingPos1 = null;
-            pendingPos2 = null;
-            source.sendFeedback(() -> Text.literal("Designated " + p), true);
-            return 1;
+            com.ben.csp.directorate.DirectorateState.get(source.getServer())
+                .workflow().submit(new com.ben.csp.directorate.DirectorateRequest(
+                    requestId, com.ben.csp.directorate.RequestType.PROMBAZA_DESIGNATION,
+                    name + " (" + area.describe() + ")", null, null, area,
+                    source.getName(), day(source)));
+            com.ben.csp.directorate.DirectorateState.get(source.getServer()).markDirty();
         } catch (IllegalStateException e) {
             source.sendError(Text.literal(e.getMessage()));
             return 0;
         }
+        source.sendFeedback(() -> Text.literal(
+            "Request submitted to the Directorate: " + requestId
+            + " — approve it with /directorate approve " + requestId), true);
+        return 1;
     }
 
     private static int list(CommandContext<ServerCommandSource> ctx) {

@@ -53,6 +53,14 @@ public final class DirectorateRequest {
     public String decisionReason() { return decisionReason; }
     public boolean isPending() { return status == RequestStatus.PENDING; }
 
+    /** Restore a decided request from a save. */
+    public void restore(RequestStatus status, String decidedBy, long decidedDay, String reason) {
+        this.status = status;
+        this.decidedBy = decidedBy;
+        this.decidedDay = decidedDay;
+        this.decisionReason = reason;
+    }
+
     public void approve(String by, long day) {
         requirePending("approve");
         status = RequestStatus.APPROVED;

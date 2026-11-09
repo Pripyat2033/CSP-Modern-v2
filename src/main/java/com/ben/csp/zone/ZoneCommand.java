@@ -42,8 +42,24 @@ public final class ZoneCommand {
             source.sendError(Text.literal("The zone is already spawned. Use /zone draw or /zone status."));
             return 0;
         }
-        Area area = Area.of(p.getX() - radius, p.getY(), p.getZ() - radius,
-                            p.getX() + radius, p.getY() + 20, p.getZ() + radius);
+        // The territory is the Director's to lay out. If a prombaza has been
+        // designated, the enterprises come onto that ground; otherwise fall back
+        // to a radius around the caller, for a quick trial.
+        Area area;
+        var prombazas = com.ben.csp.prombaza.PrombazaState.get(source.getServer()).registry();
+        if (!prombazas.isEmpty()) {
+            var pb = prombazas.all().get(prombazas.all().size() - 1);
+            area = pb.area();
+            source.sendFeedback(() -> Text.literal(
+                "Building on the designated prombaza '" + pb.id() + "'."), false);
+        } else {
+            area = Area.of(p.getX() - radius, p.getY(), p.getZ() - radius,
+                           p.getX() + radius, p.getY() + 20, p.getZ() + radius);
+            source.sendFeedback(() -> Text.literal(
+                "No prombaza designated: laying out a " + (radius * 2)
+                + " m territory around you. Designate one with /directorate designate"
+                + " for the proper ground."), false);
+        }
         state.spawn(area);
         state.markDirty();
         GroundWorks.drawTerritory(world, state.territory());
