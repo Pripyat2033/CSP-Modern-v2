@@ -1,5 +1,12 @@
 package com.ben.csp.entity.ai.dosye;
 
+// ============================================================================
+// SUPERSEDED by com.ben.csp.entity.ai.Dosye
+//   This duplicate is not referenced anywhere. It is kept only so that
+//   existing work is not destroyed. DO NOT USE IT IN NEW CODE.
+//   Ask Ben before deleting.
+// ============================================================================
+
 import net.minecraft.nbt.NbtCompound;
 import java.util.List;
 import java.util.ArrayList;
@@ -8,6 +15,7 @@ import java.util.ArrayList;
  * "Science Grade": Represents a personnel dossier (Dosye).
  * Contains personal history and psychological state for an Enterprise agent.
  */
+@Deprecated
 public class Dosye {
     public enum PersonalityTrait { STOIC, ANXIOUS, DILIGENT, REBELLIOUS, QUESTIONING, RELIABLE }
     public enum PartyStatus { NON_MEMBER, CANDIDATE, MEMBER, ELITE }

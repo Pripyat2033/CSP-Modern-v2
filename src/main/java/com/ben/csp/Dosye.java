@@ -1,5 +1,12 @@
 package com.ben.csp;
 
+// ============================================================================
+// SUPERSEDED by com.ben.csp.entity.ai.Dosye
+//   This duplicate is not referenced anywhere. It is kept only so that
+//   existing work is not destroyed. DO NOT USE IT IN NEW CODE.
+//   Ask Ben before deleting.
+// ============================================================================
+
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -12,6 +19,7 @@ import net.minecraft.util.Formatting;
  * Historical Context: Soviet-era "case files" used for personnel records, project documentation,
  * and incident reports. Each Dosye tracks related materials in an organized filing cabinet.
  */
+@Deprecated
 public class Dosye {
     
     private final String id;

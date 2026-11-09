@@ -1,5 +1,12 @@
 package com.ben.csp.agent;
 
+// ============================================================================
+// SUPERSEDED by com.ben.csp.skala.SkalaRequestDeviceScreen
+//   This duplicate is not referenced anywhere. It is kept only so that
+//   existing work is not destroyed. DO NOT USE IT IN NEW CODE.
+//   Ask Ben before deleting.
+// ============================================================================
+
 import java.util.Map;
 
 import net.minecraft.block.BlockState;
@@ -18,6 +25,7 @@ import net.minecraft.util.math.BlockPos;
  * - debugInfo: Dynamic device state tracking, updated on requests/inventory changes
  * - deviceLocation: Full context string for request logging and inventory operations
  */
+@Deprecated
 public class SkalaRequestDeviceScreen extends Screen {
 
     private final BlockPos requestBlock;

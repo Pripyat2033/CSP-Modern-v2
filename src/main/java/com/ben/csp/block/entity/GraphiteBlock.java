@@ -1,9 +1,17 @@
 package com.ben.csp.block.entity;
 
+// ============================================================================
+// SUPERSEDED by com.ben.csp.block.GraphiteBlock
+//   This duplicate is not referenced anywhere. It is kept only so that
+//   existing work is not destroyed. DO NOT USE IT IN NEW CODE.
+//   Ask Ben before deleting.
+// ============================================================================
+
 
 /**
  * Graphite Block - RBMK Reactor Moderator Block.
  */
+@Deprecated
 public class GraphiteBlock {
 
     private static String register(String name) {

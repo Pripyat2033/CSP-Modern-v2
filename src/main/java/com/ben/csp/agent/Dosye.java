@@ -1,11 +1,19 @@
 package com.ben.csp.agent;
 
+// ============================================================================
+// SUPERSEDED by com.ben.csp.entity.ai.Dosye
+//   This duplicate is not referenced anywhere. It is kept only so that
+//   existing work is not destroyed. DO NOT USE IT IN NEW CODE.
+//   Ask Ben before deleting.
+// ============================================================================
+
 import net.minecraft.nbt.NbtCompound;
 import java.util.*;
 
 /**
  * Case File (Досье) - Soviet-era document record for tracking personnel, incidents, or operations.
  */
+@Deprecated
 public class Dosye {
     public final String dosyeId;
     public final String title;
