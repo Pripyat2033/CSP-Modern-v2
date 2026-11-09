@@ -8,11 +8,11 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.util.Identifier;
 
-public class GlavnyInzhenerEntityRenderer extends MobEntityRenderer<GlavnyInzhenerEntity, GlavnyInzhenerEntityModel> {
+public class GlavnyInzhenerEntityRenderer extends MobEntityRenderer<GlavnyInzhenerEntity, GlavnyInzhenerEntityModel<GlavnyInzhenerEntity>> {
     private static final Identifier TEXTURE = new Identifier(CSPMod.MOD_ID, "textures/entity/glavny_inzhener.png");
 
     public GlavnyInzhenerEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new GlavnyInzhenerEntityModel(context.getPart(ModModelLayers.GLAVNY_INZHENER)), 0.5f);
+        super(context, new GlavnyInzhenerEntityModel<>(context.getPart(ModModelLayers.GLAVNY_INZHENER)), 0.5f);
     }
 
     @Override

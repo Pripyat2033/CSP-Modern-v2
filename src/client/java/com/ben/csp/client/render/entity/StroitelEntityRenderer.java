@@ -15,6 +15,6 @@ public class StroitelEntityRenderer extends MobEntityRenderer<StroitelEntity, St
 
     @Override
     public Identifier getTexture(StroitelEntity entity) {
-        return new Identifier("minecraft", "textures/entity/villager/villager.png");
+        return new Identifier("csp-modern", "textures/entity/stroitel.png");
     }
 }

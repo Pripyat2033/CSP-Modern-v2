@@ -15,6 +15,6 @@ public class UchetchikEntityRenderer extends MobEntityRenderer<UchetchikEntity, 
 
     @Override
     public Identifier getTexture(UchetchikEntity entity) {
-        return new Identifier("minecraft", "textures/entity/villager/villager.png");
+        return new Identifier("csp-modern", "textures/entity/uchetchik.png");
     }
 }

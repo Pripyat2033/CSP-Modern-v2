@@ -4,6 +4,7 @@ import com.ben.csp.entity.ai.Dosye;
 import com.ben.csp.entity.ai.DosyeNbt;
 import com.ben.csp.entity.ai.DynamicPersonalityEngine;
 import com.ben.csp.entity.ai.Garrisonable;
+import com.ben.csp.entity.ai.WorkerChat;
 import com.ben.csp.entity.goals.WorkAtAssignedPostGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -14,6 +15,8 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -85,6 +88,14 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
                 this.goalSelector.add(3, new LookAroundGoal(this));
             }
         }
+    }
+
+    @Override
+    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
+        if (!getWorld().isClient() && hand == Hand.MAIN_HAND) {
+            WorkerChat.speak(this, player);
+        }
+        return ActionResult.SUCCESS;
     }
 
     private void applyDosyeName() {

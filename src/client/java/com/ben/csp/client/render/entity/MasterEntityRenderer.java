@@ -15,6 +15,6 @@ public class MasterEntityRenderer extends MobEntityRenderer<MasterEntity, Master
 
     @Override
     public Identifier getTexture(MasterEntity entity) {
-        return new Identifier("minecraft", "textures/entity/villager/villager.png");
+        return new Identifier("csp-modern", "textures/entity/master.png");
     }
 }

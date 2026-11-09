@@ -1,23 +1,24 @@
 package com.ben.csp.client.render.model.entity;
-import com.ben.csp.entity.*;
-import com.ben.csp.entity.GlavnyInzhenerEntity;
+
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.entity.model.VillagerResemblingModel;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.entity.LivingEntity;
 
-public class GlavnyInzhenerEntityModel extends VillagerResemblingModel<GlavnyInzhenerEntity> {
+/**
+ * Biped (humanoid) model for the glavny_inzhener worker. Replaces the villager model so
+ * the role can wear a proper 1986 Soviet work uniform skin.
+ */
+public class GlavnyInzhenerEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
+
     public GlavnyInzhenerEntityModel(ModelPart root) {
         super(root);
     }
 
     public static TexturedModelData getTexturedModelData() {
-        ModelData modelData = VillagerResemblingModel.getModelData();
+        ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
         return TexturedModelData.of(modelData, 64, 64);
-    }
-
-    @Override
-    public void setAngles(GlavnyInzhenerEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
     }
 }

@@ -15,6 +15,6 @@ public class NachalnikSnabzheniyaEntityRenderer extends MobEntityRenderer<Nachal
 
     @Override
     public Identifier getTexture(NachalnikSnabzheniyaEntity entity) {
-        return new Identifier("minecraft", "textures/entity/villager/villager.png");
+        return new Identifier("csp-modern", "textures/entity/nachalnik_snabzheniya.png");
     }
 }

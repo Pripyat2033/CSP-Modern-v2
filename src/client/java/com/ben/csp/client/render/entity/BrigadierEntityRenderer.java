@@ -15,6 +15,6 @@ public class BrigadierEntityRenderer extends MobEntityRenderer<BrigadierEntity, 
 
     @Override
     public Identifier getTexture(BrigadierEntity entity) {
-        return new Identifier("minecraft", "textures/entity/villager/villager.png");
+        return new Identifier("csp-modern", "textures/entity/brigadier.png");
     }
 }

@@ -8,11 +8,11 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.util.Identifier;
 
-public class SekretarEntityRenderer extends MobEntityRenderer<SekretarEntity, SekretarEntityModel> {
+public class SekretarEntityRenderer extends MobEntityRenderer<SekretarEntity, SekretarEntityModel<SekretarEntity>> {
     private static final Identifier TEXTURE = new Identifier(CSPMod.MOD_ID, "textures/entity/sekretar.png");
 
     public SekretarEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new SekretarEntityModel(context.getPart(ModModelLayers.SEKRETAR)), 0.5f);
+        super(context, new SekretarEntityModel<>(context.getPart(ModModelLayers.SEKRETAR)), 0.5f);
     }
 
     @Override

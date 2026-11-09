@@ -15,6 +15,6 @@ public class ProrabEntityRenderer extends MobEntityRenderer<ProrabEntity, Prorab
 
     @Override
     public Identifier getTexture(ProrabEntity entity) {
-        return new Identifier("minecraft", "textures/entity/villager/villager.png");
+        return new Identifier("csp-modern", "textures/entity/prorab.png");
     }
 }

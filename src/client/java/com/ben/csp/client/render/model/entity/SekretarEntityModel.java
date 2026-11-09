@@ -1,28 +1,24 @@
 package com.ben.csp.client.render.model.entity;
-import com.ben.csp.entity.*;
-import com.ben.csp.entity.SekretarEntity;
+
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.entity.model.VillagerResemblingModel;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.entity.LivingEntity;
 
 /**
- * The model for the Sekretar entity.
- * It uses the VillagerResemblingModel as a base for a standard humanoid shape.
+ * Biped (humanoid) model for the sekretar worker. Replaces the villager model so
+ * the role can wear a proper 1986 Soviet work uniform skin.
  */
-public class SekretarEntityModel extends VillagerResemblingModel<SekretarEntity> {
+public class SekretarEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
 
     public SekretarEntityModel(ModelPart root) {
         super(root);
     }
 
     public static TexturedModelData getTexturedModelData() {
-        ModelData modelData = VillagerResemblingModel.getModelData();
+        ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
         return TexturedModelData.of(modelData, 64, 64);
-    }
-
-    @Override
-    public void setAngles(SekretarEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
     }
 }

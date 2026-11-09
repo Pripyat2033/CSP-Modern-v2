@@ -60,7 +60,7 @@ public class DynamicPersonalityEngine {
             lastName = ukrainianLastNames.get(random.nextInt(ukrainianLastNames.size()));
         }
 
-        String patronymic = firstName + "ovich"; // Simplified
+        String patronymic = firstName + (lastName.endsWith("enko") || firstName.endsWith("a") ? "ovna" : "ovich");
         String birthplace = birthplaces.get(random.nextInt(birthplaces.size()));
         Dosye.Trait trait = Dosye.Trait.values()[random.nextInt(Dosye.Trait.values().length)];
 
