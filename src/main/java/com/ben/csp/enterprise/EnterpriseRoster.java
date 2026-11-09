@@ -6,9 +6,12 @@ import java.util.List;
  * The enterprises that build the zone, each with the real facilities it must
  * construct, staff and run.
  *
- * <p>IMPORTANT: the names are PROVISIONAL. The specialities are the historical
- * categories of Soviet construction trusts, but the exact organisations that
- * built ChNPP have not been verified against a source. Rename freely; keep ids.
+ * <p>PROVENANCE. Only the general contractor is verified: the station was built
+ * by the trust Кременчуггэсстрой (ru.wikipedia, Чернобыльская АЭС). That one
+ * enterprise is marked VERIFIED and carries the real name. The specialist trusts
+ * below are RECONSTRUCTIONS: historically plausible for a large Soviet site, but
+ * the record does not name the actual ChNPP subcontractors, so they are marked as
+ * provisional and may be renamed or replaced as data appears. Keep ids.
  */
 public final class EnterpriseRoster {
 
@@ -24,8 +27,8 @@ public final class EnterpriseRoster {
     }
 
     public static List<Enterprise> provisional() {
-        return List.of(
-            of("genstroi", "Construction Trust (general contractor)",
+        List<Enterprise> all = List.of(
+            of("genstroi", "Кременчуггэсстрой — general contractor",
                 Specialty.GENERAL_CONSTRUCTION, List.of(
                     fac("genstroi", FacilityType.HEADQUARTERS, "Construction Trust HQ", 12),
                     fac("genstroi", FacilityType.CONSTRUCTION_OFFICE, "Site construction office", 20),
@@ -88,5 +91,11 @@ public final class EnterpriseRoster {
                     fac("santekhmontazh", FacilityType.CONSTRUCTION_OFFICE, "Sanitation office", 6),
                     fac("santekhmontazh", FacilityType.WORKSHOP, "Sanitation workshop", 20)))
         );
+        // the general contractor is a cited fact; the specialist trusts are not
+        for (Enterprise e : all) {
+            e.setProvenance("genstroi".equals(e.id())
+                ? Provenance.VERIFIED : Provenance.RECONSTRUCTION);
+        }
+        return all;
     }
 }

@@ -22,6 +22,7 @@ public final class Enterprise {
 
     private String directorId;      // the enterprise director NPC
     private Contract contract;
+    private Provenance provenance = Provenance.RECONSTRUCTION;
     private EnterpriseStatus status = EnterpriseStatus.FORMING;
 
     public Enterprise(String id, String name, Specialty specialty, List<Facility> facilities) {
@@ -41,6 +42,10 @@ public final class Enterprise {
     public String directorId() { return directorId; }
     public Contract contract() { return contract; }
     public EnterpriseStatus status() { return status; }
+
+    /** Whether this organisation is a cited fact or a reconstruction. */
+    public Provenance provenance() { return provenance; }
+    public void setProvenance(Provenance provenance) { this.provenance = java.util.Objects.requireNonNull(provenance); }
 
     public void assignDirector(String directorId) {
         this.directorId = Objects.requireNonNull(directorId, "directorId");
