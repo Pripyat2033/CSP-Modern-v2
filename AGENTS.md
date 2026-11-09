@@ -63,17 +63,45 @@ There were TWO separate lines at the site, and the mod models both:
 - **Operation** — the station enterprise, director **Брюханов В. П.**, which
   runs the plant once built.
 
-The player holds the **Director's role** (the in-tray of approvals in
-`directorate`), and must be free to be PRESENT anywhere — Bryukhanov was not a
-bureaucrat at a desk; he was in the units and the control rooms. Presence should
-help, never be required to shuffle paper.
+**This is a MULTIPLAYER mod. The Director is not one player: the server admins
+and their staff hold the Directorate.** The directorate's authority (the in-tray
+of approvals in `directorate`) is the admins' tool. The player keeps the
+Director's role throughout the whole game — no phase change. The Director must be
+free to be PRESENT anywhere: Bryukhanov was not a bureaucrat at a desk, he was in
+the units and the control rooms. Presence should help, never be required to
+shuffle paper.
 
 On the night of 26 April 1986 Bryukhanov was NOT in the control room: he was at
 home in Pripyat (проспект Ленина, 6) and drove to the plant after the explosion
 (his own account). The people at the panel were the OPERATING shift: Акимов
 (shift chief), Топтунов (senior reactor control engineer), Дятлов (deputy chief
-engineer for operations). So the end-state reconstruction lets the player take an
-OPERATOR's post for the night, not the director's.
+engineer for operations).
+
+# BUILD ORDER (agreed)
+
+1. **The plant and the prombaza first.** They power and serve everything else.
+2. **Pripyat later**, and only once everything else is ready.
+3. Build **piece by piece**. This is a long road; nothing is expected in one go.
+
+# THE GRID — "the plant powers the map", literally
+
+The plant powers the map in the **most literal sense imaginable**: a real power
+grid. The units generate real power (the RBMK-1000 is 1000 MW electrical per
+unit); the zone's functional buildings consume it; the grid has to stay in
+balance. Model it with the real quantities — megawatts of supply and demand, and
+grid **frequency** (50.0 Hz nominal in the USSR), which falls when demand exceeds
+supply. Automatic frequency load shedding (**АЧР**) drops non-essential load in
+stages to arrest the fall; if it cannot, the grid blacks out. This is both the
+living-world mechanic and a real lesson in power engineering.
+
+# SAFETY THROUGH EDUCATION (the ideology — do not compromise it)
+
+We do not believe in "safety means hiding information from someone" — to us that
+is the most dangerous thing you could do. The ideology is **Safety Through
+Education**. Therefore every course — nuclear engineering, physics, electronics —
+must be **accurate**. It is never watered down or dumbed down, **because
+misinformation kills.** Teach it properly, practically, so people actually
+understand.
 
 # TERMINOLOGY
 
