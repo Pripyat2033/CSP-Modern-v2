@@ -1,8 +1,10 @@
 package com.ben.csp;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
+import com.ben.csp.prombaza.PrombazaCommand;
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.data.InfrastructureRequirementLoader;
 import com.ben.csp.entity.ModEntities;
@@ -51,5 +53,9 @@ public class CSPMod implements ModInitializer {
             .registerReloadListener(new OPB82RuleLoader());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA)
             .registerReloadListener(new InfrastructureRequirementLoader());
+
+        // Commands
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+            PrombazaCommand.register(dispatcher));
     }
 }

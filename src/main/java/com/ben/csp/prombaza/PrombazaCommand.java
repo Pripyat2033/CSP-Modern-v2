@@ -1,0 +1,126 @@
+package com.ben.csp.prombaza;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+
+/**
+ * Operator commands to designate and undo a prombaza.
+ *
+ *   /prombaza pos1 [x y z]     set corner 1 (at the caller, or explicit coords)
+ *   /prombaza pos2 [x y z]     set corner 2
+ *   /prombaza designate <id> <name>
+ *   /prombaza list
+ *   /prombaza undo <id>
+ */
+public final class PrombazaCommand {
+
+    private PrombazaCommand() {}
+
+    private static BlockPos pendingPos1;
+    private static BlockPos pendingPos2;
+
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(CommandManager.literal("prombaza")
+            .requires(source -> source.hasPermissionLevel(2))
+            .then(CommandManager.literal("pos1")
+                .executes(ctx -> setPos(ctx, true, null))
+                .then(CommandManager.argument("x", IntegerArgumentType.integer())
+                    .then(CommandManager.argument("y", IntegerArgumentType.integer())
+                        .then(CommandManager.argument("z", IntegerArgumentType.integer())
+                            .executes(ctx -> setPos(ctx, true, readCoords(ctx)))))))
+            .then(CommandManager.literal("pos2")
+                .executes(ctx -> setPos(ctx, false, null))
+                .then(CommandManager.argument("x", IntegerArgumentType.integer())
+                    .then(CommandManager.argument("y", IntegerArgumentType.integer())
+                        .then(CommandManager.argument("z", IntegerArgumentType.integer())
+                            .executes(ctx -> setPos(ctx, false, readCoords(ctx)))))))
+            .then(CommandManager.literal("designate")
+                .then(CommandManager.argument("id", StringArgumentType.word())
+                    .then(CommandManager.argument("name", StringArgumentType.greedyString())
+                        .executes(PrombazaCommand::designate))))
+            .then(CommandManager.literal("list").executes(PrombazaCommand::list))
+            .then(CommandManager.literal("undo")
+                .then(CommandManager.argument("id", StringArgumentType.word())
+                    .executes(PrombazaCommand::undo))));
+    }
+
+    private static BlockPos readCoords(CommandContext<ServerCommandSource> ctx) {
+        return new BlockPos(IntegerArgumentType.getInteger(ctx, "x"),
+                            IntegerArgumentType.getInteger(ctx, "y"),
+                            IntegerArgumentType.getInteger(ctx, "z"));
+    }
+
+    private static int setPos(CommandContext<ServerCommandSource> ctx, boolean first, BlockPos given) {
+        BlockPos pos = given != null ? given : BlockPos.ofFloored(ctx.getSource().getPosition());
+        if (first) {
+            pendingPos1 = pos;
+        } else {
+            pendingPos2 = pos;
+        }
+        String which = first ? "1" : "2";
+        ctx.getSource().sendFeedback(() -> Text.literal("Prombaza corner " + which + " = " + fmt(pos)), false);
+        return 1;
+    }
+
+    private static int designate(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource source = ctx.getSource();
+        if (pendingPos1 == null || pendingPos2 == null) {
+            source.sendError(Text.literal("Set both corners first: /prombaza pos1 then /prombaza pos2"));
+            return 0;
+        }
+        String id = StringArgumentType.getString(ctx, "id");
+        String name = StringArgumentType.getString(ctx, "name");
+        Area area = Area.of(pendingPos1.getX(), pendingPos1.getY(), pendingPos1.getZ(),
+                            pendingPos2.getX(), pendingPos2.getY(), pendingPos2.getZ());
+        PrombazaState state = PrombazaState.get(source.getServer());
+        try {
+            Prombaza p = state.registry().designate(id, name, area, day(source), source.getName());
+            state.markDirty();
+            pendingPos1 = null;
+            pendingPos2 = null;
+            source.sendFeedback(() -> Text.literal("Designated " + p), true);
+            return 1;
+        } catch (IllegalStateException e) {
+            source.sendError(Text.literal(e.getMessage()));
+            return 0;
+        }
+    }
+
+    private static int list(CommandContext<ServerCommandSource> ctx) {
+        PrombazaRegistry reg = PrombazaState.get(ctx.getSource().getServer()).registry();
+        if (reg.isEmpty()) {
+            ctx.getSource().sendFeedback(() -> Text.literal("No prombaza designated."), false);
+            return 1;
+        }
+        for (Prombaza p : reg.all()) {
+            ctx.getSource().sendFeedback(() -> Text.literal(" - " + p), false);
+        }
+        return reg.size();
+    }
+
+    private static int undo(CommandContext<ServerCommandSource> ctx) {
+        String id = StringArgumentType.getString(ctx, "id");
+        PrombazaState state = PrombazaState.get(ctx.getSource().getServer());
+        if (state.registry().undo(id)) {
+            state.markDirty();
+            ctx.getSource().sendFeedback(() -> Text.literal("Undid prombaza '" + id + "'"), true);
+            return 1;
+        }
+        ctx.getSource().sendError(Text.literal("No prombaza with id '" + id + "'"));
+        return 0;
+    }
+
+    private static long day(ServerCommandSource source) {
+        return source.getWorld().getTimeOfDay() / 24000L + 1L;
+    }
+
+    private static String fmt(BlockPos p) {
+        return "(" + p.getX() + " " + p.getY() + " " + p.getZ() + ")";
+    }
+}
