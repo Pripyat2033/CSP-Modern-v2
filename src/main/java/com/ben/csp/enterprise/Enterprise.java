@@ -2,90 +2,101 @@ package com.ben.csp.enterprise;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
- * A Soviet specialised enterprise (trust) working the prombaza.
+ * A Soviet specialised enterprise (trust) working the zone.
  *
- * <p>Provisional names: the specialities are historical categories, but the
- * exact ChNPP organisation names are not yet verified and are marked as such.
+ * <p>An enterprise is not one building: it is a set of real, physical facilities
+ * (its headquarters, its office, its production plants) that must each be built,
+ * directed and staffed. Only when its whole set is working is the enterprise
+ * operational. Until then it can do nothing — it has no plant to do it with.
  */
 public final class Enterprise {
 
     private final String id;
     private final String name;
     private final Specialty specialty;
-    private final List<FacilityType> requiredFacilities;
-    private final Set<FacilityType> builtFacilities = EnumSet.noneOf(FacilityType.class);
+    private final List<Facility> facilities;
 
-    private String directorId;   // assigned Enterprise Director NPC, may be null
-    private int personnel;
+    private String directorId;      // the enterprise director NPC
+    private Contract contract;
+    private EnterpriseStatus status = EnterpriseStatus.FORMING;
 
-    public Enterprise(String id, String name, Specialty specialty,
-                      List<FacilityType> requiredFacilities) {
+    public Enterprise(String id, String name, Specialty specialty, List<Facility> facilities) {
         this.id = Objects.requireNonNull(id, "id");
         this.name = Objects.requireNonNull(name, "name");
         this.specialty = Objects.requireNonNull(specialty, "specialty");
-        this.requiredFacilities = List.copyOf(requiredFacilities);
+        if (facilities.isEmpty()) {
+            throw new IllegalArgumentException("an enterprise must own at least one facility");
+        }
+        this.facilities = List.copyOf(facilities);
     }
 
     public String id() { return id; }
     public String name() { return name; }
     public Specialty specialty() { return specialty; }
-    public List<FacilityType> requiredFacilities() { return requiredFacilities; }
-    public Set<FacilityType> builtFacilities() { return Collections.unmodifiableSet(builtFacilities); }
+    public List<Facility> facilities() { return Collections.unmodifiableList(facilities); }
     public String directorId() { return directorId; }
-    public int personnel() { return personnel; }
+    public Contract contract() { return contract; }
+    public EnterpriseStatus status() { return status; }
 
     public void assignDirector(String directorId) {
         this.directorId = Objects.requireNonNull(directorId, "directorId");
     }
 
-    public void setPersonnel(int personnel) {
-        if (personnel < 0) {
-            throw new IllegalArgumentException("personnel must not be negative");
-        }
-        this.personnel = personnel;
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
-    /** Mark a facility as built; only facilities in the required chain count. */
-    public void markFacilityBuilt(FacilityType facility) {
-        if (!requiredFacilities.contains(facility)) {
-            throw new IllegalArgumentException(
-                name + " does not require " + facility.label());
-        }
-        builtFacilities.add(facility);
+    public Facility facility(FacilityType type) {
+        return facilities.stream().filter(f -> f.type() == type).findFirst().orElse(null);
     }
 
-    public List<FacilityType> missingFacilities() {
-        List<FacilityType> missing = new ArrayList<>();
-        for (FacilityType f : requiredFacilities) {
-            if (!builtFacilities.contains(f)) {
+    public List<Facility> missingFacilities() {
+        List<Facility> missing = new ArrayList<>();
+        for (Facility f : facilities) {
+            if (!f.isBuilt()) {
                 missing.add(f);
             }
         }
         return missing;
     }
 
-    /** An enterprise can only work once its whole facility chain is up. */
+    /** Operational once every facility is built, directed and manned. */
     public boolean isOperational() {
-        return builtFacilities.containsAll(requiredFacilities);
+        return facilities.stream().allMatch(Facility::isOperational);
     }
 
-    /** How far along the facility chain is, 0..1. */
+    /** How far the build-up has gone, 0..1, counting built facilities. */
     public double readiness() {
-        if (requiredFacilities.isEmpty()) {
-            return 1.0;
+        long built = facilities.stream().filter(Facility::isBuilt).count();
+        return (double) built / facilities.size();
+    }
+
+    /** Advance every facility's production with the clock. */
+    public void work(double workHours) {
+        for (Facility f : facilities) {
+            f.work(workHours);
         }
-        return (double) builtFacilities.size() / requiredFacilities.size();
+        refreshStatus();
+    }
+
+    private void refreshStatus() {
+        if (contract != null && contract.liability() != CriminalLiability.NONE) {
+            status = EnterpriseStatus.DELINQUENT;
+        } else if (isOperational()) {
+            status = EnterpriseStatus.OPERATIONAL;
+        } else {
+            status = EnterpriseStatus.FORMING;
+        }
     }
 
     @Override
     public String toString() {
-        return name + " [" + specialty.label() + "] " + (isOperational() ? "OPERATIONAL"
-            : "building (" + builtFacilities.size() + "/" + requiredFacilities.size() + ")");
+        long built = facilities.stream().filter(Facility::isBuilt).count();
+        return name + " [" + specialty.label() + "] " + status + " ("
+            + built + "/" + facilities.size() + " built)";
     }
 }

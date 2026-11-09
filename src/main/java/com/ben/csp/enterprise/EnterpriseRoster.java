@@ -3,61 +3,90 @@ package com.ben.csp.enterprise;
 import java.util.List;
 
 /**
- * The enterprises that build the zone.
+ * The enterprises that build the zone, each with the real facilities it must
+ * construct, staff and run.
  *
- * <p>IMPORTANT: these are PROVISIONAL names. The specialities are the historical
+ * <p>IMPORTANT: the names are PROVISIONAL. The specialities are the historical
  * categories of Soviet construction trusts, but the exact organisations that
- * built ChNPP have not been verified against a source. Rename freely once the
- * real names are known; only the ids should stay stable.
+ * built ChNPP have not been verified against a source. Rename freely; keep ids.
  */
 public final class EnterpriseRoster {
 
     private EnterpriseRoster() {}
 
+    private static Facility fac(String entId, FacilityType type, String label, int staff) {
+        return new Facility(entId + "-" + type.name().toLowerCase(), type, label, staff);
+    }
+
+    private static Enterprise of(String id, String name, Specialty specialty,
+                                 List<Facility> facilities) {
+        return new Enterprise(id, name, specialty, facilities);
+    }
+
     public static List<Enterprise> provisional() {
         return List.of(
-            new Enterprise("genstroi", "Construction Trust (general contractor)",
-                Specialty.GENERAL_CONSTRUCTION,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.STORAGE_YARD, FacilityType.WORKSHOP)),
+            of("genstroi", "Construction Trust (general contractor)",
+                Specialty.GENERAL_CONSTRUCTION, List.of(
+                    fac("genstroi", FacilityType.HEADQUARTERS, "Construction Trust HQ", 12),
+                    fac("genstroi", FacilityType.CONSTRUCTION_OFFICE, "Site construction office", 20),
+                    fac("genstroi", FacilityType.STORAGE_YARD, "Trust storage yard", 6),
+                    fac("genstroi", FacilityType.WORKSHOP, "Trust workshop", 15))),
 
-            new Enterprise("zemlyan", "Earthworks and Mechanisation Trust",
-                Specialty.EARTHWORKS,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.STORAGE_YARD,
-                        FacilityType.EXCAVATION_FLEET)),
+            of("zemlyan", "Earthworks and Mechanisation Trust",
+                Specialty.EARTHWORKS, List.of(
+                    fac("zemlyan", FacilityType.HEADQUARTERS, "Earthworks Trust HQ", 10),
+                    fac("zemlyan", FacilityType.CONSTRUCTION_OFFICE, "Earthworks site office", 8),
+                    fac("zemlyan", FacilityType.EXCAVATION_DEPOT, "Excavation depot", 40))),
 
-            new Enterprise("zhelezobeton", "Concrete Works Trust",
-                Specialty.CONCRETE_WORKS,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.STORAGE_YARD,
-                        FacilityType.CONCRETE_PLANT, FacilityType.REBAR_YARD)),
+            of("zhelezobeton", "Concrete Works Trust",
+                Specialty.CONCRETE_WORKS, List.of(
+                    fac("zhelezobeton", FacilityType.HEADQUARTERS, "Concrete Trust HQ", 10),
+                    fac("zhelezobeton", FacilityType.CONSTRUCTION_OFFICE, "Concrete works office", 8),
+                    fac("zhelezobeton", FacilityType.CONCRETE_PLANT, "Concrete batching plant", 60),
+                    fac("zhelezobeton", FacilityType.REBAR_PLANT, "Reinforcement plant", 80))),
 
-            new Enterprise("metallomontazh", "Steel Erection Trust",
-                Specialty.STEEL_ERECTION,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.STEEL_YARD,
-                        FacilityType.WORKSHOP)),
+            of("metallomontazh", "Steel Erection Trust",
+                Specialty.STEEL_ERECTION, List.of(
+                    fac("metallomontazh", FacilityType.HEADQUARTERS, "Steel Trust HQ", 8),
+                    fac("metallomontazh", FacilityType.CONSTRUCTION_OFFICE, "Steelworks office", 8),
+                    fac("metallomontazh", FacilityType.STEEL_YARD, "Steel fabrication yard", 50),
+                    fac("metallomontazh", FacilityType.WORKSHOP, "Steel workshop", 20))),
 
-            new Enterprise("spetsraboty", "Special Works Trust",
-                Specialty.SPECIAL_WORKS,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.PILE_RIG, FacilityType.WORKSHOP)),
+            of("spetsraboty", "Special Works Trust",
+                Specialty.SPECIAL_WORKS, List.of(
+                    fac("spetsraboty", FacilityType.HEADQUARTERS, "Special Works HQ", 8),
+                    fac("spetsraboty", FacilityType.CONSTRUCTION_OFFICE, "Special works office", 6),
+                    fac("spetsraboty", FacilityType.PILE_DEPOT, "Pile-driving depot", 30))),
 
-            new Enterprise("elektromontazh", "Elektromontazh Trust",
-                Specialty.ELECTRICAL_INSTALLATION,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.WORKSHOP, FacilityType.CABLE_STORE)),
+            of("elektromontazh", "Elektromontazh Trust",
+                Specialty.ELECTRICAL_INSTALLATION, List.of(
+                    fac("elektromontazh", FacilityType.HEADQUARTERS, "Elektromontazh HQ", 10),
+                    fac("elektromontazh", FacilityType.CONSTRUCTION_OFFICE, "Elektromontazh office", 8),
+                    fac("elektromontazh", FacilityType.CABLE_STORE, "Cable store", 15),
+                    fac("elektromontazh", FacilityType.WORKSHOP, "Electrical workshop", 25))),
 
-            new Enterprise("teploenergomontazh", "Heat and Power Installation Trust",
-                Specialty.THERMAL_INSTALLATION,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.WORKSHOP, FacilityType.STORAGE_YARD)),
+            of("teploenergomontazh", "Heat and Power Installation Trust",
+                Specialty.THERMAL_INSTALLATION, List.of(
+                    fac("teploenergomontazh", FacilityType.HEADQUARTERS, "Heat and Power HQ", 8),
+                    fac("teploenergomontazh", FacilityType.CONSTRUCTION_OFFICE, "Heat and Power office", 8),
+                    fac("teploenergomontazh", FacilityType.WORKSHOP, "Installation workshop", 30))),
 
-            new Enterprise("otdelka", "Finishing Works Trust",
-                Specialty.FINISHING,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.STORAGE_YARD, FacilityType.WORKSHOP)),
+            of("otdelka", "Finishing Works Trust",
+                Specialty.FINISHING, List.of(
+                    fac("otdelka", FacilityType.HEADQUARTERS, "Finishing Trust HQ", 6),
+                    fac("otdelka", FacilityType.CONSTRUCTION_OFFICE, "Finishing office", 6),
+                    fac("otdelka", FacilityType.STORAGE_YARD, "Finishing materials yard", 10))),
 
-            new Enterprise("transport", "Transport Enterprise",
-                Specialty.TRANSPORT,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.TRANSPORT_DEPOT)),
+            of("transport", "Transport Enterprise",
+                Specialty.TRANSPORT, List.of(
+                    fac("transport", FacilityType.HEADQUARTERS, "Transport HQ", 6),
+                    fac("transport", FacilityType.TRANSPORT_DEPOT, "Transport depot", 45))),
 
-            new Enterprise("santekhmontazh", "Sanitation and Ventilation Trust",
-                Specialty.SANITATION_VENTILATION,
-                List.of(FacilityType.SITE_OFFICE, FacilityType.WORKSHOP, FacilityType.STORAGE_YARD))
+            of("santekhmontazh", "Sanitation and Ventilation Trust",
+                Specialty.SANITATION_VENTILATION, List.of(
+                    fac("santekhmontazh", FacilityType.HEADQUARTERS, "Sanitation Trust HQ", 6),
+                    fac("santekhmontazh", FacilityType.CONSTRUCTION_OFFICE, "Sanitation office", 6),
+                    fac("santekhmontazh", FacilityType.WORKSHOP, "Sanitation workshop", 20)))
         );
     }
 }

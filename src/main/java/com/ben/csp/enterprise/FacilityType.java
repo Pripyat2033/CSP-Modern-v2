@@ -1,22 +1,22 @@
 package com.ben.csp.enterprise;
 
 /**
- * A production or support facility an enterprise must stand up inside the
- * prombaza before it can do its work. An enterprise is not one building: it is
- * a chain of them (for example a construction trust cannot pour concrete until
- * it has built its own batching plant and reinforcement yard).
+ * The kind of industrial building a facility is. Every one of these is a real,
+ * physical building that must be constructed and staffed in the zone; none is a
+ * marker on a map.
  */
 public enum FacilityType {
-    SITE_OFFICE("Site office", true),
+    HEADQUARTERS("Enterprise headquarters", true),
+    CONSTRUCTION_OFFICE("Construction office", true),
     STORAGE_YARD("Storage yard", true),
     WORKSHOP("Workshop", true),
     CONCRETE_PLANT("Concrete batching plant", false),
-    REBAR_YARD("Reinforcement yard", false),
-    EXCAVATION_FLEET("Excavation fleet", false),
+    REBAR_PLANT("Reinforcement plant", false),
+    EXCAVATION_DEPOT("Excavation depot", false),
     STEEL_YARD("Steel fabrication yard", false),
     CABLE_STORE("Cable store", false),
     TRANSPORT_DEPOT("Transport depot", false),
-    PILE_RIG("Pile-driving rig", false);
+    PILE_DEPOT("Pile-driving depot", false);
 
     private final String label;
     private final boolean support;
@@ -30,7 +30,7 @@ public enum FacilityType {
         return label;
     }
 
-    /** Support facilities are stood up first; they serve the production ones. */
+    /** Support buildings are stood up first; they serve the production ones. */
     public boolean isSupport() {
         return support;
     }
