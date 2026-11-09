@@ -32,6 +32,16 @@ public final class EnterpriseSetup {
     public int designContractsCompleted() { return designContractsCompleted; }
     public int level() { return level; }
 
+    /** Restore the setup from a save. */
+    public void restore(boolean hqComplete, int hqProgress, int staffHired,
+                        int designContractsCompleted, int level) {
+        this.hqComplete = hqComplete;
+        this.hqProgress = hqProgress;
+        this.staffHired = staffHired;
+        this.designContractsCompleted = designContractsCompleted;
+        this.level = level;
+    }
+
     /** The enterprise begins its own HQ construction as soon as it is hired. */
     public void beginHqConstruction() {
         if (hqComplete) {

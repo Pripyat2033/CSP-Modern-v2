@@ -39,6 +39,11 @@ public final class SiteAllocator {
 
     public int takenCount() { return taken.size(); }
 
+    /** Mark a plot as taken, so a restored facility is not built over. */
+    public void claim(Footprint plot) {
+        taken.add(Objects.requireNonNull(plot, "plot"));
+    }
+
     /**
      * Choose the first free plot of the given size, clear of the reserved
      * infrastructure and of everything already taken. Refuses if the territory is

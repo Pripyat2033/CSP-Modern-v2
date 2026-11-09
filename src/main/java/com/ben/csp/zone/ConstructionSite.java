@@ -47,6 +47,13 @@ public final class ConstructionSite {
     public boolean hasBrigade() { return brigadeId != null; }
     public boolean hasMaterials() { return materialsOnSite > 0; }
 
+    /** Restore a site's progress from a save. */
+    public void restore(double manHoursDone, double materialsOnSite, String brigadeId) {
+        this.manHoursDone = Math.max(0, Math.min(requiredManHours, manHoursDone));
+        this.materialsOnSite = Math.max(0, materialsOnSite);
+        this.brigadeId = brigadeId;
+    }
+
     /** The construction office assigns a brigade to this site. */
     public void assignBrigade(String brigadeId) {
         this.brigadeId = Objects.requireNonNull(brigadeId, "brigadeId");

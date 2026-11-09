@@ -44,6 +44,7 @@ public final class EnterpriseLifecycle {
     public EnterpriseSetup setup() { return setup; }
     public List<Brigade> brigades() { return List.copyOf(brigades); }
     public List<ConstructionSite> sites() { return List.copyOf(sites); }
+    public SiteAllocator allocator() { return allocator; }
     public boolean isDone() { return phase == Phase.DONE; }
 
     /** The staff an enterprise needs: its facilities' staffs, plus an overhead. */
@@ -100,6 +101,11 @@ public final class EnterpriseLifecycle {
 
     private void advanceFacility() {
         List<Facility> facilities = enterprise.facilities();
+        // move past any facility that is already done, so a restored zone and a
+        // live one step through the roster in exactly the same way
+        while (facilityIndex < facilities.size() && facilities.get(facilityIndex).isOperational()) {
+            facilityIndex++;
+        }
         if (facilityIndex >= facilities.size()) {
             if (enterprise.isOperational()) {
                 phase = Phase.DONE;
@@ -142,9 +148,60 @@ public final class EnterpriseLifecycle {
             f.assignFacilityDirector("fd-" + f.id());
         } else if (f.staff() < f.requiredStaff()) {
             f.setStaff(f.requiredStaff());
-        } else {
-            facilityIndex++;
         }
+        // once the facility is operational, the next tick's loop moves past it
+    }
+
+    /** Site a restored facility and reserve its plot, so later builds avoid it. */
+    public void claimPlot(Facility f, com.ben.csp.enterprise.Footprint plot) {
+        f.site(plot);
+        allocator.claim(plot);
+        reopenSite(f);
+    }
+
+    /** Restore a construction site's progress from a save (by facility order). */
+    public void restoreSite(int index, double manHoursDone, double materialsOnSite, String brigadeId) {
+        if (index >= 0 && index < sites.size()) {
+            sites.get(index).restore(manHoursDone, materialsOnSite, brigadeId);
+        }
+    }
+
+    /** Open a construction site for a facility being restored, if it has a plot. */
+    public void reopenSite(Facility f) {
+        if (f.hasFootprint() && siteFor(f) == null) {
+            sites.add(new ConstructionSite("cs-" + f.id(), f.id(), f.footprint(),
+                requiredManHours(f.footprint())));
+        }
+    }
+
+    /** Work out which phase the enterprise is in from its current state. */
+    public void recomputePhase() {
+        if (enterprise.isOperational()) {
+            phase = Phase.DONE;
+            return;
+        }
+        if (!setup.hasHq()) {
+            phase = Phase.HQ;
+            return;
+        }
+        if (setup.staffHired() < staffTarget) {
+            phase = Phase.STAFF;
+            return;
+        }
+        phase = Phase.FACILITIES;
+        List<Facility> facilities = enterprise.facilities();
+        facilityIndex = 0;
+        for (int i = 0; i < facilities.size(); i++) {
+            if (!facilities.get(i).isOperational()) {
+                facilityIndex = i;
+                return;
+            }
+        }
+    }
+
+    /** The facilities in order, for saving and restoring. */
+    public List<Facility> facilities() {
+        return enterprise.facilities();
     }
 
     private ConstructionSite siteFor(Facility f) {

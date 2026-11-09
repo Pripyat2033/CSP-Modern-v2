@@ -5,6 +5,9 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import com.ben.csp.prombaza.PrombazaCommand;
+import com.ben.csp.zone.ZoneCommand;
+import com.ben.csp.zone.ZoneTicker;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.data.InfrastructureRequirementLoader;
 import com.ben.csp.entity.ModEntities;
@@ -55,7 +58,12 @@ public class CSPMod implements ModInitializer {
             .registerReloadListener(new InfrastructureRequirementLoader());
 
         // Commands
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
-            PrombazaCommand.register(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            PrombazaCommand.register(dispatcher);
+            ZoneCommand.register(dispatcher);
+        });
+
+        // The zone runs on the server clock: the enterprises build themselves live.
+        ServerTickEvents.END_SERVER_TICK.register(ZoneTicker::tick);
     }
 }
