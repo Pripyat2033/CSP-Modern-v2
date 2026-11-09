@@ -1,26 +1,37 @@
 package com.ben.csp.enterprise;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * One real industrial building inside the zone.
+ * One real industrial building inside the zone, run by its own facility director.
  *
  * <p>A facility is not a marker: it is a building that has to be constructed,
- * staffed, and put to work. It has its own facility director, its own staff, and
- * its own production process. Until it is built, directed and manned it does
- * nothing; once it is, its process advances with the work clock.
+ * given a director, and manned. It has a production quota to meet and needs
+ * supplies to run; accidents on it have to be answered for. Every facility the
+ * enterprise builds must have a facility director, and that director reports to
+ * the enterprise director.
  */
 public final class Facility {
 
     private final String id;
     private final FacilityType type;
     private final String name;
+    private final int requiredStaff;
 
     private boolean built;
-    private String directorId;      // its own facility director NPC
+    private String facilityDirectorId;
     private int staff;
-    private final int requiredStaff;
-    private double produced;        // units of product accumulated
+
+    private double quotaPerDay;
+    private double supplies;
+    private double supplyPerUnit = 0.0; // 0 means this facility needs no tracked supplies
+
+    private double produced;        // lifetime output
+    private double producedToday;
+    private final List<Incident> incidents = new ArrayList<>();
 
     public Facility(String id, FacilityType type, String name, int requiredStaff) {
         this.id = Objects.requireNonNull(id, "id");
@@ -36,17 +47,21 @@ public final class Facility {
     public FacilityType type() { return type; }
     public String name() { return name; }
     public boolean isBuilt() { return built; }
-    public String directorId() { return directorId; }
+    public String facilityDirectorId() { return facilityDirectorId; }
     public int staff() { return staff; }
     public int requiredStaff() { return requiredStaff; }
+    public double quotaPerDay() { return quotaPerDay; }
+    public double supplies() { return supplies; }
     public double produced() { return produced; }
+    public double producedToday() { return producedToday; }
 
     public void completeConstruction() {
         this.built = true;
     }
 
-    public void assignDirector(String directorId) {
-        this.directorId = Objects.requireNonNull(directorId, "directorId");
+    /** Every facility has a facility director; without one it cannot work. */
+    public void assignFacilityDirector(String directorId) {
+        this.facilityDirectorId = Objects.requireNonNull(directorId, "directorId");
     }
 
     public void setStaff(int staff) {
@@ -56,22 +71,85 @@ public final class Facility {
         this.staff = staff;
     }
 
+    public void setQuotaPerDay(double quotaPerDay) {
+        if (quotaPerDay < 0) {
+            throw new IllegalArgumentException("quota must not be negative");
+        }
+        this.quotaPerDay = quotaPerDay;
+    }
+
+    public void setSupplyPerUnit(double supplyPerUnit) {
+        if (supplyPerUnit < 0) {
+            throw new IllegalArgumentException("supply per unit must not be negative");
+        }
+        this.supplyPerUnit = supplyPerUnit;
+    }
+
+    public void deliverSupplies(double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("supplies must not be negative");
+        }
+        this.supplies += amount;
+    }
+
     /** A facility works only once built, directed and manned. */
     public boolean isOperational() {
-        return built && directorId != null && staff >= requiredStaff;
+        return built && facilityDirectorId != null && staff >= requiredStaff;
     }
 
     /**
-     * Advance this facility's production by a number of work-hours. Only an
-     * operational facility produces; output scales with staff against the
-     * requirement, capped at 1.0 (no over-production from extra hands).
+     * Advance production by work-hours. Output is limited by staff and by the
+     * supplies on hand; running dry of supplies is exactly the kind of problem a
+     * facility director has to raise.
      */
     public void work(double workHours) {
         if (!isOperational() || workHours <= 0) {
             return;
         }
         double effort = Math.min(1.0, (double) staff / Math.max(1, requiredStaff));
-        produced += workHours * effort;
+        double potential = workHours * effort;
+        if (supplyPerUnit > 0) {
+            potential = Math.min(potential, supplies / supplyPerUnit);
+        }
+        if (potential <= 0) {
+            return;
+        }
+        produced += potential;
+        producedToday += potential;
+        supplies = Math.max(0.0, supplies - potential * supplyPerUnit);
+    }
+
+    public boolean isMeetingQuota() {
+        return quotaPerDay <= 0 || producedToday + 1e-9 >= quotaPerDay;
+    }
+
+    /** Called at each work-day boundary; reports whether yesterday's quota was met. */
+    public boolean startNewDay() {
+        boolean met = isMeetingQuota();
+        producedToday = 0;
+        return met;
+    }
+
+    public void recordIncident(String description, long day) {
+        incidents.add(new Incident(description, day));
+    }
+
+    public List<Incident> unresolvedIncidents() {
+        List<Incident> open = new ArrayList<>();
+        for (Incident i : incidents) {
+            if (!i.isResolved()) {
+                open.add(i);
+            }
+        }
+        return open;
+    }
+
+    public List<Incident> incidents() {
+        return Collections.unmodifiableList(incidents);
+    }
+
+    public boolean hasUnresolvedIncidents() {
+        return incidents.stream().anyMatch(i -> !i.isResolved());
     }
 
     @Override
