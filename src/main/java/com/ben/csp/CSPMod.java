@@ -14,6 +14,7 @@ import com.ben.csp.block.ModBlocks;
 import com.ben.csp.data.InfrastructureRequirementLoader;
 import com.ben.csp.entity.ModEntities;
 import com.ben.csp.entity.ModEntityAttributes;
+import com.ben.csp.entity.dialogue.DialogueListener;
 import com.ben.csp.block.entity.ModBlockEntities;
 import com.ben.csp.item.ModItemGroups;
 import com.ben.csp.item.ModItems;
@@ -70,10 +71,13 @@ public class CSPMod implements ModInitializer {
             CspCommand.register(dispatcher);
         });
 
+        // Speak to the workers in plain words: the nearest one answers and acts.
+        DialogueListener.register();
+
         // The zone runs on the server clock: the enterprises build themselves live.
         ServerTickEvents.END_SERVER_TICK.register(ZoneTicker::tick);
 
-        LOGGER.info("CSP-Modern 0.2.0 loaded. Commands: /csp help, /prombaza, "
+        LOGGER.info("CSP-Modern 0.3.0 loaded. Commands: /csp help, /prombaza, "
             + "/directorate, /zone.");
     }
 }

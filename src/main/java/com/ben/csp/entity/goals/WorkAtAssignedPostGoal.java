@@ -24,6 +24,9 @@ public class WorkAtAssignedPostGoal extends Goal {
 
     @Override
     public boolean canStart() {
+        if (worker.isFollowing()) {
+            return false;
+        }
         BlockPos post = worker.getWorkplacePos();
         return post != null && distanceSquaredTo(post) > ARRIVE_SQUARED;
     }
@@ -36,6 +39,9 @@ public class WorkAtAssignedPostGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
+        if (worker.isFollowing()) {
+            return false;
+        }
         BlockPos post = worker.getWorkplacePos();
         return post != null && distanceSquaredTo(post) > ARRIVE_SQUARED;
     }

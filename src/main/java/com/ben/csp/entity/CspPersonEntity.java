@@ -5,6 +5,7 @@ import com.ben.csp.entity.ai.DosyeNbt;
 import com.ben.csp.entity.ai.DynamicPersonalityEngine;
 import com.ben.csp.entity.ai.Garrisonable;
 import com.ben.csp.entity.ai.WorkerChat;
+import com.ben.csp.entity.goals.FollowPlayerGoal;
 import com.ben.csp.entity.goals.WorkAtAssignedPostGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -43,6 +44,8 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
     private boolean sitting;
     private int talkTicks;
     private int talkTargetId = -1;
+    private int followTicks;
+    private int followTargetId = -1;
 
     protected CspPersonEntity(EntityType<? extends CspPersonEntity> entityType, World world) {
         super(entityType, world);
@@ -59,6 +62,9 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
         }
         // While being spoken to, the worker stops and turns to face the player,
         // so a conversation reads as one instead of a chase.
+        if (!getWorld().isClient() && followTicks > 0) {
+            followTicks--;
+        }
         if (!getWorld().isClient() && talkTicks > 0) {
             talkTicks--;
             getNavigation().stop();
@@ -83,6 +89,7 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
 
     @Override
     protected void initGoals() {
+        this.goalSelector.add(0, new FollowPlayerGoal(this));
         this.goalSelector.add(0, new SwimGoal(this));
         switch (getRole().getProfile()) {
             case GARRISON -> {
@@ -157,6 +164,47 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
 
     public void setWorkplacePos(@Nullable BlockPos workplacePos) {
         this.workplacePos = workplacePos;
+    }
+
+    // ------------------------------------------------------------- orders
+
+    /** "Come here" — walk to the speaker, then stop. */
+    public void orderCome(PlayerEntity player) {
+        startFollowing(player, 120);
+    }
+
+    /** "Follow me" — stay with the speaker for a long while. */
+    public void orderFollow(PlayerEntity player) {
+        startFollowing(player, 12000);
+    }
+
+    private void startFollowing(PlayerEntity player, int ticks) {
+        this.followTargetId = player.getId();
+        this.followTicks = ticks;
+        this.sitting = false;
+        getNavigation().stop();
+    }
+
+    /** "Stand down" — stop where you are. */
+    public void orderStandDown() {
+        this.followTicks = 0;
+        this.sitting = true;
+        getNavigation().stop();
+    }
+
+    /** "To your post" — resume the assigned work. */
+    public void orderGoToPost() {
+        this.followTicks = 0;
+        this.sitting = false;
+        getNavigation().stop();
+    }
+
+    public boolean isFollowing() {
+        return followTicks > 0;
+    }
+
+    public int getFollowTargetId() {
+        return followTargetId;
     }
 
     // ---------------------------------------------------------- Garrisonable
