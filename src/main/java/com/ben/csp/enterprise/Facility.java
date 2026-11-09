@@ -31,6 +31,7 @@ public final class Facility {
 
     private double produced;        // lifetime output
     private double producedToday;
+    private Footprint footprint;    // where the building stands, once sited
     private final List<Incident> incidents = new ArrayList<>();
 
     public Facility(String id, FacilityType type, String name, int requiredStaff) {
@@ -54,6 +55,15 @@ public final class Facility {
     public double supplies() { return supplies; }
     public double produced() { return produced; }
     public double producedToday() { return producedToday; }
+
+    /** Where the building stands, or null if it has not been sited yet. */
+    public Footprint footprint() { return footprint; }
+    public boolean hasFootprint() { return footprint != null; }
+
+    /** Site the facility at its real place on the ground. */
+    public void site(Footprint footprint) {
+        this.footprint = Objects.requireNonNull(footprint, "footprint");
+    }
 
     public void completeConstruction() {
         this.built = true;

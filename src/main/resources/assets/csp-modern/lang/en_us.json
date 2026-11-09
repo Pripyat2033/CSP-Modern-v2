@@ -9,8 +9,8 @@
   "block.csp-modern.icms_message_output": "ICMS Message Output",
   "block.csp-modern.industrial_control": "Industrial Control Block",
   "block.csp-modern.mtk_display": "MTK Display",
-  "block.csp-modern.planshet": "Planshet",
-  "block.csp-modern.planshet_part": "Planshet Part",
+  "block.csp-modern.planshet": "Plane Table",
+  "block.csp-modern.planshet_part": "Plane Table (part)",
   "block.csp-modern.stockpile": "Stockpile",
   "block.csp-modern.teletype_printer": "Teletype Printer",
   "block.csp-modern.vertushka": "Vertushka Telephone",
@@ -56,5 +56,5 @@
   "tooltip.csp-modern.directors_planshet": "Carries a construction work-package blueprint",
   "entity.csp-modern.kommutator": "Kommutator",
   "item.csp-modern.kommutator_spawn_egg": "Kommutator Spawn Egg",
-  "block.csp-modern.genplan": "Генплан"
+  "block.csp-modern.genplan": "Site Plan"
 }
