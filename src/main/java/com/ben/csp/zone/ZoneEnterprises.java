@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The enterprises of the zone, stood up from a plan and then left to manage
- * themselves on the work clock. This is the piece that turns a roster into a
- * working site: spawn them, tick the clock, and watch them build themselves out.
+ * The enterprises on a prombaza territory, stood up from the plans and then left
+ * to manage themselves on the work clock. The territory comes first; the
+ * enterprises come onto it, each choosing where inside it to build.
  */
 public final class ZoneEnterprises {
 
@@ -21,17 +21,19 @@ public final class ZoneEnterprises {
         this.prombazaId = prombazaId;
     }
 
-    /** Stand up every enterprise in the roster at the sites the plan gives it. */
-    public static ZoneEnterprises spawn(ZonePlan plan, List<Enterprise> roster, long day) {
-        Objects.requireNonNull(plan, "plan");
+    /**
+     * Put the roster onto a laid-out territory. Every enterprise shares the same
+     * ground and picks its own plots within it.
+     */
+    public static ZoneEnterprises spawn(PrombazaTerritory territory,
+                                        List<Enterprise> roster, long day) {
+        Objects.requireNonNull(territory, "territory");
         Objects.requireNonNull(roster, "roster");
-        ZoneEnterprises zone = new ZoneEnterprises(plan.prombazaId());
+        SiteAllocator allocator = new SiteAllocator(territory);
+        ZoneEnterprises zone = new ZoneEnterprises(territory.id());
         for (Enterprise e : roster) {
-            List<com.ben.csp.enterprise.Footprint> sites = plan.sitesFor(e.id());
-            if (sites == null) {
-                throw new IllegalStateException("the plan has no site for " + e.id());
-            }
-            zone.lifecycles.add(new EnterpriseLifecycle(e, sites, plan.staffTargetFor(e.id())));
+            zone.lifecycles.add(new EnterpriseLifecycle(
+                e, allocator, EnterpriseLifecycle.staffTargetFor(e)));
         }
         return zone;
     }

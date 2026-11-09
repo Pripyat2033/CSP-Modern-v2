@@ -16,6 +16,10 @@ import java.util.Set;
  * stand, and how many staff each enterprise needs. The plan gives the enterprises
  * their ground; from it they are stood up and can manage themselves.
  */
+@Deprecated
+// TODO: User to delete this file later. Superseded: the prombaza territory is laid
+// out first (PrombazaTerritory), and each enterprise CHOOSES its own plots inside
+// it (SiteAllocator); enterprises are not handed fixed sites.
 public final class ZonePlan {
 
     private final String prombazaId;
