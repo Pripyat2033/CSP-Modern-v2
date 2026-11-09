@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 
 /**
  * Puts the zone on the ground in the world. The territory boundary and the
@@ -23,17 +24,49 @@ public final class GroundWorks {
     private static final int MARK_HEIGHT = 1;
     private static final int BUILDING_HEIGHT = 5;
 
-    /** Draw the territory boundary and its reserved roads and rail on the ground. */
+    /**
+     * Mark the territory boundary and its reserved ground on the ground. This is
+     * a survey mark, not a building: a dashed line of white concrete with a post
+     * at each corner, so a player sees a boundary and not a wall.
+     */
     public static void drawTerritory(ServerWorld world, PrombazaTerritory territory) {
-        drawOutline(world, territory.boundary(), Blocks.RED_CONCRETE);
+        dashedOutline(world, territory.boundary(), Blocks.WHITE_CONCRETE, 2);
         for (Footprint r : territory.reserved()) {
-            fillFlat(world, r, Blocks.GRAY_CONCRETE, 0);
+            drawOutline(world, r, Blocks.LIGHT_GRAY_CONCRETE);
         }
         for (Route route : territory.routes()) {
             for (int i = 0; i < route.pointCount() - 1; i++) {
                 drawLine(world, route.x(i), route.z(i), route.x(i + 1), route.z(i + 1),
                     Blocks.GRAVEL);
             }
+        }
+        cornerPost(world, territory.boundary().minX(), territory.boundary().minZ());
+        cornerPost(world, territory.boundary().maxX(), territory.boundary().minZ());
+        cornerPost(world, territory.boundary().minX(), territory.boundary().maxZ());
+        cornerPost(world, territory.boundary().maxX(), territory.boundary().maxZ());
+    }
+
+    /** Remove the boundary and reserved marks, leaving the ground as it was. */
+    public static void clearTerritory(ServerWorld world, PrombazaTerritory territory) {
+        clearDashedOutline(world, territory.boundary(), Blocks.WHITE_CONCRETE, 2);
+        for (Footprint r : territory.reserved()) {
+            clearOutline(world, r, Blocks.LIGHT_GRAY_CONCRETE);
+        }
+    }
+
+    /** A bright, self-lit mark at a chosen corner, so the player can see it. */
+    public static void showCorner(ServerWorld world, int x, int z) {
+        set(world, x, z, Blocks.GLOWSTONE, 0);
+    }
+
+    /** Take the corner mark away again. */
+    public static void hideCorner(ServerWorld world, int x, int z) {
+        clearIf(world, x, z, Blocks.GLOWSTONE);
+    }
+
+    private static void cornerPost(ServerWorld world, double x, double z) {
+        for (int dy = 0; dy < 3; dy++) {
+            set(world, (int) Math.floor(x), (int) Math.floor(z), Blocks.STRIPPED_OAK_LOG, dy);
         }
     }
 
@@ -48,6 +81,48 @@ public final class GroundWorks {
             raise(world, plot, Blocks.WHITE_CONCRETE, BUILDING_HEIGHT);
         } else {
             drawOutline(world, plot, Blocks.YELLOW_CONCRETE);
+        }
+    }
+
+    /** Remove a facility's marker or building blocks. */
+    public static void clearFacility(ServerWorld world, Facility f) {
+        if (f.hasFootprint()) {
+            clearMarkers(world, f.footprint());
+        }
+    }
+
+    /** Remove a construction site's marker or building blocks. */
+    public static void clearSite(ServerWorld world, ConstructionSite site) {
+        clearMarkers(world, site.plot());
+    }
+
+    private static final net.minecraft.block.Block[] MARKER_BLOCKS = {
+        Blocks.YELLOW_CONCRETE, Blocks.LIGHT_GRAY_CONCRETE, Blocks.WHITE_CONCRETE,
+        Blocks.STONE, Blocks.OAK_PLANKS, Blocks.STONE_BRICK_SLAB,
+    };
+
+    private static void clearMarkers(ServerWorld world, Footprint plot) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                if (!world.getChunkManager().isChunkLoaded(x >> 4, z >> 4)) {
+                    continue;
+                }
+                int ground = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, x, z);
+                for (int dy = 0; dy <= 6; dy++) {
+                    BlockPos pos = new BlockPos(x, ground + dy, z);
+                    net.minecraft.block.Block here = world.getBlockState(pos).getBlock();
+                    for (net.minecraft.block.Block b : MARKER_BLOCKS) {
+                        if (here == b) {
+                            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -89,6 +164,70 @@ public final class GroundWorks {
         }
     }
 
+    private static void dashedOutline(ServerWorld world, Footprint plot, net.minecraft.block.Block block, int period) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            if ((x - x0) % period == 0) {
+                set(world, x, z0, block);
+                set(world, x, z1, block);
+            }
+        }
+        for (int z = z0; z <= z1; z++) {
+            if ((z - z0) % period == 0) {
+                set(world, x0, z, block);
+                set(world, x1, z, block);
+            }
+        }
+    }
+
+    private static void clearOutline(ServerWorld world, Footprint plot, net.minecraft.block.Block block) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            clearIf(world, x, z0, block);
+            clearIf(world, x, z1, block);
+        }
+        for (int z = z0; z <= z1; z++) {
+            clearIf(world, x0, z, block);
+            clearIf(world, x1, z, block);
+        }
+    }
+
+    private static void clearDashedOutline(ServerWorld world, Footprint plot, net.minecraft.block.Block block, int period) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            if ((x - x0) % period == 0) {
+                clearIf(world, x, z0, block);
+                clearIf(world, x, z1, block);
+            }
+        }
+        for (int z = z0; z <= z1; z++) {
+            if ((z - z0) % period == 0) {
+                clearIf(world, x0, z, block);
+                clearIf(world, x1, z, block);
+            }
+        }
+    }
+
+    private static void clearIf(ServerWorld world, int x, int z, net.minecraft.block.Block block) {
+        if (!world.getChunkManager().isChunkLoaded(x >> 4, z >> 4)) {
+            return;
+        }
+        int ground = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, x, z);
+        BlockPos pos = new BlockPos(x, ground, z);
+        if (world.getBlockState(pos).getBlock() == block) {
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+        }
+    }
+
     private static void fillFlat(ServerWorld world, Footprint plot, net.minecraft.block.Block block, int dy) {
         int x0 = (int) Math.floor(plot.minX());
         int x1 = (int) Math.floor(plot.maxX());
@@ -122,8 +261,18 @@ public final class GroundWorks {
     }
 
     private static void set(ServerWorld world, int x, int z, net.minecraft.block.Block block, int dy) {
+        // Never reach into an unloaded chunk: doing so loads it, and drawing a
+        // large area would load the whole area at once and freeze the server.
+        if (!world.getChunkManager().isChunkLoaded(x >> 4, z >> 4)) {
+            return;
+        }
         int ground = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, x, z);
         BlockPos pos = new BlockPos(x, ground + dy, z);
+        // Never build over a worker or a player: drawing a marker where someone
+        // stands would bury them.
+        if (!world.getOtherEntities(null, new Box(pos)).isEmpty()) {
+            return;
+        }
         BlockState state = block.getDefaultState();
         if (!world.getBlockState(pos).equals(state)) {
             world.setBlockState(pos, state, 3);

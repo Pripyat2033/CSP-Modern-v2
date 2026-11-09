@@ -3,12 +3,14 @@ package com.ben.csp.directorate;
 import com.ben.csp.prombaza.Prombaza;
 import com.ben.csp.prombaza.PrombazaCommand;
 import com.ben.csp.prombaza.PrombazaState;
+import com.ben.csp.zone.ground.GroundWorks;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.CommandManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -83,7 +85,10 @@ public final class DirectorateCommand {
                 Prombaza p = pbState.registry().designate(pbId, name, r.area(), day(ctx),
                     ctx.getSource().getName());
                 pbState.markDirty();
-                ctx.getSource().sendFeedback(() -> Text.literal("APPROVED and designated: " + p), true);
+                GroundWorks.drawTerritory(ctx.getSource().getWorld(),
+                    com.ben.csp.zone.PrombazaTerritory.standard(pbId, r.area()));
+                ctx.getSource().sendFeedback(() -> Text.literal("APPROVED and designated: " + p
+                    + " — the boundary is marked on the ground."), true);
             } catch (IllegalStateException e) {
                 ctx.getSource().sendError(Text.literal("approved, but could not designate: " + e.getMessage()));
                 return 0;
@@ -125,9 +130,23 @@ public final class DirectorateCommand {
             Prombaza p = pbState.registry().designate(id, name, area, day(ctx),
                 ctx.getSource().getName());
             pbState.markDirty();
+            // Take the temporary corner marks away now the real boundary is drawn.
+            ServerWorld world = ctx.getSource().getWorld();
+            GroundWorks.hideCorner(world, p1.getX(), p1.getZ());
+            GroundWorks.hideCorner(world, p2.getX(), p2.getZ());
+            GroundWorks.drawTerritory(world, com.ben.csp.zone.PrombazaTerritory.standard(id, area));
             PrombazaCommand.clearPendingCorners();
             ctx.getSource().sendFeedback(() -> Text.literal(
-                "The Director designates: " + p), true);
+                "The Director designates the prombaza '" + p.id() + "': " + p.area().describe()
+                + " (" + (p.area().maxX() - p.area().minX()) + " x "
+                + (p.area().maxZ() - p.area().minZ()) + " m)."), true);
+            ctx.getSource().sendFeedback(() -> Text.literal(
+                "A prombaza is the production base — the yard where the construction "
+                + "trusts stand up their workshops, stores and concrete plant before "
+                + "going on to the station. The boundary is marked on the ground."), false);
+            ctx.getSource().sendFeedback(() -> Text.literal(
+                "Next: stand the ten enterprises up on it with /zone spawn, then "
+                + "/zone status to watch them build."), false);
             return 1;
         } catch (IllegalStateException e) {
             ctx.getSource().sendError(Text.literal(e.getMessage()));

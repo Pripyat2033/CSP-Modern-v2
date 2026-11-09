@@ -30,7 +30,8 @@ public final class ZoneCommand {
                 .then(CommandManager.argument("radius", IntegerArgumentType.integer(16, 512))
                     .executes(ctx -> spawn(ctx, IntegerArgumentType.getInteger(ctx, "radius")))))
             .then(CommandManager.literal("status").executes(ZoneCommand::status))
-            .then(CommandManager.literal("draw").executes(ZoneCommand::draw)));
+            .then(CommandManager.literal("draw").executes(ZoneCommand::draw))
+            .then(CommandManager.literal("clear").executes(ZoneCommand::clear)));
     }
 
     private static int spawn(CommandContext<ServerCommandSource> ctx, int radius) {
@@ -64,9 +65,16 @@ public final class ZoneCommand {
         state.markDirty();
         GroundWorks.drawTerritory(world, state.territory());
         source.sendFeedback(() -> Text.literal(
-            "Промбаза laid out: " + state.territory().boundary().width() + "x"
-            + state.territory().boundary().height() + " m, "
-            + state.zone().count() + " enterprises standing on it."), true);
+            "Prombaza laid out: " + state.territory().boundary().width() + " x "
+            + state.territory().boundary().height() + " m."), true);
+        source.sendFeedback(() -> Text.literal(
+            state.zone().count() + " construction enterprises have come onto the "
+            + "territory. Each will build its own office, hire staff, then set out "
+            + "and build its facilities — a marker first, then a building over time."), false);
+        source.sendFeedback(() -> Text.literal(
+            "The white dashed line and the four log posts mark the boundary; the "
+            + "small yellow outlines are facility plots. Watch it grow with "
+            + "/zone status. To undo the ground marks: /zone clear."), false);
         return 1;
     }
 
@@ -88,6 +96,29 @@ public final class ZoneCommand {
                 + (e.isOperational() ? "operational" : "forming") + " — "
                 + e.facilities().size() + " facilities"), false);
         }
+        return 1;
+    }
+
+    private static int clear(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource source = ctx.getSource();
+        ServerWorld world = source.getWorld();
+        ZoneState state = ZoneState.get(source.getServer());
+        if (!state.isSpawned()) {
+            source.sendError(Text.literal("The zone has not been spawned."));
+            return 0;
+        }
+        GroundWorks.clearTerritory(world, state.territory());
+        for (EnterpriseLifecycle l : state.zone().lifecycles()) {
+            for (var f : l.enterprise().facilities()) {
+                GroundWorks.clearFacility(world, f);
+            }
+            for (ConstructionSite s : l.sites()) {
+                GroundWorks.clearSite(world, s);
+            }
+        }
+        source.sendFeedback(() -> Text.literal(
+            "Ground marks cleared. The zone itself is untouched — /zone draw puts "
+            + "the marks back."), true);
         return 1;
     }
 

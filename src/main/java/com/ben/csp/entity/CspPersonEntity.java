@@ -41,6 +41,8 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
     @Nullable
     private BlockPos garrisonPos;
     private boolean sitting;
+    private int talkTicks;
+    private int talkTargetId = -1;
 
     protected CspPersonEntity(EntityType<? extends CspPersonEntity> entityType, World world) {
         super(entityType, world);
@@ -54,6 +56,18 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
         if (!getWorld().isClient() && dosye == null) {
             this.dosye = DynamicPersonalityEngine.getInstance().generateDosye();
             applyDosyeName();
+        }
+        // While being spoken to, the worker stops and turns to face the player,
+        // so a conversation reads as one instead of a chase.
+        if (!getWorld().isClient() && talkTicks > 0) {
+            talkTicks--;
+            getNavigation().stop();
+            var target = getWorld().getEntityById(talkTargetId);
+            if (target instanceof PlayerEntity p && p.isAlive()) {
+                getLookControl().lookAt(p, 30.0f, 30.0f);
+            } else {
+                talkTicks = 0;
+            }
         }
     }
 
@@ -94,15 +108,39 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         if (!getWorld().isClient() && hand == Hand.MAIN_HAND) {
             WorkerChat.speak(this, player);
+            // Stop and turn to the speaker, and hold it for a few seconds.
+            this.talkTicks = 120;
+            this.talkTargetId = player.getId();
+            getNavigation().stop();
+            getLookControl().lookAt(player, 30.0f, 30.0f);
         }
         return ActionResult.SUCCESS;
     }
 
     private void applyDosyeName() {
         if (dosye != null) {
-            setCustomName(Text.literal(dosye.getFullName()));
+            setCustomName(Text.literal(dosye.getFullName() + " " + roleTag(getRole())));
             setCustomNameVisible(true);
         }
+    }
+
+    /** A short, plain tag for the job, shown on the nametag. */
+    public static String roleTag(WorkerRole role) {
+        return switch (role) {
+            case TOLKACH -> "[labourer]";
+            case STROITEL -> "[builder]";
+            case GEODEZIST -> "[surveyor]";
+            case UCHETCHIK -> "[record keeper]";
+            case BRIGADIER -> "[brigade leader]";
+            case SEKRETAR -> "[secretary]";
+            case NACHALNIK_SNABZHENIYA -> "[supply chief]";
+            case MASTER -> "[foreman]";
+            case PRORAB -> "[site superintendent]";
+            case GLAVNY_INZHENER -> "[chief engineer]";
+            case FACILITY_DIRECTOR -> "[facility director]";
+            case ENTERPRISE_DIRECTOR -> "[enterprise director]";
+            case KOMMUTATOR -> "[switchboard operator]";
+        };
     }
 
     @Nullable

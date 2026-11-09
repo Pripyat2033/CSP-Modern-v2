@@ -8,6 +8,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.world.ServerWorld;
+import com.ben.csp.zone.ground.GroundWorks;
 
 /**
  * Operator commands to designate and undo a prombaza.
@@ -68,14 +70,37 @@ public final class PrombazaCommand {
     }
 
     private static int setPos(CommandContext<ServerCommandSource> ctx, boolean first, BlockPos given) {
-        BlockPos pos = given != null ? given : BlockPos.ofFloored(ctx.getSource().getPosition());
+        ServerCommandSource source = ctx.getSource();
+        BlockPos pos = given != null ? given : BlockPos.ofFloored(source.getPosition());
         if (first) {
             pendingPos1 = pos;
         } else {
             pendingPos2 = pos;
         }
+        // Drop a bright mark on the ground so the player can SEE the corner.
+        ServerWorld world = source.getWorld();
+        {
+            GroundWorks.showCorner(world, pos.getX(), pos.getZ());
+        }
         String which = first ? "1" : "2";
-        ctx.getSource().sendFeedback(() -> Text.literal("Prombaza corner " + which + " = " + fmt(pos)), false);
+        source.sendFeedback(() -> Text.literal(
+            "Prombaza corner " + which + " set at " + fmt(pos)
+            + " (a glowstone mark is on the ground there)."), false);
+
+        if (pendingPos1 != null && pendingPos2 != null) {
+            int w = Math.abs(pendingPos2.getX() - pendingPos1.getX());
+            int d = Math.abs(pendingPos2.getZ() - pendingPos1.getZ());
+            source.sendFeedback(() -> Text.literal(
+                "Both corners set: " + w + " x " + d + " m. The area is marked on the "
+                + "ground (corner 1 at " + fmt(pendingPos1) + ", corner 2 at "
+                + fmt(pendingPos2) + ")."), false);
+            source.sendFeedback(() -> Text.literal(
+                "Now give the territory to the enterprises with: "
+                + "/directorate designate pb1"), false);
+        } else {
+            source.sendFeedback(() -> Text.literal(
+                "Now walk to the opposite corner and run /prombaza pos2."), false);
+        }
         return 1;
     }
 
