@@ -19,6 +19,6 @@ public class IcmsMessageInputBlock extends Block {
     }
 
     public static void register() {
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", NAME), new IcmsMessageInputBlock());
+        Registry.register(Registries.BLOCK, Identifier.of("csp-modern", NAME), new IcmsMessageInputBlock());
     }
 }

@@ -34,9 +34,9 @@ public class ChiseledBlockEntity extends BlockEntity {
      * Demonstrates proper usage of Registry and Registries imports:
      */
     public static void registerBlockEntity(Identifier id) {
-        if (id == null || !id.getNamespace().equals("csp_modern")) {
+        if (id == null || !id.getNamespace().equals("csp-modern")) {
             // Use default identifier for automatic registration
-            id = Identifier.of("csp_modern", "chiseled_block_entity");
+            id = Identifier.of("csp-modern", "chiseled_block_entity");
         }
         Registry.register(
             Registries.BLOCK_ENTITY_TYPE,

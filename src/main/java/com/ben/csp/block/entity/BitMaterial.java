@@ -1,8 +1,5 @@
 package com.ben.csp.block.entity;
 
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 
 /**
  * BitMaterial - Bit-scale material definitions for 1:1 scale simulation.
@@ -10,8 +7,10 @@ import net.minecraft.util.Identifier;
 public class BitMaterial {
 
     private static String register(String name) {
-        Registry.register(Registries.BLOCK, new Identifier("csp_modern", name), null);
-        return "csp_modern:" + name;
+        // Registration removed: this previously called Registry.register(..., null),
+        // which throws at runtime. These are identity strings only - no block is
+        // registered here. Actual blocks are registered in ModBlocks.
+        return "csp-modern:" + name;
     }
 
     public static final String STRUCTURAL_CONCRETE = register("structural_concrete");

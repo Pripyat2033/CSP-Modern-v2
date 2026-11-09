@@ -1,11 +1,15 @@
 package com.ben.csp.block;
 
 import net.minecraft.block.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModBlocks {
+    public static final String MOD_ID = "csp-modern";
+
     public static final Block VERTUSHKA_BLOCK = VertushkaBlock.INSTANCE;
     public static final Block ARCHIVE_FILING_CABINET_BLOCK = new ArchiveFilingCabinetBlock();
     public static final Block GEODETIC_MARKER_BLOCK = new GeodeticMarkerBlock();
@@ -23,20 +27,26 @@ public class ModBlocks {
     public static final Block ICMS_CONTROL_PANEL_BLOCK = new IcmsControlPanelBlock();
 
     public static void register() {
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "vertushka"), VERTUSHKA_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "archive_filing_cabinet"), ARCHIVE_FILING_CABINET_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "geodetic_marker"), GEODETIC_MARKER_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "planshet"), PLANSHET_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "planshet_part"), PLANSHET_PART_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "industrial_control"), INDUSTRIAL_CONTROL_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "chiseled"), CHISELED_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "mtk_display"), MTK_DISPLAY_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "teletype_printer"), TELETYPE_PRINTER_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "fuel_channel"), FUEL_CHANNEL_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "graphite"), GRAPHITE_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "stockpile"), STOCKPILE_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "icms_message_input"), ICMS_MESSAGE_INPUT_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "icms_message_output"), ICMS_MESSAGE_OUTPUT_BLOCK);
-        Registry.register(Registries.BLOCK, Identifier.of("csp_modern", "control_panel"), ICMS_CONTROL_PANEL_BLOCK);
+        register("vertushka", VERTUSHKA_BLOCK);
+        register("archive_filing_cabinet", ARCHIVE_FILING_CABINET_BLOCK);
+        register("geodetic_marker", GEODETIC_MARKER_BLOCK);
+        register("planshet", PLANSHET_BLOCK);
+        register("planshet_part", PLANSHET_PART_BLOCK);
+        register("industrial_control", INDUSTRIAL_CONTROL_BLOCK);
+        register("chiseled", CHISELED_BLOCK);
+        register("mtk_display", MTK_DISPLAY_BLOCK);
+        register("teletype_printer", TELETYPE_PRINTER_BLOCK);
+        register("fuel_channel", FUEL_CHANNEL_BLOCK);
+        register("graphite", GRAPHITE_BLOCK);
+        register("stockpile", STOCKPILE_BLOCK);
+        register("icms_message_input", ICMS_MESSAGE_INPUT_BLOCK);
+        register("icms_message_output", ICMS_MESSAGE_OUTPUT_BLOCK);
+        register("control_panel", ICMS_CONTROL_PANEL_BLOCK);
+    }
+
+    private static void register(String name, Block block) {
+        Identifier id = Identifier.of(MOD_ID, name);
+        Registry.register(Registries.BLOCK, id, block);
+        Registry.register(Registries.ITEM, id, new BlockItem(block, new Item.Settings()));
     }
 }

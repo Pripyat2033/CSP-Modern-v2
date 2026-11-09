@@ -32,8 +32,8 @@ public class MtkDisplayBlockEntity extends BlockEntity {
      * Demonstrates proper usage of Registry and Registries imports:
      */
     public static void registerBlockEntity(Identifier id) {
-        if (id == null || !id.getNamespace().equals("csp_modern")) {
-            id = Identifier.of("csp_modern", "mtk_display_block_entity");
+        if (id == null || !id.getNamespace().equals("csp-modern")) {
+            id = Identifier.of("csp-modern", "mtk_display_block_entity");
         }
         Registry.register(
             Registries.BLOCK_ENTITY_TYPE,

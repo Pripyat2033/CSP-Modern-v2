@@ -1,0 +1,18 @@
+{
+  "block.csp-modern.archive_filing_cabinet": "Archive Filing Cabinet",
+  "block.csp-modern.chiseled": "Chiseled Block",
+  "block.csp-modern.control_panel": "ICMS Control Panel",
+  "block.csp-modern.fuel_channel": "Fuel Channel",
+  "block.csp-modern.geodetic_marker": "Geodetic Marker",
+  "block.csp-modern.graphite": "Graphite Block",
+  "block.csp-modern.icms_message_input": "ICMS Message Input",
+  "block.csp-modern.icms_message_output": "ICMS Message Output",
+  "block.csp-modern.industrial_control": "Industrial Control Block",
+  "block.csp-modern.mtk_display": "MTK Display",
+  "block.csp-modern.planshet": "Planshet",
+  "block.csp-modern.planshet_part": "Planshet Part",
+  "block.csp-modern.stockpile": "Stockpile",
+  "block.csp-modern.teletype_printer": "Teletype Printer",
+  "block.csp-modern.vertushka": "Vertushka Telephone",
+  "itemGroup.csp-modern": "Chernobyl Scientific Project"
+}

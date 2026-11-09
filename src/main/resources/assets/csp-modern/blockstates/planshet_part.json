@@ -1,0 +1,82 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=1": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=2": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=3": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=4": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=5": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=6": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=7": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=8": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=9": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=10": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=11": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=12": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=13": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=14": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=15": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=16": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=17": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=18": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=19": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=20": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=21": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=22": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=23": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=24": {
+      "model": "csp-modern:block/planshet_part"
+    },
+    "age=25": {
+      "model": "csp-modern:block/planshet_part"
+    }
+  }
+}
