@@ -1,0 +1,235 @@
+{
+  "credit": "CSP-Modern",
+  "textures": {
+    "particle": "csp-modern:block/vertushka_body",
+    "body": "csp-modern:block/vertushka_body",
+    "handset": "csp-modern:block/vertushka_handset",
+    "dial": "csp-modern:block/vertushka_dial_4"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        4
+      ],
+      "to": [
+        13,
+        3,
+        12
+      ],
+      "faces": {
+        "down": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        0.4,
+        3.55
+      ],
+      "to": [
+        11,
+        2.6,
+        4.0
+      ],
+      "faces": {
+        "down": {
+          "texture": "#dial"
+        },
+        "up": {
+          "texture": "#dial"
+        },
+        "north": {
+          "texture": "#dial"
+        },
+        "south": {
+          "texture": "#dial"
+        },
+        "west": {
+          "texture": "#dial"
+        },
+        "east": {
+          "texture": "#dial"
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        3,
+        4.5
+      ],
+      "to": [
+        5,
+        3.4,
+        11.5
+      ],
+      "faces": {
+        "down": {
+          "texture": "#handset"
+        },
+        "up": {
+          "texture": "#handset"
+        },
+        "north": {
+          "texture": "#handset"
+        },
+        "south": {
+          "texture": "#handset"
+        },
+        "west": {
+          "texture": "#handset"
+        },
+        "east": {
+          "texture": "#handset"
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        3,
+        4.5
+      ],
+      "to": [
+        12.5,
+        3.4,
+        11.5
+      ],
+      "faces": {
+        "down": {
+          "texture": "#handset"
+        },
+        "up": {
+          "texture": "#handset"
+        },
+        "north": {
+          "texture": "#handset"
+        },
+        "south": {
+          "texture": "#handset"
+        },
+        "west": {
+          "texture": "#handset"
+        },
+        "east": {
+          "texture": "#handset"
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        3.4,
+        6
+      ],
+      "to": [
+        13.5,
+        4.4,
+        9
+      ],
+      "faces": {
+        "down": {
+          "texture": "#handset"
+        },
+        "up": {
+          "texture": "#handset"
+        },
+        "north": {
+          "texture": "#handset"
+        },
+        "south": {
+          "texture": "#handset"
+        },
+        "west": {
+          "texture": "#handset"
+        },
+        "east": {
+          "texture": "#handset"
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        3.4,
+        4.5
+      ],
+      "to": [
+        4.5,
+        5.4,
+        10.5
+      ],
+      "faces": {
+        "down": {
+          "texture": "#handset"
+        },
+        "up": {
+          "texture": "#handset"
+        },
+        "north": {
+          "texture": "#handset"
+        },
+        "south": {
+          "texture": "#handset"
+        },
+        "west": {
+          "texture": "#handset"
+        },
+        "east": {
+          "texture": "#handset"
+        }
+      }
+    },
+    {
+      "from": [
+        11.5,
+        3.4,
+        4.5
+      ],
+      "to": [
+        13.5,
+        5.4,
+        10.5
+      ],
+      "faces": {
+        "down": {
+          "texture": "#handset"
+        },
+        "up": {
+          "texture": "#handset"
+        },
+        "north": {
+          "texture": "#handset"
+        },
+        "south": {
+          "texture": "#handset"
+        },
+        "west": {
+          "texture": "#handset"
+        },
+        "east": {
+          "texture": "#handset"
+        }
+      }
+    }
+  ]
+}

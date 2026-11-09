@@ -1,6 +1,139 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "credit": "CSP-Modern",
   "textures": {
-    "all": "csp-modern:block/teletype_printer"
-  }
+    "particle": "csp-modern:block/teletype_body",
+    "body": "csp-modern:block/teletype_body",
+    "keys": "csp-modern:block/teletype_keys",
+    "paper": "csp-modern:block/teletype_paper"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        2
+      ],
+      "to": [
+        15,
+        4,
+        14
+      ],
+      "faces": {
+        "down": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        4,
+        3
+      ],
+      "to": [
+        13,
+        7,
+        9
+      ],
+      "faces": {
+        "down": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        4,
+        9.5
+      ],
+      "to": [
+        14,
+        4.9,
+        13
+      ],
+      "faces": {
+        "down": {
+          "texture": "#keys"
+        },
+        "up": {
+          "texture": "#keys"
+        },
+        "north": {
+          "texture": "#keys"
+        },
+        "south": {
+          "texture": "#keys"
+        },
+        "west": {
+          "texture": "#keys"
+        },
+        "east": {
+          "texture": "#keys"
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        7,
+        4.0
+      ],
+      "to": [
+        11.5,
+        10,
+        4.3
+      ],
+      "faces": {
+        "down": {
+          "texture": "#paper"
+        },
+        "up": {
+          "texture": "#paper"
+        },
+        "north": {
+          "texture": "#paper"
+        },
+        "south": {
+          "texture": "#paper"
+        },
+        "west": {
+          "texture": "#paper"
+        },
+        "east": {
+          "texture": "#paper"
+        }
+      }
+    }
+  ]
 }

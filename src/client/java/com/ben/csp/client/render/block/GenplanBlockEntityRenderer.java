@@ -65,7 +65,7 @@ public class GenplanBlockEntityRenderer implements BlockEntityRenderer<GenplanBl
 
         Matrix4f m = matrices.peek().getPositionMatrix();
         VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEX));
-        float s = 0.5f; // half-extent of the face, in blocks
+        float s = 0.45f; // inset, so the board frame shows around the drawing
         vc.vertex(m, -s, -s, 0).color(255, 255, 255, 255).texture(u0, v1)
             .overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
             .normal(0, 0, 1).next();

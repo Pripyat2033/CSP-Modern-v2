@@ -77,7 +77,7 @@ public class CSPMod implements ModInitializer {
         // The zone runs on the server clock: the enterprises build themselves live.
         ServerTickEvents.END_SERVER_TICK.register(ZoneTicker::tick);
 
-        LOGGER.info("CSP-Modern 0.4.0 loaded. Commands: /csp help, /prombaza, "
+        LOGGER.info("CSP-Modern 0.5.0 loaded. Commands: /csp help, /prombaza, "
             + "/directorate, /zone.");
     }
 }

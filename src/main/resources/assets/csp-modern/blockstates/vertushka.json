@@ -1,5 +1,164 @@
 {
   "variants": {
-    "": { "model": "csp-modern:block/vertushka" }
+    "dial=0,facing=north": {
+      "model": "csp-modern:block/vertushka",
+      "y": 0
+    },
+    "dial=1,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_1",
+      "y": 0
+    },
+    "dial=2,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_2",
+      "y": 0
+    },
+    "dial=3,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_3",
+      "y": 0
+    },
+    "dial=4,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_4",
+      "y": 0
+    },
+    "dial=5,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_5",
+      "y": 0
+    },
+    "dial=6,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_6",
+      "y": 0
+    },
+    "dial=7,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_7",
+      "y": 0
+    },
+    "dial=8,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_8",
+      "y": 0
+    },
+    "dial=9,facing=north": {
+      "model": "csp-modern:block/vertushka_dial_9",
+      "y": 0
+    },
+    "dial=0,facing=east": {
+      "model": "csp-modern:block/vertushka",
+      "y": 90
+    },
+    "dial=1,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_1",
+      "y": 90
+    },
+    "dial=2,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_2",
+      "y": 90
+    },
+    "dial=3,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_3",
+      "y": 90
+    },
+    "dial=4,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_4",
+      "y": 90
+    },
+    "dial=5,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_5",
+      "y": 90
+    },
+    "dial=6,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_6",
+      "y": 90
+    },
+    "dial=7,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_7",
+      "y": 90
+    },
+    "dial=8,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_8",
+      "y": 90
+    },
+    "dial=9,facing=east": {
+      "model": "csp-modern:block/vertushka_dial_9",
+      "y": 90
+    },
+    "dial=0,facing=south": {
+      "model": "csp-modern:block/vertushka",
+      "y": 180
+    },
+    "dial=1,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_1",
+      "y": 180
+    },
+    "dial=2,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_2",
+      "y": 180
+    },
+    "dial=3,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_3",
+      "y": 180
+    },
+    "dial=4,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_4",
+      "y": 180
+    },
+    "dial=5,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_5",
+      "y": 180
+    },
+    "dial=6,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_6",
+      "y": 180
+    },
+    "dial=7,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_7",
+      "y": 180
+    },
+    "dial=8,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_8",
+      "y": 180
+    },
+    "dial=9,facing=south": {
+      "model": "csp-modern:block/vertushka_dial_9",
+      "y": 180
+    },
+    "dial=0,facing=west": {
+      "model": "csp-modern:block/vertushka",
+      "y": 270
+    },
+    "dial=1,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_1",
+      "y": 270
+    },
+    "dial=2,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_2",
+      "y": 270
+    },
+    "dial=3,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_3",
+      "y": 270
+    },
+    "dial=4,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_4",
+      "y": 270
+    },
+    "dial=5,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_5",
+      "y": 270
+    },
+    "dial=6,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_6",
+      "y": 270
+    },
+    "dial=7,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_7",
+      "y": 270
+    },
+    "dial=8,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_8",
+      "y": 270
+    },
+    "dial=9,facing=west": {
+      "model": "csp-modern:block/vertushka_dial_9",
+      "y": 270
+    }
   }
 }

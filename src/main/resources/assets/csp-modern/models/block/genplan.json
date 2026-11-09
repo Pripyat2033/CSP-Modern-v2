@@ -1,6 +1,41 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "credit": "CSP-Modern",
   "textures": {
-    "all": "csp-modern:block/genplan"
-  }
+    "particle": "csp-modern:block/genplan_board",
+    "board": "csp-modern:block/genplan_board"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#board"
+        },
+        "up": {
+          "texture": "#board"
+        },
+        "north": {
+          "texture": "#board"
+        },
+        "south": {
+          "texture": "#board"
+        },
+        "west": {
+          "texture": "#board"
+        },
+        "east": {
+          "texture": "#board"
+        }
+      }
+    }
+  ]
 }
