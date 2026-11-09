@@ -29,6 +29,13 @@ Rules that follow from the mission:
 4. **Two zones of honesty.** The disaster-relevant facility (Unit 4 and its
    control room) must be a real simulation. Elsewhere, build real where it is
    known and mark approximations plainly.
+5. **THE HARD GATE — no plant construction before the means exist.** We are
+   FORBIDDEN from building ChNPP/ChAES until every enterprise is operational
+   (its facilities built, directed and manned) AND a prombaza has been
+   designated. The enterprises and their facilities are not set dressing: they
+   are prerequisites. Plant construction code must call
+   `PlantBuildAuthorisation.require()` first, which refuses until the gate opens.
+   Do not begin the plant, the reactor, or the control room before that.
 
 # TERMINOLOGY
 

@@ -1,5 +1,20 @@
 # CSP-Modern-v2 — project memory
 
+## MISSION (corrected by Ben 2026-11-09) — read before every decision
+This is a **forensic, 1:1, Science Grade or Better (SGB) reconstruction of the
+RBMK-1000 at ChNPP and the night of 26 April 1986**. End state = stand in the
+control room, press the same buttons, watch the same behaviours. The plant must be
+built to **exact scale and spec**. The enterprises / workforce / construction
+systems are the MEANS to build it; the **Stroiteli exist because a human cannot
+build to the required exact scale**. Rules: accuracy over drama (if it did not
+happen it does not go in); nothing guessed (cite the source or mark unknown);
+fidelity is GATED not assumed (set-out разбивка before, as-built исполнительная
+съёмка after; mis-built = refused AND flagged); two zones of honesty (Unit 4 +
+control room = real simulation; elsewhere real where known, approximations marked).
+Full text in `AGENTS.md` (top). Terminology: Soviet name in-game, tooltip =
+romanised + English.
+
+
 Minecraft Fabric mod, MC 1.20.1 (Yarn mappings). Simulates ChNPP at 1:1 scale;
 core gameplay is a construction-workforce / agent system. Repo
 `Pripyat2033/CSP-Modern-v2`, working branch `OpenHands`. Read `AGENTS.md` for
