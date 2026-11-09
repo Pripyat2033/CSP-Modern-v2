@@ -1,16 +1,28 @@
 package com.ben.csp.block;
 
+import com.ben.csp.telephony.DialGeometry;
+import com.ben.csp.telephony.KommutatorExchange;
+import com.ben.csp.telephony.TelephonyState;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -21,14 +33,15 @@ import net.minecraft.world.World;
 
 /**
  * The vertushka (KTS) desk telephone: a bakelite body with a rotary dial and a
- * handset. The dial has ten states so it can be turned in play, and the block turns
- * to face the player who places it.
+ * handset. Right-click to lift the handset; put your finger in a dial hole to call a
+ * number; right-click again to hang up. The коммутатор does the rest — see
+ * {@link KommutatorExchange}.
  */
 public class VertushkaBlock extends HorizontalFacingBlock {
 
     public static final String ID = "vertushka_block";
 
-    /** The rotary dial position, 0-9. Right-clicking turns it one step. */
+    /** The last dialled digit, 0-9, shown on the dial. */
     public static final IntProperty DIAL = IntProperty.of("dial", 0, 9);
 
     private static final VoxelShape SHAPE = Block.createCuboidShape(3, 0, 4, 13, 5.5, 12);
@@ -56,19 +69,107 @@ public class VertushkaBlock extends HorizontalFacingBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
-                              Hand hand, BlockHitResult hit) {
-        if (!world.isClient) {
-            // Turn the dial one hole. The full exchange is added with the telephone.
-            int next = (state.get(DIAL) + 1) % 10;
-            world.setBlockState(pos, state.with(DIAL, next));
-            world.playSound(null, pos, net.minecraft.sound.SoundEvents.BLOCK_LEVER_CLICK,
-                net.minecraft.sound.SoundCategory.BLOCKS, 0.4f, 0.9f + next * 0.03f);
-            if (player instanceof net.minecraft.server.network.ServerPlayerEntity sp) {
-                sp.sendMessage(net.minecraft.text.Text.literal("Dial: " + next
-                    + "  (the exchange is not connected yet)"), true);
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        super.onPlaced(world, pos, state, placer, stack);
+        if (world instanceof ServerWorld sw) {
+            int number = TelephonyState.get(sw.getServer()).placeLine(pos);
+            if (placer instanceof ServerPlayerEntity sp) {
+                sp.sendMessage(Text.literal("Vertushka connected on line " + number + ".")
+                    .formatted(Formatting.GRAY), false);
             }
         }
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState,
+                                boolean moved) {
+        if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld sw) {
+            TelephonyState.get(sw.getServer()).removeLine(pos);
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
+                              Hand hand, BlockHitResult hit) {
+        if (world instanceof ServerWorld sw && player instanceof ServerPlayerEntity sp) {
+            use(sw, pos, state, sp, hit);
+        }
         return ActionResult.success(world.isClient);
+    }
+
+    private static void use(ServerWorld world, BlockPos pos, BlockState state,
+                            ServerPlayerEntity player, BlockHitResult hit) {
+        MinecraftServer server = world.getServer();
+        TelephonyState tel = TelephonyState.get(server);
+        int number = tel.lineAt(pos);
+        if (number < 0) {
+            number = tel.placeLine(pos);
+        }
+        KommutatorExchange.Line line = tel.exchange().line(number);
+        if (line == null) {
+            return;
+        }
+
+        switch (line.state) {
+            case ON_HOOK -> {
+                tel.exchange().offHook(number);
+                player.sendMessage(Text.literal("You lift the handset on line " + number
+                    + ". Put your finger in a hole on the dial to call a number.").formatted(Formatting.GRAY), false);
+            }
+            case OFF_HOOK, DIALING -> dial(world, pos, state, player, hit, tel, number);
+            case RINGING -> {
+                if (line.outgoing) {
+                    hangUp(world, pos, state, player, tel, number, "You hang up; the call is dropped.");
+                } else {
+                    tel.exchange().answer(number);
+                    world.setBlockState(pos, state.with(DIAL, 0));
+                    player.sendMessage(Text.literal("You answer line " + line.peer
+                        + ". Speak plainly — say what you need; right-click to hang up.")
+                        .formatted(Formatting.GREEN), false);
+                }
+            }
+            case TALKING -> hangUp(world, pos, state, player, tel, number,
+                "You hang up. The line is clear.");
+            case BUSY -> hangUp(world, pos, state, player, tel, number,
+                "You hang up and will try again later.");
+        }
+    }
+
+    private static void hangUp(ServerWorld world, BlockPos pos, BlockState state,
+                               ServerPlayerEntity player, TelephonyState tel, int number,
+                               String message) {
+        tel.exchange().hangUp(number);
+        world.setBlockState(pos, state.with(DIAL, 0));
+        world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.4f, 0.6f);
+        player.sendMessage(Text.literal(message).formatted(Formatting.GRAY), false);
+    }
+
+    private static void dial(ServerWorld world, BlockPos pos, BlockState state,
+                             ServerPlayerEntity player, BlockHitResult hit,
+                             TelephonyState tel, int number) {
+        double dx = hit.getPos().x - pos.getX();
+        double dy = hit.getPos().y - pos.getY();
+        double dz = hit.getPos().z - pos.getZ();
+        int digit = DialGeometry.digitFor(faceOf(state.get(FACING)), dx, dy, dz);
+        if (digit < 0) {
+            player.sendMessage(Text.literal("Put your finger in one of the holes.")
+                .formatted(Formatting.GRAY), true);
+            return;
+        }
+        tel.exchange().dial(number, (char) ('0' + digit));
+        world.setBlockState(pos, state.with(DIAL, digit));
+        world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS,
+            0.4f, 0.8f + digit * 0.04f);
+        player.sendMessage(Text.literal("Dialled " + digit + ".").formatted(Formatting.GRAY), true);
+    }
+
+    private static DialGeometry.Face faceOf(Direction facing) {
+        return switch (facing) {
+            case SOUTH -> DialGeometry.Face.SOUTH;
+            case EAST -> DialGeometry.Face.EAST;
+            case WEST -> DialGeometry.Face.WEST;
+            default -> DialGeometry.Face.NORTH;
+        };
     }
 }
