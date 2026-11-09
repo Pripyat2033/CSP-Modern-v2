@@ -31,7 +31,11 @@ public final class EnterpriseInterfaceSelfTest {
 
         // it is connected to the country by real transport, and not otherwise
         check(iface.isConnected(), "the enterprise is connected by rail");
-        eq(1, iface.transportNodes().size(), "one transport node for the power branch");
+        eq(2, iface.transportNodes().size(), "the power branch has two rail nodes");
+        eq(Provenance.VERIFIED, UnionFacts.semikhodyRail().provenance(),
+            "Semikhody, the plant's own station, is a cited fact");
+        check(UnionFacts.semikhodyRail().connectsTo().contains("internal"),
+            "Semikhody links on to the plant's internal rail network");
         eq(TransportKind.RAIL, iface.transportNodes().get(0).kind(), "the link is rail");
         eq(Provenance.VERIFIED, iface.transportNodes().get(0).provenance(),
             "the Yanov rail link is a cited fact");

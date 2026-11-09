@@ -15,7 +15,7 @@ public final class UnionFacts {
     public static final String SOURCE =
         "ru.wikipedia: Госплан СССР; Госснаб СССР; Материально-техническое снабжение; "
         + "Министерство энергетики и электрификации СССР; Хозяйственный расчёт; "
-        + "Янов (станция); Железнодорожная линия Чернигов — Овруч";
+        + "Янов (станция); Семиходы; Железнодорожная линия Чернигов — Овруч";
 
     /**
      * A verified fact worth teaching: the existence of the Chernihiv-Ovruch rail
@@ -58,6 +58,18 @@ public final class UnionFacts {
     }
 
     /**
+     * The plant's own railway station: Semikhody, on the same Chernihiv-Ovruch
+     * line, in the immediate surroundings of the plant and Pripyat. Deliveries
+     * and staff reached the plant here; from Semikhody the plant's own internal
+     * rail network ran on. Source: ru.wikipedia, Семиходы.
+     */
+    public static TransportNode semikhodyRail() {
+        return new TransportNode("semikhody", "Станция Семиходы (Semikhody station)",
+            TransportKind.RAIL, "Чернигов — Овруч line; the plant's own internal rail network",
+            Provenance.VERIFIED, SOURCE);
+    }
+
+    /**
      * The Pripyat river port, on the Pripyat river. Its existence is known, but
      * the detail (berths, the craft that called) is not yet sourced, so it is
      * marked a reconstruction until it is.
@@ -78,6 +90,7 @@ public final class UnionFacts {
             .to(minenergo())
             .to(gosplan(AdministrativeLevel.USSR))
             .to(gossnab())
-            .via(yanovRail());
+            .via(yanovRail())
+            .via(semikhodyRail());
     }
 }
