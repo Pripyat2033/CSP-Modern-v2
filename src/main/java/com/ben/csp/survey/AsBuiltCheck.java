@@ -1,8 +1,11 @@
 package com.ben.csp.survey;
 
 import com.ben.csp.enterprise.Footprint;
+import com.ben.csp.plan.ProblemMarker;
+import com.ben.csp.plan.Severity;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The as-built check (исполнительная съёмка) of one building: after it is built,
@@ -77,6 +80,22 @@ public final class AsBuiltCheck {
     /** Whether the building stands within tolerance. Meaningful once complete. */
     public boolean isWithinTolerance() {
         return deviation() <= tolerance;
+    }
+
+    /**
+     * When the check has failed, the marker to put on the plan: it flags the
+     * building at its as-built position with the measured deviation, and carries
+     * a выноска to a detail sheet. A structure that is off the design is both
+     * refused and flagged, never quietly passed.
+     */
+    public Optional<ProblemMarker> failureMarker(String detailSheetNumber) {
+        if (status != Status.FAILED) {
+            return Optional.empty();
+        }
+        String text = String.format("As-built deviation %.2f m (limit %.2f m): %s",
+            deviation(), tolerance, facilityId);
+        return Optional.of(new ProblemMarker(asBuilt.centerX(), asBuilt.centerZ(),
+            Severity.PROBLEM, text, detailSheetNumber));
     }
 
     public void work(double hours, long day) {

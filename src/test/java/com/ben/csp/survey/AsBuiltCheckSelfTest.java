@@ -29,6 +29,14 @@ public final class AsBuiltCheckSelfTest {
         check(bad.failed(), "it fails once checked");
         check(bad.isComplete(), "a failed check is still complete");
 
+        // a failure flags the plan (refuse AND flag), and a pass does not
+        check(ok.failureMarker("7").isEmpty(), "a passed building flags nothing");
+        var marker = bad.failureMarker("7");
+        check(marker.isPresent(), "a failed building is flagged on the plan");
+        check(marker.get().hasCallout(), "the flag carries a выноска to a detail sheet");
+        eq("7", marker.get().detailSheetNumber(), "the выноска names the detail sheet");
+        check(marker.get().description().contains("deviation"), "the flag states the deviation");
+
         // the deviation is symmetric and considers every corner
         Footprint far = Footprint.of(100, 100, 140, 133);
         AsBuiltCheck corner = new AsBuiltCheck("AB-3", "g1", "hq", design, far, 0.5, 20, 2);
