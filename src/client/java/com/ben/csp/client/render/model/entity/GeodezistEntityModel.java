@@ -1,6 +1,6 @@
 package com.ben.csp.client.render.model.entity;
 import com.ben.csp.entity.*;
-import com.ben.csp.entity.ModModelLayers;
+import com.ben.csp.client.render.model.ModModelLayers;
 import com.ben.csp.entity.GeodezistEntity;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;

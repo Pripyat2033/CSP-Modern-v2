@@ -1,24 +1,14 @@
 package com.ben.csp.entity;
 
-import net.minecraft.registry.Registries;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
-import net.minecraft.entity.LivingEntity;
 
 /**
- * TolkachEntity Entity.
+ * Tolkach - manual labourer.
  */
-abstract class TolkachEntity extends LivingEntity {
+public class TolkachEntity extends CspPersonEntity {
 
-    public static final EntityType<TolkachEntity> BARAGE = null;
-
-
-    public TolkachEntity(World world) {
-        super(BARAGE, world);
-    }
-
-    public TolkachEntity(EntityType<? extends TolkachEntity> entityType, World world) {
+    public TolkachEntity(EntityType<TolkachEntity> entityType, World world) {
         super(entityType, world);
     }
-
 }

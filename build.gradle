@@ -17,6 +17,14 @@ repositories {
 }
 
 loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        "csp-modern" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
 }
 
 dependencies {

@@ -1,24 +1,14 @@
 package com.ben.csp.entity;
 
-import net.minecraft.registry.Registries;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
-import net.minecraft.entity.LivingEntity;
 
 /**
- * FacilityDirectorEntity Entity.
+ * Facility director.
  */
-abstract class FacilityDirectorEntity extends LivingEntity {
+public class FacilityDirectorEntity extends CspPersonEntity {
 
-    public static final EntityType<FacilityDirectorEntity> BARAGE = null;
-
-
-    public FacilityDirectorEntity(World world) {
-        super(BARAGE, world);
-    }
-
-    public FacilityDirectorEntity(EntityType<? extends FacilityDirectorEntity> entityType, World world) {
+    public FacilityDirectorEntity(EntityType<FacilityDirectorEntity> entityType, World world) {
         super(entityType, world);
     }
-
 }

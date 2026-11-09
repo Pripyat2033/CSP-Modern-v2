@@ -2,7 +2,7 @@ package com.ben.csp.client.render.entity;
 import com.ben.csp.entity.*;
 import com.ben.csp.CSPMod;
 import com.ben.csp.entity.GlavnyInzhenerEntity;
-import com.ben.csp.entity.ModModelLayers;
+import com.ben.csp.client.render.model.ModModelLayers;
 import com.ben.csp.client.render.model.entity.GlavnyInzhenerEntityModel;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;

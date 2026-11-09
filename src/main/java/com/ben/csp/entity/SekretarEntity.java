@@ -1,24 +1,14 @@
 package com.ben.csp.entity;
 
-import net.minecraft.registry.Registries;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
-import net.minecraft.entity.LivingEntity;
 
 /**
- * SekretarEntity Entity.
+ * Sekretar - secretary.
  */
-abstract class SekretarEntity extends LivingEntity {
+public class SekretarEntity extends CspPersonEntity {
 
-    public static final EntityType<SekretarEntity> BARAGE = null;
-
-
-    public SekretarEntity(World world) {
-        super(BARAGE, world);
-    }
-
-    public SekretarEntity(EntityType<? extends SekretarEntity> entityType, World world) {
+    public SekretarEntity(EntityType<SekretarEntity> entityType, World world) {
         super(entityType, world);
     }
-
 }

@@ -2,12 +2,28 @@ package com.ben.csp.skala;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 
 public class SkalaRequestDeviceBlockEntity extends BlockEntity {
-    public static final String ID = "skala_request_device_block_entity";
-    
-    // Constructor with null parameters - Fabric handles registration internally
-    public SkalaRequestDeviceBlockEntity() {
-        super(null, null, null);
+
+    public static final BlockEntityType<SkalaRequestDeviceBlockEntity> SKALA_REQUEST_DEVICE_BLOCK_ENTITY_TYPE =
+        FabricBlockEntityTypeBuilder.create(SkalaRequestDeviceBlockEntity::new, com.ben.csp.block.ModBlocks.SKALA_REQUEST_DEVICE_BLOCK).build();
+
+    public SkalaRequestDeviceBlockEntity(BlockPos pos, BlockState state) {
+        super(SKALA_REQUEST_DEVICE_BLOCK_ENTITY_TYPE, pos, state);
     }
+
+    // GUI state used by SkalaRequestDeviceScreen.
+    private String requestCode = "";
+    private String valueDisplay = "";
+    private String referenceDisplay = "";
+
+    public String getRequestCode() { return requestCode; }
+    public String getValueDisplay() { return valueDisplay; }
+    public String getReferenceDisplay() { return referenceDisplay; }
+    public void setRequestCode(String v) { this.requestCode = v; }
+    public void setValueDisplay(String v) { this.valueDisplay = v; }
+    public void setReferenceDisplay(String v) { this.referenceDisplay = v; }
 }

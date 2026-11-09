@@ -15,6 +15,8 @@ import com.ben.csp.item.ModItemsSpawnEggs;
  */
 public class CSPMod implements ModInitializer {
 
+    public static final String MOD_ID = "csp-modern";
+
     @Override
     public void onInitialize() {
         // Register all blocks

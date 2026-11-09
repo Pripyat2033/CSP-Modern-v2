@@ -1,24 +1,14 @@
 package com.ben.csp.entity;
 
-import net.minecraft.registry.Registries;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
-import net.minecraft.entity.LivingEntity;
 
 /**
- * ProrabEntity Entity.
+ * Prorab - site foreman.
  */
-abstract class ProrabEntity extends LivingEntity {
+public class ProrabEntity extends CspPersonEntity {
 
-    public static final EntityType<ProrabEntity> BARAGE = null;
-
-
-    public ProrabEntity(World world) {
-        super(BARAGE, world);
-    }
-
-    public ProrabEntity(EntityType<? extends ProrabEntity> entityType, World world) {
+    public ProrabEntity(EntityType<ProrabEntity> entityType, World world) {
         super(entityType, world);
     }
-
 }

@@ -1,6 +1,5 @@
 package com.ben.csp.rbmk;
 
-import net.minecraft.client.MinecraftClient;
 
 /**
  * REKORD Solver Library - JNA-compatible native interop interface.

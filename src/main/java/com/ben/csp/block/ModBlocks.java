@@ -6,6 +6,9 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import com.ben.csp.skala.SkalaCoreBlock;
+import com.ben.csp.skala.SkalaTapeDriveBlock;
+import com.ben.csp.skala.SkalaRequestDeviceBlock;
 
 public class ModBlocks {
     public static final String MOD_ID = "csp-modern";
@@ -25,6 +28,9 @@ public class ModBlocks {
     public static final Block ICMS_MESSAGE_INPUT_BLOCK = new IcmsMessageInputBlock();
     public static final Block ICMS_MESSAGE_OUTPUT_BLOCK = new IcmsMessageOutputBlock();
     public static final Block ICMS_CONTROL_PANEL_BLOCK = new IcmsControlPanelBlock();
+    public static final Block SKALA_CORE_BLOCK = new SkalaCoreBlock(Block.Settings.create());
+    public static final Block SKALA_TAPE_DRIVE_BLOCK = new SkalaTapeDriveBlock(Block.Settings.create());
+    public static final Block SKALA_REQUEST_DEVICE_BLOCK = new SkalaRequestDeviceBlock(Block.Settings.create());
 
     public static void register() {
         register("vertushka", VERTUSHKA_BLOCK);
@@ -42,6 +48,9 @@ public class ModBlocks {
         register("icms_message_input", ICMS_MESSAGE_INPUT_BLOCK);
         register("icms_message_output", ICMS_MESSAGE_OUTPUT_BLOCK);
         register("control_panel", ICMS_CONTROL_PANEL_BLOCK);
+        register("skala_core", SKALA_CORE_BLOCK);
+        register("skala_tape_drive", SKALA_TAPE_DRIVE_BLOCK);
+        register("skala_request_device", SKALA_REQUEST_DEVICE_BLOCK);
     }
 
     private static void register(String name, Block block) {

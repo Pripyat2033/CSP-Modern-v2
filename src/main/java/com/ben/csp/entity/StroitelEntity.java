@@ -1,24 +1,14 @@
 package com.ben.csp.entity;
 
-import net.minecraft.registry.Registries;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
-import net.minecraft.entity.LivingEntity;
 
 /**
- * StroitelEntity Entity.
+ * Stroitel - construction worker.
  */
-abstract class StroitelEntity extends LivingEntity {
+public class StroitelEntity extends CspPersonEntity {
 
-    public static final EntityType<StroitelEntity> BARAGE = null;
-
-
-    public StroitelEntity(World world) {
-        super(BARAGE, world);
-    }
-
-    public StroitelEntity(EntityType<? extends StroitelEntity> entityType, World world) {
+    public StroitelEntity(EntityType<StroitelEntity> entityType, World world) {
         super(entityType, world);
     }
-
 }

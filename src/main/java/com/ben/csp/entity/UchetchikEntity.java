@@ -1,24 +1,14 @@
 package com.ben.csp.entity;
 
-import net.minecraft.registry.Registries;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
-import net.minecraft.entity.LivingEntity;
 
 /**
- * UchetchikEntity Entity.
+ * Uchetchik - timekeeper.
  */
-abstract class UchetchikEntity extends LivingEntity {
+public class UchetchikEntity extends CspPersonEntity {
 
-    public static final EntityType<UchetchikEntity> BARAGE = null;
-
-
-    public UchetchikEntity(World world) {
-        super(BARAGE, world);
-    }
-
-    public UchetchikEntity(EntityType<? extends UchetchikEntity> entityType, World world) {
+    public UchetchikEntity(EntityType<UchetchikEntity> entityType, World world) {
         super(entityType, world);
     }
-
 }
