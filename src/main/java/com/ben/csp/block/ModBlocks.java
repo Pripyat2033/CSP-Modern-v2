@@ -16,6 +16,7 @@ public class ModBlocks {
     public static final Block VERTUSHKA_BLOCK = VertushkaBlock.INSTANCE;
     public static final Block ARCHIVE_FILING_CABINET_BLOCK = new ArchiveFilingCabinetBlock();
     public static final Block GEODETIC_MARKER_BLOCK = new GeodeticMarkerBlock();
+    public static final Block GENPLAN_BLOCK = new GenplanBlock(net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings.copyOf(net.minecraft.block.Blocks.IRON_BLOCK).nonOpaque());
     public static final Block PLANSHET_BLOCK = new PlanshetBlock();
     public static final Block PLANSHET_PART_BLOCK = new PlanshetPartBlock();
     public static final Block INDUSTRIAL_CONTROL_BLOCK = IndustrialControlBlock.INSTANCE;
@@ -36,6 +37,7 @@ public class ModBlocks {
         register("vertushka", VERTUSHKA_BLOCK);
         register("archive_filing_cabinet", ARCHIVE_FILING_CABINET_BLOCK);
         register("geodetic_marker", GEODETIC_MARKER_BLOCK);
+        register("genplan", GENPLAN_BLOCK);
         register("planshet", PLANSHET_BLOCK);
         register("planshet_part", PLANSHET_PART_BLOCK);
         register("industrial_control", INDUSTRIAL_CONTROL_BLOCK);

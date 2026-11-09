@@ -62,6 +62,7 @@ public class CSPModClient implements ClientModInitializer {
     }
 
     private void registerBlockEntityRenderers() {
+        BlockEntityRendererFactories.register(ModBlockEntities.GENPLAN_BLOCK_ENTITY, GenplanBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.PLANSHET_BLOCK_ENTITY, PlanshetBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.VERTUSHKA_BLOCK_ENTITY, VertushkaBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ARCHIVE_FILING_CABINET_BLOCK_ENTITY, ArchiveFilingCabinetBlockEntityRenderer::new);

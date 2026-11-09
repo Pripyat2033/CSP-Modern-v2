@@ -31,6 +31,7 @@ public class ModItemGroups {
                 entries.add(ModBlocks.ICMS_MESSAGE_OUTPUT_BLOCK);
                 entries.add(ModBlocks.INDUSTRIAL_CONTROL_BLOCK);
                 entries.add(ModBlocks.MTK_DISPLAY_BLOCK);
+                entries.add(ModBlocks.GENPLAN_BLOCK);
                 entries.add(ModBlocks.PLANSHET_BLOCK);
                 entries.add(ModBlocks.PLANSHET_PART_BLOCK);
                 entries.add(ModBlocks.SKALA_CORE_BLOCK);

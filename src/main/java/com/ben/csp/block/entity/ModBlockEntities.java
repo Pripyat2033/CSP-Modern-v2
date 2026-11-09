@@ -29,6 +29,8 @@ public class ModBlockEntities {
     public static final BlockEntityType<IcmsPanelBlockEntity> ICMS_PANEL_BLOCK_ENTITY =
         IcmsPanelBlockEntity.ICMSPANEL_BLOCK_ENTITY_TYPE;
 
+    public static final BlockEntityType<GenplanBlockEntity> GENPLAN_BLOCK_ENTITY =
+        GenplanBlockEntity.GENPLAN_BLOCK_ENTITY_TYPE;
     public static final BlockEntityType<PlanshetBlockEntity> PLANSHET_BLOCK_ENTITY =
         PlanshetBlockEntity.PLANSHET_BLOCK_ENTITY_TYPE;
     public static final BlockEntityType<ArchiveFilingCabinetBlockEntity> ARCHIVE_FILING_CABINET_BLOCK_ENTITY =
@@ -48,6 +50,7 @@ public class ModBlockEntities {
         reg("mtk_display_block_entity", MTK_DISPLAY_BLOCK_ENTITY);
         reg("icms_block_entity", ICMS_BLOCK_ENTITY);
         reg("icms_panel_block_entity", ICMS_PANEL_BLOCK_ENTITY);
+        reg("genplan_block_entity", GENPLAN_BLOCK_ENTITY);
         reg("planshet_block_entity", PLANSHET_BLOCK_ENTITY);
         reg("archive_filing_cabinet_block_entity", ARCHIVE_FILING_CABINET_BLOCK_ENTITY);
         reg("skala_core_block_entity", SKALA_CORE_BLOCK_ENTITY);

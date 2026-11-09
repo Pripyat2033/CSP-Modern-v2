@@ -55,5 +55,6 @@
   "tooltip.csp-modern.magnetic_tape_item": "SKALA program and data storage medium",
   "tooltip.csp-modern.directors_planshet": "Carries a construction work-package blueprint",
   "entity.csp-modern.kommutator": "Kommutator",
-  "item.csp-modern.kommutator_spawn_egg": "Kommutator Spawn Egg"
+  "item.csp-modern.kommutator_spawn_egg": "Kommutator Spawn Egg",
+  "block.csp-modern.genplan": "Генплан"
 }
