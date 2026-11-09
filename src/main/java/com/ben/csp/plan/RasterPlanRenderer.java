@@ -112,6 +112,11 @@ public final class RasterPlanRenderer implements PlanRenderer {
         }
     }
 
+    /** Draw a single pixel; used for markers and overlays. */
+    public void setPixel(int x, int y, int argb) {
+        plot(x, y, argb);
+    }
+
     private void plot(int x, int y, int argb) {
         if (x < 0 || y < 0 || x >= width || y >= height) {
             return;

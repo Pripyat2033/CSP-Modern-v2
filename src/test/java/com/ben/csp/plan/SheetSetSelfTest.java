@@ -67,10 +67,13 @@ public final class SheetSetSelfTest {
 
     private static PlanSheet sheet(String number, String title, Scale scale,
                                    int minX, int minZ, int maxX, int maxZ) {
-        PlanView view = PlanView.fit(minX, minZ, maxX, maxZ, 256, 192, 12);
+        PlanExtent extent = new PlanExtent(minX, minZ, maxX, maxZ);
+        PlanDocument doc = new PlanDocument(title);
+        doc.layer("boundary").add(new PlanPrimitive.Rect(minX, minZ,
+            maxX - minX, maxZ - minZ, false, PlanStyle.of(0xFF000000, 1.0)));
         TitleBlock tb = new TitleBlock("Central Prombaza", title, scale, number, 3,
             "geodezist-1", "Ben", 40);
-        return new PlanSheet(number, title, scale, view, tb);
+        return new PlanSheet(number, title, scale, extent, doc, tb);
     }
 
     private static void eq(Object e, Object a, String what) {
