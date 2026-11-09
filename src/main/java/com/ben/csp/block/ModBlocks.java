@@ -6,6 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import com.ben.csp.item.GenplanBlockItem;
+import com.ben.csp.item.PlanshetBlockItem;
 import com.ben.csp.skala.SkalaCoreBlock;
 import com.ben.csp.skala.SkalaTapeDriveBlock;
 import com.ben.csp.skala.SkalaRequestDeviceBlock;
@@ -37,8 +39,8 @@ public class ModBlocks {
         register("vertushka", VERTUSHKA_BLOCK);
         register("archive_filing_cabinet", ARCHIVE_FILING_CABINET_BLOCK);
         register("geodetic_marker", GEODETIC_MARKER_BLOCK);
-        register("genplan", GENPLAN_BLOCK);
-        register("planshet", PLANSHET_BLOCK);
+        registerWithItem("genplan", GENPLAN_BLOCK, GenplanBlockItem::new);
+        registerWithItem("planshet", PLANSHET_BLOCK, PlanshetBlockItem::new);
         register("planshet_part", PLANSHET_PART_BLOCK);
         register("industrial_control", INDUSTRIAL_CONTROL_BLOCK);
         register("chiseled", CHISELED_BLOCK);
@@ -56,8 +58,14 @@ public class ModBlocks {
     }
 
     private static void register(String name, Block block) {
+        registerWithItem(name, block, BlockItem::new);
+    }
+
+    /** Register a block with a specific BlockItem, for a block that needs one. */
+    private static void registerWithItem(String name, Block block,
+                                         java.util.function.BiFunction<Block, Item.Settings, ? extends Item> itemFactory) {
         Identifier id = Identifier.of(MOD_ID, name);
         Registry.register(Registries.BLOCK, id, block);
-        Registry.register(Registries.ITEM, id, new BlockItem(block, new Item.Settings()));
+        Registry.register(Registries.ITEM, id, itemFactory.apply(block, new Item.Settings()));
     }
 }
