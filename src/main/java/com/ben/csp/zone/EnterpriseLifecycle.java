@@ -5,18 +5,17 @@ import com.ben.csp.enterprise.EnterpriseSetup;
 import com.ben.csp.enterprise.Facility;
 import com.ben.csp.enterprise.FacilityType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * One enterprise standing itself up, step by step, on the work clock. It builds
  * its HQ, hires its staff, then for each of its facilities CHOOSES a plot inside
- * the prombaza territory, sets it out, builds it and has it checked — the real
- * order, geodetic set-out before and as-built check after.
- *
- * <p>The enterprise is not given a site: it picks one. The territory is laid out
- * first; the enterprise takes a free plot of the size its facility needs, clear of
- * the roads and rail already reserved.
+ * the prombaza territory and BUILDS it over time: the plot is set out as a marker,
+ * the construction office assigns a brigade and delivers materials, and the marker
+ * becomes a building as the work is done. Only then is it checked as-built,
+ * directed and manned.
  */
 public final class EnterpriseLifecycle {
 
@@ -26,6 +25,8 @@ public final class EnterpriseLifecycle {
     private final EnterpriseSetup setup;
     private final SiteAllocator allocator;
     private final int staffTarget;
+    private final List<Brigade> brigades;
+    private final List<ConstructionSite> sites = new ArrayList<>();
 
     private Phase phase = Phase.HQ;
     private int facilityIndex = 0;
@@ -36,15 +37,28 @@ public final class EnterpriseLifecycle {
         this.setup = new EnterpriseSetup(enterprise.id());
         this.allocator = Objects.requireNonNull(allocator, "allocator");
         this.staffTarget = staffTarget;
+        this.brigades = brigadesFor(enterprise);
     }
 
     public Enterprise enterprise() { return enterprise; }
     public EnterpriseSetup setup() { return setup; }
+    public List<Brigade> brigades() { return List.copyOf(brigades); }
+    public List<ConstructionSite> sites() { return List.copyOf(sites); }
     public boolean isDone() { return phase == Phase.DONE; }
 
     /** The staff an enterprise needs: its facilities' staffs, plus an overhead. */
     public static int staffTargetFor(Enterprise e) {
         return e.facilities().stream().mapToInt(Facility::requiredStaff).sum() + 8;
+    }
+
+    /** The gangs an enterprise puts on the ground: two, of its own trade strength. */
+    private static List<Brigade> brigadesFor(Enterprise e) {
+        int totalStaff = e.facilities().stream().mapToInt(Facility::requiredStaff).sum();
+        int perBrigade = Math.max(4, totalStaff / 3);
+        List<Brigade> out = new ArrayList<>();
+        out.add(new Brigade(e.id() + "-br1", e.name() + " brigade 1", e.specialty(), perBrigade, 8.0));
+        out.add(new Brigade(e.id() + "-br2", e.name() + " brigade 2", e.specialty(), perBrigade, 8.0));
+        return out;
     }
 
     /** Advance one step. Returns true if the enterprise has just become operational. */
@@ -93,10 +107,34 @@ public final class EnterpriseLifecycle {
             return;
         }
         Facility f = facilities.get(facilityIndex);
+
         if (!f.hasFootprint()) {
+            // set out: choose the plot, raise the marker, open the construction site
             double[] size = sizeFor(f.type());
-            f.site(allocator.allocate(size[0], size[1])); // the enterprise picks its plot
-        } else if (!f.isBuilt()) {
+            var plot = allocator.allocate(size[0], size[1]);
+            f.site(plot);
+            ConstructionSite site = new ConstructionSite(
+                "cs-" + f.id(), f.id(), plot, requiredManHours(plot));
+            sites.add(site);
+            return;
+        }
+
+        ConstructionSite site = siteFor(f);
+        if (site != null && !site.isComplete()) {
+            // the construction office keeps a brigade and materials on the site
+            if (!site.hasBrigade()) {
+                site.assignBrigade(brigades.get(facilityIndex % brigades.size()).id());
+            }
+            if (!site.hasMaterials()) {
+                site.deliverMaterials(site.materialsRequired() / 4.0);
+            }
+            Brigade b = brigades.get(facilityIndex % brigades.size());
+            site.work(b.dailyManHours());
+            return;
+        }
+
+        // the building stands: check it, direct it, man it
+        if (!f.isBuilt()) {
             f.completeConstruction();
         } else if (!f.isAsBuiltAccepted() && !f.isAsBuiltRefused()) {
             f.acceptAsBuilt();
@@ -107,6 +145,20 @@ public final class EnterpriseLifecycle {
         } else {
             facilityIndex++;
         }
+    }
+
+    private ConstructionSite siteFor(Facility f) {
+        for (ConstructionSite s : sites) {
+            if (s.facilityId().equals(f.id())) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    /** Labour a facility of this size needs, in man-hours. Placeholder scale. */
+    private static double requiredManHours(com.ben.csp.enterprise.Footprint plot) {
+        return plot.area();
     }
 
     /** The ground a facility of this kind needs, in metres. */

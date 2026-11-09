@@ -34,13 +34,34 @@ public final class ZoneEnterprisesSelfTest {
 
         int newlyOperational = 0;
         int ticks = 0;
-        while (!zone.allOperational() && ticks < 4000) {
+        boolean sawMarker = false;   // a facility set out but not yet built
+        boolean sawGrowing = false;  // a facility part-way up
+        while (!zone.allOperational() && ticks < 8000) {
             newlyOperational += zone.tick(ticks);
+            for (EnterpriseLifecycle l : zone.lifecycles()) {
+                for (ConstructionSite s : l.sites()) {
+                    if (s.stage() == BuildStage.STAKED) sawMarker = true;
+                    if (s.stage() != BuildStage.FINISHED) sawGrowing = true;
+                }
+            }
             ticks++;
         }
 
         check(zone.allOperational(), "every enterprise becomes operational on its own");
         eq(10, newlyOperational, "each enterprise became operational exactly once");
+        check(sawMarker, "facilities start as a marker, not a finished building");
+        check(sawGrowing, "facilities grow over time, not in one step");
+
+        // every facility has a construction site that finished
+        for (EnterpriseLifecycle l : zone.lifecycles()) {
+            eq(l.enterprise().facilities().size(), l.sites().size(),
+                l.enterprise().id() + " opened a site for every facility");
+            for (ConstructionSite s : l.sites()) {
+                check(s.isComplete(), l.enterprise().id() + "/" + s.facilityId() + " was built out");
+                eq(BuildStage.FINISHED, s.stage(), s.facilityId() + " finished");
+                check(s.hasBrigade(), s.facilityId() + " had a brigade");
+            }
+        }
 
         // every facility chose a plot INSIDE the territory, clear of what is reserved
         for (Enterprise e : zone.enterprises()) {
