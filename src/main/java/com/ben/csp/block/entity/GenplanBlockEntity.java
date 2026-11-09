@@ -12,6 +12,8 @@ import com.ben.csp.plan.PlanSheetRasterizer;
 import com.ben.csp.plan.PlanStyle;
 import com.ben.csp.plan.Scale;
 import com.ben.csp.plan.SitePlanSource;
+import com.ben.csp.plan.ZonePlanSource;
+import com.ben.csp.zone.ZoneState;
 import com.ben.csp.plan.TitleBlock;
 import com.ben.csp.prombaza.Area;
 import com.ben.csp.prombaza.Prombaza;
@@ -195,6 +197,25 @@ public class GenplanBlockEntity extends BlockEntity {
             new double[] {area.minX(), area.maxX(), area.maxX(), area.minX()},
             new double[] {area.minZ(), area.minZ(), area.maxZ(), area.maxZ()},
             true, PlanStyle.of(0xFF1A1A1A, 2.0)));
+
+        // If the zone has been spawned, the board draws the live site — the
+        // territory, its reserved roads and rail, and the enterprises' facilities
+        // at the stage they have reached — on top of the boundary.
+        if (getWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+            ZoneState zoneState = ZoneState.get(serverWorld.getServer());
+            if (zoneState.isSpawned()) {
+                PlanDocument live = new ZonePlanSource(
+                    zoneState.territory(), zoneState.zone()).build();
+                if (live != null) {
+                    for (PlanLayer layer : live.layers()) {
+                        PlanLayer target = doc.layer(layer.name());
+                        for (PlanPrimitive p : layer.primitives()) {
+                            target.add(p);
+                        }
+                    }
+                }
+            }
+        }
 
         TitleBlock titleBlock = new TitleBlock(prombaza.name(), "План промбазы", Scale.S1_2000,
             "1", 1, prombaza.createdBy(), prombaza.createdBy(), prombaza.createdDay());
