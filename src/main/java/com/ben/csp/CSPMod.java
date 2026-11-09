@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import com.ben.csp.prombaza.PrombazaCommand;
+import com.ben.csp.command.CspCommand;
 import com.ben.csp.directorate.DirectorateCommand;
 import com.ben.csp.zone.ZoneCommand;
 import com.ben.csp.zone.ZoneTicker;
@@ -63,6 +64,7 @@ public class CSPMod implements ModInitializer {
             PrombazaCommand.register(dispatcher);
             ZoneCommand.register(dispatcher);
             DirectorateCommand.register(dispatcher);
+            CspCommand.register(dispatcher);
         });
 
         // The zone runs on the server clock: the enterprises build themselves live.

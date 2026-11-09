@@ -34,14 +34,17 @@ public final class DirectorateCommand {
             .requires(source -> source.hasPermissionLevel(2))
             .then(CommandManager.literal("list").executes(DirectorateCommand::list))
             .then(CommandManager.literal("approve")
+                .executes(ctx -> usage(ctx, "/directorate approve <id>"))
                 .then(CommandManager.argument("id", StringArgumentType.word())
                     .executes(DirectorateCommand::approve)))
             .then(CommandManager.literal("deny")
+                .executes(ctx -> usage(ctx, "/directorate deny <id> [reason]"))
                 .then(CommandManager.argument("id", StringArgumentType.word())
                     .executes(ctx -> deny(ctx, "denied"))
                     .then(CommandManager.argument("reason", StringArgumentType.greedyString())
                         .executes(ctx -> deny(ctx, StringArgumentType.getString(ctx, "reason"))))))
             .then(CommandManager.literal("designate")
+                .executes(ctx -> usage(ctx, "/directorate designate <id> [name]"))
                 .then(CommandManager.argument("id", StringArgumentType.word())
                     .executes(ctx -> designate(ctx, StringArgumentType.getString(ctx, "id")))
                     .then(CommandManager.argument("name", StringArgumentType.greedyString())
@@ -152,6 +155,11 @@ public final class DirectorateCommand {
             ctx.getSource().sendError(Text.literal(e.getMessage()));
             return 0;
         }
+    }
+
+    private static int usage(CommandContext<ServerCommandSource> ctx, String text) {
+        ctx.getSource().sendError(Text.literal("Usage: " + text + "  (see /csp help)"));
+        return 0;
     }
 
     private static long day(CommandContext<ServerCommandSource> ctx) {

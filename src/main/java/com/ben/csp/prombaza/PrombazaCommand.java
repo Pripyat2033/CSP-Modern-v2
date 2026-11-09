@@ -59,6 +59,7 @@ public final class PrombazaCommand {
                         .executes(ctx -> designate(ctx, StringArgumentType.getString(ctx, "name"))))))
             .then(CommandManager.literal("list").executes(PrombazaCommand::list))
             .then(CommandManager.literal("undo")
+                .executes(ctx -> usage(ctx, "/prombaza undo <id>"))
                 .then(CommandManager.argument("id", StringArgumentType.word())
                     .executes(PrombazaCommand::undo))));
     }
@@ -147,12 +148,31 @@ public final class PrombazaCommand {
     private static int undo(CommandContext<ServerCommandSource> ctx) {
         String id = StringArgumentType.getString(ctx, "id");
         PrombazaState state = PrombazaState.get(ctx.getSource().getServer());
-        if (state.registry().undo(id)) {
-            state.markDirty();
-            ctx.getSource().sendFeedback(() -> Text.literal("Undid prombaza '" + id + "'"), true);
-            return 1;
+        var found = state.registry().byId(id);
+        if (found.isEmpty()) {
+            ctx.getSource().sendError(Text.literal("No prombaza with id '" + id
+                + "'. Run /prombaza list to see the ids."));
+            return 0;
         }
-        ctx.getSource().sendError(Text.literal("No prombaza with id '" + id + "'"));
+        // Clear the ground marks first: undo must undo what the player can SEE,
+        // not only what is on the record.
+        Prombaza p = found.get();
+        ServerWorld world = ctx.getSource().getWorld();
+        GroundWorks.clearTerritory(world, com.ben.csp.zone.PrombazaTerritory.standard(id, p.area()));
+        state.registry().undo(id);
+        state.markDirty();
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "Undid prombaza '" + id + "' — the boundary marks are cleared from the ground."), true);
+        if (com.ben.csp.zone.ZoneState.get(ctx.getSource().getServer()).isSpawned()) {
+            ctx.getSource().sendFeedback(() -> Text.literal(
+                "Note: the enterprises on the zone are still standing. /zone clear removes "
+                + "their ground marks."), false);
+        }
+        return 1;
+    }
+
+    private static int usage(CommandContext<ServerCommandSource> ctx, String text) {
+        ctx.getSource().sendError(Text.literal("Usage: " + text + "  (see /csp help)"));
         return 0;
     }
 
