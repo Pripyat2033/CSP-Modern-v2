@@ -41,8 +41,9 @@ public final class DirectorateCommand {
                         .executes(ctx -> deny(ctx, StringArgumentType.getString(ctx, "reason"))))))
             .then(CommandManager.literal("designate")
                 .then(CommandManager.argument("id", StringArgumentType.word())
+                    .executes(ctx -> designate(ctx, StringArgumentType.getString(ctx, "id")))
                     .then(CommandManager.argument("name", StringArgumentType.greedyString())
-                        .executes(DirectorateCommand::designate))));
+                        .executes(ctx -> designate(ctx, StringArgumentType.getString(ctx, "name"))))));
         dispatcher.register(root);
     }
 
@@ -108,7 +109,7 @@ public final class DirectorateCommand {
         return 1;
     }
 
-    private static int designate(CommandContext<ServerCommandSource> ctx) {
+    private static int designate(CommandContext<ServerCommandSource> ctx, String name) {
         BlockPos p1 = PrombazaCommand.pendingPos1();
         BlockPos p2 = PrombazaCommand.pendingPos2();
         if (p1 == null || p2 == null) {
@@ -117,7 +118,6 @@ public final class DirectorateCommand {
             return 0;
         }
         String id = StringArgumentType.getString(ctx, "id");
-        String name = StringArgumentType.getString(ctx, "name");
         com.ben.csp.prombaza.Area area = com.ben.csp.prombaza.Area.of(
             p1.getX(), p1.getY(), p1.getZ(), p2.getX(), p2.getY(), p2.getZ());
         PrombazaState pbState = PrombazaState.get(ctx.getSource().getServer());

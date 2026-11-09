@@ -52,8 +52,9 @@ public final class PrombazaCommand {
                             .executes(ctx -> setPos(ctx, false, readCoords(ctx)))))))
             .then(CommandManager.literal("designate")
                 .then(CommandManager.argument("id", StringArgumentType.word())
+                    .executes(ctx -> designate(ctx, StringArgumentType.getString(ctx, "id")))
                     .then(CommandManager.argument("name", StringArgumentType.greedyString())
-                        .executes(PrombazaCommand::designate))))
+                        .executes(ctx -> designate(ctx, StringArgumentType.getString(ctx, "name"))))))
             .then(CommandManager.literal("list").executes(PrombazaCommand::list))
             .then(CommandManager.literal("undo")
                 .then(CommandManager.argument("id", StringArgumentType.word())
@@ -78,14 +79,13 @@ public final class PrombazaCommand {
         return 1;
     }
 
-    private static int designate(CommandContext<ServerCommandSource> ctx) {
+    private static int designate(CommandContext<ServerCommandSource> ctx, String name) {
         ServerCommandSource source = ctx.getSource();
         if (pendingPos1 == null || pendingPos2 == null) {
             source.sendError(Text.literal("Set both corners first: /prombaza pos1 then /prombaza pos2"));
             return 0;
         }
         String id = StringArgumentType.getString(ctx, "id");
-        String name = StringArgumentType.getString(ctx, "name");
         Area area = Area.of(pendingPos1.getX(), pendingPos1.getY(), pendingPos1.getZ(),
                             pendingPos2.getX(), pendingPos2.getY(), pendingPos2.getZ());
         // The territory is not ours to take: it goes to the Director as a request.
