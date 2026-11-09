@@ -19,6 +19,8 @@ import com.ben.csp.item.ModItemGroups;
 import com.ben.csp.item.ModItems;
 import com.ben.csp.item.ModItemsSpawnEggs;
 import com.ben.csp.opb.OPB82RuleLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CSP-Modern Mod Entry Point
@@ -29,6 +31,7 @@ import com.ben.csp.opb.OPB82RuleLoader;
 public class CSPMod implements ModInitializer {
 
     public static final String MOD_ID = "csp-modern";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
     public void onInitialize() {
@@ -69,5 +72,8 @@ public class CSPMod implements ModInitializer {
 
         // The zone runs on the server clock: the enterprises build themselves live.
         ServerTickEvents.END_SERVER_TICK.register(ZoneTicker::tick);
+
+        LOGGER.info("CSP-Modern 0.2.0 loaded. Commands: /csp help, /prombaza, "
+            + "/directorate, /zone.");
     }
 }

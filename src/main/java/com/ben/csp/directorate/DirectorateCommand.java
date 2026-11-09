@@ -32,6 +32,7 @@ public final class DirectorateCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> root = CommandManager.literal("directorate")
             .requires(source -> source.hasPermissionLevel(2))
+            .executes(ctx -> usage(ctx, "/directorate list | approve <id> | deny <id> [reason] | designate <id> [name]"))
             .then(CommandManager.literal("list").executes(DirectorateCommand::list))
             .then(CommandManager.literal("approve")
                 .executes(ctx -> usage(ctx, "/directorate approve <id>"))

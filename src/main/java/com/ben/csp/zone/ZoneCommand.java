@@ -25,6 +25,8 @@ public final class ZoneCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("zone")
             .requires(source -> source.hasPermissionLevel(2))
+            .executes(ctx -> { ctx.getSource().sendError(Text.literal(
+                "Usage: /zone spawn [radius] | status | draw | clear  (see /csp help)")); return 0; })
             .then(CommandManager.literal("spawn")
                 .executes(ctx -> spawn(ctx, 120))
                 .then(CommandManager.argument("radius", IntegerArgumentType.integer(16, 512))

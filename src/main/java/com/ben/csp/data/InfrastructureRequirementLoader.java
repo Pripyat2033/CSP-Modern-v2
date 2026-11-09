@@ -36,7 +36,7 @@ public class InfrastructureRequirementLoader implements SimpleSynchronousResourc
     public void reload(ResourceManager manager) {
         Map<String, Map<Integer, List<String>>> requirements = new HashMap<>();
         Map<Identifier, Resource> found = manager.findResources(
-            "", id -> id.getPath().equals("enterprise_infrastructure.json"));
+            "csp", id -> id.getPath().equals("enterprise_infrastructure.json"));
 
         for (Map.Entry<Identifier, Resource> entry : found.entrySet()) {
             try (Reader reader = entry.getValue().getReader()) {

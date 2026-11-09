@@ -40,6 +40,7 @@ public final class PrombazaCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("prombaza")
             .requires(source -> source.hasPermissionLevel(2))
+            .executes(ctx -> usage(ctx, "/prombaza pos1 | pos2 | list | designate <id> [name] | undo <id>"))
             .then(CommandManager.literal("pos1")
                 .executes(ctx -> setPos(ctx, true, null))
                 .then(CommandManager.argument("x", IntegerArgumentType.integer())

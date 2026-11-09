@@ -37,7 +37,7 @@ public class OPB82RuleLoader implements SimpleSynchronousResourceReloadListener 
     public void reload(ResourceManager manager) {
         Map<String, Opb82Rules.Article> articles = new HashMap<>();
         Map<Identifier, Resource> found = manager.findResources(
-            "", id -> id.getPath().equals("opb82_rules.json"));
+            "csp", id -> id.getPath().equals("opb82_rules.json"));
 
         for (Map.Entry<Identifier, Resource> entry : found.entrySet()) {
             try (Reader reader = entry.getValue().getReader()) {
