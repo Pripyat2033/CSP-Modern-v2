@@ -53,5 +53,7 @@
   "tooltip.csp-modern.skala_linker_tool": "Links SKALA peripheral blocks into a group",
   "tooltip.csp-modern.chisel": "Dresses chiseled construction blocks",
   "tooltip.csp-modern.magnetic_tape_item": "SKALA program and data storage medium",
-  "tooltip.csp-modern.directors_planshet": "Carries a construction work-package blueprint"
+  "tooltip.csp-modern.directors_planshet": "Carries a construction work-package blueprint",
+  "entity.csp-modern.kommutator": "Kommutator",
+  "item.csp-modern.kommutator_spawn_egg": "Kommutator Spawn Egg"
 }

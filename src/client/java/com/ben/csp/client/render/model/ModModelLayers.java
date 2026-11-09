@@ -25,6 +25,7 @@ public class ModModelLayers {
     public static final EntityModelLayer SEKRETAR = layer("sekretar");
     public static final EntityModelLayer GEODEZIST = layer("geodezist");
     public static final EntityModelLayer GLAVNY_INZHENER = layer("glavny_inzhener");
+    public static final EntityModelLayer KOMMUTATOR = layer("kommutator");
 
     // Block entity layers
     public static final EntityModelLayer VERTUSHKA = layer("vertushka");

@@ -28,6 +28,7 @@ public class ModItemsSpawnEggs {
         reg("master", ModEntities.MASTER, 0xAA66FF, 0x4B0082);
         reg("geodezist", ModEntities.GEODEZIST, 0x44FF88, 0x006644);
         reg("uchetchik", ModEntities.UCHETCHIK, 0x8888FF, 0x00008B);
+        reg("kommutator", ModEntities.KOMMUTATOR, 0xDDA0DD, 0x4B0082);
         reg("sekretar", ModEntities.SEKRETAR, 0xFFAACC, 0x8B3A62);
         reg("nachalnik_snabzheniya", ModEntities.NACHALNIK_SNABZHENIYA, 0x66DDDD, 0x006666);
         reg("enterprise_director", ModEntities.ENTERPRISE_DIRECTOR, 0xFFD700, 0x8B6914);

@@ -21,7 +21,6 @@ public class DynamicPersonalityEngine {
     private final List<String> nationalities = List.of("Russian", "Ukrainian", "Belarusian", "Kazakh");
 
     // Science Grade: Added pools for generating more detailed, historically authentic dossiers.
-    private final List<String> kharakteristikaTemplates = List.of("Displays ideological maturity.", "A disciplined and reliable worker.", "Sometimes questions directives.", "Shows initiative, perhaps too much.", "Has a politically questionable sense of humor.");
     private final List<String> kompromatEntries = List.of("Uncle lives in America.", "Was reprimanded for lateness in 1982.", "Known to associate with 'unreliable' elements.", "Once made a joke about the General Secretary.");
     private final List<String> pastJobs = List.of("Kolkhoz Tractor Driver", "Factory Welder", "Army Sergeant", "University Researcher");
     private final Random random = new Random();
@@ -66,7 +65,7 @@ public class DynamicPersonalityEngine {
         Dosye.Trait trait = Dosye.Trait.values()[random.nextInt(Dosye.Trait.values().length)];
 
         // Generate a more detailed, "Science Grade" dossier.
-        Dosye.Kharakteristika kharakteristika = Dosye.Kharakteristika.valueOf(kharakteristikaTemplates.get(random.nextInt(kharakteristikaTemplates.size())).toUpperCase());
+        Dosye.Kharakteristika kharakteristika = Dosye.Kharakteristika.values()[random.nextInt(Dosye.Kharakteristika.values().length)];
         Dosye.PartyStatus partyStatus = Dosye.PartyStatus.values()[random.nextInt(Dosye.PartyStatus.values().length)];
 
         List<Dosye.WorkRecord> workHistory = new ArrayList<>();

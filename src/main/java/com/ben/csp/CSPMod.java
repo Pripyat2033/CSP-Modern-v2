@@ -6,6 +6,7 @@ import net.minecraft.resource.ResourceType;
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.data.InfrastructureRequirementLoader;
 import com.ben.csp.entity.ModEntities;
+import com.ben.csp.entity.ModEntityAttributes;
 import com.ben.csp.block.entity.ModBlockEntities;
 import com.ben.csp.item.ModItemGroups;
 import com.ben.csp.item.ModItems;
@@ -35,6 +36,9 @@ public class CSPMod implements ModInitializer {
         
         // Register all entity types
         ModEntities.init();
+
+        // Default attributes (health/speed) for every entity
+        ModEntityAttributes.register();
         
         // Register spawn egg items (must be after entities are registered)
         ModItemsSpawnEggs.registerModSpawnEggs();

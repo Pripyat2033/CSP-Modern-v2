@@ -36,6 +36,7 @@ public class CSPModClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.FACILITY_DIRECTOR, FacilityDirectorEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.SEKRETAR, SekretarEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.GLAVNY_INZHENER, GlavnyInzhenerEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.KOMMUTATOR, KommutatorOperatorEntityRenderer::new);
 
         // Entity Model Layers - This connects the model definition to the renderer.
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.GEODEZIST, GeodezistEntityModel::getTexturedModelData);
@@ -50,6 +51,7 @@ public class CSPModClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SEKRETAR, SekretarEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.FACILITY_DIRECTOR, FacilityDirectorEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.GLAVNY_INZHENER, GlavnyInzhenerEntityModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.KOMMUTATOR, KommutatorOperatorEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.VERTUSHKA, VertushkaBlockModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ARCHIVE_FILING_CABINET, ArchiveFilingCabinetBlockEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SKALA_TAPE_DRIVE, SkalaTapeDriveBlockEntityModel::getTexturedModelData);

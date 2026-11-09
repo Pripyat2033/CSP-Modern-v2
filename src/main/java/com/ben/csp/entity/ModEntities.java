@@ -41,6 +41,10 @@ public class ModEntities {
         "geodezist", SpawnGroup.CREATURE, 0.6f, 1.8f,
         FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, GeodezistEntity::new));
 
+    public static final EntityType<KommutatorOperatorEntity> KOMMUTATOR = register(
+        "kommutator", SpawnGroup.CREATURE, 0.6f, 1.8f,
+        FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, KommutatorOperatorEntity::new));
+
     public static final EntityType<UchetchikEntity> UCHETCHIK = register(
         "uchetchik", SpawnGroup.CREATURE, 0.6f, 1.8f,
         FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, UchetchikEntity::new));
@@ -81,8 +85,8 @@ public class ModEntities {
     public static void init() {
         // Static initialisers above perform registration on class load.
         // Referenced here so the class is definitely loaded during mod init.
-        String registered = "tolkach, stroitel, prorab, brigadier, master, geodezist, "
-                + "uchetchik, sekretar, nachalnik_snabzheniya, enterprise_director, "
+        String registered = "tolkach, stroitel, prorab, brigadier, master, geodezist, uchetchik, kommutator, "
+                + "sekretar, nachalnik_snabzheniya, enterprise_director, "
                 + "facility_director, glavny_inzhener, barge";
         org.slf4j.LoggerFactory.getLogger("csp-modern").info("Registered entities: {}", registered);
     }
