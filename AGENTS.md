@@ -8,14 +8,29 @@ This mod is a **forensic, 1:1, Science Grade or Better (SGB) reconstruction of t
 RBMK-1000 at the Chernobyl Nuclear Power Plant (ChNPP), and of the experiment on
 the night of 26 April 1986** that caused the disaster.
 
+**It is a LIVING WORLD, not a static scenario.** The player builds and runs the
+plant — and the plant is real: it powers the map. The zone around it is full of
+functional buildings (offices, schools, factories), because a power station is
+built to serve a place, and that place has to work. The night of 26 April is the
+culminating reconstruction, reached through the living world rather than replacing
+it.
+
 - **The end state is the point:** stand in the control room, press the same
   buttons the real operators pressed, and watch the same behaviours they saw.
+- **The plant is both the subject and the power source.** It keeps the lights on.
+- **It teaches for real.** Nuclear engineering, physics, electronics — taught the
+  practical way, so people actually understand, not through a fake abstraction.
 - **The plant must be built to exact scale and specification.** That is not
   flavour; the simulation downstream depends on exact geometry.
 - **The enterprises, workforce and construction systems are the MEANS, not the
   point.** They exist to survey, set out, build and check the plant to spec.
 - **The Stroiteli (builders) exist because a human cannot build to the required
   exact scale.** The NPC workforce can.
+
+Working name for the living world: the **"Special Zone"**. Note the term is used
+LOOSELY: "Зона" (the exclusion zone) is a POST-accident term. Before 26 April 1986
+the site was the plant, the town of Pripyat, and the construction site — not a
+zone. Use the name as a working title, not as history.
 
 Rules that follow from the mission:
 
@@ -36,6 +51,29 @@ Rules that follow from the mission:
    are prerequisites. Plant construction code must call
    `PlantBuildAuthorisation.require()` first, which refuses until the gate opens.
    Do not begin the plant, the reactor, or the control room before that.
+6. **The world must live.** Systems are built to run continuously and to persist,
+   not to fire once and end. The plant powers the map; the map has working
+   buildings; the whole thing runs on the work clock.
+
+# THE TWO AUTHORITIES AND THE PLAYER'S ROLE
+
+There were TWO separate lines at the site, and the mod models both:
+- **Construction** — the administration (управление строительства), chief
+  **Кизима В. Т.**, holding the specialist trusts. It builds the plant.
+- **Operation** — the station enterprise, director **Брюханов В. П.**, which
+  runs the plant once built.
+
+The player holds the **Director's role** (the in-tray of approvals in
+`directorate`), and must be free to be PRESENT anywhere — Bryukhanov was not a
+bureaucrat at a desk; he was in the units and the control rooms. Presence should
+help, never be required to shuffle paper.
+
+On the night of 26 April 1986 Bryukhanov was NOT in the control room: he was at
+home in Pripyat (проспект Ленина, 6) and drove to the plant after the explosion
+(his own account). The people at the panel were the OPERATING shift: Акимов
+(shift chief), Топтунов (senior reactor control engineer), Дятлов (deputy chief
+engineer for operations). So the end-state reconstruction lets the player take an
+OPERATOR's post for the night, not the director's.
 
 # TERMINOLOGY
 
