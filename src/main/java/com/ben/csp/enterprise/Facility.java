@@ -32,6 +32,7 @@ public final class Facility {
     private double produced;        // lifetime output
     private double producedToday;
     private Footprint footprint;    // where the building stands, once sited
+    private Provenance provenance = Provenance.RECONSTRUCTION; // verified, or reconstructed
     private boolean asBuiltAccepted; // signed off by the geodezist after the build
     private boolean asBuiltRefused;  // failed the check and is not signed off
     private final List<Incident> incidents = new ArrayList<>();
@@ -61,6 +62,14 @@ public final class Facility {
     /** Where the building stands, or null if it has not been sited yet. */
     public Footprint footprint() { return footprint; }
     public boolean hasFootprint() { return footprint != null; }
+
+    /** Whether this facility is a cited fact or a reconstruction. */
+    public Provenance provenance() { return provenance; }
+
+    /** Mark this facility as taken from a source, or as a reconstruction. */
+    public void setProvenance(Provenance provenance) {
+        this.provenance = Objects.requireNonNull(provenance, "provenance");
+    }
 
     /** Site the facility at its real place on the ground. */
     public void site(Footprint footprint) {
