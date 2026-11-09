@@ -32,6 +32,7 @@ public final class Facility {
     private double produced;        // lifetime output
     private double producedToday;
     private Footprint footprint;    // where the building stands, once sited
+    private boolean asBuiltAccepted; // signed off by the geodezist after the build
     private final List<Incident> incidents = new ArrayList<>();
 
     public Facility(String id, FacilityType type, String name, int requiredStaff) {
@@ -65,7 +66,22 @@ public final class Facility {
         this.footprint = Objects.requireNonNull(footprint, "footprint");
     }
 
+    /** True once the geodezist has checked the finished building and signed it off. */
+    public boolean isAsBuiltAccepted() { return asBuiltAccepted; }
+
+    /** Sign the building off after the as-built check has passed. */
+    public void acceptAsBuilt() {
+        if (!built) {
+            throw new IllegalStateException("the as-built check needs a finished building");
+        }
+        this.asBuiltAccepted = true;
+    }
+
     public void completeConstruction() {
+        if (footprint == null) {
+            throw new IllegalStateException(
+                "a facility cannot be built before a geodezist has set it out on the ground");
+        }
         this.built = true;
     }
 

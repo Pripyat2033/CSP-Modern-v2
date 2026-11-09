@@ -16,6 +16,9 @@ public final class EnterpriseSelfTest {
 
         // the concrete plant: built, but with no facility director yet
         Facility plant = concrete.facility(FacilityType.CONCRETE_PLANT);
+        // no building is raised before a geodezist has set it out on the ground
+        expectThrow(plant::completeConstruction, "a facility cannot be built before it is set out");
+        plant.site(Footprint.of(0, 0, 20, 20));
         plant.completeConstruction();
         plant.setStaff(plant.requiredStaff());
         check(!plant.isOperational(), "a facility with no facility director cannot work");
@@ -47,6 +50,7 @@ public final class EnterpriseSelfTest {
 
         // build out the whole chain to make the enterprise operational
         for (Facility f : concrete.facilities()) {
+            if (!f.hasFootprint()) f.site(Footprint.of(0, 0, 20, 20));
             if (!f.isBuilt()) f.completeConstruction();
             if (f.facilityDirectorId() == null) f.assignFacilityDirector("dir-" + f.id());
             f.setStaff(f.requiredStaff());
