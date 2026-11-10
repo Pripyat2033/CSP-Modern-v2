@@ -147,10 +147,19 @@ public final class ZoneCommand {
         source.sendFeedback(() -> Text.literal(
             "Day " + state.day() + ": " + zone.operationalCount() + "/" + zone.count()
             + " enterprises operational."), false);
-        int routes = zone.plan() == null ? 0 : zone.plan().routes().size();
-        source.sendFeedback(() -> Text.literal(
-            "The site is surveyed: " + routes + " route(s) laid out (the rail spur and the "
-            + "roads). Each enterprise's yard holds its office and facilities."), false);
+        SitePlan plan = zone.plan();
+        if (plan != null) {
+            int routes = plan.routes().size();
+            StringBuilder zones = new StringBuilder();
+            plan.zoneCounts().forEach((z, n) ->
+                zones.append(z.russian()).append(" ").append(n).append("; "));
+            source.sendFeedback(() -> Text.literal(
+                "The site is surveyed to СНиП II-89-80*: " + routes + " route(s) laid out "
+                + "(the rail spur and the roads). Zones — " + zones.toString().trim()), false);
+            source.sendFeedback(() -> Text.literal(
+                "Building density " + Math.round(plan.density() * 100) + "% "
+                + "(the norm requires at least " + Math.round(plan.densityRequired() * 100) + "%)."), false);
+        }
         for (EnterpriseLifecycle l : zone.lifecycles()) {
             var e = l.enterprise();
             source.sendFeedback(() -> Text.literal(
