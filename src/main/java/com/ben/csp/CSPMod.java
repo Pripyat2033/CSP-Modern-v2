@@ -15,6 +15,7 @@ import com.ben.csp.data.InfrastructureRequirementLoader;
 import com.ben.csp.entity.ModEntities;
 import com.ben.csp.entity.ModEntityAttributes;
 import com.ben.csp.entity.dialogue.DialogueListener;
+import com.ben.csp.perf.PerformanceProbe;
 import com.ben.csp.telephony.TelephonyState;
 import com.ben.csp.block.entity.ModBlockEntities;
 import com.ben.csp.item.ModItemGroups;
@@ -78,8 +79,10 @@ public class CSPMod implements ModInitializer {
         // The zone runs on the server clock: the enterprises build themselves live.
         ServerTickEvents.END_SERVER_TICK.register(ZoneTicker::tick);
         ServerTickEvents.END_SERVER_TICK.register(TelephonyState::tick);
+        ServerTickEvents.START_SERVER_TICK.register(PerformanceProbe::onTickStart);
+        ServerTickEvents.END_SERVER_TICK.register(PerformanceProbe::onTickEnd);
 
-        LOGGER.info("CSP-Modern 0.7.0 loaded. Commands: /csp help, /prombaza, "
+        LOGGER.info("CSP-Modern 0.8.0 loaded. Commands: /csp help, /prombaza, "
             + "/directorate, /zone.");
     }
 }

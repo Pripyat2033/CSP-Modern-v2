@@ -66,12 +66,9 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
         }
         // While being spoken to, the worker stops and turns to face the player,
         // so a conversation reads as one instead of a chase.
-        if (!getWorld().isClient()) {
-            int ext = ensureExtension();
-            if (ext != shownExtension) {
-                shownExtension = ext;
-                applyDosyeName();
-            }
+        if (!getWorld().isClient() && shownExtension < 0) {
+            shownExtension = ensureExtension();
+            applyDosyeName();
         }
         if (!getWorld().isClient() && followTicks > 0) {
             followTicks--;

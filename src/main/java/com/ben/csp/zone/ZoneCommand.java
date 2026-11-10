@@ -1,6 +1,7 @@
 package com.ben.csp.zone;
 
 import com.ben.csp.prombaza.Area;
+import com.ben.csp.perf.PerformanceProbe;
 import com.ben.csp.zone.ground.GroundWorks;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -32,6 +33,9 @@ public final class ZoneCommand {
                 .then(CommandManager.argument("radius", IntegerArgumentType.integer(16, 512))
                     .executes(ctx -> spawn(ctx, IntegerArgumentType.getInteger(ctx, "radius")))))
             .then(CommandManager.literal("status").executes(ZoneCommand::status))
+            .then(CommandManager.literal("muster").executes(ZoneCommand::muster))
+            .then(CommandManager.literal("demob").executes(ZoneCommand::demob))
+            .then(CommandManager.literal("perf").executes(ZoneCommand::perf))
             .then(CommandManager.literal("draw").executes(ZoneCommand::draw))
             .then(CommandManager.literal("clear").executes(ZoneCommand::clear)));
     }
@@ -77,6 +81,45 @@ public final class ZoneCommand {
             "The white dashed line and the four log posts mark the boundary; the "
             + "small yellow outlines are facility plots. Watch it grow with "
             + "/zone status. To undo the ground marks: /zone clear."), false);
+        return 1;
+    }
+
+    /** Put the whole workforce on the ground and report the count. */
+    private static int muster(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource source = ctx.getSource();
+        ServerWorld world = source.getWorld();
+        ZoneState state = ZoneState.get(source.getServer());
+        if (!state.isSpawned()) {
+            source.sendError(Text.literal("The zone has not been spawned. Use /zone spawn."));
+            return 0;
+        }
+        BlockPos at = BlockPos.ofFloored(source.getPosition());
+        PerformanceProbe.resetPeak();
+        long started = System.nanoTime();
+        int placed = Muster.everyone(world, state.zone(), at);
+        long ms = (System.nanoTime() - started) / 1_000_000L;
+        source.sendFeedback(() -> Text.literal("Muster: " + placed + " workers on the ground in "
+            + ms + " ms. Watch the tick with /zone perf."), false);
+        return 1;
+    }
+
+    /** Remove the workforce from the ground. */
+    private static int demob(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource source = ctx.getSource();
+        int removed = Muster.demobilise(source.getWorld());
+        source.sendFeedback(() -> Text.literal("Demobilised " + removed + " workers."), false);
+        return 1;
+    }
+
+    /** Report the server tick time — the plain answer to "can it cope?". */
+    private static int perf(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource source = ctx.getSource();
+        int workers = Muster.count(source.getWorld());
+        double avg = PerformanceProbe.averageMspt();
+        double peak = PerformanceProbe.peakMspt();
+        source.sendFeedback(() -> Text.literal(String.format(
+            "Tick: %.2f ms average, %.2f ms peak (budget 50 ms). %d workers. Verdict: %s.",
+            avg, peak, workers, PerformanceProbe.verdict())), false);
         return 1;
     }
 
