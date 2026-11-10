@@ -60,6 +60,19 @@ public final class EnterpriseLifecycle {
     /** Where this enterprise's headquarters is being built. */
     public Footprint hqPlot() { return hqPlot; }
 
+    /** The plot the enterprise is working on now: a facility under construction, or the
+     *  office while it is being built. The crew is put here. */
+    public Footprint activePlot() {
+        if (phase == Phase.FACILITIES) {
+            for (ConstructionSite s : sites) {
+                if (!s.isComplete()) {
+                    return s.plot();
+                }
+            }
+        }
+        return hqPlot;
+    }
+
     /** A plain phrase for what this enterprise is doing now, for /zone status. */
     public String progressLabel() {
         return switch (phase) {

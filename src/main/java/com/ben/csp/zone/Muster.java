@@ -5,6 +5,7 @@ import com.ben.csp.enterprise.Facility;
 import com.ben.csp.enterprise.Footprint;
 import com.ben.csp.entity.CspPersonEntity;
 import com.ben.csp.entity.ModEntities;
+import com.ben.csp.enterprise.Specialty;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -103,6 +104,18 @@ public final class Muster {
         }
         e.refreshPositionAndAngles(x + 0.5, y, z + 0.5, world.random.nextFloat() * 360f, 0f);
         world.spawnEntity(e);
+    }
+
+    /** The worker entity type for an enterprise of this trade. */
+    public static EntityType<? extends MobEntity> typeFor(Specialty s) {
+        return switch (s) {
+            case GENERAL_CONSTRUCTION -> ModEntities.PRORAB;
+            case EARTHWORKS, CONCRETE_WORKS, FINISHING -> ModEntities.STROITEL;
+            case STEEL_ERECTION, THERMAL_INSTALLATION -> ModEntities.MASTER;
+            case SPECIAL_WORKS -> ModEntities.BRIGADIER;
+            case ELECTRICAL_INSTALLATION, SANITATION_VENTILATION -> ModEntities.TOLKACH;
+            case TRANSPORT -> ModEntities.NACHALNIK_SNABZHENIYA;
+        };
     }
 
     /** Choose a trade fitting the enterprise's specialty and the facility's kind. */

@@ -31,7 +31,9 @@ public final class ZoneTicker {
         state.advanceDay();
         state.markDirty();
 
-        drawZone(server.getOverworld(), state.zone());
+        ServerWorld world = server.getOverworld();
+        drawZone(world, state.zone());
+        CrewMuster.spawnCrews(world, state.zone());
     }
 
     /** Draw the whole zone on the ground: every enterprise's office and its sites. */
