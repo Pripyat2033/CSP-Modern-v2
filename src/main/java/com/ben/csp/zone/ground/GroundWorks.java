@@ -35,6 +35,20 @@ public final class GroundWorks {
         // buildings will ever appear here.
     }
 
+    /** Draw the surveyed routes: the rail spur and the roads the enterprises agreed. */
+    public static void drawRoutes(ServerWorld world, java.util.List<Route> routes) {
+        for (Route r : routes) {
+            for (int i = 0; i < r.pointCount() - 1; i++) {
+                net.minecraft.block.Block block = switch (r.kind()) {
+                    case RAIL -> Blocks.RAIL;
+                    case ROAD -> Blocks.GRAY_CARPET;
+                    default -> Blocks.LIGHT_GRAY_CARPET;
+                };
+                drawLineTop(world, r.x(i), r.z(i), r.x(i + 1), r.z(i + 1), block);
+            }
+        }
+    }
+
     /** Remove the boundary and reserved marks, leaving the ground as it was. */
     public static void clearTerritory(ServerWorld world, PrombazaTerritory territory) {
         // Nothing was drawn for the territory, so there is nothing to clear here.
@@ -83,7 +97,8 @@ public final class GroundWorks {
     private static final net.minecraft.block.Block[] MARKER_BLOCKS = {
         Blocks.YELLOW_CONCRETE, Blocks.LIGHT_GRAY_CONCRETE, Blocks.WHITE_CONCRETE,
         Blocks.STONE, Blocks.OAK_PLANKS, Blocks.STONE_BRICK_SLAB,
-        Blocks.YELLOW_CARPET, Blocks.WHITE_CARPET, Blocks.GRAY_CARPET, Blocks.TORCH,
+        Blocks.YELLOW_CARPET, Blocks.WHITE_CARPET, Blocks.GRAY_CARPET,
+        Blocks.LIGHT_GRAY_CARPET, Blocks.RAIL, Blocks.TORCH,
     };
 
     private static void clearMarkers(ServerWorld world, Footprint plot) {

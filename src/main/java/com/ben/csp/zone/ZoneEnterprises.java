@@ -16,6 +16,7 @@ public final class ZoneEnterprises {
 
     private final String prombazaId;
     private final List<EnterpriseLifecycle> lifecycles = new ArrayList<>();
+    private SitePlan plan;
 
     private ZoneEnterprises(String prombazaId) {
         this.prombazaId = prombazaId;
@@ -29,14 +30,20 @@ public final class ZoneEnterprises {
                                         List<Enterprise> roster, long day) {
         Objects.requireNonNull(territory, "territory");
         Objects.requireNonNull(roster, "roster");
-        SiteAllocator allocator = new SiteAllocator(territory);
+        // The enterprises survey the territory together first: rail spur, roads, and a
+        // yard for each of them. Only then does each one build its own part of the plan.
+        SitePlan plan = SitePlan.layOut(territory, roster);
         ZoneEnterprises zone = new ZoneEnterprises(territory.id());
+        zone.plan = plan;
         for (Enterprise e : roster) {
             zone.lifecycles.add(new EnterpriseLifecycle(
-                e, allocator, EnterpriseLifecycle.staffTargetFor(e)));
+                e, plan, EnterpriseLifecycle.staffTargetFor(e)));
         }
         return zone;
     }
+
+    /** The layout the enterprises agreed for the site. */
+    public SitePlan plan() { return plan; }
 
     public String prombazaId() { return prombazaId; }
     public int count() { return lifecycles.size(); }

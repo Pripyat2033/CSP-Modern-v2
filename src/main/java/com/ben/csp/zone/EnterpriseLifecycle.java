@@ -24,7 +24,7 @@ public final class EnterpriseLifecycle {
 
     private final Enterprise enterprise;
     private final EnterpriseSetup setup;
-    private final SiteAllocator allocator;
+    private final SitePlan plan;
     private final int staffTarget;
     private final List<Brigade> brigades;
     private final List<ConstructionSite> sites = new ArrayList<>();
@@ -36,23 +36,23 @@ public final class EnterpriseLifecycle {
     private Facility hqFacility;
     private boolean awaitingGround;
 
-    public EnterpriseLifecycle(Enterprise enterprise, SiteAllocator allocator, int staffTarget) {
+    public EnterpriseLifecycle(Enterprise enterprise, SitePlan plan, int staffTarget) {
         this.enterprise = Objects.requireNonNull(enterprise, "enterprise");
         this.setup = new EnterpriseSetup(enterprise.id());
-        this.allocator = Objects.requireNonNull(allocator, "allocator");
+        this.plan = Objects.requireNonNull(plan, "plan");
         this.staffTarget = staffTarget;
         this.brigades = brigadesFor(enterprise);
-        // The enterprise's own headquarters is one of its facilities; site it now, so the
-        // offices are laid out first and can be seen being built. The HQ phase builds it.
+        // The enterprise's own headquarters is one of its facilities; its plot comes from
+        // the agreed layout, and the HQ phase builds it.
         this.hqFacility = findHeadquarters(enterprise);
-        siteHqIfPossible();
+        assignHq();
     }
 
     public Enterprise enterprise() { return enterprise; }
     public EnterpriseSetup setup() { return setup; }
     public List<Brigade> brigades() { return List.copyOf(brigades); }
     public List<ConstructionSite> sites() { return List.copyOf(sites); }
-    public SiteAllocator allocator() { return allocator; }
+    public SitePlan plan() { return plan; }
     public boolean isDone() { return phase == Phase.DONE; }
     /** Where this enterprise's headquarters is being built. */
     public Footprint hqPlot() { return hqPlot; }
@@ -111,25 +111,21 @@ public final class EnterpriseLifecycle {
         return false;
     }
 
-    /** Choose the office's plot, if the territory has room. If it has not, the
-     *  enterprise waits: the Director may enlarge the prombaza. */
-    private void siteHqIfPossible() {
-        if (hqFacility == null || hqPlot != null) {
+    /** Take the office's plot from the agreed layout. If the plan could not fit this
+     *  enterprise, it waits: the Director may enlarge the prombaza. */
+    private void assignHq() {
+        if (hqFacility == null) {
             return;
         }
-        double[] hqSize = sizeFor(FacilityType.HEADQUARTERS);
-        try {
-            hqPlot = allocator.allocate(hqSize[0], hqSize[1]);
+        hqPlot = plan.hqPlot(enterprise.id());
+        if (hqPlot != null) {
             hqFacility.site(hqPlot);
-        } catch (IllegalStateException full) {
-            hqPlot = null;
         }
     }
 
     private void advanceHq() {
-        siteHqIfPossible();
         if (hqPlot == null) {
-            return;   // no ground yet; try again next day
+            return;   // no ground in the plan yet
         }
         if (!started) {
             setup.beginHqConstruction();
@@ -170,14 +166,10 @@ public final class EnterpriseLifecycle {
         Facility f = facilities.get(facilityIndex);
 
         if (!f.hasFootprint()) {
-            // set out: choose the plot, raise the marker, open the construction site.
-            // If the territory is full, the enterprise waits for more ground rather than
-            // failing — the prombaza is what the Director gives it, and it may be enlarged.
-            double[] size = sizeFor(f.type());
-            Footprint plot;
-            try {
-                plot = allocator.allocate(size[0], size[1]);
-            } catch (IllegalStateException full) {
+            // set out from the agreed layout: raise the marker, open the construction site.
+            // If the plan had no room for this enterprise, it waits for more ground.
+            Footprint plot = plan.plot(enterprise.id(), facilityIndex);
+            if (plot == null) {
                 awaitingGround = true;
                 return;
             }
@@ -219,7 +211,6 @@ public final class EnterpriseLifecycle {
     /** Site a restored facility and reserve its plot, so later builds avoid it. */
     public void claimPlot(Facility f, com.ben.csp.enterprise.Footprint plot) {
         f.site(plot);
-        allocator.claim(plot);
         reopenSite(f);
     }
 
@@ -297,7 +288,7 @@ public final class EnterpriseLifecycle {
     }
 
     /** The ground a facility of this kind needs, in metres. */
-    private static double[] sizeFor(FacilityType type) {
+    public static double[] sizeFor(FacilityType type) {
         return switch (type) {
             case HEADQUARTERS -> new double[]{28, 20};
             case CONSTRUCTION_OFFICE -> new double[]{24, 16};

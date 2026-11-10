@@ -38,6 +38,9 @@ public final class ZoneTicker {
 
     /** Draw the whole zone on the ground: every enterprise's office and its sites. */
     public static void drawZone(ServerWorld world, ZoneEnterprises zone) {
+        if (zone.plan() != null) {
+            GroundWorks.drawRoutes(world, zone.plan().routes());
+        }
         for (EnterpriseLifecycle l : zone.lifecycles()) {
             if (l.hqPlot() != null) {
                 GroundWorks.drawHq(world, l.hqPlot(), l.setup().hqProgress(),

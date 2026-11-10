@@ -147,6 +147,10 @@ public final class ZoneCommand {
         source.sendFeedback(() -> Text.literal(
             "Day " + state.day() + ": " + zone.operationalCount() + "/" + zone.count()
             + " enterprises operational."), false);
+        int routes = zone.plan() == null ? 0 : zone.plan().routes().size();
+        source.sendFeedback(() -> Text.literal(
+            "The site is surveyed: " + routes + " route(s) laid out (the rail spur and the "
+            + "roads). Each enterprise's yard holds its office and facilities."), false);
         for (EnterpriseLifecycle l : zone.lifecycles()) {
             var e = l.enterprise();
             source.sendFeedback(() -> Text.literal(
