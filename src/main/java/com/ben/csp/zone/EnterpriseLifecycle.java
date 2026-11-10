@@ -4,6 +4,7 @@ import com.ben.csp.enterprise.Enterprise;
 import com.ben.csp.enterprise.EnterpriseSetup;
 import com.ben.csp.enterprise.Facility;
 import com.ben.csp.enterprise.FacilityType;
+import com.ben.csp.enterprise.Footprint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ public final class EnterpriseLifecycle {
     private Phase phase = Phase.HQ;
     private int facilityIndex = 0;
     private boolean started;
+    private Footprint hqPlot;
+    private Facility hqFacility;
 
     public EnterpriseLifecycle(Enterprise enterprise, SiteAllocator allocator, int staffTarget) {
         this.enterprise = Objects.requireNonNull(enterprise, "enterprise");
@@ -38,6 +41,14 @@ public final class EnterpriseLifecycle {
         this.allocator = Objects.requireNonNull(allocator, "allocator");
         this.staffTarget = staffTarget;
         this.brigades = brigadesFor(enterprise);
+        // The enterprise's own headquarters is one of its facilities; site it now, so the
+        // offices are laid out first and can be seen being built. The HQ phase builds it.
+        this.hqFacility = findHeadquarters(enterprise);
+        if (hqFacility != null) {
+            double[] hqSize = sizeFor(FacilityType.HEADQUARTERS);
+            this.hqPlot = allocator.allocate(hqSize[0], hqSize[1]);
+            hqFacility.site(hqPlot);
+        }
     }
 
     public Enterprise enterprise() { return enterprise; }
@@ -46,6 +57,18 @@ public final class EnterpriseLifecycle {
     public List<ConstructionSite> sites() { return List.copyOf(sites); }
     public SiteAllocator allocator() { return allocator; }
     public boolean isDone() { return phase == Phase.DONE; }
+    /** Where this enterprise's headquarters is being built. */
+    public Footprint hqPlot() { return hqPlot; }
+
+    /** A plain phrase for what this enterprise is doing now, for /zone status. */
+    public String progressLabel() {
+        return switch (phase) {
+            case HQ -> "building its office (" + setup.hqProgress() + "%)";
+            case STAFF -> "hiring staff (" + setup.staffHired() + "/" + staffTarget + ")";
+            case FACILITIES -> "building its facilities";
+            case DONE -> "operational";
+        };
+    }
 
     /** The staff an enterprise needs: its facilities' staffs, plus an overhead. */
     public static int staffTargetFor(Enterprise e) {
@@ -83,16 +106,19 @@ public final class EnterpriseLifecycle {
             setup.beginHqConstruction();
             started = true;
         }
-        setup.advanceHqConstruction(25);
+        setup.advanceHqConstruction(50);
         if (setup.hasHq()) {
             enterprise.assignDirector("director-" + enterprise.id());
+            if (hqFacility != null && !hqFacility.isBuilt()) {
+                hqFacility.completeConstruction();
+            }
             phase = Phase.STAFF;
         }
     }
 
     private void advanceStaff() {
         if (setup.staffHired() < staffTarget) {
-            setup.hire(Math.min(5, staffTarget - setup.staffHired()));
+            setup.hire(Math.min(25, staffTarget - setup.staffHired()));
         }
         if (setup.staffHired() >= staffTarget) {
             phase = Phase.FACILITIES;
@@ -168,10 +194,24 @@ public final class EnterpriseLifecycle {
 
     /** Open a construction site for a facility being restored, if it has a plot. */
     public void reopenSite(Facility f) {
+        // The headquarters is built by the HQ phase, not as a construction site, so it
+        // never gets one — including on restore, or it would be built twice.
+        if (f.type() == FacilityType.HEADQUARTERS) {
+            return;
+        }
         if (f.hasFootprint() && siteFor(f) == null) {
             sites.add(new ConstructionSite("cs-" + f.id(), f.id(), f.footprint(),
                 requiredManHours(f.footprint())));
         }
+    }
+
+    private static Facility findHeadquarters(Enterprise e) {
+        for (Facility f : e.facilities()) {
+            if (f.type() == FacilityType.HEADQUARTERS) {
+                return f;
+            }
+        }
+        return null;
     }
 
     /** Work out which phase the enterprise is in from its current state. */

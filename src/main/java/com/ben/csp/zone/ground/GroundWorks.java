@@ -126,6 +126,30 @@ public final class GroundWorks {
         }
     }
 
+    /** Draw an enterprise's headquarters by how far it has got, so the first thing
+     *  the player sees is the offices going up, not empty ground. */
+    public static void drawHq(ServerWorld world, Footprint plot, int percent) {
+        if (percent <= 0) {
+            return;
+        }
+        if (percent < 35) {
+            drawOutline(world, plot, Blocks.YELLOW_CONCRETE);
+        } else if (percent < 70) {
+            fillFlat(world, plot, Blocks.STONE, 0);
+        } else if (percent < 100) {
+            fillFlat(world, plot, Blocks.STONE, 0);
+            raise(world, plot, Blocks.OAK_PLANKS, 3);
+        } else {
+            fillFlat(world, plot, Blocks.LIGHT_GRAY_CONCRETE, 0);
+            raise(world, plot, Blocks.WHITE_CONCRETE, BUILDING_HEIGHT);
+        }
+    }
+
+    /** Mark out a rectangle the player is choosing, so the corners can be seen. */
+    public static void previewOutline(ServerWorld world, Footprint plot) {
+        dashedOutline(world, plot, Blocks.WHITE_CONCRETE, 2);
+    }
+
     /** Draw a construction site's progress: a marker, a foundation, or a building. */
     public static void drawSite(ServerWorld world, ConstructionSite site) {
         Footprint plot = site.plot();

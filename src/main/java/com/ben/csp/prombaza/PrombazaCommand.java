@@ -90,12 +90,16 @@ public final class PrombazaCommand {
             + " (a glowstone mark is on the ground there)."), false);
 
         if (pendingPos1 != null && pendingPos2 != null) {
+            // Show the rectangle the player is choosing, so it is not a blind guess.
+            com.ben.csp.enterprise.Footprint plot = com.ben.csp.enterprise.Footprint.of(
+                pendingPos1.getX(), pendingPos1.getZ(), pendingPos2.getX(), pendingPos2.getZ());
+            GroundWorks.previewOutline(world, plot);
             int w = Math.abs(pendingPos2.getX() - pendingPos1.getX());
             int d = Math.abs(pendingPos2.getZ() - pendingPos1.getZ());
             source.sendFeedback(() -> Text.literal(
-                "Both corners set: " + w + " x " + d + " m. The area is marked on the "
-                + "ground (corner 1 at " + fmt(pendingPos1) + ", corner 2 at "
-                + fmt(pendingPos2) + ")."), false);
+                "Both corners set: " + w + " x " + d + " m — the rectangle is marked on the "
+                + "ground. Corner 1 at " + fmt(pendingPos1) + ", corner 2 at "
+                + fmt(pendingPos2) + "."), false);
             source.sendFeedback(() -> Text.literal(
                 "Now give the territory to the enterprises with: "
                 + "/directorate designate pb1"), false);

@@ -81,9 +81,11 @@ public final class ZoneCommand {
             + "territory. Each will build its own office, hire staff, then set out "
             + "and build its facilities — a marker first, then a building over time."), false);
         source.sendFeedback(() -> Text.literal(
-            "The white dashed line and the four log posts mark the boundary; the "
-            + "small yellow outlines are facility plots. Watch it grow with "
-            + "/zone status. To undo the ground marks: /zone clear."), false);
+            "Each enterprise first builds its office, then hires its staff, then "
+            + "builds its facilities — watch the offices and buildings go up on the "
+            + "ground. It runs on its own clock: one work-day every ten seconds, so "
+            + "the first buildings appear within about a minute. /zone status shows "
+            + "what each one is doing. To undo the ground marks: /zone clear."), false);
         return 1;
     }
 
@@ -140,9 +142,8 @@ public final class ZoneCommand {
         for (EnterpriseLifecycle l : zone.lifecycles()) {
             var e = l.enterprise();
             source.sendFeedback(() -> Text.literal(
-                "  " + e.name() + " [" + e.specialty().label() + "] "
-                + (e.isOperational() ? "operational" : "forming") + " — "
-                + e.facilities().size() + " facilities"), false);
+                "  " + e.name() + " [" + e.specialty().label() + "] — "
+                + l.progressLabel()), false);
         }
         return 1;
     }
