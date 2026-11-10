@@ -1,6 +1,5 @@
 package com.ben.csp.client;
 
-import com.ben.csp.entity.CspPersonEntity;
 import com.ben.csp.entity.ModEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;
@@ -39,9 +38,6 @@ public final class EntityRendererGuard {
         for (EntityType<?> type : workerTypes()) {
             Identifier id = Registries.ENTITY_TYPE.getId(type);
             ids.add(id.getPath());
-            if (!CspPersonEntity.class.isAssignableFrom(type.getBaseClass())) {
-                LOG.error("[CSP] entity type {} is not a worker", id);
-            }
         }
         LOG.info("[CSP] worker types needing a renderer ({}): {}", ids.size(), String.join(", ", ids));
     }
