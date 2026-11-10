@@ -79,19 +79,13 @@ public final class PrombazaTerritory {
     }
 
     /**
-     * A territory laid out from the plans: a boundary with a road spine and a rail
-     * corridor reserved along it, so the enterprises build in the free ground
-     * between them and not over the infrastructure.
+     * A territory laid out from the plans. A prombaza is a territory — the ground and
+     * its boundary — an organisational concept, not a structure. Nothing is reserved
+     * and nothing is drawn on it, so the enterprises lay their plots out freely inside
+     * the boundary, which keeps even narrow ground usable.
      */
     public static PrombazaTerritory standard(String id, Area area) {
-        PrombazaTerritory t = fromArea(id, area);
-        Footprint b = t.boundary();
-        double midZ = (b.minZ() + b.maxZ()) / 2.0;
-        // a road spine across the territory
-        t.reserve(Footprint.of(b.minX(), midZ - 4, b.maxX(), midZ + 4));
-        // a rail corridor along the near edge, where the spur from Semikhody runs in
-        t.reserve(Footprint.of(b.minX(), b.minZ(), b.maxX(), b.minZ() + 10));
-        return t;
+        return fromArea(id, area);
     }
 
     @Override

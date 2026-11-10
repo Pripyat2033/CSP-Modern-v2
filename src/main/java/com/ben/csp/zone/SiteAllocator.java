@@ -51,8 +51,15 @@ public final class SiteAllocator {
      */
     public Footprint allocate(double width, double height) {
         Footprint b = territory.boundary();
-        for (double z = b.minZ(); z + height <= b.maxZ(); z += step) {
-            for (double x = b.minX(); x + width <= b.maxX(); x += step) {
+        if (width > b.width() || height > b.height()) {
+            throw new IllegalStateException(tooSmall(width, height));
+        }
+        // Candidate positions are the edges of the territory and the edges of every plot
+        // already taken, plus a spacing gap. A plot can always be slid up and left until it
+        // meets one of those edges, so trying them finds every fit — including narrow and
+        // odd-shaped territories, which a coarse grid would wrongly refuse.
+        for (double z : candidates(b.minZ(), b.maxZ(), height)) {
+            for (double x : candidates(b.minX(), b.maxX(), width)) {
                 Footprint c = Footprint.of(x, z, x + width, z + height);
                 if (territory.isReserved(c) || overlapsTaken(c)) {
                     continue;
@@ -61,10 +68,35 @@ public final class SiteAllocator {
                 return c;
             }
         }
-        throw new IllegalStateException(
-            "the territory (" + (int) b.width() + " x " + (int) b.height()
+        throw new IllegalStateException(tooSmall(width, height));
+    }
+
+    /** Left (or top) edges a plot may take: the territory edge, and each taken plot's
+     *  far edge plus a gap, or its near edge less the plot and a gap. */
+    private java.util.List<Double> candidates(double lo, double hi, double size) {
+        java.util.TreeSet<Double> out = new java.util.TreeSet<>();
+        addCandidate(out, lo, lo, hi - size);
+        addCandidate(out, hi - size, lo, hi - size);
+        for (Footprint t : taken) {
+            addCandidate(out, t.maxX() + spacing, lo, hi - size);
+            addCandidate(out, t.minX() - size - spacing, lo, hi - size);
+            addCandidate(out, t.maxZ() + spacing, lo, hi - size);
+            addCandidate(out, t.minZ() - size - spacing, lo, hi - size);
+        }
+        return new java.util.ArrayList<>(out);
+    }
+
+    private static void addCandidate(java.util.TreeSet<Double> out, double v, double lo, double hi) {
+        if (v >= lo - 1e-9 && v <= hi + 1e-9) {
+            out.add(Math.max(lo, v));
+        }
+    }
+
+    private String tooSmall(double width, double height) {
+        Footprint b = territory.boundary();
+        return "the territory (" + (int) b.width() + " x " + (int) b.height()
             + " m) has no free plot " + (int) width + " x " + (int) height
-            + " m - the enterprises need more ground than this");
+            + " m - the enterprises need more ground than this";
     }
 
     private boolean overlapsTaken(Footprint c) {

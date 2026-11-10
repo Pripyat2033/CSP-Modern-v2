@@ -87,7 +87,7 @@ public final class PrombazaCommand {
         String which = first ? "1" : "2";
         source.sendFeedback(() -> Text.literal(
             "Prombaza corner " + which + " set at " + fmt(pos)
-            + " (a glowstone mark is on the ground there)."), false);
+            + " (a torch marks it)."), false);
 
         if (pendingPos1 != null && pendingPos2 != null) {
             // Show the rectangle the player is choosing, so it is not a blind guess.
@@ -97,9 +97,8 @@ public final class PrombazaCommand {
             int w = Math.abs(pendingPos2.getX() - pendingPos1.getX());
             int d = Math.abs(pendingPos2.getZ() - pendingPos1.getZ());
             source.sendFeedback(() -> Text.literal(
-                "Both corners set: " + w + " x " + d + " m — the rectangle is marked on the "
-                + "ground. Corner 1 at " + fmt(pendingPos1) + ", corner 2 at "
-                + fmt(pendingPos2) + "."), false);
+                "Both corners set: " + w + " x " + d + " m. Corner 1 at " + fmt(pendingPos1)
+                + ", corner 2 at " + fmt(pendingPos2) + "."), false);
             source.sendFeedback(() -> Text.literal(
                 "Now give the territory to the enterprises with: "
                 + "/directorate designate pb1"), false);

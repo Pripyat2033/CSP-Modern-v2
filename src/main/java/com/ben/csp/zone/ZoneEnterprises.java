@@ -57,8 +57,12 @@ public final class ZoneEnterprises {
     public int tick(long day) {
         int newly = 0;
         for (EnterpriseLifecycle l : lifecycles) {
-            if (l.tick(day)) {
-                newly++;
+            try {
+                if (l.tick(day)) {
+                    newly++;
+                }
+            } catch (RuntimeException e) {
+                // one enterprise must not stop the whole zone for the day
             }
         }
         return newly;

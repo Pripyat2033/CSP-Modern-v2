@@ -89,10 +89,8 @@ public final class DirectorateCommand {
                 Prombaza p = pbState.registry().designate(pbId, name, r.area(), day(ctx),
                     ctx.getSource().getName());
                 pbState.markDirty();
-                GroundWorks.drawTerritory(ctx.getSource().getWorld(),
-                    com.ben.csp.zone.PrombazaTerritory.standard(pbId, r.area()));
                 ctx.getSource().sendFeedback(() -> Text.literal("APPROVED and designated: " + p
-                    + " — the boundary is marked on the ground."), true);
+                    + " — the territory is recorded; nothing is built on the ground."), true);
             } catch (IllegalStateException e) {
                 ctx.getSource().sendError(Text.literal("approved, but could not designate: " + e.getMessage()));
                 return 0;
@@ -134,11 +132,10 @@ public final class DirectorateCommand {
             Prombaza p = pbState.registry().designate(id, name, area, day(ctx),
                 ctx.getSource().getName());
             pbState.markDirty();
-            // Take the temporary corner marks away now the real boundary is drawn.
+            // Take the two corner torches away now the territory is recorded.
             ServerWorld world = ctx.getSource().getWorld();
             GroundWorks.hideCorner(world, p1.getX(), p1.getZ());
             GroundWorks.hideCorner(world, p2.getX(), p2.getZ());
-            GroundWorks.drawTerritory(world, com.ben.csp.zone.PrombazaTerritory.standard(id, area));
             PrombazaCommand.clearPendingCorners();
             ctx.getSource().sendFeedback(() -> Text.literal(
                 "The Director designates the prombaza '" + p.id() + "': " + p.area().describe()
@@ -147,7 +144,8 @@ public final class DirectorateCommand {
             ctx.getSource().sendFeedback(() -> Text.literal(
                 "A prombaza is the production base — the yard where the construction "
                 + "trusts stand up their workshops, stores and concrete plant before "
-                + "going on to the station. The boundary is marked on the ground."), false);
+                + "going on to the station. The territory is recorded; nothing is built on "
+                + "the ground to mark it."), false);
             ctx.getSource().sendFeedback(() -> Text.literal(
                 "Next: stand the ten enterprises up on it with /zone spawn, then "
                 + "/zone status to watch them build."), false);

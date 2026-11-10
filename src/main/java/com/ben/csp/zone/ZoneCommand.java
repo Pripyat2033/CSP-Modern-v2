@@ -81,7 +81,6 @@ public final class ZoneCommand {
             return 0;
         }
         state.markDirty();
-        GroundWorks.drawTerritory(world, state.territory());
         source.sendFeedback(() -> Text.literal(
             "Prombaza laid out: " + state.territory().boundary().width() + " x "
             + state.territory().boundary().height() + " m."), true);
@@ -188,7 +187,6 @@ public final class ZoneCommand {
             source.sendError(Text.literal("The zone has not been spawned. Use /zone spawn."));
             return 0;
         }
-        GroundWorks.drawTerritory(world, state.territory());
         for (EnterpriseLifecycle l : state.zone().lifecycles()) {
             for (var f : l.enterprise().facilities()) {
                 GroundWorks.drawFacility(world, f);

@@ -34,6 +34,7 @@ public final class EnterpriseLifecycle {
     private boolean started;
     private Footprint hqPlot;
     private Facility hqFacility;
+    private boolean awaitingGround;
 
     public EnterpriseLifecycle(Enterprise enterprise, SiteAllocator allocator, int staffTarget) {
         this.enterprise = Objects.requireNonNull(enterprise, "enterprise");
@@ -44,11 +45,7 @@ public final class EnterpriseLifecycle {
         // The enterprise's own headquarters is one of its facilities; site it now, so the
         // offices are laid out first and can be seen being built. The HQ phase builds it.
         this.hqFacility = findHeadquarters(enterprise);
-        if (hqFacility != null) {
-            double[] hqSize = sizeFor(FacilityType.HEADQUARTERS);
-            this.hqPlot = allocator.allocate(hqSize[0], hqSize[1]);
-            hqFacility.site(hqPlot);
-        }
+        siteHqIfPossible();
     }
 
     public Enterprise enterprise() { return enterprise; }
@@ -78,7 +75,7 @@ public final class EnterpriseLifecycle {
         return switch (phase) {
             case HQ -> "building its office (" + setup.hqProgress() + "%)";
             case STAFF -> "hiring staff (" + setup.staffHired() + "/" + staffTarget + ")";
-            case FACILITIES -> "building its facilities";
+            case FACILITIES -> awaitingGround ? "waiting for more ground" : "building its facilities";
             case DONE -> "operational";
         };
     }
@@ -114,7 +111,26 @@ public final class EnterpriseLifecycle {
         return false;
     }
 
+    /** Choose the office's plot, if the territory has room. If it has not, the
+     *  enterprise waits: the Director may enlarge the prombaza. */
+    private void siteHqIfPossible() {
+        if (hqFacility == null || hqPlot != null) {
+            return;
+        }
+        double[] hqSize = sizeFor(FacilityType.HEADQUARTERS);
+        try {
+            hqPlot = allocator.allocate(hqSize[0], hqSize[1]);
+            hqFacility.site(hqPlot);
+        } catch (IllegalStateException full) {
+            hqPlot = null;
+        }
+    }
+
     private void advanceHq() {
+        siteHqIfPossible();
+        if (hqPlot == null) {
+            return;   // no ground yet; try again next day
+        }
         if (!started) {
             setup.beginHqConstruction();
             started = true;
@@ -154,9 +170,18 @@ public final class EnterpriseLifecycle {
         Facility f = facilities.get(facilityIndex);
 
         if (!f.hasFootprint()) {
-            // set out: choose the plot, raise the marker, open the construction site
+            // set out: choose the plot, raise the marker, open the construction site.
+            // If the territory is full, the enterprise waits for more ground rather than
+            // failing — the prombaza is what the Director gives it, and it may be enlarged.
             double[] size = sizeFor(f.type());
-            var plot = allocator.allocate(size[0], size[1]);
+            Footprint plot;
+            try {
+                plot = allocator.allocate(size[0], size[1]);
+            } catch (IllegalStateException full) {
+                awaitingGround = true;
+                return;
+            }
+            awaitingGround = false;
             f.site(plot);
             ConstructionSite site = new ConstructionSite(
                 "cs-" + f.id(), f.id(), plot, requiredManHours(plot));

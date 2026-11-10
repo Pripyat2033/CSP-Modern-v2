@@ -30,35 +30,14 @@ public final class GroundWorks {
      * at each corner, so a player sees a boundary and not a wall.
      */
     public static void drawTerritory(ServerWorld world, PrombazaTerritory territory) {
-        // A survey, not a wall. A torch at each corner, and a thin flat line only for the
-        // reserved ground (road spine and rail corridor). The boundary line itself is left
-        // clear, so no row of blocks is thrown across the site.
-        for (Footprint r : territory.reserved()) {
-            outlineTop(world, r, Blocks.YELLOW_CARPET);
-        }
-        for (Route route : territory.routes()) {
-            for (int i = 0; i < route.pointCount() - 1; i++) {
-                drawLineTop(world, route.x(i), route.z(i), route.x(i + 1), route.z(i + 1),
-                    Blocks.GRAY_CARPET);
-            }
-        }
-        cornerTorch(world, territory.boundary().minX(), territory.boundary().minZ());
-        cornerTorch(world, territory.boundary().maxX(), territory.boundary().minZ());
-        cornerTorch(world, territory.boundary().minX(), territory.boundary().maxZ());
-        cornerTorch(world, territory.boundary().maxX(), territory.boundary().maxZ());
+        // A prombaza is a territory, not a structure: nothing is built on the ground to
+        // mark it. It exists as the record and the boundary; only the enterprises' own
+        // buildings will ever appear here.
     }
 
     /** Remove the boundary and reserved marks, leaving the ground as it was. */
     public static void clearTerritory(ServerWorld world, PrombazaTerritory territory) {
-        for (Footprint r : territory.reserved()) {
-            clearRegionTop(world, r, Blocks.YELLOW_CARPET);
-        }
-        for (Route route : territory.routes()) {
-            for (int i = 0; i < route.pointCount() - 1; i++) {
-                clearLineTop(world, route.x(i), route.z(i), route.x(i + 1), route.z(i + 1),
-                    Blocks.GRAY_CARPET);
-            }
-        }
+        // Nothing was drawn for the territory, so there is nothing to clear here.
     }
 
     /** A bright, self-lit mark at a chosen corner, so the player can see it. */
@@ -148,14 +127,13 @@ public final class GroundWorks {
         } else {
             fillFlat(world, plot, Blocks.LIGHT_GRAY_CONCRETE, 0);
             raise(world, plot, Blocks.WHITE_CONCRETE, BUILDING_HEIGHT);
-            placeSign(world, (int) Math.floor(plot.minX()), (int) Math.floor(plot.minZ()),
-                name, "HEAD OFFICE");
         }
     }
 
     /** Mark out a rectangle the player is choosing, so the corners can be seen. */
     public static void previewOutline(ServerWorld world, Footprint plot) {
-        dashedOutlineTop(world, plot, Blocks.WHITE_CARPET, 2);
+        // The rectangle the player is choosing is shown by the two corner torches only;
+        // the territory is not drawn, so no blocks are placed here.
     }
 
     /** Draw a construction site's progress: a marker, a foundation, or a building. */
