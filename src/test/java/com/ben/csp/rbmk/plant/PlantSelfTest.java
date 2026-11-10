@@ -15,7 +15,56 @@ public final class PlantSelfTest {
         steadyState();
         trips();
         eccs();
+        subsystems();
         System.out.println("PlantSelfTest: " + checks + " checks passed.");
+    }
+
+    private static void subsystems() {
+        // valves
+        Valve gate = new Valve(Valve.Kind.GATE);
+        gate.setPosition(0.0);
+        check(gate.closed(), "a gate valve closes fully");
+        gate.setPosition(1.0);
+        check(gate.open(), "a gate valve opens fully");
+        Valve control = new Valve(Valve.Kind.CONTROL);
+        control.setPosition(0.0);
+        for (int i = 0; i < 100; i++) {
+            control.step(0.1);
+        }
+        check(control.position() < 0.05, "a control valve throttles toward closed");
+
+        // rotameters: one per fuel channel
+        check(Rotameter.COUNT == 1872, "there is a rotameter on every fuel channel");
+        Rotameter rot = new Rotameter(0);
+        rot.setFlowKgS(0.1);
+        check(rot.starving(), "a channel with almost no flow reads as starving");
+        rot.setFlowKgS(Rotameter.NOMINAL_KGS);
+        check(!rot.starving(), "a channel at nominal flow reads normal");
+
+        // oil system: the standby pump starts on a turbine trip
+        OilSystem oil = new OilSystem();
+        check(oil.mainPumpRunning(), "the main oil pump runs at power");
+        oil.onTurbineTrip(0.2);
+        check(!oil.mainPumpRunning() && oil.emergencyPumpRunning(),
+            "the emergency oil pump starts when the turbine slows");
+        for (int i = 0; i < 100; i++) {
+            oil.step(0.1);
+        }
+        check(!oil.lowPressureTrip(), "oil pressure is held above the trip");
+
+        // the running plant has 6 pumps running, 2 standby
+        PlantSystem p = new PlantSystem();
+        int running = 0, standby = 0;
+        for (MainCirculatingPump pump : p.pumps()) {
+            if (pump.running()) {
+                running++;
+            }
+            if (pump.standby()) {
+                standby++;
+            }
+        }
+        check(running == 6 && standby == 2,
+            "the plant runs six pumps with two standby (got " + running + "+" + standby + ")");
     }
 
     private static void nominalFlows() {

@@ -28,6 +28,13 @@ public class ModBlocks {
     public static final Block FUEL_CHANNEL_BLOCK = FuelChannelBlock.INSTANCE;
     public static final Block GRAPHITE_BLOCK = GraphiteBlock.INSTANCE;
     public static final Block CONTROL_ROD_BLOCK = ControlRodBlock.INSTANCE;
+    public static final Block STEAM_SEPARATOR_BLOCK = PlantEquipmentBlock.steamSeparator();
+    public static final Block TURBINE_BLOCK = PlantEquipmentBlock.turbine();
+    public static final Block CONDENSER_BLOCK = PlantEquipmentBlock.condenser();
+    public static final Block MCP_BLOCK = PlantEquipmentBlock.pump();
+    public static final Block FEEDWATER_BLOCK = PlantEquipmentBlock.feedwater();
+    public static final Block ECCS_ACCUMULATOR_BLOCK = PlantEquipmentBlock.accumulator();
+    public static final Block PLANT_PIPE_BLOCK = PlantEquipmentBlock.pipe();
     public static final Block STOCKPILE_BLOCK = new StockpileBlock();
     public static final Block ICMS_MESSAGE_INPUT_BLOCK = new IcmsMessageInputBlock();
     public static final Block ICMS_MESSAGE_OUTPUT_BLOCK = new IcmsMessageOutputBlock();
@@ -50,6 +57,13 @@ public class ModBlocks {
         register("fuel_channel", FUEL_CHANNEL_BLOCK);
         register("graphite", GRAPHITE_BLOCK);
         register("control_rod", CONTROL_ROD_BLOCK);
+        register("steam_separator", STEAM_SEPARATOR_BLOCK);
+        register("turbine", TURBINE_BLOCK);
+        register("condenser", CONDENSER_BLOCK);
+        register("mcp", MCP_BLOCK);
+        register("feedwater", FEEDWATER_BLOCK);
+        register("eccs_accumulator", ECCS_ACCUMULATOR_BLOCK);
+        register("plant_pipe", PLANT_PIPE_BLOCK);
         register("stockpile", STOCKPILE_BLOCK);
         register("icms_message_input", ICMS_MESSAGE_INPUT_BLOCK);
         register("icms_message_output", ICMS_MESSAGE_OUTPUT_BLOCK);

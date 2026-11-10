@@ -15,6 +15,8 @@ public final class MainCirculatingPump {
 
     private final int index;
     private boolean running = true;
+    /** A standby pump: motor off, ready to start, not counted as failed. */
+    private boolean standby = false;
     /** Flow as a fraction of rated, 0..1. */
     private double flowFraction = 1.0;
     /** True while coasting down after a trip. */
@@ -30,6 +32,25 @@ public final class MainCirculatingPump {
 
     public boolean running() {
         return running;
+    }
+
+    /** A standby pump is available but not running; it is not a failure. */
+    public void setStandby(boolean standby) {
+        this.standby = standby;
+        if (standby) {
+            this.running = false;
+            this.coasting = false;
+            this.flowFraction = 0;
+        }
+    }
+
+    public boolean standby() {
+        return standby;
+    }
+
+    /** True if this pump has failed (tripped and not merely standby). */
+    public boolean failed() {
+        return !running && !standby;
     }
 
     public boolean coasting() {
@@ -59,6 +80,7 @@ public final class MainCirculatingPump {
     public void start() {
         running = true;
         coasting = false;
+        standby = false;
     }
 
     /**

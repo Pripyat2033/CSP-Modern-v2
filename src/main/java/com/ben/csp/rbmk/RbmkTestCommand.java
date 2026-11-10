@@ -53,6 +53,7 @@ public final class RbmkTestCommand {
             .then(CommandManager.literal("plant")
                 .then(CommandManager.literal("start").executes(RbmkTestCommand::plantStart))
                 .then(CommandManager.literal("scram").executes(RbmkTestCommand::plantScram))
+                .then(CommandManager.literal("build").executes(RbmkTestCommand::plantBuild))
                 .then(CommandManager.literal("status").executes(RbmkTestCommand::plantStatus))));
     }
 
@@ -185,6 +186,45 @@ public final class RbmkTestCommand {
             graphiteBlocks, fuelBlocks, rodBlocks, ms);
         return 1;
     }
+
+    /**
+     * {@code /rbmk plant build} — places the whole plant at 1:4 as real blocks:
+     * the core solid, then the four steam separator drums, two turbogenerators,
+     * their condensers, eight main circulating pumps, the feedwater tanks and the
+     * twelve ECCS accumulators as separate machines around it.
+     */
+    private static int plantBuild(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        ServerWorld world = s.getWorld();
+        BlockPos origin = BlockPos.ofFloored(s.getPosition());
+
+        long t0 = System.nanoTime();
+        RbmkWorldBuilder.Counts core = RbmkWorldBuilder.placeCore(world, origin);
+        RbmkWorldBuilder.Counts plant = RbmkWorldBuilder.placePlant(world, origin);
+        double ms = (System.nanoTime() - t0) / 1e6;
+
+        feedback(s, "RBMK-1000 plant, placed as blocks (1:4)", Formatting.GOLD);
+        feedback(s, String.format("  core:        %d graphite, %d fuel, %d rod blocks",
+            core.graphite, core.fuel, core.rods), Formatting.WHITE);
+        feedback(s, String.format("  separators:  %d blocks (4 drums, 2.8 m x 31 m)",
+            plant.separators), Formatting.WHITE);
+        feedback(s, String.format("  turbines:    %d blocks (2 turbogenerators)",
+            plant.turbines), Formatting.WHITE);
+        feedback(s, String.format("  condensers:  %d blocks (2)", plant.condensers),
+            Formatting.WHITE);
+        feedback(s, String.format("  pumps:       %d blocks (8 ГЦН)", plant.pumps),
+            Formatting.WHITE);
+        feedback(s, String.format("  feedwater:   %d blocks (4 deaerators)",
+            plant.feedwater), Formatting.WHITE);
+        feedback(s, String.format("  ECCS:        %d blocks (12 accumulators)",
+            plant.accumulators), Formatting.WHITE);
+        feedback(s, String.format("  total:       %d block updates in %.0f ms",
+            core.total + plant.total, ms), Formatting.WHITE);
+        feedback(s, "  then /rbmk plant start to run it live", Formatting.GRAY);
+        LOGGER.info("RBMK plant build: core {} + plant {} blocks in {} ms",
+            core.total, plant.total, ms);
+        return 1;
+    }
     private static int plantStart(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource s = ctx.getSource();
         PlantTicker.startPlant();
@@ -243,6 +283,9 @@ public final class RbmkTestCommand {
         feedback(s, String.format("  feedwater: %.0f kg/s at %.0f C, deaerator %.2f",
             p.feedwater().flowKgS(), p.feedwater().temperatureC(),
             p.feedwater().deaeratorLevel()), Formatting.WHITE);
+        feedback(s, String.format("  rotameters: %d channels, %d starving; oil %.1f bar",
+            p.rotameters().length, p.starvingChannels(), p.oil()[0].pressureBar()),
+            Formatting.WHITE);
         return 1;
     }
 

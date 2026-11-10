@@ -36,6 +36,15 @@ public final class PlantSystem {
     private final Condenser[] condensers = new Condenser[PlantPhysics.TURBINE_COUNT];
     private final FeedwaterSystem feedwater = new FeedwaterSystem();
     private final Eccs eccs = new Eccs();
+    /** Gate and control valves on the two circuits. */
+    private final Valve[] valves = {
+        new Valve(Valve.Kind.GATE), new Valve(Valve.Kind.CONTROL),
+        new Valve(Valve.Kind.GATE), new Valve(Valve.Kind.CONTROL),
+    };
+    /** The channel flow meters — one per fuel channel. */
+    private final Rotameter[] rotameters = new Rotameter[Rotameter.COUNT];
+    /** Bearing/governing oil system per turbine. */
+    private final OilSystem[] oil = new OilSystem[PlantPhysics.TURBINE_COUNT];
 
     private boolean scrammed = false;
     private String tripReason = null;
@@ -44,8 +53,12 @@ public final class PlantSystem {
     public PlantSystem() {
         for (int c = 0; c < PlantPhysics.CIRCUITS; c++) {
             for (int p = 0; p < PlantPhysics.MCP_PER_CIRCUIT; p++) {
-                // one pump per circuit is the standby; keep all eight present
-                pumps[c * PlantPhysics.MCP_PER_CIRCUIT + p] = new MainCirculatingPump(p);
+                MainCirculatingPump pump = new MainCirculatingPump(p);
+                // the fourth pump in each circuit is the standby
+                if (p == PlantPhysics.MCP_PER_CIRCUIT - 1) {
+                    pump.setStandby(true);
+                }
+                pumps[c * PlantPhysics.MCP_PER_CIRCUIT + p] = pump;
             }
         }
         for (int i = 0; i < separators.length; i++) {
@@ -54,6 +67,10 @@ public final class PlantSystem {
         for (int i = 0; i < turbines.length; i++) {
             turbines[i] = new Turbine(i);
             condensers[i] = new Condenser(i);
+            oil[i] = new OilSystem();
+        }
+        for (int i = 0; i < rotameters.length; i++) {
+            rotameters[i] = new Rotameter(i);
         }
     }
 
@@ -84,6 +101,29 @@ public final class PlantSystem {
 
     public Eccs eccs() {
         return eccs;
+    }
+
+    public Valve[] valves() {
+        return valves;
+    }
+
+    public Rotameter[] rotameters() {
+        return rotameters;
+    }
+
+    public OilSystem[] oil() {
+        return oil;
+    }
+
+    /** How many channel flow meters read a starving channel. */
+    public int starvingChannels() {
+        int n = 0;
+        for (Rotameter r : rotameters) {
+            if (r.starving()) {
+                n++;
+            }
+        }
+        return n;
     }
 
     public boolean scrammed() {
@@ -189,6 +229,19 @@ public final class PlantSystem {
         // 7. ECCS, if it has been called
         eccs.step(dt);
 
+        // 7b. valves, channel flow meters, and the turbine oil systems
+        for (Valve v : valves) {
+            v.step(dt);
+        }
+        double perChannelKgS = totalFlowKgS / Rotameter.COUNT;
+        for (Rotameter r : rotameters) {
+            r.setFlowKgS(perChannelKgS);
+        }
+        for (int i = 0; i < oil.length; i++) {
+            oil[i].onTurbineTrip(turbines[i].speedFraction());
+            oil[i].step(dt);
+        }
+
         // 8. the trip matrix
         checkTrips();
     }
@@ -215,7 +268,7 @@ public final class PlantSystem {
         for (int c = 0; c < PlantPhysics.CIRCUITS; c++) {
             int down = 0;
             for (int p = 0; p < PlantPhysics.MCP_PER_CIRCUIT; p++) {
-                if (!pumps[c * PlantPhysics.MCP_PER_CIRCUIT + p].running()) {
+                if (pumps[c * PlantPhysics.MCP_PER_CIRCUIT + p].failed()) {
                     down++;
                 }
             }
