@@ -9,7 +9,12 @@ import java.util.Random;
  * The DPE is responsible for procedurally generating a unique Dosye for each NPC,
  * drawing from data-driven pools of names, places, and traits.
  */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DynamicPersonalityEngine {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("csp-modern");
     private static final DynamicPersonalityEngine INSTANCE = new DynamicPersonalityEngine();
 
     // These would be loaded from JSON files.
@@ -94,8 +99,8 @@ public class DynamicPersonalityEngine {
         if (generatedDosye.getKharakteristika() != null) {
             kharakteristikaStr = "+ " + generatedDosye.getKharakteristika();
         }
-        System.out.println("[DPE] Generated dosye for: " + fullName + " | Nationality: " + nationalityStr + 
-                           " | Birthplace: " + birthplaceStr + kharakteristikaStr + " | Party: " + partyStatus);
+        LOGGER.debug("Generated dosye for: {} | Nationality: {} | Birthplace: {} | Party: {}{}",
+            fullName, nationalityStr, birthplaceStr, partyStatus, kharakteristikaStr);
         
         return generatedDosye;
     }
