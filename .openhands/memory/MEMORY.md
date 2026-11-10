@@ -81,3 +81,24 @@ hammered, so one fetch per ~50 s. SNiP II-89-80 full text lives at
 - `2026-11-09.md` — genplan by functional zone (СНиП II-89-80*), version reset
   0.9.5→0.0.1, public download reissued; earlier: loaders, Kartograf NBT fix,
   missing assets, dead-code removal, creative tab, full build + server verification.
+
+## THE PLANT IS COUPLED SYSTEMS, NOT ONE MACHINE (2026-11-09)
+
+`com.ben.csp.rbmk.plant` holds the RBMK-1000 plant as separate systems, each with
+its own state and physics: MainCirculatingPump x8 (6 run + 2 standby, coastdown),
+SteamSeparator x4 (drum level + trips), Turbine x2, Condenser x2, FeedwaterSystem,
+Eccs, Valve, Rotameter x1872, OilSystem. `PlantSystem` couples them and carries
+the trip matrix; `PlantTicker` runs it live on the server clock (CSPMod registers
+it). Commands: `/rbmk plant start|scram|status|build`.
+
+Physics that must not be "simplified": turbine work = SPECIFIC WORK 655 kJ/kg
+(500 MWe / 763 kg/s), not latent-drop x efficiency; condenser heat = steam x
+(H_steam - H_feedwater) - turbine work, not the full latent drop; drum level
+floats on NET (feedwater - steam); rods: insertion 1.0 = FULLY IN (scram ->
+setRodTarget(1.0)); the auto-regulator needs integral action or it settles at 1.13.
+Full detail + the live-verified numbers in `2026-11-09.md`.
+
+Blocks: PlantEquipmentBlock + ModBlocks (steam_separator, turbine, condenser, mcp,
+feedwater, eccs_accumulator, plant_pipe); `RbmkWorldBuilder` places core solid and
+plant as SHELLS (solid deaerators = 92k blocks = 2.2 s tick spike). Tests: 102
+checks (Geometry 28, Physics 15, Spatial 16, Accident 15, Plant 28).
