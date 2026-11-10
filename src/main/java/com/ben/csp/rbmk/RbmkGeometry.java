@@ -43,6 +43,15 @@ public final class RbmkGeometry {
     public static final double CORE_HEIGHT_M = 7.0;
     public static final int CORE_DIAMETER_BLOCKS = toBlocks(CORE_DIAMETER_M); // 47
     public static final int CORE_HEIGHT_BLOCKS = toBlocks(CORE_HEIGHT_M);     // 28
+    /**
+     * The channel region: the 12.25 m circle (49 blocks) that holds the 1,872
+     * channels. The active region (11.8 m) is smaller than the channel region, and
+     * a 250 mm lattice circle only reaches 1,872 channels at 12.25 m — see
+     * docs/RBMK-PLANT-SYSTEMS.md §1a. The 11.8 m figure is the fuelled core.
+     */
+    public static final double CHANNEL_REGION_DIAMETER_M = 12.25;
+    public static final int CHANNEL_REGION_DIAMETER_BLOCKS = toBlocks(CHANNEL_REGION_DIAMETER_M); // 49
+    /** The graphite stack (moderator + radial reflector): 14 m circle, 56 blocks. */
     public static final double STACK_DIAMETER_M = 14.0;
     public static final double STACK_HEIGHT_M = 8.0;
     public static final int STACK_DIAMETER_BLOCKS = toBlocks(STACK_DIAMETER_M); // 56

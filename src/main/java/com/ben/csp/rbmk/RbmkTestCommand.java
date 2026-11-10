@@ -125,13 +125,13 @@ public final class RbmkTestCommand {
         Block fuel = ModBlocks.FUEL_CHANNEL_BLOCK;
         Block rod = ModBlocks.CONTROL_ROD_BLOCK;
 
-        int height = RbmkGeometry.CORE_HEIGHT_BLOCKS;
+        int height = RbmkGeometry.STACK_HEIGHT_BLOCKS;
         long t0 = System.nanoTime();
         int graphiteBlocks = 0;
         int fuelBlocks = 0;
         int rodBlocks = 0;
 
-        // graphite moderator: one block per lattice cell, through the core height
+        // graphite moderator stack + radial reflector: one block per cell, 14 m across
         for (RbmkLattice.Cell cell : RbmkLattice.graphiteCells()) {
             int x = origin.getX() + cell.x();
             int z = origin.getZ() + cell.z();
@@ -162,9 +162,12 @@ public final class RbmkTestCommand {
         feedback(s, "RBMK-1000 core, placed as blocks (1:4)", Formatting.GOLD);
         feedback(s, String.format("  position: %d, %d, %d", origin.getX(), origin.getY(),
             origin.getZ()), Formatting.WHITE);
-        feedback(s, String.format("  graphite:       %d blocks", graphiteBlocks), Formatting.WHITE);
-        feedback(s, String.format("  fuel channels:  %d blocks (ТК)", fuelBlocks), Formatting.WHITE);
-        feedback(s, String.format("  control rods:   %d blocks (СУЗ)", rodBlocks), Formatting.WHITE);
+        feedback(s, String.format("  graphite stack (14 m, incl. reflector): %d blocks",
+            graphiteBlocks), Formatting.WHITE);
+        feedback(s, String.format("  fuel channels:  %d blocks (ТК, %d channels)",
+            fuelBlocks, RbmkLattice.fuelCount()), Formatting.WHITE);
+        feedback(s, String.format("  control rods:   %d blocks (СУЗ, %d channels)",
+            rodBlocks, RbmkLattice.controlCount()), Formatting.WHITE);
         feedback(s, String.format("  total written:  %d block updates in %.0f ms",
             graphiteBlocks + fuelBlocks + rodBlocks, ms), Formatting.WHITE);
         feedback(s, "  now watch the server tick — /rbmk test for the solver cost",

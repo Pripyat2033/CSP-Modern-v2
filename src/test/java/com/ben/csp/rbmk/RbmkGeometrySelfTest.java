@@ -20,6 +20,7 @@ public final class RbmkGeometrySelfTest {
         eq(28, RbmkGeometry.CORE_HEIGHT_BLOCKS, "active core is 28 blocks tall");
         eq(56, RbmkGeometry.STACK_DIAMETER_BLOCKS, "graphite stack is 56 blocks across");
         eq(32, RbmkGeometry.STACK_HEIGHT_BLOCKS, "graphite stack is 32 blocks tall");
+        eq(49, RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS, "channel region is 49 blocks across");
         eq(68, RbmkGeometry.UBS_DIAMETER_BLOCKS, "UBS is 68 blocks across");
         eq(12, RbmkGeometry.UBS_THICKNESS_BLOCKS, "UBS is 12 blocks thick");
         eq(58, RbmkGeometry.LBS_DIAMETER_BLOCKS, "LBS is 58 blocks across");
@@ -32,11 +33,15 @@ public final class RbmkGeometrySelfTest {
         check(graphite.size() > 1000, "the graphite is a stack of individual blocks ("
             + graphite.size() + " of them), not one block");
         List<RbmkLattice.Channel> channels = RbmkLattice.channels();
+        eq(1872, channels.size(), "there are 1,872 channels (1,661 fuel + 211 control)");
         eq(211, RbmkLattice.controlCount(), "there are 211 control channels");
-        eq(channels.size() - 211, RbmkLattice.fuelCount(), "the rest are fuel channels");
-        // Report (do not hide) the geometry-vs-record discrepancy.
-        System.out.println("  note: an 11.8 m circle at 0.25 m pitch yields "
-            + graphite.size() + " cells; the recorded count is 1872 (see geometry note 1a)");
+        eq(1661, RbmkLattice.fuelCount(), "there are 1,661 fuel channels");
+        // The channel region (49 blocks, 1,885 cells) is the smallest 250 mm circle
+        // that holds the 1,872 channels; the 14 m stack adds the radial reflector.
+        eq(1885, RbmkLattice.graphiteCells().size() - RbmkLattice.reflectorCells().size(),
+            "the channel region holds 1,885 cells");
+        eq(568, RbmkLattice.reflectorCells().size(),
+            "the radial reflector outside it is 568 cells (graphite only)");
 
         // ---- control rod: withdrawn ----
         RbmkGeometry.NodeMaterial[] withdrawn = RbmkGeometry.rodMaterials(0.0);
