@@ -27,6 +27,7 @@ public class ModBlocks {
     public static final Block TELETYPE_PRINTER_BLOCK = new TeletypePrinterBlock();
     public static final Block FUEL_CHANNEL_BLOCK = FuelChannelBlock.INSTANCE;
     public static final Block GRAPHITE_BLOCK = GraphiteBlock.INSTANCE;
+    public static final Block CONTROL_ROD_BLOCK = ControlRodBlock.INSTANCE;
     public static final Block STOCKPILE_BLOCK = new StockpileBlock();
     public static final Block ICMS_MESSAGE_INPUT_BLOCK = new IcmsMessageInputBlock();
     public static final Block ICMS_MESSAGE_OUTPUT_BLOCK = new IcmsMessageOutputBlock();
@@ -48,6 +49,7 @@ public class ModBlocks {
         register("teletype_printer", TELETYPE_PRINTER_BLOCK);
         register("fuel_channel", FUEL_CHANNEL_BLOCK);
         register("graphite", GRAPHITE_BLOCK);
+        register("control_rod", CONTROL_ROD_BLOCK);
         register("stockpile", STOCKPILE_BLOCK);
         register("icms_message_input", ICMS_MESSAGE_INPUT_BLOCK);
         register("icms_message_output", ICMS_MESSAGE_OUTPUT_BLOCK);

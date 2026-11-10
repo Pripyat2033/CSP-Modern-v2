@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import com.ben.csp.prombaza.PrombazaCommand;
 import com.ben.csp.command.CspCommand;
+import com.ben.csp.rbmk.RbmkTestCommand;
 import com.ben.csp.directorate.DirectorateCommand;
 import com.ben.csp.zone.ZoneCommand;
 import com.ben.csp.zone.ZoneTicker;
@@ -71,6 +72,7 @@ public class CSPMod implements ModInitializer {
             ZoneCommand.register(dispatcher);
             DirectorateCommand.register(dispatcher);
             CspCommand.register(dispatcher);
+            RbmkTestCommand.register(dispatcher);
         });
 
         // Speak to the workers in plain words: the nearest one answers and acts.
