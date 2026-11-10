@@ -30,44 +30,49 @@ public final class GroundWorks {
      * at each corner, so a player sees a boundary and not a wall.
      */
     public static void drawTerritory(ServerWorld world, PrombazaTerritory territory) {
-        dashedOutlineTop(world, territory.boundary(), Blocks.WHITE_CARPET, 2);
+        // A survey, not a wall. A torch at each corner, and a thin flat line only for the
+        // reserved ground (road spine and rail corridor). The boundary line itself is left
+        // clear, so no row of blocks is thrown across the site.
         for (Footprint r : territory.reserved()) {
-            drawOutline(world, r, Blocks.LIGHT_GRAY_CONCRETE);
+            outlineTop(world, r, Blocks.YELLOW_CARPET);
         }
         for (Route route : territory.routes()) {
             for (int i = 0; i < route.pointCount() - 1; i++) {
-                drawLine(world, route.x(i), route.z(i), route.x(i + 1), route.z(i + 1),
-                    Blocks.GRAVEL);
+                drawLineTop(world, route.x(i), route.z(i), route.x(i + 1), route.z(i + 1),
+                    Blocks.GRAY_CARPET);
             }
         }
-        cornerPost(world, territory.boundary().minX(), territory.boundary().minZ());
-        cornerPost(world, territory.boundary().maxX(), territory.boundary().minZ());
-        cornerPost(world, territory.boundary().minX(), territory.boundary().maxZ());
-        cornerPost(world, territory.boundary().maxX(), territory.boundary().maxZ());
+        cornerTorch(world, territory.boundary().minX(), territory.boundary().minZ());
+        cornerTorch(world, territory.boundary().maxX(), territory.boundary().minZ());
+        cornerTorch(world, territory.boundary().minX(), territory.boundary().maxZ());
+        cornerTorch(world, territory.boundary().maxX(), territory.boundary().maxZ());
     }
 
     /** Remove the boundary and reserved marks, leaving the ground as it was. */
     public static void clearTerritory(ServerWorld world, PrombazaTerritory territory) {
-        clearDashedOutlineTop(world, territory.boundary(), Blocks.WHITE_CARPET, 2);
         for (Footprint r : territory.reserved()) {
-            clearOutline(world, r, Blocks.LIGHT_GRAY_CONCRETE);
+            clearRegionTop(world, r, Blocks.YELLOW_CARPET);
+        }
+        for (Route route : territory.routes()) {
+            for (int i = 0; i < route.pointCount() - 1; i++) {
+                clearLineTop(world, route.x(i), route.z(i), route.x(i + 1), route.z(i + 1),
+                    Blocks.GRAY_CARPET);
+            }
         }
     }
 
     /** A bright, self-lit mark at a chosen corner, so the player can see it. */
     public static void showCorner(ServerWorld world, int x, int z) {
-        set(world, x, z, Blocks.GLOWSTONE, 0);
+        set(world, x, z, Blocks.TORCH, 1);
     }
 
     /** Take the corner mark away again. */
     public static void hideCorner(ServerWorld world, int x, int z) {
-        clearIf(world, x, z, Blocks.GLOWSTONE);
+        clearTop(world, x, z, Blocks.TORCH);
     }
 
-    private static void cornerPost(ServerWorld world, double x, double z) {
-        for (int dy = 0; dy < 3; dy++) {
-            set(world, (int) Math.floor(x), (int) Math.floor(z), Blocks.STRIPPED_OAK_LOG, dy);
-        }
+    private static void cornerTorch(ServerWorld world, double x, double z) {
+        set(world, (int) Math.floor(x), (int) Math.floor(z), Blocks.TORCH, 1);
     }
 
     /** Mark a facility's plot and, if it stands, raise its building. */
@@ -80,7 +85,7 @@ public final class GroundWorks {
             fillFlat(world, plot, Blocks.LIGHT_GRAY_CONCRETE, 0);
             raise(world, plot, Blocks.WHITE_CONCRETE, BUILDING_HEIGHT);
         } else {
-            drawOutline(world, plot, Blocks.YELLOW_CONCRETE);
+            outlineTop(world, plot, Blocks.YELLOW_CARPET);
         }
     }
 
@@ -99,6 +104,7 @@ public final class GroundWorks {
     private static final net.minecraft.block.Block[] MARKER_BLOCKS = {
         Blocks.YELLOW_CONCRETE, Blocks.LIGHT_GRAY_CONCRETE, Blocks.WHITE_CONCRETE,
         Blocks.STONE, Blocks.OAK_PLANKS, Blocks.STONE_BRICK_SLAB,
+        Blocks.YELLOW_CARPET, Blocks.WHITE_CARPET, Blocks.GRAY_CARPET, Blocks.TORCH,
     };
 
     private static void clearMarkers(ServerWorld world, Footprint plot) {
@@ -133,7 +139,7 @@ public final class GroundWorks {
             return;
         }
         if (percent < 35) {
-            drawOutline(world, plot, Blocks.YELLOW_CONCRETE);
+            outlineTop(world, plot, Blocks.YELLOW_CARPET);
         } else if (percent < 70) {
             fillFlat(world, plot, Blocks.STONE, 0);
         } else if (percent < 100) {
@@ -149,7 +155,7 @@ public final class GroundWorks {
 
     /** Mark out a rectangle the player is choosing, so the corners can be seen. */
     public static void previewOutline(ServerWorld world, Footprint plot) {
-        dashedOutline(world, plot, Blocks.WHITE_CONCRETE, 2);
+        dashedOutlineTop(world, plot, Blocks.WHITE_CARPET, 2);
     }
 
     /** Draw a construction site's progress: a marker, a foundation, or a building. */
@@ -157,7 +163,7 @@ public final class GroundWorks {
         Footprint plot = site.plot();
         BuildStage stage = site.stage();
         switch (stage) {
-            case STAKED -> drawOutline(world, plot, Blocks.YELLOW_CONCRETE);
+            case STAKED -> outlineTop(world, plot, Blocks.YELLOW_CARPET);
             case FOUNDATION -> fillFlat(world, plot, Blocks.STONE, 0);
             case STRUCTURE -> {
                 fillFlat(world, plot, Blocks.STONE, 0);
@@ -308,6 +314,66 @@ public final class GroundWorks {
                 text = text.withMessage(i, net.minecraft.text.Text.literal(lines[i]));
             }
             sign.setText(text, true);
+        }
+    }
+
+    private static void outlineTop(ServerWorld world, Footprint plot, net.minecraft.block.Block block) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            set(world, x, z0, block, 1);
+            set(world, x, z1, block, 1);
+        }
+        for (int z = z0; z <= z1; z++) {
+            set(world, x0, z, block, 1);
+            set(world, x1, z, block, 1);
+        }
+    }
+
+    private static void drawLineTop(ServerWorld world, double xa, double za, double xb, double zb,
+                                    net.minecraft.block.Block block) {
+        double len = Math.hypot(xb - xa, zb - za);
+        int steps = (int) Math.ceil(len);
+        for (int i = 0; i <= steps; i++) {
+            double t = steps == 0 ? 0 : (double) i / steps;
+            set(world, (int) Math.round(xa + (xb - xa) * t),
+                (int) Math.round(za + (zb - za) * t), block, 1);
+        }
+    }
+
+    private static void clearTop(ServerWorld world, int x, int z, net.minecraft.block.Block block) {
+        if (!world.getChunkManager().isChunkLoaded(x >> 4, z >> 4)) {
+            return;
+        }
+        int ground = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, x, z);
+        BlockPos pos = new BlockPos(x, ground + 1, z);
+        if (world.getBlockState(pos).getBlock() == block) {
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+        }
+    }
+
+    private static void clearRegionTop(ServerWorld world, Footprint plot, net.minecraft.block.Block block) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                clearTop(world, x, z, block);
+            }
+        }
+    }
+
+    private static void clearLineTop(ServerWorld world, double xa, double za, double xb, double zb,
+                                     net.minecraft.block.Block block) {
+        double len = Math.hypot(xb - xa, zb - za);
+        int steps = (int) Math.ceil(len);
+        for (int i = 0; i <= steps; i++) {
+            double t = steps == 0 ? 0 : (double) i / steps;
+            clearTop(world, (int) Math.round(xa + (xb - xa) * t),
+                (int) Math.round(za + (zb - za) * t), block);
         }
     }
 

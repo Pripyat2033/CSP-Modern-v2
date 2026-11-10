@@ -62,7 +62,9 @@ public final class SiteAllocator {
             }
         }
         throw new IllegalStateException(
-            "the territory has no free plot " + width + "x" + height + " m");
+            "the territory (" + (int) b.width() + " x " + (int) b.height()
+            + " m) has no free plot " + (int) width + " x " + (int) height
+            + " m - the enterprises need more ground than this");
     }
 
     private boolean overlapsTaken(Footprint c) {

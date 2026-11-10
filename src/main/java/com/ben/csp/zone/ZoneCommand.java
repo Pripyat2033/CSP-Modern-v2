@@ -70,7 +70,16 @@ public final class ZoneCommand {
                 + " m territory around you. Designate one with /directorate designate"
                 + " for the proper ground."), false);
         }
-        state.spawn(area);
+        try {
+            state.spawn(area);
+        } catch (IllegalStateException e) {
+            source.sendError(Text.literal("Could not stand the enterprises up: "
+                + e.getMessage()
+                + ". The ten enterprises need room for ten offices and their facilities - "
+                + "designate a larger prombaza, or run /zone spawn 120 to lay out ground "
+                + "around you."));
+            return 0;
+        }
         state.markDirty();
         GroundWorks.drawTerritory(world, state.territory());
         source.sendFeedback(() -> Text.literal(
