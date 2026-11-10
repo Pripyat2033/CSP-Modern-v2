@@ -58,6 +58,26 @@ renderers, screens, client keybinds). `src/aecs` is a separate source set (javap
 - `PersistentState`: when data "saves" but never round-trips, diff the writeNbt key
   type vs the fromNbt read type (KartografManager had write=Compound, read=String).
 
+## Site planning = Soviet genplan norms (do not invent figures)
+The prombaza is planned to **СНиП II-89-80\*** "Генеральные планы промышленных
+предприятий" — the norm a 1986 designer worked to. Package
+`com.ben.csp.zone.genplan`: `Zone.of(FacilityType)` divides the site by function
+(предзаводская / производственная / подсобная / складская, §3.8); `SiteNorms`
+quotes every figure with its clause (fire breaks табл. 1*: 6 m non-combustible,
+12 m storage; roads §3.47-3.48, 3.75 m a lane; rail §3.52, 3.75 m track spacing,
+6 m to a building; **minimum building density 50 %** for concrete/RC works, from
+the Приложение). `GenplanZones.layOut(boundary, roster)` packs lots by zone,
+deterministic; `SitePlan` is now a thin facade over it. When adding site
+planning, cite the clause in `SiteNorms` — do NOT invent distances.
+
+**Reading blocked Russian norms**: the norm hosts (docs.cntd, gostrf, meganorm,
+sniprf) are dead/blocked from the sandbox and searx/Qwant/Jina are CAPTCHA/401.
+The Wayback Machine works: fetch the archived copy with `id_` in the URL
+(`web.archive.org/web/<ts>id_/http://…`) and decode **cp1251**; it 429s if
+hammered, so one fetch per ~50 s. SNiP II-89-80 full text lives at
+`web.archive.org/web/20030506031443id_/http://www.vashdom.ru/snip/II-89-80/`.
+
 ## Session logs
-- `2026-11-09.md` — gap-fill: loaders, Kartograf NBT fix, missing assets, dead-code
-  removal, creative tab, full build + server verification.
+- `2026-11-09.md` — genplan by functional zone (СНиП II-89-80*), version reset
+  0.9.5→0.0.1, public download reissued; earlier: loaders, Kartograf NBT fix,
+  missing assets, dead-code removal, creative tab, full build + server verification.
