@@ -40,7 +40,8 @@ public final class ZoneTicker {
     public static void drawZone(ServerWorld world, ZoneEnterprises zone) {
         for (EnterpriseLifecycle l : zone.lifecycles()) {
             if (l.hqPlot() != null) {
-                GroundWorks.drawHq(world, l.hqPlot(), l.setup().hqProgress());
+                GroundWorks.drawHq(world, l.hqPlot(), l.setup().hqProgress(),
+                    l.enterprise().name());
             }
             for (ConstructionSite s : l.sites()) {
                 GroundWorks.drawSite(world, s);

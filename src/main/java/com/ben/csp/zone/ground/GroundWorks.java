@@ -30,7 +30,7 @@ public final class GroundWorks {
      * at each corner, so a player sees a boundary and not a wall.
      */
     public static void drawTerritory(ServerWorld world, PrombazaTerritory territory) {
-        dashedOutline(world, territory.boundary(), Blocks.WHITE_CONCRETE, 2);
+        dashedOutlineTop(world, territory.boundary(), Blocks.WHITE_CARPET, 2);
         for (Footprint r : territory.reserved()) {
             drawOutline(world, r, Blocks.LIGHT_GRAY_CONCRETE);
         }
@@ -48,7 +48,7 @@ public final class GroundWorks {
 
     /** Remove the boundary and reserved marks, leaving the ground as it was. */
     public static void clearTerritory(ServerWorld world, PrombazaTerritory territory) {
-        clearDashedOutline(world, territory.boundary(), Blocks.WHITE_CONCRETE, 2);
+        clearDashedOutlineTop(world, territory.boundary(), Blocks.WHITE_CARPET, 2);
         for (Footprint r : territory.reserved()) {
             clearOutline(world, r, Blocks.LIGHT_GRAY_CONCRETE);
         }
@@ -128,7 +128,7 @@ public final class GroundWorks {
 
     /** Draw an enterprise's headquarters by how far it has got, so the first thing
      *  the player sees is the offices going up, not empty ground. */
-    public static void drawHq(ServerWorld world, Footprint plot, int percent) {
+    public static void drawHq(ServerWorld world, Footprint plot, int percent, String name) {
         if (percent <= 0) {
             return;
         }
@@ -142,6 +142,8 @@ public final class GroundWorks {
         } else {
             fillFlat(world, plot, Blocks.LIGHT_GRAY_CONCRETE, 0);
             raise(world, plot, Blocks.WHITE_CONCRETE, BUILDING_HEIGHT);
+            placeSign(world, (int) Math.floor(plot.minX()), (int) Math.floor(plot.minZ()),
+                name, "HEAD OFFICE");
         }
     }
 
@@ -238,6 +240,74 @@ public final class GroundWorks {
                 clearIf(world, x0, z, block);
                 clearIf(world, x1, z, block);
             }
+        }
+    }
+
+    private static void dashedOutlineTop(ServerWorld world, Footprint plot,
+                                         net.minecraft.block.Block block, int period) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            if ((x - x0) % period == 0) {
+                set(world, x, z0, block, 1);
+                set(world, x, z1, block, 1);
+            }
+        }
+        for (int z = z0; z <= z1; z++) {
+            if ((z - z0) % period == 0) {
+                set(world, x0, z, block, 1);
+                set(world, x1, z, block, 1);
+            }
+        }
+    }
+
+    private static void clearDashedOutlineTop(ServerWorld world, Footprint plot,
+                                              net.minecraft.block.Block block, int period) {
+        int x0 = (int) Math.floor(plot.minX());
+        int x1 = (int) Math.floor(plot.maxX());
+        int z0 = (int) Math.floor(plot.minZ());
+        int z1 = (int) Math.floor(plot.maxZ());
+        for (int x = x0; x <= x1; x++) {
+            if ((x - x0) % period == 0) {
+                clearIfTop(world, x, z0, block);
+                clearIfTop(world, x, z1, block);
+            }
+        }
+        for (int z = z0; z <= z1; z++) {
+            if ((z - z0) % period == 0) {
+                clearIfTop(world, x0, z, block);
+                clearIfTop(world, x1, z, block);
+            }
+        }
+    }
+
+    private static void clearIfTop(ServerWorld world, int x, int z, net.minecraft.block.Block block) {
+        if (!world.getChunkManager().isChunkLoaded(x >> 4, z >> 4)) {
+            return;
+        }
+        int ground = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, x, z);
+        BlockPos pos = new BlockPos(x, ground + 1, z);
+        if (world.getBlockState(pos).getBlock() == block) {
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+        }
+    }
+
+    /** A sign on a post, so a building can be named. */
+    public static void placeSign(ServerWorld world, int x, int z, String... lines) {
+        if (!world.getChunkManager().isChunkLoaded(x >> 4, z >> 4)) {
+            return;
+        }
+        int ground = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, x, z);
+        BlockPos pos = new BlockPos(x, ground + 1, z);
+        world.setBlockState(pos, Blocks.OAK_SIGN.getDefaultState(), 3);
+        if (world.getBlockEntity(pos) instanceof net.minecraft.block.entity.SignBlockEntity sign) {
+            net.minecraft.block.entity.SignText text = sign.getFrontText();
+            for (int i = 0; i < lines.length && i < 4; i++) {
+                text = text.withMessage(i, net.minecraft.text.Text.literal(lines[i]));
+            }
+            sign.setText(text, true);
         }
     }
 
