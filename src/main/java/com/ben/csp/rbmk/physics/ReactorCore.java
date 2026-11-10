@@ -45,6 +45,11 @@ public final class ReactorCore {
     private static final double ROD_GAIN = 0.035;
     /** Reactivity demanded per unit power error (the operator's authority). */
     private static final double POWER_GAIN = 0.01;
+    /** Integral gain: the АР trims out the steady-state power offset. */
+    private static final double INTEGRAL_GAIN = 0.002;
+    /** Anti-windup clamp on the integral term. */
+    private static final double INTEGRAL_LIMIT = 0.4;
+    private double rodIntegral = 0;
 
     /** Rod drive speed in units of insertion per second: 0.4 m/s over 7 m. */
     private static final double ROD_RATE = RbmkGeometry.ROD_SPEED_M_PER_S / RbmkGeometry.CORE_HEIGHT_M;
@@ -136,7 +141,11 @@ public final class ReactorCore {
     /** Advance the coupled core by dt seconds. */
     public void step(double dt) {
         if (autoRod) {
-            double demand = reactivity() - POWER_GAIN * (powerSetpoint - power);
+            double error = powerSetpoint - power;
+            // integral trims the offset: power below setpoint drives rods out
+            rodIntegral -= INTEGRAL_GAIN * error * dt;
+            rodIntegral = Math.max(-INTEGRAL_LIMIT, Math.min(INTEGRAL_LIMIT, rodIntegral));
+            double demand = reactivity() - POWER_GAIN * error + rodIntegral;
             insertionTarget = clamp01(insertion + demand / ROD_GAIN);
         }
         moveRod(dt);

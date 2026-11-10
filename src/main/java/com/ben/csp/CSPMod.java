@@ -84,6 +84,9 @@ public class CSPMod implements ModInitializer {
         ServerTickEvents.START_SERVER_TICK.register(PerformanceProbe::onTickStart);
         ServerTickEvents.END_SERVER_TICK.register(PerformanceProbe::onTickEnd);
 
+        // The reactor plant runs live on the server clock.
+        com.ben.csp.rbmk.plant.PlantTicker.register();
+
         LOGGER.info("CSP-Modern 0.0.1 loaded. Commands: /csp help, /prombaza, "
             + "/directorate, /zone.");
     }

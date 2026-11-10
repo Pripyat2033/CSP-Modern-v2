@@ -2,6 +2,11 @@ package com.ben.csp.rbmk;
 
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.perf.PerformanceProbe;
+import com.ben.csp.rbmk.plant.Condenser;
+import com.ben.csp.rbmk.plant.PlantPhysics;
+import com.ben.csp.rbmk.plant.PlantSystem;
+import com.ben.csp.rbmk.plant.PlantTicker;
+import com.ben.csp.rbmk.plant.SteamSeparator;
 import com.ben.csp.rbmk.physics.ReactorCore;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
 import com.mojang.brigadier.CommandDispatcher;
@@ -44,7 +49,11 @@ public final class RbmkTestCommand {
         dispatcher.register(CommandManager.literal("rbmk")
             .then(CommandManager.literal("test").executes(RbmkTestCommand::test))
             .then(CommandManager.literal("build").executes(RbmkTestCommand::build))
-            .then(CommandManager.literal("status").executes(RbmkTestCommand::status)));
+            .then(CommandManager.literal("status").executes(RbmkTestCommand::status))
+            .then(CommandManager.literal("plant")
+                .then(CommandManager.literal("start").executes(RbmkTestCommand::plantStart))
+                .then(CommandManager.literal("scram").executes(RbmkTestCommand::plantScram))
+                .then(CommandManager.literal("status").executes(RbmkTestCommand::plantStatus))));
     }
 
     private static int test(CommandContext<ServerCommandSource> ctx) {
@@ -176,6 +185,77 @@ public final class RbmkTestCommand {
             graphiteBlocks, fuelBlocks, rodBlocks, ms);
         return 1;
     }
+    private static int plantStart(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        PlantTicker.startPlant();
+        feedback(s, "RBMK-1000 plant started: rods on auto-regulator, plant running live",
+            Formatting.GOLD);
+        feedback(s, "  watch it hold — or fail to — with /rbmk plant status", Formatting.GRAY);
+        return 1;
+    }
+
+    private static int plantScram(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        if (PlantTicker.plant() == null) {
+            feedback(s, "No plant running — /rbmk plant start", Formatting.GRAY);
+            return 0;
+        }
+        PlantTicker.plant().scram("operator AZ-5");
+        feedback(s, "AZ-5: scram. Rods in, pumps tripping, ECCS actuated.", Formatting.RED);
+        return 1;
+    }
+
+    private static int plantStatus(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        PlantSystem p = PlantTicker.plant();
+        if (p == null) {
+            feedback(s, "No plant running — /rbmk plant start", Formatting.GRAY);
+            return 0;
+        }
+        double thermalMw = PlantPhysics.P_THERMAL_W * p.core().power() / 1e6;
+        double electricMw = p.electricalOutputW() / 1e6;
+        double flowM3h = 0;
+        for (var pump : p.pumps()) {
+            flowM3h += pump.flowM3s() * 3600;
+        }
+        double minLevel = 1, maxLevel = 0;
+        for (SteamSeparator d : p.separators()) {
+            minLevel = Math.min(minLevel, d.level());
+            maxLevel = Math.max(maxLevel, d.level());
+        }
+        double rejectedMw = 0;
+        for (Condenser c : p.condensers()) {
+            rejectedMw += c.heatRejectedW() / 1e6;
+        }
+        feedback(s, String.format("RBMK-1000 plant, t = %.1f s%s", p.timeS(),
+            p.scrammed() ? "  [SCRAM: " + p.tripReason() + "]" : ""),
+            p.scrammed() ? Formatting.RED : Formatting.GOLD);
+        feedback(s, String.format("  core:      power %.3f  (%.0f MWt), rods %.2f, k-eff state",
+            p.core().power(), thermalMw, p.core().insertion()), Formatting.WHITE);
+        feedback(s, String.format("  pumps:     %.0f m3/h total, %d running",
+            flowM3h, runningPumps(p)), Formatting.WHITE);
+        feedback(s, String.format("  drums:     level %.2f-%.2f, %.1f MPa",
+            minLevel, maxLevel, p.separators()[0].pressurePa() / 1e6), Formatting.WHITE);
+        feedback(s, String.format("  turbines:  %.0f MWe (%.0f rpm each)",
+            electricMw, p.turbines()[0].rpm()), Formatting.WHITE);
+        feedback(s, String.format("  condensers: rejecting %.0f MW, cooling water out %.1f C",
+            rejectedMw, p.condensers()[0].coolingWaterOutC()), Formatting.WHITE);
+        feedback(s, String.format("  feedwater: %.0f kg/s at %.0f C, deaerator %.2f",
+            p.feedwater().flowKgS(), p.feedwater().temperatureC(),
+            p.feedwater().deaeratorLevel()), Formatting.WHITE);
+        return 1;
+    }
+
+    private static int runningPumps(PlantSystem p) {
+        int n = 0;
+        for (var pump : p.pumps()) {
+            if (pump.running()) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     private static String verdict() {
         if (lastMspt < 5) {
             return "  verdict: comfortable — the core is a small slice of a tick";
