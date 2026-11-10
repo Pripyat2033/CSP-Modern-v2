@@ -58,5 +58,50 @@ public final class RbmkPhysicsReport {
                 System.out.printf("  %5d    %8.3f%n", h, xe.xenon() / eq);
             }
         }
+
+        spatial();
+    }
+
+    private static void spatial() {
+        System.out.println();
+        System.out.println("Spatial two-group diffusion (k_eff of the lattice):");
+        DiffusionSolver fresh = new DiffusionSolver();
+        fresh.setCoreState(0.0, 300.0);
+        fresh.solve(2000, 1e-7);
+        System.out.printf("  fresh core, no void          : k_eff = %.5f%n", fresh.keff());
+        DiffusionSolver voided = new DiffusionSolver();
+        voided.setCoreState(0.5, 300.0);
+        voided.solve(2000, 1e-7);
+        System.out.printf("  with 50%% void (positive coeff): k_eff = %.5f  (%+.5f)%n",
+            voided.keff(), voided.keff() - fresh.keff());
+        DiffusionSolver rods = new DiffusionSolver();
+        rods.setCoreState(0.0, 300.0);
+        for (int x = -rods.extent(); x <= rods.extent(); x++) {
+            for (int z = -rods.extent(); z <= rods.extent(); z++) {
+                if (rods.isControl(x, z)) {
+                    rods.setCell(x, z, RbmkXsec.controlCell(RbmkXsec.B4C));
+                }
+            }
+        }
+        rods.solve(2000, 1e-7);
+        System.out.printf("  all control rods inserted    : k_eff = %.5f  (%+.5f)%n",
+            rods.keff(), rods.keff() - fresh.keff());
+
+        System.out.println();
+        System.out.println("Rod worth curve (axial flux shape, integral and differential):");
+        RodWorth centre = new RodWorth();
+        RodWorth bottom = RodWorth.bottomPeaked();
+        double[] ic = centre.integralCurve(10);
+        double[] id = bottom.integralCurve(10);
+        double[] dc = centre.differentialCurve(10);
+        double[] dd = bottom.differentialCurve(10);
+        System.out.println("  ins   W_centre   dW_centre    W_bottom   dW_bottom");
+        for (int i = 0; i <= 10; i++) {
+            double dC = i < 10 ? dc[i] : 0;
+            double dB = i < 10 ? dd[i] : 0;
+            System.out.printf("  %.1f   %+.5f   %+.5f     %+.5f   %+.5f%n",
+                i / 10.0, ic[i], dC, id[i], dB);
+        }
+        System.out.println("  (bottom-peaked = accident state: dW starts POSITIVE -> positive scram)");
     }
 }
