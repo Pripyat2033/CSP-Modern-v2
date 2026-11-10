@@ -1,9 +1,11 @@
 package com.ben.csp.command;
 
+import com.ben.csp.telephony.TelephonyState;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -18,7 +20,8 @@ public final class CspCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("csp")
             .executes(CspCommand::help)
-            .then(CommandManager.literal("help").executes(CspCommand::help)));
+            .then(CommandManager.literal("help").executes(CspCommand::help))
+            .then(CommandManager.literal("directory").executes(CspCommand::directory)));
     }
 
     private static int help(CommandContext<ServerCommandSource> ctx) {
@@ -32,6 +35,9 @@ public final class CspCommand {
         line(s, "/prombaza list", "list the designated territories and their ids");
         line(s, "/prombaza designate <id> [name]", "submit a territory request to the Director");
         line(s, "/prombaza undo <id>", "remove a territory and clear its ground marks");
+        blank(s);
+        header(s, "The коммутатор (the telephone exchange)");
+        line(s, "/csp directory", "list the telephone lines and the staff extensions");
         blank(s);
         header(s, "The Director's powers");
         line(s, "/directorate list", "the Director's in-tray");
@@ -47,6 +53,26 @@ public final class CspCommand {
         blank(s);
         s.sendFeedback(() -> Text.literal("Typical first run: /prombaza pos1, /prombaza pos2, "
             + "/directorate designate pb1, /zone spawn, then /zone status.").formatted(Formatting.GRAY), false);
+        return 1;
+    }
+
+    private static int directory(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        TelephonyState tel = TelephonyState.get(s.getServer());
+        header(s, "Коммутатор — directory");
+        line(s, "0", "the operator");
+        for (int n : tel.registry().numbers()) {
+            BlockPos p = tel.registry().posOf(n);
+            line(s, String.valueOf(n), "vertushka at " + p.getX() + ", " + p.getY() + ", " + p.getZ());
+        }
+        if (tel.registry().extensions().isEmpty()) {
+            s.sendFeedback(() -> Text.literal("  (no staff extensions yet — greet a worker to give them one)")
+                .formatted(Formatting.GRAY), false);
+        } else {
+            for (int n : tel.registry().extensions()) {
+                line(s, String.valueOf(n), tel.workerNameAt(n));
+            }
+        }
         return 1;
     }
 

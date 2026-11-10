@@ -1,6 +1,8 @@
 package com.ben.csp.telephony;
 
+import com.ben.csp.entity.CspPersonEntity;
 import com.ben.csp.telephony.KommutatorExchange.Event;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -13,7 +15,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * The коммутатор as the world sees it: it owns the exchange and the directory of
@@ -27,6 +32,8 @@ public final class TelephonyState extends PersistentState {
 
     private final KommutatorExchange exchange = new KommutatorExchange();
     private final TelephonyRegistry registry = new TelephonyRegistry();
+    /** Last state seen for each staff extension, so a call ending can be noticed. */
+    private final Map<Integer, KommutatorExchange.State> previous = new HashMap<>();
 
     public KommutatorExchange exchange() {
         return exchange;
@@ -61,6 +68,50 @@ public final class TelephonyState extends PersistentState {
         }
     }
 
+    /** Give a worker an extension on first contact, and put it on the exchange. */
+    public int ensureWorker(UUID id, String name) {
+        Integer existing = registry.extensionFor(id);
+        if (existing != null) {
+            return existing;
+        }
+        int number = registry.assignWorker(id, name);
+        exchange.register(number, name);
+        markDirty();
+        return number;
+    }
+
+    public String workerNameAt(int number) {
+        UUID id = registry.workerAt(number);
+        return id == null ? "worker" : registry.workerName(id);
+    }
+
+    /** The worker standing on an extension, or null if they are not in the world. */
+    public CspPersonEntity workerAt(ServerWorld world, int number) {
+        UUID id = registry.workerAt(number);
+        if (id == null) {
+            return null;
+        }
+        Entity e = world.getEntity(id);
+        return e instanceof CspPersonEntity p ? p : null;
+    }
+
+    /** True if this worker is on the telephone right now. */
+    public boolean isOnCall(CspPersonEntity worker) {
+        Integer ext = registry.extensionFor(worker.getUuid());
+        if (ext == null) {
+            return false;
+        }
+        KommutatorExchange.Line l = exchange.line(ext);
+        return l != null && (l.state == KommutatorExchange.State.TALKING
+            || l.state == KommutatorExchange.State.RINGING);
+    }
+
+    /** The staff extension this player is speaking on, or -1. */
+    public int talkingExtensionFor(net.minecraft.entity.player.PlayerEntity player) {
+        int number = talkingLineFor(player);
+        return number >= 0 && registry.isExtension(number) ? number : -1;
+    }
+
     public int lineAt(BlockPos pos) {
         Integer n = registry.numberAt(pos);
         return n == null ? -1 : n;
@@ -82,7 +133,29 @@ public final class TelephonyState extends PersistentState {
         for (Event e : events) {
             announce(world, e);
         }
+        tickExtensions(world);
         markDirty();
+    }
+
+    /** A worker's extension rings and the worker answers; when the call ends it is noticed. */
+    private void tickExtensions(ServerWorld world) {
+        for (int number : registry.extensions()) {
+            KommutatorExchange.Line l = exchange.line(number);
+            if (l == null) {
+                continue;
+            }
+            if (l.state == KommutatorExchange.State.RINGING && !l.outgoing) {
+                int caller = l.peer;
+                exchange.answer(number);
+                ServerPlayerEntity p = playerAtLine(world, caller);
+                if (p != null) {
+                    p.sendMessage(Text.literal("Ext " + number + " (" + workerNameAt(number)
+                        + ") answers. Speak plainly; right-click to hang up.")
+                        .formatted(Formatting.GREEN), false);
+                }
+            }
+            previous.put(number, l.state);
+        }
     }
 
     private void announce(ServerWorld world, Event e) {
@@ -146,6 +219,9 @@ public final class TelephonyState extends PersistentState {
     /** The line number of the vertushka this player is holding a call on, or -1. */
     public int talkingLineFor(net.minecraft.entity.player.PlayerEntity player) {
         for (int number : registry.numbers()) {
+            if (registry.isExtension(number)) {
+                continue;
+            }
             BlockPos pos = registry.posOf(number);
             if (pos == null) {
                 continue;

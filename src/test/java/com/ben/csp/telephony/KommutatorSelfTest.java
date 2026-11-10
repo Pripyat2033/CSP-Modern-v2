@@ -21,6 +21,7 @@ public final class KommutatorSelfTest {
         operatorConnectsByHand();
         diallingReturn();
         ringGivesUp();
+        staffExtension();
 
         System.out.println(failures == 0
             ? "KommutatorSelfTest: " + checks + " checks passed"
@@ -129,6 +130,25 @@ public final class KommutatorSelfTest {
         eq("an unanswered line is released", true, gaveUp);
         eq("caller back on hook", State.ON_HOOK, x.line(101).state);
         eq("called line back on hook", State.ON_HOOK, x.line(102).state);
+    }
+
+    /** A worker's extension rings and the worker answers; the caller is then connected. */
+    private static void staffExtension() {
+        KommutatorExchange x = exchange();
+        x.register(201, "worker");
+        x.offHook(101);
+        for (char c : "201".toCharArray()) {
+            x.dial(101, c);
+        }
+        settle(x);
+        eq("the worker extension rings", State.RINGING, x.line(201).state);
+        eq("the extension is not the caller", false, x.line(201).outgoing);
+        eq("the caller is ringing", State.RINGING, x.line(101).state);
+        x.answer(201);            // the worker lifts the handset
+        eq("worker and caller are connected", State.TALKING, x.line(201).state);
+        eq("the caller is connected", State.TALKING, x.line(101).state);
+        x.hangUp(101);
+        eq("hanging up frees the extension", State.ON_HOOK, x.line(201).state);
     }
 
     private static void eq(String what, Object want, Object got) {

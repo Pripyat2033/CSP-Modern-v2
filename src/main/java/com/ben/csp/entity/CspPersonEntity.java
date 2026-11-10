@@ -1,6 +1,7 @@
 package com.ben.csp.entity;
 
 import com.ben.csp.entity.ai.Dosye;
+import com.ben.csp.telephony.TelephonyState;
 import com.ben.csp.entity.ai.DosyeNbt;
 import com.ben.csp.entity.ai.DynamicPersonalityEngine;
 import com.ben.csp.entity.ai.Garrisonable;
@@ -19,7 +20,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +49,7 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
     private int talkTargetId = -1;
     private int followTicks;
     private int followTargetId = -1;
+    private int shownExtension = -1;
 
     protected CspPersonEntity(EntityType<? extends CspPersonEntity> entityType, World world) {
         super(entityType, world);
@@ -62,6 +66,13 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
         }
         // While being spoken to, the worker stops and turns to face the player,
         // so a conversation reads as one instead of a chase.
+        if (!getWorld().isClient()) {
+            int ext = ensureExtension();
+            if (ext != shownExtension) {
+                shownExtension = ext;
+                applyDosyeName();
+            }
+        }
         if (!getWorld().isClient() && followTicks > 0) {
             followTicks--;
         }
@@ -114,6 +125,12 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         if (!getWorld().isClient() && hand == Hand.MAIN_HAND) {
+            if (getWorld() instanceof ServerWorld sw
+                && TelephonyState.get(sw.getServer()).isOnCall(this)) {
+                player.sendMessage(Text.literal("On the telephone — wait until they are free.")
+                    .formatted(Formatting.GRAY), true);
+                return ActionResult.SUCCESS;
+            }
             WorkerChat.speak(this, player);
             // Stop and turn to the speaker, and hold it for a few seconds.
             this.talkTicks = 120;
@@ -126,9 +143,28 @@ public abstract class CspPersonEntity extends PathAwareEntity implements Garriso
 
     private void applyDosyeName() {
         if (dosye != null) {
-            setCustomName(Text.literal(dosye.getFullName() + " " + roleTag(getRole())));
+            String name = dosye.getFullName() + " " + roleTag(getRole());
+            if (shownExtension > 0) {
+                name = name + " (ext " + shownExtension + ")";
+            }
+            setCustomName(Text.literal(name));
             setCustomNameVisible(true);
         }
+    }
+
+    /** Take a staff extension on first contact, so the Director can telephone them. */
+    private int ensureExtension() {
+        if (getWorld() instanceof ServerWorld sw) {
+            TelephonyState tel = TelephonyState.get(sw.getServer());
+            String name = dosye != null ? dosye.getFullName() : "worker";
+            return tel.ensureWorker(getUuid(), name);
+        }
+        return -1;
+    }
+
+    /** This worker's telephone extension, or -1 if none yet. */
+    public int getExtension() {
+        return shownExtension;
     }
 
     /** A short, plain tag for the job, shown on the nametag. */

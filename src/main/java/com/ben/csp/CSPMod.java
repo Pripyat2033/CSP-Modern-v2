@@ -79,7 +79,7 @@ public class CSPMod implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(ZoneTicker::tick);
         ServerTickEvents.END_SERVER_TICK.register(TelephonyState::tick);
 
-        LOGGER.info("CSP-Modern 0.6.0 loaded. Commands: /csp help, /prombaza, "
+        LOGGER.info("CSP-Modern 0.7.0 loaded. Commands: /csp help, /prombaza, "
             + "/directorate, /zone.");
     }
 }
