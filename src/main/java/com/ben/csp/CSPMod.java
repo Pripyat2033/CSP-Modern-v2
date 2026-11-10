@@ -82,7 +82,7 @@ public class CSPMod implements ModInitializer {
         ServerTickEvents.START_SERVER_TICK.register(PerformanceProbe::onTickStart);
         ServerTickEvents.END_SERVER_TICK.register(PerformanceProbe::onTickEnd);
 
-        LOGGER.info("CSP-Modern 0.8.0 loaded. Commands: /csp help, /prombaza, "
+        LOGGER.info("CSP-Modern 0.8.1 loaded. Commands: /csp help, /prombaza, "
             + "/directorate, /zone.");
     }
 }

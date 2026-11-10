@@ -33,7 +33,10 @@ public final class ZoneCommand {
                 .then(CommandManager.argument("radius", IntegerArgumentType.integer(16, 512))
                     .executes(ctx -> spawn(ctx, IntegerArgumentType.getInteger(ctx, "radius")))))
             .then(CommandManager.literal("status").executes(ZoneCommand::status))
-            .then(CommandManager.literal("muster").executes(ZoneCommand::muster))
+            .then(CommandManager.literal("muster")
+                .executes(ctx -> muster(ctx, -1))
+                .then(CommandManager.argument("count", IntegerArgumentType.integer(1, 2000))
+                    .executes(ctx -> muster(ctx, IntegerArgumentType.getInteger(ctx, "count")))))
             .then(CommandManager.literal("demob").executes(ZoneCommand::demob))
             .then(CommandManager.literal("perf").executes(ZoneCommand::perf))
             .then(CommandManager.literal("draw").executes(ZoneCommand::draw))
@@ -85,7 +88,7 @@ public final class ZoneCommand {
     }
 
     /** Put the whole workforce on the ground and report the count. */
-    private static int muster(CommandContext<ServerCommandSource> ctx) {
+    private static int muster(CommandContext<ServerCommandSource> ctx, int count) {
         ServerCommandSource source = ctx.getSource();
         ServerWorld world = source.getWorld();
         ZoneState state = ZoneState.get(source.getServer());
@@ -96,10 +99,10 @@ public final class ZoneCommand {
         BlockPos at = BlockPos.ofFloored(source.getPosition());
         PerformanceProbe.resetPeak();
         long started = System.nanoTime();
-        int placed = Muster.everyone(world, state.zone(), at);
+        int placed = Muster.everyone(world, state.zone(), at, count);
         long ms = (System.nanoTime() - started) / 1_000_000L;
         source.sendFeedback(() -> Text.literal("Muster: " + placed + " workers on the ground in "
-            + ms + " ms. Watch the tick with /zone perf."), false);
+            + ms + " ms. " + Muster.count(world) + " now standing. Watch the tick with /zone perf."), false);
         return 1;
     }
 

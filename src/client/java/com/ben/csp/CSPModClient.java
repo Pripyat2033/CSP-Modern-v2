@@ -24,6 +24,7 @@ public class CSPModClient implements ClientModInitializer {
     @SuppressWarnings("deprecation")
     public void onInitializeClient() {
         // Entity Renderers
+        EntityRendererRegistry.register(ModEntities.TOLKACH, TolkachEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.BARGE, BargeEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.BRIGADIER, BrigadierEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.GEODEZIST, GeodezistEntityRenderer::new);
@@ -39,6 +40,7 @@ public class CSPModClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.KOMMUTATOR, KommutatorOperatorEntityRenderer::new);
 
         // Entity Model Layers - This connects the model definition to the renderer.
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.TOLKACH, TolkachEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.GEODEZIST, GeodezistEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.BARGE, BargeEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.BRIGADIER, BrigadierEntityModel::getTexturedModelData);
@@ -59,6 +61,7 @@ public class CSPModClient implements ClientModInitializer {
         registerBlockEntityRenderers();
         
         ModMessages.registerS2CPackets();
+        com.ben.csp.client.EntityRendererGuard.report();
     }
 
     private void registerBlockEntityRenderers() {

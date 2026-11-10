@@ -25,6 +25,15 @@ public final class Muster {
 
     /** Spawn the whole workforce around each enterprise; returns how many were placed. */
     public static int everyone(ServerWorld world, ZoneEnterprises zone, BlockPos musterPoint) {
+        return everyone(world, zone, musterPoint, -1);
+    }
+
+    /**
+     * Spawn up to {@code limit} workers (all of them when {@code limit} is negative), so
+     * the crowd can be brought on a little at a time and the tick watched as it grows.
+     */
+    public static int everyone(ServerWorld world, ZoneEnterprises zone, BlockPos musterPoint,
+                               int limit) {
         int placed = 0;
         int index = 0;
         for (EnterpriseLifecycle l : zone.lifecycles()) {
@@ -33,6 +42,9 @@ public final class Muster {
             for (Facility f : e.facilities()) {
                 BlockPos at = f.hasFootprint() ? centreOfFootprint(f.footprint()) : centre;
                 for (int i = 0; i < f.requiredStaff(); i++) {
+                    if (limit >= 0 && placed >= limit) {
+                        return placed;
+                    }
                     double angle = index * 2.39996;              // golden angle
                     double radius = 3.0 + Math.sqrt(index) * 1.4;
                     int x = at.getX() + (int) Math.round(Math.cos(angle) * radius);
