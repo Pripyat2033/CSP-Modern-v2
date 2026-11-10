@@ -9,110 +9,114 @@
   "elements": [
     {
       "from": [
-        3,
+        2,
         0,
         4
       ],
       "to": [
+        14,
+        7,
+        13
+      ],
+      "faces": {
+        "down": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "from": [
+        4.0,
+        0.5,
+        3.4
+      ],
+      "to": [
+        12.0,
+        6.5,
+        3.9
+      ],
+      "faces": {
+        "down": {
+          "texture": "#dial",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#dial",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#dial",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#dial",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#dial",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#dial",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        7,
+        5
+      ],
+      "to": [
         13,
-        3,
-        12
-      ],
-      "faces": {
-        "down": {
-          "texture": "#body"
-        },
-        "up": {
-          "texture": "#body"
-        },
-        "north": {
-          "texture": "#body"
-        },
-        "south": {
-          "texture": "#body"
-        },
-        "west": {
-          "texture": "#body"
-        },
-        "east": {
-          "texture": "#body"
-        }
-      }
-    },
-    {
-      "from": [
-        5,
-        0.4,
-        3.55
-      ],
-      "to": [
-        11,
-        2.6,
-        4.0
-      ],
-      "faces": {
-        "down": {
-          "texture": "#dial"
-        },
-        "up": {
-          "texture": "#dial"
-        },
-        "north": {
-          "texture": "#dial"
-        },
-        "south": {
-          "texture": "#dial"
-        },
-        "west": {
-          "texture": "#dial"
-        },
-        "east": {
-          "texture": "#dial"
-        }
-      }
-    },
-    {
-      "from": [
-        3.5,
-        3,
-        4.5
-      ],
-      "to": [
-        5,
-        3.4,
-        11.5
-      ],
-      "faces": {
-        "down": {
-          "texture": "#handset"
-        },
-        "up": {
-          "texture": "#handset"
-        },
-        "north": {
-          "texture": "#handset"
-        },
-        "south": {
-          "texture": "#handset"
-        },
-        "west": {
-          "texture": "#handset"
-        },
-        "east": {
-          "texture": "#handset"
-        }
-      }
-    },
-    {
-      "from": [
-        11,
-        3,
-        4.5
-      ],
-      "to": [
-        12.5,
-        3.4,
-        11.5
+        7.7,
+        11
       ],
       "faces": {
         "down": {
@@ -138,45 +142,13 @@
     {
       "from": [
         2.5,
-        3.4,
-        6
-      ],
-      "to": [
-        13.5,
-        4.4,
-        9
-      ],
-      "faces": {
-        "down": {
-          "texture": "#handset"
-        },
-        "up": {
-          "texture": "#handset"
-        },
-        "north": {
-          "texture": "#handset"
-        },
-        "south": {
-          "texture": "#handset"
-        },
-        "west": {
-          "texture": "#handset"
-        },
-        "east": {
-          "texture": "#handset"
-        }
-      }
-    },
-    {
-      "from": [
-        2.5,
-        3.4,
-        4.5
+        7,
+        5
       ],
       "to": [
         4.5,
-        5.4,
-        10.5
+        8.7,
+        11
       ],
       "faces": {
         "down": {
@@ -202,13 +174,13 @@
     {
       "from": [
         11.5,
-        3.4,
-        4.5
+        7,
+        5
       ],
       "to": [
         13.5,
-        5.4,
-        10.5
+        8.7,
+        11
       ],
       "faces": {
         "down": {

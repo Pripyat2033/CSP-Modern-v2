@@ -87,23 +87,32 @@ def tex_vertushka_handset():
 
 
 def tex_vertushka_dial(turn):
-    """Cream rotary dial; the finger holes are rotated by `turn` steps (36 deg each)."""
-    px = canvas((108, 30, 30, 255))
+    """A rotary dial that reads as one: a cream disc with ten large dark finger holes,
+    rotated by `turn` steps (36 deg each) so the holes move as the dial is used. The
+    corners are transparent, so on the block the disc reads as round, not square."""
+    px = canvas((0, 0, 0, 0))
     cx = cy = 7.5
     for y in range(H):
         for x in range(W):
-            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
-            if d <= 7.2:
-                px[y][x] = (214, 208, 190, 255)
-            if d <= 6.6:
-                px[y][x] = (230, 226, 210, 255)
+            d = math.hypot(x - cx, y - cy)
+            if d <= 7.7:
+                px[y][x] = (46, 46, 50, 255)          # dark rim
+            if d <= 7.0:
+                px[y][x] = (204, 198, 182, 255)       # cream dial face
+            if d <= 6.5:
+                px[y][x] = (224, 218, 202, 255)
     for i in range(10):
         a = math.radians(i * 36 + 18 + turn * 36)
-        hx = int(round(cx + 4.3 * math.cos(a)))
-        hy = int(round(cy + 4.3 * math.sin(a)))
-        for dx, dy in ((0, 0), (1, 0), (0, 1)):
-            dot(px, hx + dx, hy + dy, (30, 30, 32, 255))
-    rect(px, 7, 7, 8, 8, (60, 30, 30, 255))
+        hx = cx + 5.0 * math.cos(a)
+        hy = cy + 5.0 * math.sin(a)
+        for y in range(H):
+            for x in range(W):
+                if math.hypot(x - hx, y - hy) <= 1.15:
+                    px[y][x] = (24, 24, 28, 255)      # the finger hole
+    for y in range(H):
+        for x in range(W):
+            if math.hypot(x - cx, y - cy) <= 1.0:
+                px[y][x] = (40, 40, 44, 255)          # centre / finger stop
     return px
 
 
@@ -151,8 +160,14 @@ def tex_genplan_board():
 FACES = ("down", "up", "north", "south", "west", "east")
 
 
-def box(f, t, tex):
-    return {"from": f, "to": t, "faces": {face: {"texture": tex} for face in FACES}}
+def box(f, t, tex, uv=None):
+    faces = {}
+    for face in FACES:
+        fdef = {"texture": tex}
+        if uv is not None:
+            fdef["uv"] = uv
+        faces[face] = fdef
+    return {"from": f, "to": t, "faces": faces}
 
 
 def emit_model(name, textures, elements):
@@ -162,15 +177,12 @@ def emit_model(name, textures, elements):
 
 
 def vertushka_elements(dial_tex):
-    t = "csp-modern:block/"
     return [
-        box([3, 0, 4], [13, 3, 12], "#body"),
-        box([5, 0.4, 3.55], [11, 2.6, 4.0], "#dial"),
-        box([3.5, 3, 4.5], [5, 3.4, 11.5], "#handset"),
-        box([11, 3, 4.5], [12.5, 3.4, 11.5], "#handset"),
-        box([2.5, 3.4, 6], [13.5, 4.4, 9], "#handset"),
-        box([2.5, 3.4, 4.5], [4.5, 5.4, 10.5], "#handset"),
-        box([11.5, 3.4, 4.5], [13.5, 5.4, 10.5], "#handset"),
+        box([2, 0, 4], [14, 7, 13], "#body"),             # the bakelite body
+        box([4.0, 0.5, 3.4], [12.0, 6.5, 3.9], "#dial", uv=[0, 0, 16, 16]),  # the round dial, whole disc mapped
+        box([3, 7, 5], [13, 7.7, 11], "#handset"),        # the handset, resting on top
+        box([2.5, 7, 5], [4.5, 8.7, 11], "#handset"),
+        box([11.5, 7, 5], [13.5, 8.7, 11], "#handset"),
     ]
 
 

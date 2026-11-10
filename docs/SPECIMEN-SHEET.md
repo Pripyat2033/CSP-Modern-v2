@@ -46,6 +46,17 @@ not hundreds of meshes.
 > Would a real operator find anything here that was not there, or miss anything that was?
 > **Invented → fail. Missing → fail. Otherwise → pass.**
 
+## The MAKET is not shippable (Director's ruling, OPB-82)
+
+The MAKET is a demonstration of the *method* only. It must **never** be shipped or used as
+a control panel, because it does not comply with the mandated Soviet regulations — in
+particular **OPB-82** (the General Regulations for Nuclear Power Plant Safety) and the
+Technical and General Regulations they belong to. A control panel that ignores the
+mandated regulations would be a serious fault, and the Director is right to refuse it.
+
+The method stands; the MAKET does not. Any real panel must be built to OPB-82 and the
+plant's own design documentation, from references, and checked against them.
+
 ## The MAKET
 
 `docs/maket-panel.png` (also at the download page) is a MAKET — a demonstration of the

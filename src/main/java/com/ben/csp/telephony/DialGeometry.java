@@ -19,7 +19,7 @@ public final class DialGeometry {
     private DialGeometry() {}
 
     private static final double CX = 0.5;
-    private static final double CY = 0.3;
+    private static final double CY = 0.78;
     private static final double MIN_RADIUS = 0.06;
 
     /** The digit under a click inside the block, or -1 if it is too near the centre. */
@@ -50,6 +50,6 @@ public final class DialGeometry {
     /** The centre of the hole for a digit, on the face, for tests and the renderer. */
     public static double[] holeCentre(int digit) {
         double angle = Math.toRadians(90.0 - digit * 36.0);
-        return new double[]{CX + 0.2 * Math.cos(angle), CY + 0.2 * Math.sin(angle)};
+        return new double[]{CX + 0.31 * Math.cos(angle), CY + 0.31 * Math.sin(angle)};
     }
 }

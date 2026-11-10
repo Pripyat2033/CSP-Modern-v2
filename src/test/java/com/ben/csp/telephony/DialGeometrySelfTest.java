@@ -18,7 +18,7 @@ public final class DialGeometrySelfTest {
             }
         }
         check("a click at the centre is ignored", -1,
-            DialGeometry.digitFor(Face.NORTH, 0.5, 0.7, 0.02));
+            DialGeometry.digitFor(Face.NORTH, 0.5, 0.22, 0.02));
 
         System.out.println(failures == 0
             ? "DialGeometrySelfTest: " + checks + " checks passed"

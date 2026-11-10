@@ -44,7 +44,7 @@ public class VertushkaBlock extends HorizontalFacingBlock {
     /** The last dialled digit, 0-9, shown on the dial. */
     public static final IntProperty DIAL = IntProperty.of("dial", 0, 9);
 
-    private static final VoxelShape SHAPE = Block.createCuboidShape(3, 0, 4, 13, 5.5, 12);
+    private static final VoxelShape SHAPE = Block.createCuboidShape(2, 0, 3.4, 14, 8.7, 13);
 
     public static final VertushkaBlock INSTANCE = new VertushkaBlock();
 
@@ -60,6 +60,11 @@ public class VertushkaBlock extends HorizontalFacingBlock {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext ctx) {
+        return SHAPE;
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext ctx) {
         return SHAPE;
     }
 
