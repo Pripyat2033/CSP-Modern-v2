@@ -122,3 +122,20 @@ THE REAL COST IS THE ONE-TIME CONSTRUCTION BURST: 4.4M blocks in one command =
 3.7 s hitch. That is what the build gate + Stroiteli + the work clock exist to
 meter. NEVER judge capacity by a monolithic build command. Untested: real client
 rendering (Ben's GPU), real chunk gen, 32x full plants. Tool: /rbmk stress <n>.
+
+## CONSTRUCTION IS METERED NOW; CLIENT TEST KIT EXISTS (2026-11-09)
+
+The build burst is fixed: `rbmk/ConstructionJob` (cursor-based plans) +
+`rbmk/ConstructionScheduler` drain the queue at 3000 blocks/tick with auto
+back-off above 35 ms MSPT. `/rbmk build` and `/rbmk plant build` ENQUEUE;
+`... immediate` keeps the one-shot path for burst measurement. Verified: 262,368
+blocks over ~4 s, ZERO hitch (the old one-shot was a 3.7 s hitch). `/rbmk stress
+<n> plant` = full plants: 16 plants (4.2M blocks) live = 0.16 ms/tick sim.
+
+Client test kit for Ben (he must run it - the client FPS is the one number the
+sandbox cannot get): flat world "Energoblok-Test" with ONE Energoblok built
+metered + running, glass viewing platform, spawn (0,70,145). `tools/
+make_energoblok_kit.py` -> `/workspace/serve_energoblok/Energoblok-Test-Kit.zip`
+(4 MB: world + mods[csp-modern, fabric-api] + README), served on 12001. Verified
+the packaged world loads clean and runs. Flat-world note: 1.20.1 layers start at
+y=-64, surface at y=0; build at y=1.
