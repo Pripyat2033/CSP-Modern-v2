@@ -297,9 +297,42 @@ TEXTURES = {
     "water_tank": gen_water_tank,
 }
 
+
+def gen_controller(base):
+    """A machine controller: a control panel with indicator lamps and vents, so
+    it reads as the machine's brain, not just another casing block."""
+    px = new(shade(base, 0.45))
+    rect(px, 1, 1, 14, 14, shade(base, 0.9))
+    rect(px, 2, 2, 13, 6, shade(base, 1.15))               # instrument panel
+    put(px, 3, 4, (90, 240, 120, 255))                     # running
+    put(px, 5, 4, (250, 210, 90, 255))                     # standby
+    put(px, 7, 4, (240, 90, 90, 255))                      # trip
+    for x in range(9, 13):                                 # gauge needle strip
+        put(px, x, 4, shade(base, 1.35))
+    for y in range(9, 14, 2):                              # cooling vents
+        rect(px, 3, y, 12, y, shade(base, 0.6))
+    rect(px, 2, 8, 13, 8, shade(BLACK, 1.2))               # label stripe
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+# controller base colours: steel with a machine-specific tint
+CONTROLLERS = {
+    "steam_separator_controller": (150, 150, 158, 255),
+    "turbine_controller": (120, 130, 150, 255),
+    "condenser_controller": (110, 140, 160, 255),
+    "mcp_controller": (140, 140, 120, 255),
+    "deaerator_controller": (130, 150, 170, 255),
+    "eccs_controller": (170, 120, 120, 255),
+}
+
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     for name, fn in TEXTURES.items():
         path = os.path.join(OUT, name + ".png")
         png(path, fn())
+        print("wrote", path, os.path.getsize(path), "bytes")
+    for name, base in CONTROLLERS.items():
+        path = os.path.join(OUT, name + ".png")
+        png(path, gen_controller(base))
         print("wrote", path, os.path.getsize(path), "bytes")

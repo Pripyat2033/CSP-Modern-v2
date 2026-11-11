@@ -82,5 +82,11 @@
   "tooltip.csp-modern.vessel": "Reactor vessel (кожух) — inner Ø14.5 m x 9.7 m steel shell around the graphite stack",
   "block.csp-modern.water_tank": "Бак биозащиты",
   "tooltip.csp-modern.water_tank": "Side biological-shield water tank — Ø16.6 to 19 m, 16 compartments of water gamma shield",
-  "tooltip.csp-modern.control_rod": "Control rod channel (СУЗ) — Система управления и защиты"
+  "tooltip.csp-modern.control_rod": "Control rod channel (СУЗ) — Система управления и защиты",
+  "block.csp-modern.steam_separator_controller": "Steam Separator Controller",
+  "block.csp-modern.turbine_controller": "Turbogenerator Controller",
+  "block.csp-modern.condenser_controller": "Condenser Controller",
+  "block.csp-modern.mcp_controller": "Main Circulating Pump Controller",
+  "block.csp-modern.deaerator_controller": "Deaerator Controller",
+  "block.csp-modern.eccs_controller": "ECCS Accumulator Controller"
 }

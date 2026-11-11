@@ -28,10 +28,10 @@ public final class ConstructionJob {
     /** What a region is, so the counts stay meaningful. */
     public enum Part {
         GRAPHITE, FUEL, RODS, SEPARATORS, TURBINES, CONDENSERS, PUMPS,
-        FEEDWATER, ACCUMULATORS, PIPES, UBS, LBS, VESSEL, WATER_TANK
+        FEEDWATER, ACCUMULATORS, PIPES, UBS, LBS, VESSEL, WATER_TANK, CONTROLLERS
     }
 
-    private enum Mode { BOX, SHELL, COLUMNS, RADIAL }
+    private enum Mode { BOX, SHELL, COLUMNS, RADIAL, CYLINDER }
 
     /** A region to fill. */
     public static final class Region {
@@ -43,6 +43,8 @@ public final class ConstructionJob {
         private final int colHeight;                // columns mode only
         private final int ccx, ccz;                 // radial mode only
         private final long rIn2, rOut2;             // radial mode: squared radii
+        private final int cylRadius;                // cylinder mode: radius
+        private final char cylAxis;                 // cylinder mode: axis 'x'
         private final long iterLen;                 // positions to walk
         private final long placeTotal;              // blocks actually placed
         private long idx;                           // cursor
@@ -50,7 +52,8 @@ public final class ConstructionJob {
         private Region(Part part, Block block, Mode mode,
                        int x0, int y0, int z0, int x1, int y1, int z1,
                        int[] colX, int[] colZ, int colHeight,
-                       int ccx, int ccz, long rIn2, long rOut2) {
+                       int ccx, int ccz, long rIn2, long rOut2,
+                       int cylRadius, char cylAxis) {
             this.part = part;
             this.block = block;
             this.mode = mode;
@@ -67,6 +70,8 @@ public final class ConstructionJob {
             this.ccz = ccz;
             this.rIn2 = rIn2;
             this.rOut2 = rOut2;
+            this.cylRadius = cylRadius;
+            this.cylAxis = cylAxis;
             if (mode == Mode.COLUMNS) {
                 this.iterLen = (long) colX.length * colHeight;
                 this.placeTotal = iterLen;
@@ -81,6 +86,8 @@ public final class ConstructionJob {
                         - Math.max(0, dx - 2) * Math.max(0, dy - 2) * Math.max(0, dz - 2);
                 } else if (mode == Mode.RADIAL) {
                     this.placeTotal = countRadial();
+                } else if (mode == Mode.CYLINDER) {
+                    this.placeTotal = countCylinder();
                 } else {
                     this.placeTotal = volume;
                 }
@@ -98,6 +105,28 @@ public final class ConstructionJob {
                 }
             }
             return n * (y1 - y0);
+        }
+
+        /** A horizontal drum: the tube wall (a ring in the y-z plane) plus caps. */
+        private long countCylinder() {
+            long n = 0;
+            long r2 = (long) cylRadius * cylRadius;
+            long ri2 = (long) (cylRadius - 1) * (cylRadius - 1);
+            for (int x = x0; x < x1; x++) {
+                boolean cap = x == x0 || x == x1 - 1;
+                for (int y = y0; y < y1; y++) {
+                    for (int z = z0; z < z1; z++) {
+                        long d2 = (long) (y - ccx) * (y - ccx) + (long) (z - ccz) * (z - ccz);
+                        if (d2 > r2) {
+                            continue;
+                        }
+                        if (cap || d2 > ri2) {
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
         }
 
         private boolean done() {
@@ -140,6 +169,14 @@ public final class ConstructionJob {
                     if (d2 < rIn2 || d2 > rOut2) {
                         continue;
                     }
+                } else if (mode == Mode.CYLINDER) {
+                    long d2 = (long) (y - ccx) * (y - ccx) + (long) (z - ccz) * (z - ccz);
+                    boolean cap = x == x0 || x == x1 - 1;
+                    long r2 = (long) cylRadius * cylRadius;
+                    long ri2 = (long) (cylRadius - 1) * (cylRadius - 1);
+                    if (d2 > r2 || (!cap && d2 <= ri2)) {
+                        continue;
+                    }
                 }
                 world.setBlockState(new BlockPos(x, y, z), block.getDefaultState(), 2);
                 placed++;
@@ -154,21 +191,21 @@ public final class ConstructionJob {
     public static Region box(Part part, Block block, int x0, int y0, int z0,
                              int x1, int y1, int z1) {
         return new Region(part, block, Mode.BOX, x0, y0, z0, x1, y1, z1,
-            null, null, 0, 0, 0, 0, 0);
+            null, null, 0, 0, 0, 0, 0, 0, 'x');
     }
 
     /** Only the surface of a box — a hollow shell. */
     public static Region shell(Part part, Block block, int x0, int y0, int z0,
                                int x1, int y1, int z1) {
         return new Region(part, block, Mode.SHELL, x0, y0, z0, x1, y1, z1,
-            null, null, 0, 0, 0, 0, 0);
+            null, null, 0, 0, 0, 0, 0, 0, 'x');
     }
 
     /** A set of vertical columns, one block wide, from baseY upward. */
     public static Region columns(Part part, Block block, int[] xs, int[] zs,
                                  int baseY, int height) {
         return new Region(part, block, Mode.COLUMNS, 0, baseY, 0, 0, 0, 0,
-            xs, zs, height, 0, 0, 0, 0);
+            xs, zs, height, 0, 0, 0, 0, 0, 'x');
     }
 
     /**
@@ -184,7 +221,22 @@ public final class ConstructionJob {
         long rIn2 = (long) innerRadius * innerRadius;
         long rOut2 = (long) outerRadius * outerRadius;
         return new Region(part, block, Mode.RADIAL, x0, y0, z0, x1, y1, z1,
-            null, null, 0, cx, cz, rIn2, rOut2);
+            null, null, 0, cx, cz, rIn2, rOut2, 0, 'x');
+    }
+
+    /**
+     * A horizontal drum (a cylinder with its axis along x): the tube wall plus a
+     * solid cap at each end. This is the steam separator — a pressure vessel, so
+     * it is round, not a box.
+     */
+    public static Region cylinderX(Part part, Block block, int x0, int x1,
+                                   int cy, int cz, int radius) {
+        int y0 = cy - radius;
+        int y1 = cy + radius + 1;
+        int z0 = cz - radius;
+        int z1 = cz + radius + 1;
+        return new Region(part, block, Mode.CYLINDER, x0, y0, z0, x1, y1, z1,
+            null, null, 0, cy, cz, 0, 0, radius, 'x');
     }
 
     // ------------------------------------------------------------------- state

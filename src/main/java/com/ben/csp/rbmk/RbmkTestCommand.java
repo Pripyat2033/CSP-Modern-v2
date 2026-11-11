@@ -1,5 +1,6 @@
 package com.ben.csp.rbmk;
 
+import com.ben.csp.block.MachineControllerBlock;
 import com.ben.csp.block.ModBlocks;
 import com.ben.csp.authorisation.PlantBuildAuthorisation;
 import com.ben.csp.enterprise.Enterprise;
@@ -10,6 +11,8 @@ import com.ben.csp.zone.ZoneState;
 import com.ben.csp.rbmk.plant.Condenser;
 import com.ben.csp.rbmk.plant.PlantPhysics;
 import com.ben.csp.rbmk.plant.PlantSystem;
+import com.ben.csp.rbmk.plant.MachineSpec;
+import com.ben.csp.rbmk.plant.MachineValidator;
 import com.ben.csp.rbmk.plant.PlantTicker;
 import com.ben.csp.rbmk.plant.SteamSeparator;
 import com.ben.csp.rbmk.physics.ReactorCore;
@@ -18,6 +21,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -88,8 +92,51 @@ public final class RbmkTestCommand {
                         .executes(ctx -> plantBuild(ctx, true))
                         .then(CommandManager.literal("immediate")
                             .executes(ctx -> plantBuild(ctx, true, true)))))
-                .then(CommandManager.literal("status").executes(RbmkTestCommand::plantStatus))));
+                .then(CommandManager.literal("status").executes(RbmkTestCommand::plantStatus)))
+            .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine)));
     }
+
+    /**
+     * {@code /rbmk machine} — stand on a machine controller and it validates the
+     * machine's shell: the machine is "formed" only when the real casing is
+     * present. Read-only, so it is not gated.
+     */
+    private static int machine(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        BlockPos pos = BlockPos.ofFloored(s.getPosition());
+        BlockState st = s.getWorld().getBlockState(pos);
+        MachineControllerBlock ctl = null;
+        for (Block b : MACHINE_CONTROLLERS) {
+            if (st.getBlock() == b) {
+                ctl = (MachineControllerBlock) b;
+                break;
+            }
+        }
+        if (ctl == null) {
+            feedback(s, "No machine controller here — stand on a controller block "
+                + "(the corner of a box machine, or a drum's end-cap centre).",
+                Formatting.YELLOW);
+            return 0;
+        }
+        MachineSpec spec = ctl.spec();
+        BlockPos min = ctl.minCorner(pos);
+        MachineValidator.Result r =
+            MachineValidator.validate(s.getWorld(), spec, min, pos);
+        feedback(s, spec.displayName + " — " + r.describe(),
+            r.formed ? Formatting.GREEN : Formatting.RED);
+        feedback(s, String.format("  shell: %d x %d x %d blocks; controller at %d, %d, %d",
+            spec.sizeX, spec.sizeY, spec.sizeZ, pos.getX(), pos.getY(), pos.getZ()),
+            Formatting.GRAY);
+        return r.formed ? 1 : 0;
+    }
+
+    private static final List<Block> MACHINE_CONTROLLERS = List.of(
+        ModBlocks.STEAM_SEPARATOR_CONTROLLER_BLOCK,
+        ModBlocks.TURBINE_CONTROLLER_BLOCK,
+        ModBlocks.CONDENSER_CONTROLLER_BLOCK,
+        ModBlocks.MCP_CONTROLLER_BLOCK,
+        ModBlocks.DEAERATOR_CONTROLLER_BLOCK,
+        ModBlocks.ECCS_CONTROLLER_BLOCK);
 
     private static int test(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource s = ctx.getSource();

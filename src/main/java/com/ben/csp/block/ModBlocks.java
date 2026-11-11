@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import com.ben.csp.item.GenplanBlockItem;
 import com.ben.csp.item.PlanshetBlockItem;
 import com.ben.csp.item.PlantEquipmentBlockItem;
+import com.ben.csp.rbmk.plant.MachineSpecs;
 import com.ben.csp.skala.SkalaCoreBlock;
 import com.ben.csp.skala.SkalaTapeDriveBlock;
 import com.ben.csp.skala.SkalaRequestDeviceBlock;
@@ -41,6 +42,20 @@ public class ModBlocks {
     public static final Block LBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.LOWER_SHIELD);
     public static final Block VESSEL_BLOCK = SchemaBlock.of(SchemaBlock.Section.VESSEL);
     public static final Block WATER_TANK_BLOCK = SchemaBlock.of(SchemaBlock.Section.WATER_TANK);
+    // machine controllers: each machine is a multiblock whose shell is validated
+    // when the controller is used (see MachineControllerBlock / MachineValidator)
+    public static final Block STEAM_SEPARATOR_CONTROLLER_BLOCK =
+        new MachineControllerBlock(MachineSpecs.STEAM_SEPARATOR);
+    public static final Block TURBINE_CONTROLLER_BLOCK =
+        new MachineControllerBlock(MachineSpecs.TURBINE);
+    public static final Block CONDENSER_CONTROLLER_BLOCK =
+        new MachineControllerBlock(MachineSpecs.CONDENSER);
+    public static final Block MCP_CONTROLLER_BLOCK =
+        new MachineControllerBlock(MachineSpecs.MCP);
+    public static final Block DEAERATOR_CONTROLLER_BLOCK =
+        new MachineControllerBlock(MachineSpecs.DEAERATOR);
+    public static final Block ECCS_CONTROLLER_BLOCK =
+        new MachineControllerBlock(MachineSpecs.ECCS_ACCUMULATOR);
     public static final Block STOCKPILE_BLOCK = new StockpileBlock();
     public static final Block ICMS_MESSAGE_INPUT_BLOCK = new IcmsMessageInputBlock();
     public static final Block ICMS_MESSAGE_OUTPUT_BLOCK = new IcmsMessageOutputBlock();
@@ -74,6 +89,12 @@ public class ModBlocks {
         registerWithItem("lbs", LBS_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("vessel", VESSEL_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("water_tank", WATER_TANK_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("steam_separator_controller", STEAM_SEPARATOR_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("turbine_controller", TURBINE_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("condenser_controller", CONDENSER_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("mcp_controller", MCP_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("deaerator_controller", DEAERATOR_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("eccs_controller", ECCS_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
         register("stockpile", STOCKPILE_BLOCK);
         register("icms_message_input", ICMS_MESSAGE_INPUT_BLOCK);
         register("icms_message_output", ICMS_MESSAGE_OUTPUT_BLOCK);

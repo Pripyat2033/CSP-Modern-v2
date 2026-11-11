@@ -122,7 +122,7 @@ public final class RbmkWorldBuilder {
         return ConstructionJob.of(world, "RBMK core", regions);
     }
 
-    /** Plan the plant machines around the core, as shells. */
+    /** Plan the plant machines around the core, as real multiblocks. */
     public static ConstructionJob planPlant(ServerWorld world, BlockPos origin) {
         List<ConstructionJob.Region> regions = new ArrayList<>();
         int y0 = origin.getY();
@@ -132,36 +132,52 @@ public final class RbmkWorldBuilder {
         Block mcp = ModBlocks.MCP_BLOCK;
         Block feed = ModBlocks.FEEDWATER_BLOCK;
         Block eccs = ModBlocks.ECCS_ACCUMULATOR_BLOCK;
+        Block sepCtl = ModBlocks.STEAM_SEPARATOR_CONTROLLER_BLOCK;
+        Block turCtl = ModBlocks.TURBINE_CONTROLLER_BLOCK;
+        Block conCtl = ModBlocks.CONDENSER_CONTROLLER_BLOCK;
+        Block mcpCtl = ModBlocks.MCP_CONTROLLER_BLOCK;
+        Block deaCtl = ModBlocks.DEAERATOR_CONTROLLER_BLOCK;
+        Block eccsCtl = ModBlocks.ECCS_CONTROLLER_BLOCK;
 
-        int sd = PlantLayout.SEPARATOR_DIAMETER_BLOCKS;
-        int sl = PlantLayout.SEPARATOR_LENGTH_BLOCKS;
-        int sh = PlantLayout.SEPARATOR_HEIGHT_BLOCKS;
-        int off = PlantLayout.SEPARATOR_OFFSET_BLOCKS;
+        // ---- steam separator drums: horizontal cylinders, axis along x ----
+        // Four of them (2 per half), as pressure vessels, not boxes.
+        int sl = PlantLayout.SEPARATOR_LENGTH_BLOCKS;   // 124
+        int sr = (PlantLayout.SEPARATOR_DIAMETER_BLOCKS - 1) / 2; // radius 5
+        int off = PlantLayout.SEPARATOR_OFFSET_BLOCKS;  // 40
+        int sh = PlantLayout.SEPARATOR_HEIGHT_BLOCKS;   // 44
         for (int side = -1; side <= 1; side += 2) {
             for (int pair = 0; pair < 2; pair++) {
-                int cx = origin.getX() + (pair == 0 ? -sl / 3 : sl / 3);
+                int x0 = origin.getX() + (pair == 0 ? -sl / 2 - sl / 4 : sl / 4);
                 int cz = origin.getZ() + side * off;
-                regions.add(ConstructionJob.shell(ConstructionJob.Part.SEPARATORS, sep,
-                    cx - sl / 2, y0 + sh, cz - sd / 2,
-                    cx + sl / 2, y0 + sh + sd, cz + sd / 2));
+                int cy = y0 + sh;
+                regions.add(ConstructionJob.cylinderX(ConstructionJob.Part.SEPARATORS,
+                    sep, x0, x0 + sl, cy, cz, sr));
+                regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, sepCtl,
+                    x0, cy, cz, x0 + 1, cy + 1, cz + 1));
             }
         }
 
-        int tl = PlantLayout.TURBINE_LENGTH_BLOCKS;
-        int tw = PlantLayout.TURBINE_WIDTH_BLOCKS;
-        int th = PlantLayout.TURBINE_HEIGHT_BLOCKS;
+        // ---- turbogenerators: 5 cylinders + the generator, on one shaft ----
+        int tl = PlantLayout.TURBINE_LENGTH_BLOCKS;     // 156
+        int tw = PlantLayout.TURBINE_WIDTH_BLOCKS;      // 48
+        int th = PlantLayout.TURBINE_HEIGHT_BLOCKS;     // 40
         int hallX = origin.getX() + PlantLayout.TURBINE_HALL_OFFSET_BLOCKS;
         for (int t = 0; t < 2; t++) {
             int cz = origin.getZ() + (t == 0 ? -tw : tw);
             regions.add(ConstructionJob.shell(ConstructionJob.Part.TURBINES, tur,
                 hallX, y0, cz - tw / 2, hallX + tl, y0 + th, cz + tw / 2));
-            int cl = PlantLayout.CONDENSER_LENGTH_BLOCKS;
-            int cw = PlantLayout.CONDENSER_WIDTH_BLOCKS;
-            int chh = PlantLayout.CONDENSER_HEIGHT_BLOCKS;
+            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, turCtl,
+                hallX, y0, cz - tw / 2, hallX + 1, y0 + 1, cz - tw / 2 + 1));
+            int cl = PlantLayout.CONDENSER_LENGTH_BLOCKS;   // 80
+            int cw = PlantLayout.CONDENSER_WIDTH_BLOCKS;    // 48
+            int chh = PlantLayout.CONDENSER_HEIGHT_BLOCKS;  // 20
             regions.add(ConstructionJob.shell(ConstructionJob.Part.CONDENSERS, con,
                 hallX, y0 - chh, cz - cw / 2, hallX + cl, y0, cz + cw / 2));
+            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, conCtl,
+                hallX, y0 - chh, cz - cw / 2, hallX + 1, y0 - chh + 1, cz - cw / 2 + 1));
         }
 
+        // ---- main circulating pumps (ГЦН): 8, on a ring around the core ----
         int r = PlantLayout.MCP_RING_RADIUS_BLOCKS;
         int sz = PlantLayout.MCP_SIZE_BLOCKS;
         for (int i = 0; i < 8; i++) {
@@ -170,8 +186,11 @@ public final class RbmkWorldBuilder {
             int pz = origin.getZ() + (int) Math.round(r * Math.sin(a));
             regions.add(ConstructionJob.box(ConstructionJob.Part.PUMPS, mcp,
                 px, y0, pz, px + sz, y0 + sz, pz + sz));
+            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, mcpCtl,
+                px, y0, pz, px + 1, y0 + 1, pz + 1));
         }
 
+        // ---- deaerators: 4, also the feedwater storage tanks ----
         int ds = PlantLayout.DEAERATOR_SIZE_BLOCKS;
         int dh = PlantLayout.DEAERATOR_HEIGHT_BLOCKS;
         for (int i = 0; i < 4; i++) {
@@ -179,8 +198,11 @@ public final class RbmkWorldBuilder {
             int dz = origin.getZ() - ds / 2;
             regions.add(ConstructionJob.shell(ConstructionJob.Part.FEEDWATER, feed,
                 dx, y0, dz, dx + ds, y0 + dh, dz + ds));
+            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, deaCtl,
+                dx, y0, dz, dx + 1, y0 + 1, dz + 1));
         }
 
+        // ---- ECCS accumulators (САОР): 12, in two groups of six ----
         int as = PlantLayout.ACCUMULATOR_SIZE_BLOCKS;
         int ah = PlantLayout.ACCUMULATOR_HEIGHT_BLOCKS;
         for (int i = 0; i < 12; i++) {
@@ -188,6 +210,8 @@ public final class RbmkWorldBuilder {
             int az = origin.getZ() + ds + 4;
             regions.add(ConstructionJob.box(ConstructionJob.Part.ACCUMULATORS, eccs,
                 ax, y0, az, ax + as, y0 + ah, az + as));
+            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, eccsCtl,
+                ax, y0, az, ax + 1, y0 + 1, az + 1));
         }
 
         return ConstructionJob.of(world, "plant equipment", regions);
