@@ -139,3 +139,29 @@ make_energoblok_kit.py` -> `/workspace/serve_energoblok/Energoblok-Test-Kit.zip`
 (4 MB: world + mods[csp-modern, fabric-api] + README), served on 12001. Verified
 the packaged world loads clean and runs. Flat-world note: 1.20.1 layers start at
 y=-64, surface at y=0; build at y=1.
+
+## RBMK CORE: SCHEMA = SECTIONS, CONTROL DISTRIBUTED, BORE IS REAL (2026-11-09)
+
+Three corrections the Director forced, all now built (branch OpenHands):
+
+1. **"Schema" is Soviet for the reactor's structural SECTIONS, not a file.** Схема Е
+   IS the upper biological shield; the LBS, vessel (кожух) and side water tank are
+   the others. We had every dimension in `RbmkGeometry.java` and built none. Now
+   `block/SchemaBlock.java` + `RbmkWorldBuilder.planCore` build the graphite stack
+   INSIDE its sections: core = 253,780 blocks (graphite 78,496, fuel 53,152, rod
+   6,752, UBS 43,500, LBS 21,032, vessel 6,528, water tank 44,320). Was a bare
+   97,496 lump. `ConstructionJob` gained a RADIAL region (disc/annulus).
+2. **Control is distributed, not on the rim.** `RbmkLattice.channels()` used to mark
+   the outermost 211 cells as control (uncontrollable centre). Now a sub-lattice
+   every 3rd cell: nearest control at the centre, every channel within ~3.2 blocks of
+   a rod; counts unchanged. `RbmkGeometrySelfTest` asserts the DISTRIBUTION now.
+3. **The graphite block has a real BORE.** `tools/gen_graphite_bore.py` writes
+   graphite/fuel_channel/control_rod as frames (8 cuboids) around an open bore + an
+   inset top lip; the channel sits IN the bore, graphite all around. Blocks are
+   nonOpaque. COST: ~8x geometry on ~139k core cells — the likely client FPS hit.
+4. **The charter gate is enforced.** `/rbmk build` and `/rbmk plant build` call
+   `PlantBuildAuthorisation` and refuse unless enterprises ready + prombaza
+   designated; only an explicit `demo` sub-command bypasses (loud warning).
+5. **Lesson:** when the Director uses a domain term, ASK what it means. When a test
+   asserts only counts, add the property that matters (distribution). Never present
+   a placeholder as a finished thing.
