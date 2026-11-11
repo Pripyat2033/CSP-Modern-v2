@@ -208,3 +208,24 @@ at most **256 chunks per call** — split a big area into several calls. The pla
 blocks out, so its far end is unloaded. Always `forceload add x1 z1 x2 z2` first.
 Command-parse errors log as `...<--[HERE]`; `say` output is `[Server] NAME`.
 Grep the exact token, not prose.
+
+## SKALA scope: pre-1986 ONLY - no DIIS, no video monitors (2026-11-09)
+
+Ben: **DIIS did not exist in 1986; it was a 1990s upgrade.** Confirmed from the
+Chornobyl Family SKALA restoration (they saved Unit 3's machine; get transcripts
+with `yt-dlp --write-auto-sub` - Tavily is still over quota). Build to: two
+independent VNIIEM-3 machines, each a V-3M processor, 20K 24-bit words (+8K
+shared); pre-1986 output is paper (RTA-80 teletype, ACPU-128 drum printer) plus
+MTK/MTO mnemonic mosaic displays, **no video monitors**; operator enters a code
+on a request device (7 columns of buttons) and reads the answer; programs PRIZMA,
+DREG (its tape became the accident investigation's primary source), KRV, KCTK,
+KIKD, RAO. `com.ben.csp.skala` now has ONE loop (DREG); `ScanType`/`runDiisScan`/
+the DIIS code entry are removed; the self-test asserts DIIS is NOT seeded.
+
+## Kit worlds MUST ship creative + cheats (2026-11-09)
+
+A server-created `level.dat` defaults to survival (`GameType=0`) with cheats off
+(`allowCommands=0`), so Ben could not fly. `tools/make_energoblok_kit.py` now
+forces `GameType=1`+`allowCommands=1` (via nbtlib) into the shipped
+`world/level.dat`. Gradle `compileTestJava` fails "cannot access Block" -
+PRE-EXISTING; tests run via the standalone javac/java harness, not `gradle test`.
