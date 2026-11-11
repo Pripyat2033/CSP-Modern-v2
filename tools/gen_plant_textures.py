@@ -282,11 +282,67 @@ def gen_water_tank():
     return px
 
 
+def gen_turbine_cover():
+    """The turbine's cylinder cover: a big white painted circle with a ring of
+    bolts — what actually shows in the machine hall (1 HP + 4 LP)."""
+    px = new(DARK)
+    rect(px, 0, 0, S - 1, S - 1, shade(WHITE, 0.9))
+    cx, cy = 7.5, 7.5
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            if d < 2.2:
+                put(px, x, y, shade(WHITE, 1.05))       # hub
+            elif d < 6.2:
+                put(px, x, y, shade(WHITE, 0.82))       # dished face
+            else:
+                put(px, x, y, shade(STEEL, 0.75))       # rim
+    import math
+    for i in range(8):                                  # bolt ring
+        a = i * math.pi / 4
+        bx = int(round(cx + 5.0 * math.cos(a)))
+        by = int(round(cy + 5.0 * math.sin(a)))
+        put(px, bx, by, shade(DARK, 1.1))
+    frame(px, shade(DARK, 0.85))
+    return px
+
+
+def gen_generator():
+    """The TVV-500 generator body: a long horizontal machine with a terminal box,
+    a yellow nameplate band and end bells."""
+    px = new(DARK)
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.85))
+    for y in range(S):                                  # cylindrical shading
+        f = 1.12 if 4 <= y <= 7 else (0.95 if 2 <= y <= 10 else 0.68)
+        rect(px, 0, y, S - 1, y, shade(STEEL, f))
+    for x in (1, 2, 13, 14):                            # end bells
+        rect(px, x, 1, x, 14, shade(BLUE, 0.95))
+    rect(px, 2, 3, 13, 4, (200, 176, 80, 255))          # yellow nameplate band
+    rect(px, 5, 5, 10, 9, shade(DARK, 1.15))            # terminal box
+    frame(px, shade(BLACK, 1.2))
+    return px
+
+
+def gen_mcp_motor():
+    """The ГЦН's 6 kV drive motor: a grey induction motor with cooling fins."""
+    px = new(DARK)
+    rect(px, 0, 0, S - 1, S - 1, shade((150, 152, 156, 255), 0.95))
+    for y in range(2, 14, 2):                           # cooling fins
+        rect(px, 1, y, 14, y, shade((150, 152, 156, 255), 0.78))
+    rect(px, 0, 0, S - 1, 2, shade(BLUE, 1.0))          # terminal cap
+    rect(px, 6, 0, 9, 3, shade(DARK, 1.1))              # terminal box
+    frame(px, shade(DARK, 1.2))
+    return px
+
+
 TEXTURES = {
     "steam_separator": gen_steam_separator,
     "turbine": gen_turbine,
+    "turbine_cover": gen_turbine_cover,
+    "generator": gen_generator,
     "condenser": gen_condenser,
     "mcp": gen_mcp,
+    "mcp_motor": gen_mcp_motor,
     "feedwater": gen_feedwater,
     "eccs_accumulator": gen_eccs,
     "plant_pipe": gen_pipe,

@@ -32,8 +32,11 @@ public class ModBlocks {
     public static final Block CONTROL_ROD_BLOCK = ControlRodBlock.INSTANCE;
     public static final Block STEAM_SEPARATOR_BLOCK = PlantEquipmentBlock.steamSeparator();
     public static final Block TURBINE_BLOCK = PlantEquipmentBlock.turbine();
+    public static final Block TURBINE_COVER_BLOCK = PlantEquipmentBlock.turbineCover();
+    public static final Block GENERATOR_BLOCK = PlantEquipmentBlock.generator();
     public static final Block CONDENSER_BLOCK = PlantEquipmentBlock.condenser();
     public static final Block MCP_BLOCK = PlantEquipmentBlock.pump();
+    public static final Block MCP_MOTOR_BLOCK = PlantEquipmentBlock.pumpMotor();
     public static final Block FEEDWATER_BLOCK = PlantEquipmentBlock.feedwater();
     public static final Block ECCS_ACCUMULATOR_BLOCK = PlantEquipmentBlock.accumulator();
     public static final Block PLANT_PIPE_BLOCK = PlantEquipmentBlock.pipe();
@@ -79,8 +82,11 @@ public class ModBlocks {
         register("graphite", GRAPHITE_BLOCK);
         registerWithItem("steam_separator", STEAM_SEPARATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("turbine", TURBINE_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("turbine_cover", TURBINE_COVER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("generator", GENERATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("condenser", CONDENSER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("mcp", MCP_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("mcp_motor", MCP_MOTOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("feedwater", FEEDWATER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("eccs_accumulator", ECCS_ACCUMULATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("plant_pipe", PLANT_PIPE_BLOCK, PlantEquipmentBlockItem::new);

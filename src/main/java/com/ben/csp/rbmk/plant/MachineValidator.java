@@ -51,17 +51,33 @@ public final class MachineValidator {
                     }
                     required++;
                     BlockPos p = min.add(dx, dy, dz);
-                    BlockState st = world.getBlockState(p);
                     if (p.equals(controller)) {
                         continue; // the controller stands in for one casing cell
                     }
-                    if (st.getBlock() != spec.casing) {
+                    if (world.getBlockState(p).getBlock() != casingAt(spec, dx, dy, dz)) {
                         missing++;
                     }
                 }
             }
         }
         return new Result(missing == 0, missing, required);
+    }
+
+    /** The casing a shell cell should hold: the part's own block, or the spec's. */
+    private static Block casingAt(MachineSpec spec, int dx, int dy, int dz) {
+        if (!spec.isComposite()) {
+            return spec.casing;
+        }
+        for (MachineSpec.Part p : spec.parts) {
+            int x = dx - p.dx;
+            int y = dy - p.dy;
+            int z = dz - p.dz;
+            if (x >= 0 && x < p.sizeX && y >= 0 && y < p.sizeY && z >= 0 && z < p.sizeZ
+                && p.isShell(x, y, z)) {
+                return p.casing;
+            }
+        }
+        return spec.casing;
     }
 
     /** The number of casing blocks the shell needs (the controller counts as one). */

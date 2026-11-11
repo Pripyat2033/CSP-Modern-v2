@@ -39,13 +39,18 @@ Two per unit, in the 600 m machine hall beside the reactor building.
 | generator | TVV-500 (also written TBB-500) | *RBMK* §"electrical generators are the TVV-500" |
 | speed | 3000 rpm | *RBMK* §"nominal rotational speed is 3000 rpm" |
 | overall length | 39 m | *RBMK* §"The turbogenerator is 39 m long" |
+| HP cover diameter | ~4.25 m | turbine datasheet §"патрубок Ду-1200" (1.2 m HP exhaust) |
+| LP cover diameter | ~7.5 m | turbine datasheet §"ЦНД", 4 x Ду-1200 exhaust |
+| turbine (5 cylinders) length | ~70 m | turbine datasheet; the 39 m in *RBMK* counts the turbogenerator |
 | overall mass | 1200 t | *RBMK* §"its total weight is 1,200 t" |
 | rotor mass (both) | ~200 t | *RBMK* §"combined weight of the rotors is almost 200 t" |
 | stator cooling | water; rotor cooling | hydrogen | *RBMK* §"stator is cooled by water ... rotor by hydrogen" |
 
 At 1:4 → **156 blocks long**. The machine is a long shaft: the **five cylinders**
-(1 HP + 4 LP) in a row, then the generator body. Block 4 had the newer
-K-500-65/3000-2 (*RBMK* §"Block 4 had the newer ones").
+(1 HP + 4 LP) in a row, then the generator body. Only the five massive white
+circular **covers** show in the hall — the rotors, diaphragms and blade rings are
+inside. Block 4 had the newer K-500-65/3000-2 (*RBMK* §"Block 4 had the newer
+ones").
 
 ## Main circulating pumps (ГЦН)
 
@@ -95,13 +100,20 @@ whether the machine is formed. The shapes are the real shapes:
 | machine | shape | size (blocks, 1:4) |
 |---|---|---|
 | steam separator drum | horizontal cylinder (axis X) | 124 long x 11 dia |
-| turbogenerator | box, 5 cylinders + generator | 156 x 48 x 40 |
+| turbogenerator | composite: 5 cylinder covers + shaft + generator | 157 x 27 x 19 |
 | condenser | box under the turbine | 80 x 48 x 20 |
-| main circulating pump | box | 3 x 3 x 3 |
+| main circulating pump | composite: pump body + 6 kV motor | 3 x 6 x 3 |
 | deaerator | box | 24 x 24 x 40 |
 | ECCS accumulator | box | 3 x 3 x 6 |
 
+A **composite** machine is several casings under one controller, each with its own
+block — the turbogenerator is five white cylinder covers, a shaft and an iron
+generator body on one foundation. The builder places exactly the cells the
+validator checks, so a machine that reads "formed" really is the machine.
+
 Sources: English Wikipedia articles *RBMK* and *Chernobyl Nuclear Power Plant*,
-which cite the plant design literature. Where a figure is a block-game
-approximation (turbine width, condenser box, pump box) it is marked in the code
-as an approximation, because the real sub-dimensions are not in these sources.
+which cite the plant design literature; and the K-500-65/3000 construction
+datasheet (atomas.ru/rbmk), for the cylinder and cover geometry. Where a figure is
+a block-game approximation (cylinder cover diameter, cylinder length, condenser
+box, pump box) it is marked in the code as an approximation, because the real
+sub-dimensions are not in these sources.

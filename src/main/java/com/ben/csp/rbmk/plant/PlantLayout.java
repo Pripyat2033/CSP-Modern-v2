@@ -8,7 +8,9 @@ package com.ben.csp.rbmk.plant;
  * (docs/RBMK-PLANT-SYSTEMS.md §9).
  *
  * <p>Every dimension is a real one divided by four: a 2.8 m drum is 11 blocks
- * across, a 31 m drum is 124 blocks long, a 39 m turbogenerator is 156 blocks.
+ * across, a 31 m drum is 124 blocks long, a 39 m turbogenerator is ~156 blocks.
+ * The machine bodies themselves are described by {@link MachineSpecs}; this class
+ * only says where each machine stands.
  */
 public final class PlantLayout {
 
@@ -22,23 +24,14 @@ public final class PlantLayout {
     public static final int SEPARATOR_OFFSET_BLOCKS = 40;
     public static final int SEPARATOR_HEIGHT_BLOCKS = 44;
 
-    /** Turbogenerator: ~39 m long, ~12 m across. */
-    public static final int TURBINE_LENGTH_BLOCKS = 156;
-    public static final int TURBINE_WIDTH_BLOCKS = 48;
-    public static final int TURBINE_HEIGHT_BLOCKS = 40;
     /** The machine hall is offset from the core along +x. */
     public static final int TURBINE_HALL_OFFSET_BLOCKS = 120;
+    /** Half the centre-to-centre spacing of the two turbogenerators (z). */
+    public static final int TURBINE_HALL_GAP_BLOCKS = 34;
 
-    public static final int CONDENSER_LENGTH_BLOCKS = 80;
-    public static final int CONDENSER_WIDTH_BLOCKS = 48;
-    public static final int CONDENSER_HEIGHT_BLOCKS = 20;
-
-    public static final int MCP_SIZE_BLOCKS = 3;
     public static final int MCP_RING_RADIUS_BLOCKS = 36;
 
     public static final int DEAERATOR_SIZE_BLOCKS = 24;
-    public static final int DEAERATOR_HEIGHT_BLOCKS = 40;
 
     public static final int ACCUMULATOR_SIZE_BLOCKS = 3;
-    public static final int ACCUMULATOR_HEIGHT_BLOCKS = 6;
 }

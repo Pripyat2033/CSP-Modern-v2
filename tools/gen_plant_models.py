@@ -4,8 +4,9 @@ import json
 import os
 
 ROOT = "src/main/resources/assets/csp-modern"
-NAMES = ["steam_separator", "turbine", "condenser", "mcp", "feedwater",
-         "eccs_accumulator", "plant_pipe", "control_rod",
+NAMES = ["steam_separator", "turbine", "turbine_cover", "generator", "condenser",
+         "mcp", "mcp_motor", "feedwater",
+         "eccs_accumulator", "plant_pipe",
          "ubs", "lbs", "vessel", "water_tank"]
 
 os.makedirs(f"{ROOT}/blockstates", exist_ok=True)

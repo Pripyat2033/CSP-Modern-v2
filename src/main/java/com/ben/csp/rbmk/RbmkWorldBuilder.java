@@ -1,6 +1,8 @@
 package com.ben.csp.rbmk;
 
 import com.ben.csp.block.ModBlocks;
+import com.ben.csp.rbmk.plant.MachineSpec;
+import com.ben.csp.rbmk.plant.MachineSpecs;
 import com.ben.csp.rbmk.plant.PlantLayout;
 import net.minecraft.block.Block;
 import net.minecraft.server.world.ServerWorld;
@@ -126,12 +128,6 @@ public final class RbmkWorldBuilder {
     public static ConstructionJob planPlant(ServerWorld world, BlockPos origin) {
         List<ConstructionJob.Region> regions = new ArrayList<>();
         int y0 = origin.getY();
-        Block sep = ModBlocks.STEAM_SEPARATOR_BLOCK;
-        Block tur = ModBlocks.TURBINE_BLOCK;
-        Block con = ModBlocks.CONDENSER_BLOCK;
-        Block mcp = ModBlocks.MCP_BLOCK;
-        Block feed = ModBlocks.FEEDWATER_BLOCK;
-        Block eccs = ModBlocks.ECCS_ACCUMULATOR_BLOCK;
         Block sepCtl = ModBlocks.STEAM_SEPARATOR_CONTROLLER_BLOCK;
         Block turCtl = ModBlocks.TURBINE_CONTROLLER_BLOCK;
         Block conCtl = ModBlocks.CONDENSER_CONTROLLER_BLOCK;
@@ -150,71 +146,89 @@ public final class RbmkWorldBuilder {
                 int x0 = origin.getX() + (pair == 0 ? -sl / 2 - sl / 4 : sl / 4);
                 int cz = origin.getZ() + side * off;
                 int cy = y0 + sh;
-                regions.add(ConstructionJob.cylinderX(ConstructionJob.Part.SEPARATORS,
-                    sep, x0, x0 + sl, cy, cz, sr));
-                regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, sepCtl,
-                    x0, cy, cz, x0 + 1, cy + 1, cz + 1));
+                addMachine(regions, ConstructionJob.Part.SEPARATORS, MachineSpecs.STEAM_SEPARATOR,
+                    x0, cy - sr, cz - sr, sepCtl);
             }
         }
 
-        // ---- turbogenerators: 5 cylinders + the generator, on one shaft ----
-        int tl = PlantLayout.TURBINE_LENGTH_BLOCKS;     // 156
-        int tw = PlantLayout.TURBINE_WIDTH_BLOCKS;      // 48
-        int th = PlantLayout.TURBINE_HEIGHT_BLOCKS;     // 40
+        // ---- turbogenerators: five cylinder covers + the TVV-500 generator ----
+        // Two per unit, on one shaft along x, in the machine hall.
         int hallX = origin.getX() + PlantLayout.TURBINE_HALL_OFFSET_BLOCKS;
+        int hallGap = PlantLayout.TURBINE_HALL_GAP_BLOCKS;
         for (int t = 0; t < 2; t++) {
-            int cz = origin.getZ() + (t == 0 ? -tw : tw);
-            regions.add(ConstructionJob.shell(ConstructionJob.Part.TURBINES, tur,
-                hallX, y0, cz - tw / 2, hallX + tl, y0 + th, cz + tw / 2));
-            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, turCtl,
-                hallX, y0, cz - tw / 2, hallX + 1, y0 + 1, cz - tw / 2 + 1));
-            int cl = PlantLayout.CONDENSER_LENGTH_BLOCKS;   // 80
-            int cw = PlantLayout.CONDENSER_WIDTH_BLOCKS;    // 48
-            int chh = PlantLayout.CONDENSER_HEIGHT_BLOCKS;  // 20
-            regions.add(ConstructionJob.shell(ConstructionJob.Part.CONDENSERS, con,
-                hallX, y0 - chh, cz - cw / 2, hallX + cl, y0, cz + cw / 2));
-            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, conCtl,
-                hallX, y0 - chh, cz - cw / 2, hallX + 1, y0 - chh + 1, cz - cw / 2 + 1));
+            int czc = origin.getZ() + (t == 0 ? -hallGap : hallGap);
+            addMachine(regions, ConstructionJob.Part.TURBINES, MachineSpecs.TURBINE,
+                hallX, y0, czc - MachineSpecs.TURBINE.sizeZ / 2, turCtl);
+            // the condenser sits directly under the turbine
+            addMachine(regions, ConstructionJob.Part.CONDENSERS, MachineSpecs.CONDENSER,
+                hallX, y0 - MachineSpecs.CONDENSER.sizeY, czc - MachineSpecs.CONDENSER.sizeZ / 2,
+                conCtl);
         }
 
         // ---- main circulating pumps (ГЦН): 8, on a ring around the core ----
         int r = PlantLayout.MCP_RING_RADIUS_BLOCKS;
-        int sz = PlantLayout.MCP_SIZE_BLOCKS;
         for (int i = 0; i < 8; i++) {
             double a = 2 * Math.PI * i / 8;
             int px = origin.getX() + (int) Math.round(r * Math.cos(a));
             int pz = origin.getZ() + (int) Math.round(r * Math.sin(a));
-            regions.add(ConstructionJob.box(ConstructionJob.Part.PUMPS, mcp,
-                px, y0, pz, px + sz, y0 + sz, pz + sz));
-            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, mcpCtl,
-                px, y0, pz, px + 1, y0 + 1, pz + 1));
+            addMachine(regions, ConstructionJob.Part.PUMPS, MachineSpecs.MCP,
+                px, y0, pz, mcpCtl);
         }
 
         // ---- deaerators: 4, also the feedwater storage tanks ----
         int ds = PlantLayout.DEAERATOR_SIZE_BLOCKS;
-        int dh = PlantLayout.DEAERATOR_HEIGHT_BLOCKS;
         for (int i = 0; i < 4; i++) {
             int dx = origin.getX() - r - ds - i * (ds + 2);
             int dz = origin.getZ() - ds / 2;
-            regions.add(ConstructionJob.shell(ConstructionJob.Part.FEEDWATER, feed,
-                dx, y0, dz, dx + ds, y0 + dh, dz + ds));
-            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, deaCtl,
-                dx, y0, dz, dx + 1, y0 + 1, dz + 1));
+            addMachine(regions, ConstructionJob.Part.FEEDWATER, MachineSpecs.DEAERATOR,
+                dx, y0, dz, deaCtl);
         }
 
         // ---- ECCS accumulators (САОР): 12, in two groups of six ----
         int as = PlantLayout.ACCUMULATOR_SIZE_BLOCKS;
-        int ah = PlantLayout.ACCUMULATOR_HEIGHT_BLOCKS;
         for (int i = 0; i < 12; i++) {
             int ax = origin.getX() - r - as - i * (as + 2);
             int az = origin.getZ() + ds + 4;
-            regions.add(ConstructionJob.box(ConstructionJob.Part.ACCUMULATORS, eccs,
-                ax, y0, az, ax + as, y0 + ah, az + as));
-            regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, eccsCtl,
-                ax, y0, az, ax + 1, y0 + 1, az + 1));
+            addMachine(regions, ConstructionJob.Part.ACCUMULATORS, MachineSpecs.ECCS_ACCUMULATOR,
+                ax, y0, az, eccsCtl);
         }
 
         return ConstructionJob.of(world, "plant equipment", regions);
+    }
+
+    /**
+     * Add a whole machine — one casing or a composite — from its {@link MachineSpec},
+     * so the blocks the builder places are exactly the cells the validator checks.
+     * The controller stands at the spec's controller offset, replacing one shell cell.
+     */
+    private static void addMachine(List<ConstructionJob.Region> regions,
+                                   ConstructionJob.Part part, MachineSpec spec,
+                                   int x0, int y0, int z0, Block controller) {
+        if (spec.isComposite()) {
+            for (MachineSpec.Part p : spec.parts) {
+                regions.add(partRegion(part, p.casing, p.shape,
+                    x0 + p.dx, y0 + p.dy, z0 + p.dz, p.sizeX, p.sizeY, p.sizeZ));
+            }
+        } else {
+            regions.add(partRegion(part, spec.casing, spec.shape,
+                x0, y0, z0, spec.sizeX, spec.sizeY, spec.sizeZ));
+        }
+        int[] off = spec.controllerOffset();
+        regions.add(ConstructionJob.box(ConstructionJob.Part.CONTROLLERS, controller,
+            x0 + off[0], y0 + off[1], z0 + off[2],
+            x0 + off[0] + 1, y0 + off[1] + 1, z0 + off[2] + 1));
+    }
+
+    private static ConstructionJob.Region partRegion(ConstructionJob.Part part, Block casing,
+                                                     MachineSpec.Shape shape,
+                                                     int x0, int y0, int z0,
+                                                     int sx, int sy, int sz) {
+        if (shape == MachineSpec.Shape.CYLINDER_X) {
+            int radius = (sy - 1) / 2;
+            return ConstructionJob.cylinderX(part, casing, x0, x0 + sx,
+                y0 + sy / 2, z0 + sz / 2, radius);
+        }
+        return ConstructionJob.shell(part, casing, x0, y0, z0, x0 + sx, y0 + sy, z0 + sz);
     }
 
     // -------------------------------------------------------------- immediate

@@ -25,6 +25,20 @@ public class PlantEquipmentBlock extends Block {
         return new PlantEquipmentBlock(Blocks.IRON_BLOCK);
     }
 
+    /**
+     * The turbine's cylinder cover. In the machine hall the K-500-65/3000 shows
+     * only its five massive white circular covers (one HP + four LP) — the rotors
+     * and diaphragms are inside. Painted steel, so white iron.
+     */
+    public static PlantEquipmentBlock turbineCover() {
+        return new PlantEquipmentBlock(Blocks.WHITE_CONCRETE);
+    }
+
+    /** The TVV-500 generator body, bolted to the turbine on the same shaft. */
+    public static PlantEquipmentBlock generator() {
+        return new PlantEquipmentBlock(Blocks.IRON_BLOCK);
+    }
+
     /** Condenser: steel shell. */
     public static PlantEquipmentBlock condenser() {
         return new PlantEquipmentBlock(Blocks.IRON_BLOCK);
@@ -33,6 +47,11 @@ public class PlantEquipmentBlock extends Block {
     /** Main circulating pump (ГЦН): pump body. */
     public static PlantEquipmentBlock pump() {
         return new PlantEquipmentBlock(Blocks.IRON_BLOCK);
+    }
+
+    /** The ГЦН's 6 kV drive motor, mounted above the pump on the same shaft. */
+    public static PlantEquipmentBlock pumpMotor() {
+        return new PlantEquipmentBlock(Blocks.LIGHT_GRAY_CONCRETE);
     }
 
     /** Feedwater / deaerator tank: large steel vessel. */
