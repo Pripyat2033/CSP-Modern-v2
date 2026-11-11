@@ -9,6 +9,7 @@ public class GraphiteBlock extends Block {
     public static final GraphiteBlock INSTANCE = new GraphiteBlock();
     
     private GraphiteBlock() {
-        super(FabricBlockSettings.copyOf(net.minecraft.block.Blocks.IRON_BLOCK));
+        // non-opaque: the block is a frame around a real bore, not a solid cube
+        super(FabricBlockSettings.copyOf(net.minecraft.block.Blocks.IRON_BLOCK).nonOpaque());
     }
 }

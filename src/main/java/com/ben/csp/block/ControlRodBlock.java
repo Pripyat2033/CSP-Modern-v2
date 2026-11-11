@@ -10,6 +10,7 @@ public class ControlRodBlock extends Block {
     public static final ControlRodBlock INSTANCE = new ControlRodBlock();
 
     private ControlRodBlock() {
-        super(FabricBlockSettings.copyOf(net.minecraft.block.Blocks.IRON_BLOCK));
+        // non-opaque: the graphite bore is a real hole with the control rod in it
+        super(FabricBlockSettings.copyOf(net.minecraft.block.Blocks.IRON_BLOCK).nonOpaque());
     }
 }
