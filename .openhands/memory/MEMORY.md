@@ -102,3 +102,23 @@ Blocks: PlantEquipmentBlock + ModBlocks (steam_separator, turbine, condenser, mc
 feedwater, eccs_accumulator, plant_pipe); `RbmkWorldBuilder` places core solid and
 plant as SHELLS (solid deaerators = 92k blocks = 2.2 s tick spike). Tests: 102
 checks (Geometry 28, Physics 15, Spatial 16, Accident 15, Plant 28).
+
+## SCALE CAPACITY - THE CORE IS CHEAP; THE BUILD BURST IS THE COST (2026-11-09)
+
+Measured, not guessed (sandbox: Java 17, -Xmx3G). The whole plant built (262k
+blocks) = 183 ms. Plant RUNNING critical = 2.45 ms/tick; the server's OWN
+profiler reports 600 ticks / 29.95 s = 20.03 TPS (full real-time). The authentic
+3D solver = 4.34 ms/tick. /rbmk stress 32 = 4.4M blocks placed -> 2.7-3.3 ms/tick
+steady; 32 live reactor sims = 0.03 ms/tick each. Tick budget is 50 ms -> ~20x
+headroom per unit.
+
+WHY: the core blocks are INERT. FuelChannelBlockEntity is dead code (never
+registered); GraphiteBlockEntity is registered but has NO getTicker, so nothing
+ticks per-block. The physics is ONE GLOBAL SIMULATION (ReactorCore = ~20 doubles
++ the 52k-node solver, stepped once/tick). Behaviour lives in a few doubles, not
+in 78,000 blocks - so "no simplification" and "it runs" are compatible.
+
+THE REAL COST IS THE ONE-TIME CONSTRUCTION BURST: 4.4M blocks in one command =
+3.7 s hitch. That is what the build gate + Stroiteli + the work clock exist to
+meter. NEVER judge capacity by a monolithic build command. Untested: real client
+rendering (Ben's GPU), real chunk gen, 32x full plants. Tool: /rbmk stress <n>.
