@@ -203,7 +203,8 @@ running it.
 ## MC TESTING GOTCHA (cost real time)
 
 `setblock` / `execute if block` **silently fail with "That position is not
-loaded"** for chunks outside the loaded radius near spawn. The plant builds ~300
+loaded"** for chunks outside the loaded radius near spawn. `forceload add` takes
+at most **256 chunks per call** — split a big area into several calls. The plant builds ~300
 blocks out, so its far end is unloaded. Always `forceload add x1 z1 x2 z2` first.
 Command-parse errors log as `...<--[HERE]`; `say` output is `[Server] NAME`.
 Grep the exact token, not prose.
