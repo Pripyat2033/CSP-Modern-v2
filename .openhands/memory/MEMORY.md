@@ -165,3 +165,27 @@ Three corrections the Director forced, all now built (branch OpenHands):
 5. **Lesson:** when the Director uses a domain term, ASK what it means. When a test
    asserts only counts, add the property that matters (distribution). Never present
    a placeholder as a finished thing.
+
+## PLANT MACHINES ARE MULTIBLOCKS (2026-11-09)
+
+The RBMK-1000 plant machines are not decorated cubes — each is a real machine
+whose real size is cited in `docs/RBMK-MACHINE-GEOMETRY.md` (Wikipedia + design
+literature; Tavily was out of quota, Wikipedia API works). At 1:4: steam
+separator 124x11x11 (2.8 m x 31 m horizontal drum), turbogenerator 156 long
+(39 m), condenser 80x20x48, MCP 3x3x3, deaerator 24x40x24, ECCS 3x6x3.
+`MachineSpec`/`MachineSpecs`/`MachineValidator` + `MachineControllerBlock`:
+the controller is a real shell cell; using it validates the shell and reports
+formed / "incomplete — N of M shell blocks missing". `/rbmk machine` (stand on a
+controller) reports it; read-only so not gated. `ConstructionJob` has a CYLINDER
+mode for the drums. `MachineValidatorSelfTest` = 16 checks (suite 121 total).
+Commit `23cc254`. **Lesson:** when a machine is a box shell with no controller,
+it is a placeholder even if its dimensions are right — the Director wants the
+machine, structured and validated.
+
+## MC TESTING GOTCHA (cost real time)
+
+`setblock` / `execute if block` **silently fail with "That position is not
+loaded"** for chunks outside the loaded radius near spawn. The plant builds ~300
+blocks out, so its far end is unloaded. Always `forceload add x1 z1 x2 z2` first.
+Command-parse errors log as `...<--[HERE]`; `say` output is `[Server] NAME`.
+Grep the exact token, not prose.
