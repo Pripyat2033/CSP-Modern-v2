@@ -10,6 +10,7 @@ import com.ben.csp.rbmk.plant.SteamSeparator;
 import com.ben.csp.rbmk.physics.ReactorCore;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.block.Block;
 import net.minecraft.server.command.CommandManager;
@@ -43,12 +44,22 @@ public final class RbmkTestCommand {
     private static double lastMspt;
     private static int lastIters;
 
+    // stress test state
+    private static boolean stressListenerInstalled;
+    private static java.util.List<ReactorCore> stressCores;
+    private static int stressTicksLeft;
+    private static double stressCoreMs;
+    private static double stressServerMs;
+
     private RbmkTestCommand() {}
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("rbmk")
             .then(CommandManager.literal("test").executes(RbmkTestCommand::test))
             .then(CommandManager.literal("build").executes(RbmkTestCommand::build))
+            .then(CommandManager.literal("stress")
+                .then(CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
+                    .executes(RbmkTestCommand::stress)))
             .then(CommandManager.literal("status").executes(RbmkTestCommand::status))
             .then(CommandManager.literal("plant")
                 .then(CommandManager.literal("start").executes(RbmkTestCommand::plantStart))
@@ -103,6 +114,75 @@ public final class RbmkTestCommand {
         LOGGER.info("RBMK in-world test: nodes={} coldSolve={}iters/{}ms running={}mspt k_eff={}",
             nodes, iters, coldMs, lastMspt, kEffCold);
         return 1;
+    }
+
+    /**
+     * {@code /rbmk stress <n>} — the scale test. Builds {@code n} full cores in the
+     * world (the real block cost) and runs {@code n} reactor cores live for 15 s,
+     * then reports the per-tick cost and the server's own MSPT. This answers "how
+     * many RBMK-1000s can this machine actually carry" with numbers, not hope.
+     */
+    private static int stress(CommandContext<ServerCommandSource> ctx) {
+        int count = IntegerArgumentType.getInteger(ctx, "count");
+        ServerCommandSource s = ctx.getSource();
+        ServerWorld world = s.getWorld();
+        BlockPos origin = BlockPos.ofFloored(s.getPosition());
+
+        if (!stressListenerInstalled) {
+            net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK
+                .register(RbmkTestCommand::stressTick);
+            stressListenerInstalled = true;
+        }
+
+        long t0 = System.nanoTime();
+        long placed = 0;
+        int cols = (int) Math.ceil(Math.sqrt(count));
+        for (int i = 0; i < count; i++) {
+            int gx = (i % cols) * 96;
+            int gz = (i / cols) * 96;
+            placed += RbmkWorldBuilder.placeCore(world, origin.add(gx, 0, gz)).total;
+        }
+        double buildMs = (System.nanoTime() - t0) / 1e6;
+
+        stressCores = new java.util.ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            stressCores.add(new ReactorCore());
+        }
+        stressTicksLeft = 300;
+        stressCoreMs = 0;
+        stressServerMs = 0;
+        PerformanceProbe.resetPeak();
+
+        feedback(s, String.format("stress: built %d cores (%d blocks) in %.0f ms",
+            count, placed, buildMs), Formatting.GOLD);
+        feedback(s, "  now running them live for 15 s — watch the tick cost...",
+            Formatting.GRAY);
+        LOGGER.info("RBMK stress start: {} cores, {} blocks, build {} ms",
+            count, placed, buildMs);
+        return 1;
+    }
+
+    private static void stressTick(net.minecraft.server.MinecraftServer server) {
+        if (stressCores == null || stressTicksLeft <= 0) {
+            return;
+        }
+        long t0 = System.nanoTime();
+        for (ReactorCore c : stressCores) {
+            c.step(0.05);
+        }
+        stressCoreMs += (System.nanoTime() - t0) / 1e6;
+        stressServerMs += PerformanceProbe.averageMspt();
+        if (--stressTicksLeft == 0) {
+            int n = stressCores.size();
+            double avgCore = stressCoreMs / 300.0;
+            double avgServer = stressServerMs / 300.0;
+            LOGGER.info("RBMK stress result: {} cores, core cost {} ms/tick, "
+                + "server MSPT {} (peak {}), {}",
+                n, String.format("%.2f", avgCore), String.format("%.2f", avgServer),
+                String.format("%.2f", PerformanceProbe.peakMspt()),
+                PerformanceProbe.verdict());
+            stressCores = null;
+        }
     }
 
     private static int status(CommandContext<ServerCommandSource> ctx) {
