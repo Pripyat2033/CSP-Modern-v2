@@ -229,3 +229,32 @@ A server-created `level.dat` defaults to survival (`GameType=0`) with cheats off
 forces `GameType=1`+`allowCommands=1` (via nbtlib) into the shipped
 `world/level.dat`. Gradle `compileTestJava` fails "cannot access Block" -
 PRE-EXISTING; tests run via the standalone javac/java harness, not `gradle test`.
+
+## STRESS RESULT: Minecraft does NOT die - the block count is not the wall (2026-11-09)
+
+Ben's real question was "can Minecraft cope or does it die", and the answer is
+measured, not hoped. `/rbmk stress <n>` builds n real 1:4 cores (253,780 blocks
+each) as real blocks, then ticks n ReactorCore physics for 15 s and reports the
+per-tick cost. In-sandbox server (4 GB heap, flat world), one continuous run:
+
+| cores | blocks     | MSPT after build | verdict |
+|-------|-----------|------------------|---------|
+| 1     | 253,780   | 10.1 ms | comfortable |
+| 8     | 2,030,240 | 9.1 ms  | comfortable |
+| 16    | 4,060,480 | 15.7 ms | comfortable |
+| 32    | 8,120,960 | 34.5 ms | comfortable |
+| 64    | 16,241,920| 67.7 ms | overloaded, NO crash |
+| 1 plant (core+equipment) | 353,292 | 2.3 ms | comfortable |
+
+Block placement is **~250k blocks/s** (16.2 M blocks in 19.1 s). The `peak` MSPT
+(up to 19,134 ms) is the ONE-SHOT synchronous build burst inside a single tick,
+NOT steady-state load; with the normal metered scheduler it is spread out. The
+core physics cost is tiny (0.01-0.04 ms/tick) because it is the point-kinetics
+`ReactorCore`. The **full 3D spatial solver** is a separate, offline cost:
+`RbmkSolver3DBench` = 4.52 ms per outer iteration over 52,416 active nodes
+(cold solve 344 ms; ~11 iters fit in a 50 ms tick). It is NOT wired into the game
+tick (only `/rbmk test` uses it) - that is the next real test if per-channel
+spatial physics must run live. Bottom line: the engine has ~10x headroom on a
+real 1:1 RBMK-1000 (~20-30k blocks); the earlier "kids' art piece" feeling was a
+MODEL problem (1:4 makes the avatar 4x too small and every block 0.25 m), not an
+engine problem.
