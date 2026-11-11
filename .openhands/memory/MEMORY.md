@@ -170,17 +170,35 @@ Three corrections the Director forced, all now built (branch OpenHands):
 
 The RBMK-1000 plant machines are not decorated cubes — each is a real machine
 whose real size is cited in `docs/RBMK-MACHINE-GEOMETRY.md` (Wikipedia + design
-literature; Tavily was out of quota, Wikipedia API works). At 1:4: steam
-separator 124x11x11 (2.8 m x 31 m horizontal drum), turbogenerator 156 long
-(39 m), condenser 80x20x48, MCP 3x3x3, deaerator 24x40x24, ECCS 3x6x3.
+literature; Tavily was out of quota, Wikipedia API works; the K-500-65/3000
+cylinder geometry came from the atomas.ru/rbmk datasheet, cp1251-encoded). At
+1:4: steam separator 124x11x11 (2.8 m x 31 m horizontal drum), condenser
+80x20x48, deaerator 24x40x24, ECCS 3x6x3.
 `MachineSpec`/`MachineSpecs`/`MachineValidator` + `MachineControllerBlock`:
 the controller is a real shell cell; using it validates the shell and reports
 formed / "incomplete — N of M shell blocks missing". `/rbmk machine` (stand on a
 controller) reports it; read-only so not gated. `ConstructionJob` has a CYLINDER
-mode for the drums. `MachineValidatorSelfTest` = 16 checks (suite 121 total).
-Commit `23cc254`. **Lesson:** when a machine is a box shell with no controller,
-it is a placeholder even if its dimensions are right — the Director wants the
-machine, structured and validated.
+mode for the drums.
+
+**Composite machines (commit `6d251e0`).** `MachineSpec` also supports a machine
+of several casings under one controller: the **turbogenerator is 5 cylinder
+covers (1 ЦВД + 4 ЦНД, white) + a shaft + the ТВВ-500 generator on a foundation**
+(157x27x19 blocks ~39 m), and the **ГЦН is a pump body + its 6 kV motor** (3x6x3).
+Each part carries its own casing block; `MachineValidator` checks each shell cell
+against the part's block. `RbmkWorldBuilder.planPlant` now builds every machine
+from its spec via `addMachine()`, so the builder places exactly the cells the
+validator checks. New blocks: turbine_cover, generator, mcp_motor. Tests:
+`MachineValidatorSelfTest` 16 -> 29 checks; full suite 41 tests / 1761 checks.
+
+**Lesson:** when a machine is a box shell with no controller, it is a placeholder
+even if its dimensions are right — the Director wants the machine, structured and
+validated. The turbogenerator especially is not a box: it is five covers on a
+shaft, and only the covers show in the hall.
+
+**Gotcha:** `tools/gen_plant_models.py` overwrites models with a generic cube —
+it clobbered the hand-crafted `control_rod.json` (from `gen_graphite_bore.py`).
+That name is now excluded from the generator; re-check hand-crafted models after
+running it.
 
 ## MC TESTING GOTCHA (cost real time)
 
