@@ -28,49 +28,63 @@ FABRIC_JAR_NAME = "fabric-api-0.92.12+1.20.1.jar"
 OUT_DIR = "/workspace/serve_energoblok"
 ZIP_NAME = "Energoblok-Test-Kit.zip"
 
-README = """# Energoblok-1 test world - "can Minecraft actually draw it?"
+README = r"""# Energoblok — corrected core, with the bores. LOOK, don't just run.
 
-Ben - this is the one number only you can get. Everything else is measured; the
-client framerate is not. This kit gives you one complete RBMK-1000 Energoblok at
-1:4, built from real blocks, with the real physics running live, in a flat
-disposable world, so the plant is the only thing your GPU has to draw.
+Ben — this is the corrected core you told me to fix. Three things changed, and
+you can see all three. You spawn on a glass platform; **the specimen is right in
+front of you**, and the core is beyond it.
 
-## What is in the box
-    world/        one Energoblok, already built (262,368 blocks), plant running
-    mods/         csp-modern-0.0.1.jar + fabric-api (required)
-    START-HERE.md this file
+## What to look at first (the specimen, ~15 blocks ahead)
 
-## What you need
-- Minecraft Java Edition 1.20.1
-- Fabric Loader for 1.20.1  (https://fabricmc.net/use/installer/)
-- Java 17 (the launcher's bundled runtime is fine)
+Directly ahead of the platform is a 7x7 patch of graphite and, in a row:
 
-## Singleplayer test (recommended - this is the FPS number)
-1. Install Fabric Loader 1.20.1.
-2. Copy BOTH jars from mods/ into  %appdata%\\.minecraft\\mods\\
-3. Copy the world folder into  %appdata%\\.minecraft\\saves\\Energoblok-Test\\
-4. Launch the Fabric 1.20.1 profile, open the world Energoblok-Test.
-5. You spawn on a glass platform looking at the plant. Wait for chunks. Press F3.
-6. Report: fps still, fps walking, fps looking straight at the core.
+    graphite      - the block WITH ITS BORE: look straight down into it. You
+                    should see a real 114 mm hole and the lip on top, not a
+                    solid cube. This is the thing you said was missing.
+    fuel_channel  - the same graphite block, with the pressure tube and fuel
+                    sitting IN the bore. Graphite all around it.
+    control_rod   - the same graphite block, with the control rod in the bore.
 
-## Commands (in-game)
-- /rbmk plant status   live readout: power, rods, drum level, pumps, rotameters
-- /rbmk status         server tick cost (ms/tick) and the verdict
-- /rbmk plant scram    drop the rods, watch the power fall
-- /rbmk test           the 3D neutron solver cost
+If the bore reads as a solid block, tell me — that is the whole point of this
+build and I need to know if it does not come across.
+
+## What to look at second (the core, ~36 blocks north)
+
+The core is no longer a bare lump of graphite. It is the graphite stack INSIDE
+its sections:
+  - the upper biological shield (Схема Е) - the big disc over the top
+  - the lower biological shield - the disc under it
+  - the vessel (кожух) - the steel ring around the stack
+  - the side water tank - the wide ring of water (the gamma shield)
+
+## What to look at third (the control rods)
+
+Climb up and look down at the top. The control channels (СУЗ) are **spread
+through the whole core**, reaching the centre — not a ring on the outside. The
+nearest rod to the centre is at the centre. Every channel is within about 3
+blocks of a rod.
+
+## What is NOT done yet (so you don't have to find it)
+
+- The turbines and separators are still single blocks with textures. You said
+  they must be multiblocks with a controller. Not done yet — you told me the
+  bore block first, so this is next.
+- The exact control-rod cartogram (which cells are AZ / РР / АР / УСП) is still
+  a regular pattern. The distribution is right; the exact layout needs a
+  primary drawing.
 
 ## What to tell me
-1. fps still / walking / looking at the core.
-2. Your GPU and CPU.
-3. Whether the blocks render correctly (machines should look distinct).
-4. Anything that looks wrong.
 
-## What I already know (server side, measured)
-- Whole plant built metered = zero tick hitch (262,368 blocks over ~4 s).
-- Plant running live = 2.45 ms/tick; the server's own profiler: 20.03 TPS.
-- 16 complete Energobloks running = 0.16 ms/tick of simulation.
+1. Does the bore read as a real hole? Does the channel read as a tube in it?
+2. Do the sections read as the sections (shield discs, vessel, water tank)?
+3. Does the control distribution look right to you now?
+4. fps (F3) — still the one number I cannot get.
 
-The server is not the risk. The client draw is, and it is yours to answer.
+## Install
+- Minecraft Java 1.20.1 + Fabric Loader 1.20.1
+- both jars from mods/ into %appdata%\.minecraft\mods\
+- the world/ folder into %appdata%\.minecraft\saves\Energoblok\
+- open the world, you spawn on the platform looking at the specimen
 
 - built by an AI agent (OpenHands) on Ben's behalf.
 """
