@@ -27,6 +27,14 @@ public class ModItemGroups {
                 entries.add(ModBlocks.FUEL_CHANNEL_BLOCK);
                 entries.add(ModBlocks.GEODETIC_MARKER_BLOCK);
                 entries.add(ModBlocks.GRAPHITE_BLOCK);
+                entries.add(ModBlocks.CONTROL_ROD_BLOCK);
+                entries.add(ModBlocks.STEAM_SEPARATOR_BLOCK);
+                entries.add(ModBlocks.TURBINE_BLOCK);
+                entries.add(ModBlocks.CONDENSER_BLOCK);
+                entries.add(ModBlocks.MCP_BLOCK);
+                entries.add(ModBlocks.FEEDWATER_BLOCK);
+                entries.add(ModBlocks.ECCS_ACCUMULATOR_BLOCK);
+                entries.add(ModBlocks.PLANT_PIPE_BLOCK);
                 entries.add(ModBlocks.ICMS_MESSAGE_INPUT_BLOCK);
                 entries.add(ModBlocks.ICMS_MESSAGE_OUTPUT_BLOCK);
                 entries.add(ModBlocks.INDUSTRIAL_CONTROL_BLOCK);

@@ -58,5 +58,21 @@
   "item.csp-modern.kommutator_spawn_egg": "Kommutator Spawn Egg (switchboard operator)",
   "block.csp-modern.genplan": "Генплан",
   "tooltip.csp-modern.genplan": "Genplan\nSite plan: the boundary, the enterprise's buildings, and the roads, rail and services that connect them",
-  "tooltip.csp-modern.planshet": "Planshet\nPlane table: the surveyor's drawing board"
+  "tooltip.csp-modern.planshet": "Planshet\nPlane table: the surveyor's drawing board",
+  "block.csp-modern.steam_separator": "Сепаратор",
+  "tooltip.csp-modern.steam_separator": "Separator (Барабан-сепаратор) — the steam drum above the core",
+  "block.csp-modern.turbine": "Турбина",
+  "tooltip.csp-modern.turbine": "Turbine (Турбогенератор K-500-65/3000) — 500 MWe",
+  "block.csp-modern.condenser": "Конденсатор",
+  "tooltip.csp-modern.condenser": "Condenser — rejects the turbine's waste heat to the cooling water",
+  "block.csp-modern.mcp": "ГЦН",
+  "tooltip.csp-modern.mcp": "Main Circulating Pump (Главный циркуляционный насос) — 8,000 m3/h",
+  "block.csp-modern.feedwater": "Деаэратор",
+  "tooltip.csp-modern.feedwater": "Deaerator (feedwater tank) — returns 160 C water to the drums",
+  "block.csp-modern.eccs_accumulator": "САОР",
+  "tooltip.csp-modern.eccs_accumulator": "ECCS accumulator (САОР) — emergency core cooling, 10 MPa",
+  "block.csp-modern.plant_pipe": "Трубопровод",
+  "tooltip.csp-modern.plant_pipe": "Piping (Трубопровод) — connects the plant machines",
+  "block.csp-modern.control_rod": "СУЗ",
+  "tooltip.csp-modern.control_rod": "Control rod channel (СУЗ) — Система управления и защиты"
 }
