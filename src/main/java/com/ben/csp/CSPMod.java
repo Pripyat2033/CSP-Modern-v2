@@ -87,6 +87,9 @@ public class CSPMod implements ModInitializer {
         // The reactor plant runs live on the server clock.
         com.ben.csp.rbmk.plant.PlantTicker.register();
 
+        // Construction runs on the server clock, a few thousand blocks per tick.
+        com.ben.csp.rbmk.ConstructionScheduler.register();
+
         LOGGER.info("CSP-Modern 0.0.1 loaded. Commands: /csp help, /prombaza, "
             + "/directorate, /zone.");
     }

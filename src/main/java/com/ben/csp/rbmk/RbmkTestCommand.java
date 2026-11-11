@@ -47,6 +47,7 @@ public final class RbmkTestCommand {
     // stress test state
     private static boolean stressListenerInstalled;
     private static java.util.List<ReactorCore> stressCores;
+    private static java.util.List<PlantSystem> stressPlants;
     private static int stressTicksLeft;
     private static double stressCoreMs;
     private static double stressServerMs;
@@ -56,15 +57,21 @@ public final class RbmkTestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("rbmk")
             .then(CommandManager.literal("test").executes(RbmkTestCommand::test))
-            .then(CommandManager.literal("build").executes(RbmkTestCommand::build))
+            .then(CommandManager.literal("build")
+                .executes(RbmkTestCommand::build)
+                .then(CommandManager.literal("immediate").executes(RbmkTestCommand::buildImmediate)))
             .then(CommandManager.literal("stress")
                 .then(CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
-                    .executes(RbmkTestCommand::stress)))
+                    .executes(RbmkTestCommand::stress)
+                    .then(CommandManager.literal("plant").executes(RbmkTestCommand::stressPlant))))
             .then(CommandManager.literal("status").executes(RbmkTestCommand::status))
             .then(CommandManager.literal("plant")
                 .then(CommandManager.literal("start").executes(RbmkTestCommand::plantStart))
                 .then(CommandManager.literal("scram").executes(RbmkTestCommand::plantScram))
-                .then(CommandManager.literal("build").executes(RbmkTestCommand::plantBuild))
+                .then(CommandManager.literal("build")
+                    .executes(RbmkTestCommand::plantBuild)
+                    .then(CommandManager.literal("immediate")
+                        .executes(RbmkTestCommand::plantBuildImmediate)))
                 .then(CommandManager.literal("status").executes(RbmkTestCommand::plantStatus))));
     }
 
@@ -123,7 +130,16 @@ public final class RbmkTestCommand {
      * many RBMK-1000s can this machine actually carry" with numbers, not hope.
      */
     private static int stress(CommandContext<ServerCommandSource> ctx) {
-        int count = IntegerArgumentType.getInteger(ctx, "count");
+        return beginStress(ctx, IntegerArgumentType.getInteger(ctx, "count"), false);
+    }
+
+    /** {@code /rbmk stress <n> plant} — the same, with the full equipment around each. */
+    private static int stressPlant(CommandContext<ServerCommandSource> ctx) {
+        return beginStress(ctx, IntegerArgumentType.getInteger(ctx, "count"), true);
+    }
+
+    private static int beginStress(CommandContext<ServerCommandSource> ctx, int count,
+                                   boolean withPlant) {
         ServerCommandSource s = ctx.getSource();
         ServerWorld world = s.getWorld();
         BlockPos origin = BlockPos.ofFloored(s.getPosition());
@@ -140,25 +156,36 @@ public final class RbmkTestCommand {
         for (int i = 0; i < count; i++) {
             int gx = (i % cols) * 96;
             int gz = (i / cols) * 96;
-            placed += RbmkWorldBuilder.placeCore(world, origin.add(gx, 0, gz)).total;
+            BlockPos o = origin.add(gx, 0, gz);
+            placed += RbmkWorldBuilder.placeCore(world, o).total;
+            if (withPlant) {
+                placed += RbmkWorldBuilder.placePlant(world, o).total;
+            }
         }
         double buildMs = (System.nanoTime() - t0) / 1e6;
 
         stressCores = new java.util.ArrayList<>();
+        stressPlants = new java.util.ArrayList<>();
         for (int i = 0; i < count; i++) {
             stressCores.add(new ReactorCore());
+            if (withPlant) {
+                PlantSystem ps = new PlantSystem();
+                ps.startUp();
+                stressPlants.add(ps);
+            }
         }
         stressTicksLeft = 300;
         stressCoreMs = 0;
         stressServerMs = 0;
         PerformanceProbe.resetPeak();
 
-        feedback(s, String.format("stress: built %d cores (%d blocks) in %.0f ms",
-            count, placed, buildMs), Formatting.GOLD);
+        feedback(s, String.format("stress: built %d %s (%d blocks) in %.0f ms",
+            count, withPlant ? "complete plants" : "cores", placed, buildMs), Formatting.GOLD);
         feedback(s, "  now running them live for 15 s — watch the tick cost...",
             Formatting.GRAY);
-        LOGGER.info("RBMK stress start: {} cores, {} blocks, build {} ms",
-            count, placed, buildMs);
+        LOGGER.info("RBMK stress start: {} {}{}, {} blocks, build {} ms",
+            count, withPlant ? "plants" : "cores", withPlant ? " (core+equipment)" : "",
+            placed, buildMs);
         return 1;
     }
 
@@ -170,18 +197,24 @@ public final class RbmkTestCommand {
         for (ReactorCore c : stressCores) {
             c.step(0.05);
         }
+        for (PlantSystem p : stressPlants) {
+            p.step(0.05);
+        }
         stressCoreMs += (System.nanoTime() - t0) / 1e6;
         stressServerMs += PerformanceProbe.averageMspt();
         if (--stressTicksLeft == 0) {
             int n = stressCores.size();
             double avgCore = stressCoreMs / 300.0;
             double avgServer = stressServerMs / 300.0;
-            LOGGER.info("RBMK stress result: {} cores, core cost {} ms/tick, "
+            LOGGER.info("RBMK stress result: {} {}{}, core cost {} ms/tick, "
                 + "server MSPT {} (peak {}), {}",
-                n, String.format("%.2f", avgCore), String.format("%.2f", avgServer),
+                n, stressPlants.isEmpty() ? "cores" : "plants",
+                stressPlants.isEmpty() ? "" : " (core+equipment)",
+                String.format("%.2f", avgCore), String.format("%.2f", avgServer),
                 String.format("%.2f", PerformanceProbe.peakMspt()),
                 PerformanceProbe.verdict());
             stressCores = null;
+            stressPlants = null;
         }
     }
 
@@ -196,6 +229,7 @@ public final class RbmkTestCommand {
         feedback(s, String.format("server tick: average %.2f ms, peak %.2f ms  (%s)",
             PerformanceProbe.averageMspt(), PerformanceProbe.peakMspt(),
             PerformanceProbe.verdict()), Formatting.WHITE);
+        feedback(s, ConstructionScheduler.status(), Formatting.GRAY);
         return 1;
     }
 
@@ -211,59 +245,35 @@ public final class RbmkTestCommand {
         ServerWorld world = s.getWorld();
         BlockPos origin = BlockPos.ofFloored(s.getPosition());
 
-        Block graphite = ModBlocks.GRAPHITE_BLOCK;
-        Block fuel = ModBlocks.FUEL_CHANNEL_BLOCK;
-        Block rod = ModBlocks.CONTROL_ROD_BLOCK;
+        ConstructionJob job = RbmkWorldBuilder.planCore(world, origin);
+        ConstructionScheduler.enqueue(job);
+        int rate = ConstructionScheduler.blocksPerTick();
+        double etaS = job.planTotal() / (double) rate / 20.0;
 
-        int height = RbmkGeometry.STACK_HEIGHT_BLOCKS;
-        long t0 = System.nanoTime();
-        int graphiteBlocks = 0;
-        int fuelBlocks = 0;
-        int rodBlocks = 0;
-
-        // graphite moderator stack + radial reflector: one block per cell, 14 m across
-        for (RbmkLattice.Cell cell : RbmkLattice.graphiteCells()) {
-            int x = origin.getX() + cell.x();
-            int z = origin.getZ() + cell.z();
-            for (int y = 0; y < height; y++) {
-                world.setBlockState(new BlockPos(x, origin.getY() + y, z),
-                    graphite.getDefaultState(), 2);
-                graphiteBlocks++;
-            }
-        }
-
-        // channels: the fuel (ТК) and control (СУЗ) columns pierce the graphite
-        for (RbmkLattice.Channel c : RbmkLattice.channels()) {
-            int x = origin.getX() + c.x();
-            int z = origin.getZ() + c.z();
-            Block channel = c.control() ? rod : fuel;
-            for (int y = 0; y < height; y++) {
-                world.setBlockState(new BlockPos(x, origin.getY() + y, z),
-                    channel.getDefaultState(), 2);
-            }
-            if (c.control()) {
-                rodBlocks += height;
-            } else {
-                fuelBlocks += height;
-            }
-        }
-        double ms = (System.nanoTime() - t0) / 1e6;
-
-        feedback(s, "RBMK-1000 core, placed as blocks (1:4)", Formatting.GOLD);
+        feedback(s, "RBMK-1000 core queued for metered construction (1:4)", Formatting.GOLD);
         feedback(s, String.format("  position: %d, %d, %d", origin.getX(), origin.getY(),
             origin.getZ()), Formatting.WHITE);
-        feedback(s, String.format("  graphite stack (14 m, incl. reflector): %d blocks",
-            graphiteBlocks), Formatting.WHITE);
-        feedback(s, String.format("  fuel channels:  %d blocks (ТК, %d channels)",
-            fuelBlocks, RbmkLattice.fuelCount()), Formatting.WHITE);
-        feedback(s, String.format("  control rods:   %d blocks (СУЗ, %d channels)",
-            rodBlocks, RbmkLattice.controlCount()), Formatting.WHITE);
-        feedback(s, String.format("  total written:  %d block updates in %.0f ms",
-            graphiteBlocks + fuelBlocks + rodBlocks, ms), Formatting.WHITE);
-        feedback(s, "  now watch the server tick — /rbmk test for the solver cost",
+        feedback(s, String.format("  plan: %d blocks, placed %d per tick (about %.0f s)",
+            job.planTotal(), rate, etaS), Formatting.WHITE);
+        feedback(s, "  built on the server clock — /rbmk status shows progress",
             Formatting.GRAY);
-        LOGGER.info("RBMK build: {} graphite, {} fuel, {} rod blocks in {} ms",
-            graphiteBlocks, fuelBlocks, rodBlocks, ms);
+        return 1;
+    }
+
+    private static int buildImmediate(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        ServerWorld world = s.getWorld();
+        BlockPos origin = BlockPos.ofFloored(s.getPosition());
+
+        long t0 = System.nanoTime();
+        RbmkWorldBuilder.Counts c = RbmkWorldBuilder.placeCore(world, origin);
+        double ms = (System.nanoTime() - t0) / 1e6;
+
+        feedback(s, "RBMK-1000 core, placed at once (1:4) — burst measurement",
+            Formatting.GOLD);
+        feedback(s, String.format("  graphite %d, fuel %d, rod %d; total %d in %.0f ms",
+            c.graphite, c.fuel, c.rods, c.total, ms), Formatting.WHITE);
+        LOGGER.info("RBMK build (immediate): {} blocks in {} ms", c.total, ms);
         return 1;
     }
 
@@ -278,30 +288,40 @@ public final class RbmkTestCommand {
         ServerWorld world = s.getWorld();
         BlockPos origin = BlockPos.ofFloored(s.getPosition());
 
+        ConstructionJob core = RbmkWorldBuilder.planCore(world, origin);
+        ConstructionJob plant = RbmkWorldBuilder.planPlant(world, origin);
+        ConstructionScheduler.enqueue(core);
+        ConstructionScheduler.enqueue(plant);
+        long total = core.planTotal() + plant.planTotal();
+        int rate = ConstructionScheduler.blocksPerTick();
+        double etaS = total / (double) rate / 20.0;
+
+        feedback(s, "RBMK-1000 plant queued for metered construction (1:4)", Formatting.GOLD);
+        feedback(s, String.format("  core:  %d blocks", core.planTotal()), Formatting.WHITE);
+        feedback(s, String.format("  plant: %d blocks (4 drums, 2 turbos, 2 condensers,",
+            plant.planTotal()), Formatting.WHITE);
+        feedback(s, "         8 ГЦН, 4 deaerators, 12 САОР)", Formatting.WHITE);
+        feedback(s, String.format("  total: %d blocks at %d per tick (about %.0f s)",
+            total, rate, etaS), Formatting.WHITE);
+        feedback(s, "  built on the server clock, so the tick never hitches",
+            Formatting.GRAY);
+        feedback(s, "  then /rbmk plant start to run it live", Formatting.GRAY);
+        return 1;
+    }
+
+    private static int plantBuildImmediate(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        ServerWorld world = s.getWorld();
+        BlockPos origin = BlockPos.ofFloored(s.getPosition());
+
         long t0 = System.nanoTime();
         RbmkWorldBuilder.Counts core = RbmkWorldBuilder.placeCore(world, origin);
         RbmkWorldBuilder.Counts plant = RbmkWorldBuilder.placePlant(world, origin);
         double ms = (System.nanoTime() - t0) / 1e6;
 
-        feedback(s, "RBMK-1000 plant, placed as blocks (1:4)", Formatting.GOLD);
-        feedback(s, String.format("  core:        %d graphite, %d fuel, %d rod blocks",
-            core.graphite, core.fuel, core.rods), Formatting.WHITE);
-        feedback(s, String.format("  separators:  %d blocks (4 drums, 2.8 m x 31 m)",
-            plant.separators), Formatting.WHITE);
-        feedback(s, String.format("  turbines:    %d blocks (2 turbogenerators)",
-            plant.turbines), Formatting.WHITE);
-        feedback(s, String.format("  condensers:  %d blocks (2)", plant.condensers),
-            Formatting.WHITE);
-        feedback(s, String.format("  pumps:       %d blocks (8 ГЦН)", plant.pumps),
-            Formatting.WHITE);
-        feedback(s, String.format("  feedwater:   %d blocks (4 deaerators)",
-            plant.feedwater), Formatting.WHITE);
-        feedback(s, String.format("  ECCS:        %d blocks (12 accumulators)",
-            plant.accumulators), Formatting.WHITE);
-        feedback(s, String.format("  total:       %d block updates in %.0f ms",
-            core.total + plant.total, ms), Formatting.WHITE);
-        feedback(s, "  then /rbmk plant start to run it live", Formatting.GRAY);
-        LOGGER.info("RBMK plant build: core {} + plant {} blocks in {} ms",
+        feedback(s, String.format("plant placed at once: %d + %d = %d blocks in %.0f ms",
+            core.total, plant.total, core.total + plant.total, ms), Formatting.GOLD);
+        LOGGER.info("RBMK plant build (immediate): core {} + plant {} in {} ms",
             core.total, plant.total, ms);
         return 1;
     }

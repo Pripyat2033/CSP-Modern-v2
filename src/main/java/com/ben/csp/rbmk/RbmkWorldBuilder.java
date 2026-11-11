@@ -6,11 +6,19 @@ import net.minecraft.block.Block;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Places the RBMK core and the rest of the plant into the world as real blocks at
- * 1:4. The core is placed solid (one block per lattice cell); the plant machines
- * are placed as hollow shells, so their form is visible without writing millions
- * of blocks — a turbine hall at 1:4 is 156 blocks long.
+ * Describes the RBMK core and the rest of the plant as real blocks at 1:4.
+ *
+ * <p>The geometry is expressed as {@link ConstructionJob} plans — a handful of
+ * region descriptors — so the build can be either <em>metered</em> (drained a few
+ * thousand blocks per tick by {@link ConstructionScheduler}, the normal path) or
+ * <em>immediate</em> (filled in one go, used only to measure the burst cost).
+ * The core is placed solid (one block per lattice cell); the plant machines are
+ * placed as hollow shells, so their form is visible without writing millions of
+ * blocks — a turbine hall at 1:4 is 156 blocks long.
  */
 public final class RbmkWorldBuilder {
 
@@ -22,45 +30,71 @@ public final class RbmkWorldBuilder {
             feedwater, accumulators, pipes, total;
     }
 
-    /** Place the 1:4 core (graphite stack, fuel channels, control rods) at origin. */
-    public static Counts placeCore(ServerWorld world, BlockPos origin) {
+    private static Counts counts(ConstructionJob job) {
         Counts c = new Counts();
-        Block graphite = ModBlocks.GRAPHITE_BLOCK;
-        Block fuel = ModBlocks.FUEL_CHANNEL_BLOCK;
-        Block rod = ModBlocks.CONTROL_ROD_BLOCK;
-        int height = RbmkGeometry.STACK_HEIGHT_BLOCKS;
-
-        for (RbmkLattice.Cell cell : RbmkLattice.graphiteCells()) {
-            int x = origin.getX() + cell.x();
-            int z = origin.getZ() + cell.z();
-            for (int y = 0; y < height; y++) {
-                world.setBlockState(new BlockPos(x, origin.getY() + y, z),
-                    graphite.getDefaultState(), 2);
-                c.graphite++;
-            }
-        }
-        for (RbmkLattice.Channel ch : RbmkLattice.channels()) {
-            int x = origin.getX() + ch.x();
-            int z = origin.getZ() + ch.z();
-            Block block = ch.control() ? rod : fuel;
-            for (int y = 0; y < height; y++) {
-                world.setBlockState(new BlockPos(x, origin.getY() + y, z),
-                    block.getDefaultState(), 2);
-            }
-            if (ch.control()) {
-                c.rods += height;
-            } else {
-                c.fuel += height;
-            }
-        }
-        c.total = c.graphite + c.fuel + c.rods;
+        c.graphite = job.placed(ConstructionJob.Part.GRAPHITE);
+        c.fuel = job.placed(ConstructionJob.Part.FUEL);
+        c.rods = job.placed(ConstructionJob.Part.RODS);
+        c.separators = job.placed(ConstructionJob.Part.SEPARATORS);
+        c.turbines = job.placed(ConstructionJob.Part.TURBINES);
+        c.condensers = job.placed(ConstructionJob.Part.CONDENSERS);
+        c.pumps = job.placed(ConstructionJob.Part.PUMPS);
+        c.feedwater = job.placed(ConstructionJob.Part.FEEDWATER);
+        c.accumulators = job.placed(ConstructionJob.Part.ACCUMULATORS);
+        c.pipes = job.placed(ConstructionJob.Part.PIPES);
+        c.total = c.graphite + c.fuel + c.rods + c.separators + c.turbines
+            + c.condensers + c.pumps + c.feedwater + c.accumulators + c.pipes;
         return c;
     }
 
-    /** Place the plant machines around the core, as shells. */
-    public static Counts placePlant(ServerWorld world, BlockPos origin) {
-        Counts c = new Counts();
+    // ------------------------------------------------------------------ plans
+
+    /** Plan the 1:4 core: graphite stack, fuel channels and control rods. */
+    public static ConstructionJob planCore(ServerWorld world, BlockPos origin) {
+        List<ConstructionJob.Region> regions = new ArrayList<>();
+        int height = RbmkGeometry.STACK_HEIGHT_BLOCKS;
+        int baseY = origin.getY();
+
+        List<RbmkLattice.Cell> cells = RbmkLattice.graphiteCells();
+        int[] gx = new int[cells.size()];
+        int[] gz = new int[cells.size()];
+        for (int i = 0; i < cells.size(); i++) {
+            gx[i] = origin.getX() + cells.get(i).x();
+            gz[i] = origin.getZ() + cells.get(i).z();
+        }
+        regions.add(ConstructionJob.columns(ConstructionJob.Part.GRAPHITE,
+            ModBlocks.GRAPHITE_BLOCK, gx, gz, baseY, height));
+
+        List<RbmkLattice.Channel> channels = RbmkLattice.channels();
+        List<Integer> fx = new ArrayList<>(), fz = new ArrayList<>();
+        List<Integer> rx = new ArrayList<>(), rz = new ArrayList<>();
+        for (RbmkLattice.Channel ch : channels) {
+            if (ch.control()) {
+                rx.add(origin.getX() + ch.x());
+                rz.add(origin.getZ() + ch.z());
+            } else {
+                fx.add(origin.getX() + ch.x());
+                fz.add(origin.getZ() + ch.z());
+            }
+        }
+        regions.add(ConstructionJob.columns(ConstructionJob.Part.FUEL,
+            ModBlocks.FUEL_CHANNEL_BLOCK, toArray(fx), toArray(fz), baseY, height));
+        regions.add(ConstructionJob.columns(ConstructionJob.Part.RODS,
+            ModBlocks.CONTROL_ROD_BLOCK, toArray(rx), toArray(rz), baseY, height));
+
+        return ConstructionJob.of(world, "RBMK core", regions);
+    }
+
+    /** Plan the plant machines around the core, as shells. */
+    public static ConstructionJob planPlant(ServerWorld world, BlockPos origin) {
+        List<ConstructionJob.Region> regions = new ArrayList<>();
         int y0 = origin.getY();
+        Block sep = ModBlocks.STEAM_SEPARATOR_BLOCK;
+        Block tur = ModBlocks.TURBINE_BLOCK;
+        Block con = ModBlocks.CONDENSER_BLOCK;
+        Block mcp = ModBlocks.MCP_BLOCK;
+        Block feed = ModBlocks.FEEDWATER_BLOCK;
+        Block eccs = ModBlocks.ECCS_ACCUMULATOR_BLOCK;
 
         // four steam separator drums: two rows of two, above and beside the core
         int sd = PlantLayout.SEPARATOR_DIAMETER_BLOCKS;
@@ -71,9 +105,9 @@ public final class RbmkWorldBuilder {
             for (int pair = 0; pair < 2; pair++) {
                 int cx = origin.getX() + (pair == 0 ? -sl / 3 : sl / 3);
                 int cz = origin.getZ() + side * off;
-                c.separators += shell(world, cx - sl / 2, y0 + sh, cz - sd / 2,
-                    cx + sl / 2, y0 + sh + sd, cz + sd / 2,
-                    ModBlocks.STEAM_SEPARATOR_BLOCK);
+                regions.add(ConstructionJob.shell(ConstructionJob.Part.SEPARATORS, sep,
+                    cx - sl / 2, y0 + sh, cz - sd / 2,
+                    cx + sl / 2, y0 + sh + sd, cz + sd / 2));
             }
         }
 
@@ -84,14 +118,13 @@ public final class RbmkWorldBuilder {
         int hallX = origin.getX() + PlantLayout.TURBINE_HALL_OFFSET_BLOCKS;
         for (int t = 0; t < 2; t++) {
             int cz = origin.getZ() + (t == 0 ? -tw : tw);
-            c.turbines += shell(world, hallX, y0, cz - tw / 2,
-                hallX + tl, y0 + th, cz + tw / 2, ModBlocks.TURBINE_BLOCK);
-            // condenser under each turbine
+            regions.add(ConstructionJob.shell(ConstructionJob.Part.TURBINES, tur,
+                hallX, y0, cz - tw / 2, hallX + tl, y0 + th, cz + tw / 2));
             int cl = PlantLayout.CONDENSER_LENGTH_BLOCKS;
             int cw = PlantLayout.CONDENSER_WIDTH_BLOCKS;
             int chh = PlantLayout.CONDENSER_HEIGHT_BLOCKS;
-            c.condensers += shell(world, hallX, y0 - chh, cz - cw / 2,
-                hallX + cl, y0, cz + cw / 2, ModBlocks.CONDENSER_BLOCK);
+            regions.add(ConstructionJob.shell(ConstructionJob.Part.CONDENSERS, con,
+                hallX, y0 - chh, cz - cw / 2, hallX + cl, y0, cz + cw / 2));
         }
 
         // eight main circulating pumps in a ring around the core
@@ -101,8 +134,8 @@ public final class RbmkWorldBuilder {
             double a = 2 * Math.PI * i / 8;
             int px = origin.getX() + (int) Math.round(r * Math.cos(a));
             int pz = origin.getZ() + (int) Math.round(r * Math.sin(a));
-            c.pumps += box(world, px, y0, pz, px + sz, y0 + sz, pz + sz,
-                ModBlocks.MCP_BLOCK);
+            regions.add(ConstructionJob.box(ConstructionJob.Part.PUMPS, mcp,
+                px, y0, pz, px + sz, y0 + sz, pz + sz));
         }
 
         // four deaerators / feedwater tanks in a row
@@ -111,8 +144,8 @@ public final class RbmkWorldBuilder {
         for (int i = 0; i < 4; i++) {
             int dx = origin.getX() - r - ds - i * (ds + 2);
             int dz = origin.getZ() - ds / 2;
-            c.feedwater += shell(world, dx, y0, dz, dx + ds, y0 + dh, dz + ds,
-                ModBlocks.FEEDWATER_BLOCK);
+            regions.add(ConstructionJob.shell(ConstructionJob.Part.FEEDWATER, feed,
+                dx, y0, dz, dx + ds, y0 + dh, dz + ds));
         }
 
         // twelve ECCS accumulators in a row
@@ -121,47 +154,34 @@ public final class RbmkWorldBuilder {
         for (int i = 0; i < 12; i++) {
             int ax = origin.getX() - r - as - i * (as + 2);
             int az = origin.getZ() + ds + 4;
-            c.accumulators += box(world, ax, y0, az, ax + as, y0 + ah, az + as,
-                ModBlocks.ECCS_ACCUMULATOR_BLOCK);
+            regions.add(ConstructionJob.box(ConstructionJob.Part.ACCUMULATORS, eccs,
+                ax, y0, az, ax + as, y0 + ah, az + as));
         }
 
-        c.total = c.separators + c.turbines + c.condensers + c.pumps
-            + c.feedwater + c.accumulators + c.pipes;
-        return c;
+        return ConstructionJob.of(world, "plant equipment", regions);
     }
 
-    /** Place a solid box; returns the number of blocks. */
-    private static long box(ServerWorld world, int x0, int y0, int z0,
-                            int x1, int y1, int z1, Block block) {
-        long n = 0;
-        for (int x = x0; x < x1; x++) {
-            for (int y = y0; y < y1; y++) {
-                for (int z = z0; z < z1; z++) {
-                    world.setBlockState(new BlockPos(x, y, z), block.getDefaultState(), 2);
-                    n++;
-                }
-            }
-        }
-        return n;
+    // -------------------------------------------------------------- immediate
+
+    /** Place the core in one go (used to measure the burst cost). */
+    public static Counts placeCore(ServerWorld world, BlockPos origin) {
+        ConstructionJob job = planCore(world, origin);
+        job.fill(Long.MAX_VALUE);
+        return counts(job);
     }
 
-    /** Place only the surface of a box (a hollow shell); returns the block count. */
-    private static long shell(ServerWorld world, int x0, int y0, int z0,
-                              int x1, int y1, int z1, Block block) {
-        long n = 0;
-        for (int x = x0; x < x1; x++) {
-            for (int y = y0; y < y1; y++) {
-                for (int z = z0; z < z1; z++) {
-                    boolean surface = x == x0 || x == x1 - 1
-                        || y == y0 || y == y1 - 1
-                        || z == z0 || z == z1 - 1;
-                    if (surface) {
-                        world.setBlockState(new BlockPos(x, y, z), block.getDefaultState(), 2);
-                        n++;
-                    }
-                }
-            }
+    /** Place the plant machines in one go (used to measure the burst cost). */
+    public static Counts placePlant(ServerWorld world, BlockPos origin) {
+        ConstructionJob job = planPlant(world, origin);
+        job.fill(Long.MAX_VALUE);
+        return counts(job);
+    }
+
+    private static int[] toArray(List<Integer> list) {
+        int[] a = new int[list.size()];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = list.get(i);
         }
-        return n;
+        return a;
     }
 }
