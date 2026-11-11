@@ -36,6 +36,11 @@ public class ModBlocks {
     public static final Block FEEDWATER_BLOCK = PlantEquipmentBlock.feedwater();
     public static final Block ECCS_ACCUMULATOR_BLOCK = PlantEquipmentBlock.accumulator();
     public static final Block PLANT_PIPE_BLOCK = PlantEquipmentBlock.pipe();
+    // the reactor's structural sections (the "Schema"): UBS, LBS, vessel, water tank
+    public static final Block UBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.UPPER_SHIELD);
+    public static final Block LBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.LOWER_SHIELD);
+    public static final Block VESSEL_BLOCK = SchemaBlock.of(SchemaBlock.Section.VESSEL);
+    public static final Block WATER_TANK_BLOCK = SchemaBlock.of(SchemaBlock.Section.WATER_TANK);
     public static final Block STOCKPILE_BLOCK = new StockpileBlock();
     public static final Block ICMS_MESSAGE_INPUT_BLOCK = new IcmsMessageInputBlock();
     public static final Block ICMS_MESSAGE_OUTPUT_BLOCK = new IcmsMessageOutputBlock();
@@ -65,6 +70,10 @@ public class ModBlocks {
         registerWithItem("eccs_accumulator", ECCS_ACCUMULATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("plant_pipe", PLANT_PIPE_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("control_rod", CONTROL_ROD_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("ubs", UBS_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("lbs", LBS_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("vessel", VESSEL_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("water_tank", WATER_TANK_BLOCK, PlantEquipmentBlockItem::new);
         register("stockpile", STOCKPILE_BLOCK);
         register("icms_message_input", ICMS_MESSAGE_INPUT_BLOCK);
         register("icms_message_output", ICMS_MESSAGE_OUTPUT_BLOCK);

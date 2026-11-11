@@ -213,6 +213,75 @@ def gen_control_rod():
     return px
 
 
+def gen_ubs():
+    """Upper biological shield (Схема Е): serpentinite concrete disc, a plug per
+    channel, with the ring of lifting eyes it was craned by."""
+    px = new(DARK)
+    rect(px, 0, 0, S - 1, S - 1, shade((96, 98, 92, 255), 1.0))   # serpentinite
+    for y in range(S):                                            # concrete speckle
+        for x in range(S):
+            if (x * 5 + y * 11) % 7 == 0:
+                put(px, x, y, shade((96, 98, 92, 255), 0.85))
+    # the steel-graphite plugs: a regular grid of bright discs
+    for gy in (3, 8, 13):
+        for gx in (3, 8, 13):
+            put(px, gx, gy, shade(STEEL, 1.05))
+            put(px, gx + 1, gy, shade(STEEL, 0.8))
+            put(px, gx, gy + 1, shade(STEEL, 0.7))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_lbs():
+    """Lower biological shield: steel-faced serpentinite slab, heavy and plain."""
+    px = new(DARK)
+    rect(px, 0, 0, S - 1, S - 1, shade((110, 112, 116, 255), 0.95))
+    for y in range(S):
+        for x in range(S):
+            if (x + 2 * y) % 4 == 0:
+                put(px, x, y, shade((110, 112, 116, 255), 0.82))
+    # a central support ring
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if 4.6 < d < 5.4:
+                put(px, x, y, shade(STEEL, 0.9))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_vessel():
+    """The reactor vessel (кожух): a vertical steel shell with a weld seam."""
+    px = new(DARK)
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.85))
+    for y in range(S):
+        f = 1.1 if (y % 8) < 2 else 0.9
+        rect(px, 0, y, S - 1, y, shade(STEEL, f))
+    rect(px, 7, 0, 8, S - 1, shade(DARK, 1.05))     # vertical weld seam
+    for y in (2, 13):                                # horizontal seams
+        rect(px, 0, y, S - 1, y, shade(DARK, 1.1))
+    frame(px, shade(BLACK, 1.25))
+    return px
+
+
+def gen_water_tank():
+    """Side biological-shield water tank: a compartment of water with a steel
+    frame and a level mark - the gamma shield around the vessel."""
+    px = new(DARK)
+    rect(px, 0, 0, S - 1, S - 1, (54, 112, 168, 255))          # water
+    for y in range(S):
+        for x in range(S):
+            if (x * 3 + y * 5) % 6 == 0:
+                put(px, x, y, (72, 138, 196, 255))             # ripples
+    # steel compartment frame
+    rect(px, 0, 0, S - 1, 1, shade(STEEL, 0.9))
+    rect(px, 0, S - 2, S - 1, S - 1, shade(STEEL, 0.9))
+    rect(px, 0, 0, 1, S - 1, shade(STEEL, 0.8))
+    rect(px, S - 2, 0, S - 1, S - 1, shade(STEEL, 0.8))
+    rect(px, 7, 0, 8, S - 1, shade(STEEL, 0.75))               # divider
+    return px
+
+
 TEXTURES = {
     "steam_separator": gen_steam_separator,
     "turbine": gen_turbine,
@@ -222,6 +291,10 @@ TEXTURES = {
     "eccs_accumulator": gen_eccs,
     "plant_pipe": gen_pipe,
     "control_rod": gen_control_rod,
+    "ubs": gen_ubs,
+    "lbs": gen_lbs,
+    "vessel": gen_vessel,
+    "water_tank": gen_water_tank,
 }
 
 if __name__ == "__main__":

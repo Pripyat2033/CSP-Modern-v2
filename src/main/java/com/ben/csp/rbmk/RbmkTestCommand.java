@@ -1,7 +1,12 @@
 package com.ben.csp.rbmk;
 
 import com.ben.csp.block.ModBlocks;
+import com.ben.csp.authorisation.PlantBuildAuthorisation;
+import com.ben.csp.enterprise.Enterprise;
 import com.ben.csp.perf.PerformanceProbe;
+import com.ben.csp.prombaza.PrombazaRegistry;
+import com.ben.csp.prombaza.PrombazaState;
+import com.ben.csp.zone.ZoneState;
 import com.ben.csp.rbmk.plant.Condenser;
 import com.ben.csp.rbmk.plant.PlantPhysics;
 import com.ben.csp.rbmk.plant.PlantSystem;
@@ -21,6 +26,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * {@code /rbmk test} — builds the real RBMK-1000 core inside the running server
@@ -58,8 +65,13 @@ public final class RbmkTestCommand {
         dispatcher.register(CommandManager.literal("rbmk")
             .then(CommandManager.literal("test").executes(RbmkTestCommand::test))
             .then(CommandManager.literal("build")
-                .executes(RbmkTestCommand::build)
-                .then(CommandManager.literal("immediate").executes(RbmkTestCommand::buildImmediate)))
+                .executes(ctx -> build(ctx, false))
+                .then(CommandManager.literal("immediate")
+                    .executes(ctx -> build(ctx, false, true)))
+                .then(CommandManager.literal("demo")
+                    .executes(ctx -> build(ctx, true))
+                    .then(CommandManager.literal("immediate")
+                        .executes(ctx -> build(ctx, true, true)))))
             .then(CommandManager.literal("stress")
                 .then(CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
                     .executes(RbmkTestCommand::stress)
@@ -69,9 +81,13 @@ public final class RbmkTestCommand {
                 .then(CommandManager.literal("start").executes(RbmkTestCommand::plantStart))
                 .then(CommandManager.literal("scram").executes(RbmkTestCommand::plantScram))
                 .then(CommandManager.literal("build")
-                    .executes(RbmkTestCommand::plantBuild)
+                    .executes(ctx -> plantBuild(ctx, false))
                     .then(CommandManager.literal("immediate")
-                        .executes(RbmkTestCommand::plantBuildImmediate)))
+                        .executes(ctx -> plantBuild(ctx, false, true)))
+                    .then(CommandManager.literal("demo")
+                        .executes(ctx -> plantBuild(ctx, true))
+                        .then(CommandManager.literal("immediate")
+                            .executes(ctx -> plantBuild(ctx, true, true)))))
                 .then(CommandManager.literal("status").executes(RbmkTestCommand::plantStatus))));
     }
 
@@ -240,17 +256,85 @@ public final class RbmkTestCommand {
      * command's position. This is the second half of the question: not just whether
      * the solver fits, but whether the world holds the core.
      */
+    // --------------------------------------------------------- build authority
+
+    /**
+     * Refuse to raise plant unless it is authorised — the charter's hard gate.
+     * The plant is built by the enterprises; until every enterprise is operational
+     * and a prombaza has been designated, nothing of it may stand. The only way
+     * past the gate is the explicit {@code demo} sub-command, which exists for
+     * disposable test worlds and announces itself loudly.
+     */
+    private static boolean authorise(ServerCommandSource s, boolean demo) {
+        if (demo) {
+            feedback(s, "DEMO BUILD — plant construction gate bypassed for a disposable "
+                + "test world. This is not a permitted site build.", Formatting.RED);
+            return true;
+        }
+        List<Enterprise> enterprises;
+        PrombazaRegistry prombazas;
+        try {
+            enterprises = ZoneState.get(s.getServer()).zone() == null
+                ? List.of() : ZoneState.get(s.getServer()).zone().enterprises();
+            prombazas = PrombazaState.get(s.getServer()).registry();
+        } catch (RuntimeException e) {
+            enterprises = List.of();
+            prombazas = new PrombazaRegistry();
+        }
+        PlantBuildAuthorisation auth = new PlantBuildAuthorisation(enterprises, prombazas);
+        if (auth.isGranted()) {
+            return true;
+        }
+        feedback(s, "Plant construction is NOT authorised — nothing was built.",
+            Formatting.RED);
+        for (PlantBuildAuthorisation.Blocker b : auth.blockers()) {
+            feedback(s, "  · " + b.reason(), Formatting.GRAY);
+        }
+        feedback(s, String.format("  enterprises ready: %d/%d; prombaza designated: %s",
+            auth.readyCount(), auth.total(), auth.prombazaDesignated()), Formatting.GRAY);
+        feedback(s, "  for a disposable test world only: /rbmk build demo",
+            Formatting.YELLOW);
+        return false;
+    }
+
     private static int build(CommandContext<ServerCommandSource> ctx) {
+        return build(ctx, false, false);
+    }
+
+    private static int build(CommandContext<ServerCommandSource> ctx, boolean demo) {
+        return build(ctx, demo, false);
+    }
+
+    private static int build(CommandContext<ServerCommandSource> ctx, boolean demo,
+                             boolean immediate) {
         ServerCommandSource s = ctx.getSource();
+        if (!authorise(s, demo)) {
+            return 0;
+        }
         ServerWorld world = s.getWorld();
         BlockPos origin = BlockPos.ofFloored(s.getPosition());
+
+        if (immediate) {
+            long t0 = System.nanoTime();
+            RbmkWorldBuilder.Counts c = RbmkWorldBuilder.placeCore(world, origin);
+            double ms = (System.nanoTime() - t0) / 1e6;
+            feedback(s, "RBMK-1000 core, placed at once (1:4) — burst measurement",
+                Formatting.GOLD);
+            feedback(s, String.format("  graphite %d, fuel %d, rod %d, UBS %d, LBS %d, "
+                + "vessel %d, water tank %d; total %d in %.0f ms",
+                c.graphite, c.fuel, c.rods, c.ubs, c.lbs, c.vessel, c.waterTank,
+                c.total, ms), Formatting.WHITE);
+            LOGGER.info("RBMK build (immediate): {} blocks in {} ms", c.total, ms);
+            return 1;
+        }
 
         ConstructionJob job = RbmkWorldBuilder.planCore(world, origin);
         ConstructionScheduler.enqueue(job);
         int rate = ConstructionScheduler.blocksPerTick();
         double etaS = job.planTotal() / (double) rate / 20.0;
 
-        feedback(s, "RBMK-1000 core queued for metered construction (1:4)", Formatting.GOLD);
+        feedback(s, "RBMK-1000 core (graphite stack + its sections) queued (1:4)",
+            Formatting.GOLD);
         feedback(s, String.format("  position: %d, %d, %d", origin.getX(), origin.getY(),
             origin.getZ()), Formatting.WHITE);
         feedback(s, String.format("  plan: %d blocks, placed %d per tick (about %.0f s)",
@@ -260,33 +344,40 @@ public final class RbmkTestCommand {
         return 1;
     }
 
-    private static int buildImmediate(CommandContext<ServerCommandSource> ctx) {
-        ServerCommandSource s = ctx.getSource();
-        ServerWorld world = s.getWorld();
-        BlockPos origin = BlockPos.ofFloored(s.getPosition());
-
-        long t0 = System.nanoTime();
-        RbmkWorldBuilder.Counts c = RbmkWorldBuilder.placeCore(world, origin);
-        double ms = (System.nanoTime() - t0) / 1e6;
-
-        feedback(s, "RBMK-1000 core, placed at once (1:4) — burst measurement",
-            Formatting.GOLD);
-        feedback(s, String.format("  graphite %d, fuel %d, rod %d; total %d in %.0f ms",
-            c.graphite, c.fuel, c.rods, c.total, ms), Formatting.WHITE);
-        LOGGER.info("RBMK build (immediate): {} blocks in {} ms", c.total, ms);
-        return 1;
-    }
-
     /**
      * {@code /rbmk plant build} — places the whole plant at 1:4 as real blocks:
-     * the core solid, then the four steam separator drums, two turbogenerators,
-     * their condensers, eight main circulating pumps, the feedwater tanks and the
-     * twelve ECCS accumulators as separate machines around it.
+     * the core and its sections, then the four steam separator drums, two
+     * turbogenerators, their condensers, eight main circulating pumps, the
+     * feedwater tanks and the twelve ECCS accumulators as separate machines.
      */
     private static int plantBuild(CommandContext<ServerCommandSource> ctx) {
+        return plantBuild(ctx, false, false);
+    }
+
+    private static int plantBuild(CommandContext<ServerCommandSource> ctx, boolean demo) {
+        return plantBuild(ctx, demo, false);
+    }
+
+    private static int plantBuild(CommandContext<ServerCommandSource> ctx, boolean demo,
+                                  boolean immediate) {
         ServerCommandSource s = ctx.getSource();
+        if (!authorise(s, demo)) {
+            return 0;
+        }
         ServerWorld world = s.getWorld();
         BlockPos origin = BlockPos.ofFloored(s.getPosition());
+
+        if (immediate) {
+            long t0 = System.nanoTime();
+            RbmkWorldBuilder.Counts core = RbmkWorldBuilder.placeCore(world, origin);
+            RbmkWorldBuilder.Counts plant = RbmkWorldBuilder.placePlant(world, origin);
+            double ms = (System.nanoTime() - t0) / 1e6;
+            feedback(s, String.format("plant placed at once: %d + %d = %d blocks in %.0f ms",
+                core.total, plant.total, core.total + plant.total, ms), Formatting.GOLD);
+            LOGGER.info("RBMK plant build (immediate): core {} + plant {} in {} ms",
+                core.total, plant.total, ms);
+            return 1;
+        }
 
         ConstructionJob core = RbmkWorldBuilder.planCore(world, origin);
         ConstructionJob plant = RbmkWorldBuilder.planPlant(world, origin);
@@ -297,7 +388,8 @@ public final class RbmkTestCommand {
         double etaS = total / (double) rate / 20.0;
 
         feedback(s, "RBMK-1000 plant queued for metered construction (1:4)", Formatting.GOLD);
-        feedback(s, String.format("  core:  %d blocks", core.planTotal()), Formatting.WHITE);
+        feedback(s, String.format("  core:  %d blocks (stack + UBS + LBS + vessel + water tank)",
+            core.planTotal()), Formatting.WHITE);
         feedback(s, String.format("  plant: %d blocks (4 drums, 2 turbos, 2 condensers,",
             plant.planTotal()), Formatting.WHITE);
         feedback(s, "         8 ГЦН, 4 deaerators, 12 САОР)", Formatting.WHITE);
@@ -306,23 +398,6 @@ public final class RbmkTestCommand {
         feedback(s, "  built on the server clock, so the tick never hitches",
             Formatting.GRAY);
         feedback(s, "  then /rbmk plant start to run it live", Formatting.GRAY);
-        return 1;
-    }
-
-    private static int plantBuildImmediate(CommandContext<ServerCommandSource> ctx) {
-        ServerCommandSource s = ctx.getSource();
-        ServerWorld world = s.getWorld();
-        BlockPos origin = BlockPos.ofFloored(s.getPosition());
-
-        long t0 = System.nanoTime();
-        RbmkWorldBuilder.Counts core = RbmkWorldBuilder.placeCore(world, origin);
-        RbmkWorldBuilder.Counts plant = RbmkWorldBuilder.placePlant(world, origin);
-        double ms = (System.nanoTime() - t0) / 1e6;
-
-        feedback(s, String.format("plant placed at once: %d + %d = %d blocks in %.0f ms",
-            core.total, plant.total, core.total + plant.total, ms), Formatting.GOLD);
-        LOGGER.info("RBMK plant build (immediate): core {} + plant {} in {} ms",
-            core.total, plant.total, ms);
         return 1;
     }
     private static int plantStart(CommandContext<ServerCommandSource> ctx) {

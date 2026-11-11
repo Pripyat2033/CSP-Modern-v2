@@ -5,7 +5,8 @@ import os
 
 ROOT = "src/main/resources/assets/csp-modern"
 NAMES = ["steam_separator", "turbine", "condenser", "mcp", "feedwater",
-         "eccs_accumulator", "plant_pipe", "control_rod"]
+         "eccs_accumulator", "plant_pipe", "control_rod",
+         "ubs", "lbs", "vessel", "water_tank"]
 
 os.makedirs(f"{ROOT}/blockstates", exist_ok=True)
 os.makedirs(f"{ROOT}/models/block", exist_ok=True)

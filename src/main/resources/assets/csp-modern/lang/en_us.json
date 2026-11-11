@@ -74,5 +74,13 @@
   "block.csp-modern.plant_pipe": "Трубопровод",
   "tooltip.csp-modern.plant_pipe": "Piping (Трубопровод) — connects the plant machines",
   "block.csp-modern.control_rod": "СУЗ",
+  "block.csp-modern.ubs": "Схема Е",
+  "tooltip.csp-modern.ubs": "Upper biological shield (Схема Е) — Ø17 m x 3 m, ~2000 t serpentinite concrete, one plug per channel",
+  "block.csp-modern.lbs": "Схема (нижняя биозащита)",
+  "tooltip.csp-modern.lbs": "Lower biological shield — Ø14.5 m x 2 m, steel-faced serpentinite under the core",
+  "block.csp-modern.vessel": "Кожух",
+  "tooltip.csp-modern.vessel": "Reactor vessel (кожух) — inner Ø14.5 m x 9.7 m steel shell around the graphite stack",
+  "block.csp-modern.water_tank": "Бак биозащиты",
+  "tooltip.csp-modern.water_tank": "Side biological-shield water tank — Ø16.6 to 19 m, 16 compartments of water gamma shield",
   "tooltip.csp-modern.control_rod": "Control rod channel (СУЗ) — Система управления и защиты"
 }
