@@ -13,19 +13,22 @@ public final class ZonePlanSourceSelfTest {
     private static int checks = 0;
 
     public static void main(String[] args) {
-        Area area = Area.of(0, 60, 0, 240, 80, 240);
+        Area area = Area.of(0, 90, 0, 360, 120, 360);
         PrombazaTerritory territory = PrombazaTerritory.standard("pb1", area);
         List<Enterprise> roster = EnterpriseRoster.provisional();
         ZoneEnterprises zone = ZoneEnterprises.spawn(territory, roster, 0);
         ZonePlanSource source = new ZonePlanSource(territory, zone);
 
-        // an empty zone: only the boundary and the reserved roads/rail
+        // an empty zone: the boundary, and the ten offices already staked out. The
+        // enterprises site their offices the moment they survey the ground, so those
+        // stand on the board before any building work starts; the rest fills in later.
         PlanDocument empty = source.build();
         check(empty != null, "the board draws something");
         eq(1, count(empty, "boundary"), "the territory boundary is drawn");
         eq(territory.reserved().size(), count(empty, "reserved"),
             "the reserved roads and rail are drawn");
-        eq(0, count(empty, "facilities"), "nothing is built yet");
+        eq(10, count(empty, "facilities"),
+            "the ten offices are staked out before the building work starts");
 
         // run the zone and watch the board fill in
         int firstPlots = -1;

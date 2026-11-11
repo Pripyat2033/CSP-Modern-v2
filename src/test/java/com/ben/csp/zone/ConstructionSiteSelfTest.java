@@ -54,6 +54,23 @@ public final class ConstructionSiteSelfTest {
         s2.work(100000);
         check(s2.progress() < 1.0, "a site cannot finish without materials for the whole job");
 
+        // the material norm is honest about its provenance, and the demand is broken
+        // into kinds so a delivery plan can name concrete, not "materials"
+        check(site.materialNorm().isProvisional(),
+            "the default material norm is provisional until the сметные нормы are read in");
+        var breakdown = site.materialBreakdown();
+        check(!breakdown.isEmpty(), "the site names the kinds of material it needs");
+        double sum = breakdown.values().stream().mapToDouble(Double::doubleValue).sum();
+        check(Math.abs(sum - site.materialsRequired()) < 1e-6,
+            "the breakdown adds up to the total demand");
+
+        // a site given a sourced norm honours it exactly
+        MaterialNorm sourced = new MaterialNorm(0.5,
+            com.ben.csp.work.NormSource.ENIR_SOURCED, "test figure");
+        ConstructionSite s3 = new ConstructionSite("cs3", "fac3", plot, 100.0, sourced);
+        eq(50.0, s3.materialsRequired(), "materials follow the norm (100 mh x 0.5)");
+        check(!s3.materialNorm().isProvisional(), "a sourced norm is not provisional");
+
         System.out.println("ConstructionSiteSelfTest: " + checks + " checks passed.");
     }
 

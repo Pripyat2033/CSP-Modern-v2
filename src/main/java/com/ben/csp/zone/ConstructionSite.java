@@ -12,28 +12,62 @@ import java.util.Objects;
  */
 public final class ConstructionSite {
 
-    /** Materials needed per man-hour of work. A placeholder pending sourced norms. */
-    private static final double MATERIALS_PER_MAN_HOUR = 0.05;
+    /**
+     * Materials needed per man-hour of work. A {@link MaterialNorm}, and by default
+     * a provisional one: it has the right shape but must be replaced by a per-unit
+     * figure read from the сметные нормы (СНиП IV) before it is trusted.
+     */
+    public static final MaterialNorm DEFAULT_MATERIAL_NORM = MaterialNorm.provisional(
+        0.05, "СНиП IV сметные нормы: replace with per-unit consumption");
 
     private final String id;
     private final String facilityId;
     private final Footprint plot;
     private final double requiredManHours;
     private final double materialsRequired;
+    private final MaterialNorm materialNorm;
 
     private String brigadeId;
     private double manHoursDone;
     private double materialsOnSite;
 
     public ConstructionSite(String id, String facilityId, Footprint plot, double requiredManHours) {
+        this(id, facilityId, plot, requiredManHours, DEFAULT_MATERIAL_NORM);
+    }
+
+    public ConstructionSite(String id, String facilityId, Footprint plot,
+                            double requiredManHours, MaterialNorm materialNorm) {
         this.id = Objects.requireNonNull(id, "id");
         this.facilityId = Objects.requireNonNull(facilityId, "facilityId");
         this.plot = Objects.requireNonNull(plot, "plot");
+        this.materialNorm = Objects.requireNonNull(materialNorm, "materialNorm");
         if (requiredManHours <= 0) {
             throw new IllegalArgumentException("required man-hours must be positive");
         }
         this.requiredManHours = requiredManHours;
-        this.materialsRequired = requiredManHours * MATERIALS_PER_MAN_HOUR;
+        this.materialsRequired = materialNorm.forManHours(requiredManHours);
+    }
+
+    /** The material norm this site is planned against. */
+    public MaterialNorm materialNorm() {
+        return materialNorm;
+    }
+
+    /**
+     * The site's material demand broken down by kind, so a delivery plan can name
+     * what it needs. The split is the provisional shape of a reinforced-concrete
+     * facility (mostly concrete and reinforcement); it becomes sourced when the
+     * сметные нормы are read in.
+     */
+    public java.util.Map<MaterialKind, Double> materialBreakdown() {
+        double m = materialsRequired;
+        java.util.Map<MaterialKind, Double> out = new java.util.EnumMap<>(MaterialKind.class);
+        out.put(MaterialKind.CONCRETE, m * 0.55);
+        out.put(MaterialKind.REINFORCEMENT_STEEL, m * 0.15);
+        out.put(MaterialKind.STEEL_SECTIONS, m * 0.10);
+        out.put(MaterialKind.BRICK, m * 0.10);
+        out.put(MaterialKind.BALLAST, m * 0.10);
+        return out;
     }
 
     public String id() { return id; }
@@ -81,17 +115,21 @@ public final class ConstructionSite {
      * no brigade or no materials, and otherwise capped by what the materials allow.
      */
     public double work(double manHours) {
-        if (brigadeId == null || materialsOnSite <= 0 || manHours <= 0) {
+        if (brigadeId == null || manHours <= 0) {
+            return 0;
+        }
+        double rate = materialNorm.unitsPerManHour();
+        if (rate > 0 && materialsOnSite <= 0) {
             return 0;
         }
         double remaining = requiredManHours - manHoursDone;
-        double byMaterials = materialsOnSite / MATERIALS_PER_MAN_HOUR;
+        double byMaterials = rate > 0 ? materialsOnSite / rate : Double.MAX_VALUE;
         double applied = Math.min(manHours, Math.min(remaining, byMaterials));
         if (applied <= 0) {
             return 0;
         }
         manHoursDone += applied;
-        materialsOnSite = Math.max(0.0, materialsOnSite - applied * MATERIALS_PER_MAN_HOUR);
+        materialsOnSite = Math.max(0.0, materialsOnSite - applied * rate);
         return applied;
     }
 

@@ -16,7 +16,7 @@ public final class PersistenceSelfTest {
     private static int checks = 0;
 
     public static void main(String[] args) {
-        Area area = Area.of(0, 60, 0, 240, 80, 240);
+        Area area = Area.of(0, 90, 0, 360, 120, 360);
 
         // run a zone part-way
         ZoneEnterprises original = spawn(area);

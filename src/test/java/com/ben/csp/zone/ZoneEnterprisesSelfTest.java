@@ -18,15 +18,20 @@ public final class ZoneEnterprisesSelfTest {
         eq(10, roster.size(), "the roster is ten enterprises");
 
         // 1. THE TERRITORY IS LAID OUT FIRST, from the plans
-        Area area = Area.of(0, 60, 0, 240, 80, 240);
+        Area area = Area.of(0, 90, 0, 360, 120, 360);
         PrombazaTerritory territory = PrombazaTerritory.standard("pb1", area);
         check(territory.area() > 0, "the territory has ground");
-        check(territory.reserved().size() >= 2, "the roads and rail are reserved first");
 
         // 2. THE ENTERPRISES COME ONTO IT AND CHOOSE THEIR OWN PLOTS
         ZoneEnterprises zone = ZoneEnterprises.spawn(territory, roster, 1);
         eq(10, zone.count(), "ten enterprises are standing on the territory");
         eq(0, zone.operationalCount(), "none is operational at the start");
+
+        // the survey they agree on carries the rail spur and the roads; the territory
+        // itself reserves nothing (it is ground, not a building), so the site's roads
+        // and rail live on the plan.
+        check(zone.plan().routes().size() >= 2,
+            "the survey lays out the roads and the rail spur");
 
         PrombazaRegistry prombazas = new PrombazaRegistry();
         PlantBuildAuthorisation gate = new PlantBuildAuthorisation(zone.enterprises(), prombazas);
@@ -52,10 +57,14 @@ public final class ZoneEnterprisesSelfTest {
         check(sawMarker, "facilities start as a marker, not a finished building");
         check(sawGrowing, "facilities grow over time, not in one step");
 
-        // every facility has a construction site that finished
+        // every facility has a construction site that finished — except the HQ, which
+        // is raised by the enterprise's own HQ phase, not as a construction site
         for (EnterpriseLifecycle l : zone.lifecycles()) {
-            eq(l.enterprise().facilities().size(), l.sites().size(),
-                l.enterprise().id() + " opened a site for every facility");
+            long siteable = l.enterprise().facilities().stream()
+                .filter(f -> f.type() != com.ben.csp.enterprise.FacilityType.HEADQUARTERS)
+                .count();
+            eq(siteable, (long) l.sites().size(),
+                l.enterprise().id() + " opened a site for every facility but its HQ");
             for (ConstructionSite s : l.sites()) {
                 check(s.isComplete(), l.enterprise().id() + "/" + s.facilityId() + " was built out");
                 eq(BuildStage.FINISHED, s.stage(), s.facilityId() + " finished");
