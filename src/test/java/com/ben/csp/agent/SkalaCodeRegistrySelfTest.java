@@ -14,14 +14,16 @@ public final class SkalaCodeRegistrySelfTest {
     public static void main(String[] args) {
         SkalaCodeRegistry reg = new SkalaCodeRegistry();
 
-        // the registry is seeded with the standard SKALA functions it must know
+        // the registry is seeded with the standard pre-1986 SKALA functions it must know
         check(reg.isKnown("PRIZMA"), "PRIZMA is seeded");
         check(reg.isKnown("DREG"), "DREG is seeded");
-        check(reg.isKnown("DIIS"), "DIIS is seeded");
+        // DIIS is a 1990s upgrade and must NOT be seeded: the pre-1986 computer
+        // had no DIIS (Chornobyl Family SKALA restoration).
+        check(!reg.isKnown("DIIS"), "DIIS is not seeded — it is a 1990s upgrade");
         check(reg.getOperationDescription("PRIZMA") != null
             && !reg.getOperationDescription("PRIZMA").isBlank(),
             "PRIZMA has a description");
-        check(reg.size() >= 3, "the registry is not empty");
+        check(reg.size() >= 2, "the registry is not empty");
 
         // an unknown code is honestly unknown, not a fabricated answer
         check(!reg.isKnown("NOPE-9999"), "an unknown code is not known");

@@ -35,6 +35,10 @@ machines now, built from their real sizes and validated. You spawn on a glass
 platform; the row of specimen blocks is right in front of you, and the whole
 plant (core + equipment) is to your east.
 
+**The world opens in creative mode with cheats ON** — fly (double-tap space),
+use `/gamemode creative`, `/tp`, anything you need. If it still opens in
+survival for you, run `/gamemode creative` yourself (cheats are already enabled).
+
 ## What to look at first (the specimen row, ~5 blocks ahead)
 
 In a line, so you can compare them side by side:
@@ -92,6 +96,25 @@ validator checks, so a machine that reads "formed" really is the machine.
 """
 
 
+def ensure_creative_with_cheats(world_dir):
+    """Force the kit world into creative mode with cheats enabled.
+
+    Ben must be able to fly and inspect; a survival, cheats-off world is not
+    usable for that. A level.dat copied from a server-created world defaults to
+    survival, so we set it here and the setting sticks for new players too.
+    """
+    import nbtlib
+
+    path = os.path.join(world_dir, "level.dat")
+    f = nbtlib.load(path)
+    data = f["Data"]
+    data["GameType"] = nbtlib.Int(1)        # 1 = creative
+    data["allowCommands"] = nbtlib.Byte(1)  # cheats on
+    data["Difficulty"] = nbtlib.Byte(1)     # easy (mobs are not the point)
+    f.save(path)
+    print("set", path, "to creative with cheats")
+
+
 def main():
     repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     world_src = sys.argv[1] if len(sys.argv) > 1 else "/workspace/mcserver/Energoblok-Test"
@@ -111,6 +134,7 @@ def main():
     lock = os.path.join(world_dst, "session.lock")
     if os.path.exists(lock):
         os.remove(lock)
+    ensure_creative_with_cheats(world_dst)
     os.makedirs(mods_dst, exist_ok=True)
     shutil.copy(mod_jar, mods_dst)
     shutil.copy(fabric_src, mods_dst)

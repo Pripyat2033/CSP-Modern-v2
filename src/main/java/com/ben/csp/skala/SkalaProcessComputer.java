@@ -10,13 +10,20 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 /**
  * "Science Grade": A PersistentState that simulates the SKALA process computer.
- * It manages ~12,000 input channels and updates them with a realistic 2-5 second latency.
+ * It manages ~12,000 input channels and updates them with a realistic 2-5 second
+ * latency.
+ *
+ * <p>Scope note (Chornobyl Family SKALA restoration): the pre-1986 computer had
+ * no displays and no DIIS. Every channel was registered by the single DREG loop.
+ * The DIIS auxiliary system, which added video monitors and a faster display
+ * path, was fitted at Chernobyl only in the 1990s, after Unit 4 was destroyed, so
+ * it is deliberately not modelled. The earlier DIIS-2000 firmware was likewise a
+ * 1990s upgrade. The last operator printout of Unit 4 was DREG output.
  */
 public class SkalaProcessComputer extends PersistentState {
     private static final String NAME = "skala_process_computer";
@@ -35,16 +42,13 @@ public class SkalaProcessComputer extends PersistentState {
     private enum ProcessorState { ACTIVE, STANDBY, HALTED }
     private final V3MProcessor[] processors = new V3MProcessor[]{new V3MProcessor(), new V3MProcessor()};
 
-    // --- Data Acquisition Simulation (DREG and DIIS) ---
-    private static final int DREG_SCAN_TICKS = 100; // Main scan: 5 seconds (5 * 20 ticks)
-    private static final int DIIS_SCAN_TICKS = 10;  // High-speed scan: 0.5 seconds (0.5 * 20 ticks)
+    // --- Data Acquisition Simulation (DREG only) ---
+    private static final int DREG_SCAN_TICKS = 100; // Main registration loop: ~5 s
 
-    private final List<SkalaChannel> dregChannels = new ArrayList<>(12000); // Main slow channels
-    private final List<SkalaChannel> diisChannels = new ArrayList<>(200);   // High-priority fast channels
-    private final Map<String, SkalaChannel> channelMap = Maps.newHashMap(); // Unified map for quick lookups
+    private final List<SkalaChannel> dregChannels = new ArrayList<>(12000); // the channels
+    private final Map<String, SkalaChannel> channelMap = Maps.newHashMap(); // quick lookups
 
     private int dregScanIndex = 0;
-    private int diisScanIndex = 0;
 
     private static class V3MProcessor {
         ProcessorState state = ProcessorState.HALTED;
@@ -114,9 +118,8 @@ public class SkalaProcessComputer extends PersistentState {
                 processors[1].state = ProcessorState.STANDBY;
             }
             case RUNNING -> {
-                // Run the two separate data acquisition loops
+                // Run the single registration loop (DREG); pre-1986 SKALA had no DIIS
                 runDregScan(world);
-                runDiisScan(world);
             }
             case OFFLINE, HALTED -> {
                 // Do nothing
@@ -125,7 +128,8 @@ public class SkalaProcessComputer extends PersistentState {
     }
 
     /**
-     * Simulates the main, slow DREG polling loop for all ~12,000 channels.
+     * Simulates the main DREG registration loop for the ~12,000 channels. This is
+     * the only data-acquisition loop the pre-1986 computer had.
      */
     private void runDregScan(World world) {
         if (dregChannels.isEmpty()) return;
@@ -134,19 +138,6 @@ public class SkalaProcessComputer extends PersistentState {
             if (dregScanIndex >= dregChannels.size()) dregScanIndex = 0;
             dregChannels.get(dregScanIndex).update(world);
             dregScanIndex++;
-        }
-    }
-
-    /**
-     * Simulates the faster DIIS polling loop for high-priority channels.
-     */
-    private void runDiisScan(World world) {
-        if (diisChannels.isEmpty()) return;
-        int channelsToScan = (int) Math.ceil((double) diisChannels.size() / DIIS_SCAN_TICKS);
-        for (int i = 0; i < channelsToScan; i++) {
-            if (diisScanIndex >= diisChannels.size()) diisScanIndex = 0;
-            diisChannels.get(diisScanIndex).update(world);
-            diisScanIndex++;
         }
     }
 
@@ -161,18 +152,9 @@ public class SkalaProcessComputer extends PersistentState {
     }
 
     public void registerChannel(SkalaChannel channel) {
-        registerChannel(channel, EnumSet.of(SkalaChannel.ScanType.DREG));
-    }
-
-    public void registerChannel(SkalaChannel channel, EnumSet<SkalaChannel.ScanType> scanTypes) {
         if (!channelMap.containsKey(channel.getCode())) {
             channelMap.put(channel.getCode(), channel);
-            if (scanTypes.contains(SkalaChannel.ScanType.DREG)) {
-                dregChannels.add(channel);
-            }
-            if (scanTypes.contains(SkalaChannel.ScanType.DIIS)) {
-                diisChannels.add(channel);
-            }
+            dregChannels.add(channel);
         }
     }
 

@@ -15,10 +15,15 @@ import java.util.Map;
  * codes, error codes, and diagnostic identifiers the enterprise computing
  * network used, and resolves a code to what it means.
  *
- * <p>The registry is seeded with the standard SKALA functions (the reactor
- * control program PRIZMA, and the DREG / DIIS data-acquisition loops) and is
+ * <p>The registry is seeded with the standard pre-1986 SKALA functions (the
+ * reactor control program PRIZMA, and the DREG data-registration loop) and is
  * open to further codes. An unknown code is answered as unknown - it is never
  * guessed - and a code that is registered must carry a non-blank description.
+ *
+ * <p>Scope note (Chornobyl Family SKALA restoration): DIIS is deliberately
+ * absent. The DIIS auxiliary system, and its later DIIS-2000 firmware, was fitted
+ * at Chernobyl only in the 1990s, after Unit 4 was destroyed; the pre-1986
+ * computer had no DIIS and no video displays.
  */
 public class SkalaCodeRegistry {
 
@@ -49,18 +54,17 @@ public class SkalaCodeRegistry {
     private final Map<String, OperationCode> codes = new LinkedHashMap<>();
 
     /**
-     * Initialize the code registry with the standard SKALA codes. These are the
-     * functions the plant's computing network actually ran; further codes are
-     * added as they are encountered.
+     * Initialize the code registry with the standard pre-1986 SKALA codes. These
+     * are the functions the plant's computing network ran at the time of Unit 4;
+     * further codes are added as they are encountered.
      */
     public SkalaCodeRegistry() {
         registerOperationCode("PRIZMA",
             "ПРИЗМА: the reactor control program — rod positioning, "
                 + "power distribution and the fast scram (AZ-5)", 10, true);
         registerOperationCode("DREG",
-            "ДРЕГ: the slow data-acquisition polling loop (~12,000 channels)", 3, false);
-        registerOperationCode("DIIS",
-            "ДИИС: the fast data-acquisition loop for high-priority channels", 6, false);
+            "ДРЕГ: the data-registration program — the single channel polling "
+                + "loop (~12,000 channels); its tape held Unit 4's last output", 3, false);
     }
 
     /**

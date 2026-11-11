@@ -196,8 +196,21 @@ which is a real reactivity concern (WP §88-89).
 * **Oil / lubrication, sealing, valves, rotameters**: each MCP has flow control,
   non-return check, and shutoff valves; each channel a flow-control valve and a
   ball flow meter (WP §86). These are the "small" systems the Director named.
-* **SKALA** process computer: 7,200 analog + 6,500 digital inputs; PRIZMA program
-  (WP CNPP §42-43).
+* **SKALA** process computer: two independent VNIIEM-3 machines, each built on a
+  V-3M processor with 20K 24-bit words of memory (plus 8K shared). It is the
+  reactor's monitoring system; the operator reads it by entering a code on a
+  request device and reading the answer. It is seeded with PRIZMA (reactor power
+  and rod positioning), DREG (parameter registration — the tape that became the
+  accident investigation's primary source), and the monitoring programs KRV
+  (channel coolant flow), KCTK (channel integrity), KIKD (detector health) and
+  RAO (emergency deviations). Output is on paper (RTA-80 teletypes, ACPU-128 drum
+  printers) and MTK mnemonic displays; the pre-1986 machine had **no video
+  monitors**. The **DIIS** auxiliary system (and its DIIS-2000 firmware), which
+  added video monitors and a faster display path, is a **1990s upgrade** fitted at
+  Chernobyl after Unit 4 was destroyed, so it is deliberately not modelled.
+  (Chornobyl Family SKALA restoration — the machine was saved from Unit 3. The
+  figure of 7,200 analog + 6,500 digital inputs is from WP CNPP §42-43 and still
+  needs a primary source.)
 
 ---
 
