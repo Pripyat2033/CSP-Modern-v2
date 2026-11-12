@@ -335,6 +335,61 @@ def gen_mcp_motor():
     return px
 
 
+def gen_containment_wall():
+    """The wall of a sealed compartment: heavy reinforced concrete, board-marked,
+    with the steel reinforcement showing at the seams. This is the containment."""
+    base = (128, 126, 120, 255)
+    px = new(base)
+    for y in range(S):
+        for x in range(S):
+            if (x * 3 + y * 7) % 5 == 0:
+                put(px, x, y, shade(base, 0.9))
+    # formwork board marks: horizontal bands
+    for y in (3, 4, 9, 10):
+        rect(px, 0, y, S - 1, y, shade(base, 0.82))
+    # reinforcement / aggregate speckle
+    for (x, y) in [(2, 2), (12, 6), (5, 12), (13, 13), (8, 7)]:
+        put(px, x, y, shade((90, 88, 84, 255), 1.0))
+    frame(px, shade((70, 68, 64, 255), 1.0))
+    return px
+
+
+def gen_containment_relief():
+    """A pressure-relief panel set into the floor: a steel plate with a vent grid,
+    the relief assembly that dumps steam to the distribution corridor."""
+    px = new(shade(STEEL, 0.7))
+    rect(px, 1, 1, 14, 14, shade(STEEL, 0.95))
+    for y in range(3, 13, 2):                       # vent louvres
+        rect(px, 3, y, 12, y, shade(DARK, 1.1))
+    for x in (2, 13):                               # bolt columns
+        for y in range(2, 14, 3):
+            put(px, x, y, shade(STEEL, 1.2))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_containment_door():
+    """A blast door in a compartment wall: a heavy steel door with a wheel and a
+    hazard stripe, sealing the box for its design-basis accident."""
+    px = new(shade(STEEL, 0.8))
+    rect(px, 2, 1, 13, 14, shade(STEEL, 1.0))
+    for y in range(1, 15):                          # panel seams
+        if y % 4 == 0:
+            rect(px, 2, y, 13, y, shade(STEEL, 0.7))
+    for y in range(1, 15):                          # hazard stripe band
+        for x in range(2, 14):
+            if (x + y) % 4 < 2:
+                put(px, x, y, (196, 172, 60, 255))  # yellow
+            else:
+                put(px, x, y, (40, 40, 44, 255))    # black
+    # the hand wheel
+    for (dx, dy) in [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)]:
+        put(px, 7 + dx, 7 + dy, shade(STEEL, 1.35))
+    put(px, 7, 7, shade(COPPER, 1.0))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
 TEXTURES = {
     "steam_separator": gen_steam_separator,
     "turbine": gen_turbine,
@@ -351,6 +406,9 @@ TEXTURES = {
     "lbs": gen_lbs,
     "vessel": gen_vessel,
     "water_tank": gen_water_tank,
+    "containment_wall": gen_containment_wall,
+    "containment_relief": gen_containment_relief,
+    "containment_door": gen_containment_door,
 }
 
 

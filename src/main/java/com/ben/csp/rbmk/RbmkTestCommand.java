@@ -440,9 +440,10 @@ public final class RbmkTestCommand {
         feedback(s, "RBMK-1000 plant queued for metered construction (1:4)", Formatting.GOLD);
         feedback(s, String.format("  core:  %d blocks (stack + UBS + LBS + vessel + water tank)",
             core.planTotal()), Formatting.WHITE);
-        feedback(s, String.format("  plant: %d blocks (4 drums, 2 turbos, 2 condensers,",
+        feedback(s, String.format("  plant: %d blocks (7 sealed boxes + 5 islands,",
             plant.planTotal()), Formatting.WHITE);
-        feedback(s, "         8 ГЦН, 4 deaerators, 12 САОР)", Formatting.WHITE);
+        feedback(s, "         with 4 drums, 2 turbos, 2 condensers, 8 ГЦН,", Formatting.WHITE);
+        feedback(s, "         4 deaerators, 12 САОР placed inside their rooms)", Formatting.WHITE);
         feedback(s, String.format("  total: %d blocks at %d per tick (about %.0f s)",
             total, rate, etaS), Formatting.WHITE);
         feedback(s, "  built on the server clock, so the tick never hitches",

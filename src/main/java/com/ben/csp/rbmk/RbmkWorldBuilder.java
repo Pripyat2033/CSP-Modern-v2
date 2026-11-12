@@ -1,9 +1,10 @@
 package com.ben.csp.rbmk;
 
 import com.ben.csp.block.ModBlocks;
+import com.ben.csp.rbmk.plant.Compartment;
+import com.ben.csp.rbmk.plant.EnergoblokLayout;
 import com.ben.csp.rbmk.plant.MachineSpec;
 import com.ben.csp.rbmk.plant.MachineSpecs;
-import com.ben.csp.rbmk.plant.PlantLayout;
 import net.minecraft.block.Block;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +33,7 @@ public final class RbmkWorldBuilder {
     public static final class Counts {
         public long graphite, fuel, rods, ubs, lbs, vessel, waterTank,
             separators, turbines, condensers, pumps, feedwater, accumulators, pipes,
-            total;
+            containment, controllers, total;
     }
 
     private static Counts counts(ConstructionJob job) {
@@ -51,9 +52,11 @@ public final class RbmkWorldBuilder {
         c.feedwater = job.placed(ConstructionJob.Part.FEEDWATER);
         c.accumulators = job.placed(ConstructionJob.Part.ACCUMULATORS);
         c.pipes = job.placed(ConstructionJob.Part.PIPES);
+        c.containment = job.placed(ConstructionJob.Part.CONTAINMENT);
+        c.controllers = job.placed(ConstructionJob.Part.CONTROLLERS);
         c.total = c.graphite + c.fuel + c.rods + c.ubs + c.lbs + c.vessel + c.waterTank
             + c.separators + c.turbines + c.condensers + c.pumps + c.feedwater
-            + c.accumulators + c.pipes;
+            + c.accumulators + c.pipes + c.containment + c.controllers;
         return c;
     }
 
@@ -117,83 +120,89 @@ public final class RbmkWorldBuilder {
         regions.add(ConstructionJob.radial(ConstructionJob.Part.WATER_TANK, ModBlocks.WATER_TANK_BLOCK,
             ox, oz, tankInner, tankOuter,
             baseY - RbmkGeometry.LBS_THICKNESS_BLOCKS, top));
-        // upper biological shield (Схема Е): the disc over the core
-        regions.add(ConstructionJob.radial(ConstructionJob.Part.UBS, ModBlocks.UBS_BLOCK,
-            ox, oz, 0, ubsR, top, top + RbmkGeometry.UBS_THICKNESS_BLOCKS));
+        // upper biological shield (Схема Е): the disc over the core, PIERCED. It is
+        // not a solid lid: every one of the 1,872 channels passes through it (each
+        // channel has its own plug), and the rod drives and steam lines pass
+        // through too. So the shield is built as the disc minus the channel cells.
+        regions.add(ConstructionJob.piercedDisc(ConstructionJob.Part.UBS, ModBlocks.UBS_BLOCK,
+            ox, oz, 0, ubsR, top, top + RbmkGeometry.UBS_THICKNESS_BLOCKS,
+            channelX(channels, ox), channelZ(channels, oz)));
 
         return ConstructionJob.of(world, "RBMK core", regions);
     }
 
-    /** Plan the plant machines around the core, as real multiblocks. */
+    private static int[] channelX(List<RbmkLattice.Channel> channels, int ox) {
+        int[] a = new int[channels.size()];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = ox + channels.get(i).x();
+        }
+        return a;
+    }
+
+    private static int[] channelZ(List<RbmkLattice.Channel> channels, int oz) {
+        int[] a = new int[channels.size()];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = oz + channels.get(i).z();
+        }
+        return a;
+    }
+
+    /**
+     * Plan the plant as an <b>energoblok</b>: the sealed, pressure-resistant
+     * concrete boxes that are the containment, each with its machines inside it.
+     * The boxes come first, then every machine is placed from
+     * {@link EnergoblokLayout#machines()} so nothing can drift out of its room.
+     */
     public static ConstructionJob planPlant(ServerWorld world, BlockPos origin) {
         List<ConstructionJob.Region> regions = new ArrayList<>();
-        int y0 = origin.getY();
-        Block sepCtl = ModBlocks.STEAM_SEPARATOR_CONTROLLER_BLOCK;
-        Block turCtl = ModBlocks.TURBINE_CONTROLLER_BLOCK;
-        Block conCtl = ModBlocks.CONDENSER_CONTROLLER_BLOCK;
-        Block mcpCtl = ModBlocks.MCP_CONTROLLER_BLOCK;
-        Block deaCtl = ModBlocks.DEAERATOR_CONTROLLER_BLOCK;
-        Block eccsCtl = ModBlocks.ECCS_CONTROLLER_BLOCK;
+        int ox = origin.getX();
+        int oy = origin.getY();
+        int oz = origin.getZ();
 
-        // ---- steam separator drums: horizontal cylinders, axis along x ----
-        // Four of them (2 per half), as pressure vessels, not boxes.
-        int sl = PlantLayout.SEPARATOR_LENGTH_BLOCKS;   // 124
-        int sr = (PlantLayout.SEPARATOR_DIAMETER_BLOCKS - 1) / 2; // radius 5
-        int off = PlantLayout.SEPARATOR_OFFSET_BLOCKS;  // 40
-        int sh = PlantLayout.SEPARATOR_HEIGHT_BLOCKS;   // 44
-        for (int side = -1; side <= 1; side += 2) {
-            for (int pair = 0; pair < 2; pair++) {
-                int x0 = origin.getX() + (pair == 0 ? -sl / 2 - sl / 4 : sl / 4);
-                int cz = origin.getZ() + side * off;
-                int cy = y0 + sh;
-                addMachine(regions, ConstructionJob.Part.SEPARATORS, MachineSpecs.STEAM_SEPARATOR,
-                    x0, cy - sr, cz - sr, sepCtl);
+        // ---- the boxes: walls (shells) around each sealed compartment ----
+        for (Compartment c : EnergoblokLayout.compartments()) {
+            int[] o = c.outerBox();
+            regions.add(ConstructionJob.shell(ConstructionJob.Part.CONTAINMENT,
+                ModBlocks.CONTAINMENT_WALL_BLOCK,
+                ox + o[0], oy + o[1], oz + o[2],
+                ox + o[3], oy + o[4], oz + o[5]));
+        }
+
+        // ---- the machines, each inside its room ----
+        for (EnergoblokLayout.Placement p : EnergoblokLayout.machines()) {
+            MachineSpec spec = specFor(p.part());
+            if (spec == null) {
+                continue;
             }
+            Block ctl = controllerFor(p.part());
+            addMachine(regions, p.part(), spec, ox + p.x(), oy + p.y(), oz + p.z(), ctl);
         }
 
-        // ---- turbogenerators: five cylinder covers + the TVV-500 generator ----
-        // Two per unit, on one shaft along x, in the machine hall.
-        int hallX = origin.getX() + PlantLayout.TURBINE_HALL_OFFSET_BLOCKS;
-        int hallGap = PlantLayout.TURBINE_HALL_GAP_BLOCKS;
-        for (int t = 0; t < 2; t++) {
-            int czc = origin.getZ() + (t == 0 ? -hallGap : hallGap);
-            addMachine(regions, ConstructionJob.Part.TURBINES, MachineSpecs.TURBINE,
-                hallX, y0, czc - MachineSpecs.TURBINE.sizeZ / 2, turCtl);
-            // the condenser sits directly under the turbine
-            addMachine(regions, ConstructionJob.Part.CONDENSERS, MachineSpecs.CONDENSER,
-                hallX, y0 - MachineSpecs.CONDENSER.sizeY, czc - MachineSpecs.CONDENSER.sizeZ / 2,
-                conCtl);
-        }
+        return ConstructionJob.of(world, "energoblok", regions);
+    }
 
-        // ---- main circulating pumps (ГЦН): 8, on a ring around the core ----
-        int r = PlantLayout.MCP_RING_RADIUS_BLOCKS;
-        for (int i = 0; i < 8; i++) {
-            double a = 2 * Math.PI * i / 8;
-            int px = origin.getX() + (int) Math.round(r * Math.cos(a));
-            int pz = origin.getZ() + (int) Math.round(r * Math.sin(a));
-            addMachine(regions, ConstructionJob.Part.PUMPS, MachineSpecs.MCP,
-                px, y0, pz, mcpCtl);
-        }
+    private static MachineSpec specFor(ConstructionJob.Part part) {
+        return switch (part) {
+            case SEPARATORS -> MachineSpecs.STEAM_SEPARATOR;
+            case TURBINES -> MachineSpecs.TURBINE;
+            case CONDENSERS -> MachineSpecs.CONDENSER;
+            case PUMPS -> MachineSpecs.MCP;
+            case FEEDWATER -> MachineSpecs.DEAERATOR;
+            case ACCUMULATORS -> MachineSpecs.ECCS_ACCUMULATOR;
+            default -> null;
+        };
+    }
 
-        // ---- deaerators: 4, also the feedwater storage tanks ----
-        int ds = PlantLayout.DEAERATOR_SIZE_BLOCKS;
-        for (int i = 0; i < 4; i++) {
-            int dx = origin.getX() - r - ds - i * (ds + 2);
-            int dz = origin.getZ() - ds / 2;
-            addMachine(regions, ConstructionJob.Part.FEEDWATER, MachineSpecs.DEAERATOR,
-                dx, y0, dz, deaCtl);
-        }
-
-        // ---- ECCS accumulators (САОР): 12, in two groups of six ----
-        int as = PlantLayout.ACCUMULATOR_SIZE_BLOCKS;
-        for (int i = 0; i < 12; i++) {
-            int ax = origin.getX() - r - as - i * (as + 2);
-            int az = origin.getZ() + ds + 4;
-            addMachine(regions, ConstructionJob.Part.ACCUMULATORS, MachineSpecs.ECCS_ACCUMULATOR,
-                ax, y0, az, eccsCtl);
-        }
-
-        return ConstructionJob.of(world, "plant equipment", regions);
+    private static Block controllerFor(ConstructionJob.Part part) {
+        return switch (part) {
+            case SEPARATORS -> ModBlocks.STEAM_SEPARATOR_CONTROLLER_BLOCK;
+            case TURBINES -> ModBlocks.TURBINE_CONTROLLER_BLOCK;
+            case CONDENSERS -> ModBlocks.CONDENSER_CONTROLLER_BLOCK;
+            case PUMPS -> ModBlocks.MCP_CONTROLLER_BLOCK;
+            case FEEDWATER -> ModBlocks.DEAERATOR_CONTROLLER_BLOCK;
+            case ACCUMULATORS -> ModBlocks.ECCS_CONTROLLER_BLOCK;
+            default -> ModBlocks.STEAM_SEPARATOR_CONTROLLER_BLOCK;
+        };
     }
 
     /**

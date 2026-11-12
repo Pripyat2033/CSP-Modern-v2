@@ -28,10 +28,11 @@ public final class ConstructionJob {
     /** What a region is, so the counts stay meaningful. */
     public enum Part {
         GRAPHITE, FUEL, RODS, SEPARATORS, TURBINES, CONDENSERS, PUMPS,
-        FEEDWATER, ACCUMULATORS, PIPES, UBS, LBS, VESSEL, WATER_TANK, CONTROLLERS
+        FEEDWATER, ACCUMULATORS, PIPES, UBS, LBS, VESSEL, WATER_TANK, CONTROLLERS,
+        CONTAINMENT
     }
 
-    private enum Mode { BOX, SHELL, COLUMNS, RADIAL, CYLINDER }
+    private enum Mode { BOX, SHELL, COLUMNS, RADIAL, PIERCED_RADIAL, CYLINDER }
 
     /** A region to fill. */
     public static final class Region {
@@ -45,6 +46,7 @@ public final class ConstructionJob {
         private final long rIn2, rOut2;             // radial mode: squared radii
         private final int cylRadius;                // cylinder mode: radius
         private final char cylAxis;                 // cylinder mode: axis 'x'
+        private final HoleMask holes;               // pierced-radial mode: (x,z) to skip
         private final long iterLen;                 // positions to walk
         private final long placeTotal;              // blocks actually placed
         private long idx;                           // cursor
@@ -54,6 +56,15 @@ public final class ConstructionJob {
                        int[] colX, int[] colZ, int colHeight,
                        int ccx, int ccz, long rIn2, long rOut2,
                        int cylRadius, char cylAxis) {
+            this(part, block, mode, x0, y0, z0, x1, y1, z1, colX, colZ, colHeight,
+                ccx, ccz, rIn2, rOut2, cylRadius, cylAxis, null, null);
+        }
+
+        private Region(Part part, Block block, Mode mode,
+                       int x0, int y0, int z0, int x1, int y1, int z1,
+                       int[] colX, int[] colZ, int colHeight,
+                       int ccx, int ccz, long rIn2, long rOut2,
+                       int cylRadius, char cylAxis, int[] holeX, int[] holeZ) {
             this.part = part;
             this.block = block;
             this.mode = mode;
@@ -72,6 +83,11 @@ public final class ConstructionJob {
             this.rOut2 = rOut2;
             this.cylRadius = cylRadius;
             this.cylAxis = cylAxis;
+            if (holeX == null) {
+                this.holes = new HoleMask(null, null);
+            } else {
+                this.holes = new HoleMask(holeX, holeZ);
+            }
             if (mode == Mode.COLUMNS) {
                 this.iterLen = (long) colX.length * colHeight;
                 this.placeTotal = iterLen;
@@ -86,6 +102,8 @@ public final class ConstructionJob {
                         - Math.max(0, dx - 2) * Math.max(0, dy - 2) * Math.max(0, dz - 2);
                 } else if (mode == Mode.RADIAL) {
                     this.placeTotal = countRadial();
+                } else if (mode == Mode.PIERCED_RADIAL) {
+                    this.placeTotal = countPiercedRadial();
                 } else if (mode == Mode.CYLINDER) {
                     this.placeTotal = countCylinder();
                 } else {
@@ -102,6 +120,24 @@ public final class ConstructionJob {
                     if (d2 >= rIn2 && d2 <= rOut2) {
                         n++;
                     }
+                }
+            }
+            return n * (y1 - y0);
+        }
+
+        /** Like countRadial, but every (x, z) in {@link #holes} is skipped. */
+        private long countPiercedRadial() {
+            long n = 0;
+            for (int x = x0; x < x1; x++) {
+                for (int z = z0; z < z1; z++) {
+                    long d2 = (long) (x - ccx) * (x - ccx) + (long) (z - ccz) * (z - ccz);
+                    if (d2 < rIn2 || d2 > rOut2) {
+                        continue;
+                    }
+                    if (holes.isHole(x, z)) {
+                        continue;
+                    }
+                    n++;
                 }
             }
             return n * (y1 - y0);
@@ -131,6 +167,11 @@ public final class ConstructionJob {
 
         private boolean done() {
             return idx >= iterLen;
+        }
+
+        /** How many blocks this region will place (no world needed to read it). */
+        public long placeTotal() {
+            return placeTotal;
         }
 
         /** Place up to {@code budget} blocks; return how many were placed. */
@@ -167,6 +208,14 @@ public final class ConstructionJob {
                 } else if (mode == Mode.RADIAL) {
                     long d2 = (long) (x - ccx) * (x - ccx) + (long) (z - ccz) * (z - ccz);
                     if (d2 < rIn2 || d2 > rOut2) {
+                        continue;
+                    }
+                } else if (mode == Mode.PIERCED_RADIAL) {
+                    long d2 = (long) (x - ccx) * (x - ccx) + (long) (z - ccz) * (z - ccz);
+                    if (d2 < rIn2 || d2 > rOut2) {
+                        continue;
+                    }
+                    if (holes.isHole(x, z)) {
                         continue;
                     }
                 } else if (mode == Mode.CYLINDER) {
@@ -222,6 +271,25 @@ public final class ConstructionJob {
         long rOut2 = (long) outerRadius * outerRadius;
         return new Region(part, block, Mode.RADIAL, x0, y0, z0, x1, y1, z1,
             null, null, 0, cx, cz, rIn2, rOut2, 0, 'x');
+    }
+
+    /**
+     * A radial fill with holes drilled through it: a disc (innerRadius 0) or an
+     * annulus, extruded from y0 to y1, minus every (x, z) cell in the hole arrays.
+     * This is how the upper biological shield is built — a disc that is not solid
+     * because the 1,872 channels pass through it.
+     */
+    public static Region piercedDisc(Part part, Block block, int cx, int cz,
+                                     int innerRadius, int outerRadius, int y0, int y1,
+                                     int[] holeX, int[] holeZ) {
+        int x0 = cx - outerRadius;
+        int x1 = cx + outerRadius + 1;
+        int z0 = cz - outerRadius;
+        int z1 = cz + outerRadius + 1;
+        long rIn2 = (long) innerRadius * innerRadius;
+        long rOut2 = (long) outerRadius * outerRadius;
+        return new Region(part, block, Mode.PIERCED_RADIAL, x0, y0, z0, x1, y1, z1,
+            null, null, 0, cx, cz, rIn2, rOut2, 0, 'x', holeX, holeZ);
     }
 
     /**

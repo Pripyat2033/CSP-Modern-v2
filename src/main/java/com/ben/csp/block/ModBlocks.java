@@ -45,6 +45,10 @@ public class ModBlocks {
     public static final Block LBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.LOWER_SHIELD);
     public static final Block VESSEL_BLOCK = SchemaBlock.of(SchemaBlock.Section.VESSEL);
     public static final Block WATER_TANK_BLOCK = SchemaBlock.of(SchemaBlock.Section.WATER_TANK);
+    // the energoblok compartments: the sealed concrete boxes that ARE the containment
+    public static final Block CONTAINMENT_WALL_BLOCK = ContainmentBlock.of(ContainmentBlock.Kind.WALL);
+    public static final Block CONTAINMENT_RELIEF_BLOCK = ContainmentBlock.of(ContainmentBlock.Kind.RELIEF);
+    public static final Block CONTAINMENT_DOOR_BLOCK = ContainmentBlock.of(ContainmentBlock.Kind.DOOR);
     // machine controllers: each machine is a multiblock whose shell is validated
     // when the controller is used (see MachineControllerBlock / MachineValidator)
     public static final Block STEAM_SEPARATOR_CONTROLLER_BLOCK =
@@ -95,6 +99,9 @@ public class ModBlocks {
         registerWithItem("lbs", LBS_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("vessel", VESSEL_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("water_tank", WATER_TANK_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("containment_wall", CONTAINMENT_WALL_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("containment_relief", CONTAINMENT_RELIEF_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("containment_door", CONTAINMENT_DOOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("steam_separator_controller", STEAM_SEPARATOR_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("turbine_controller", TURBINE_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("condenser_controller", CONDENSER_CONTROLLER_BLOCK, PlantEquipmentBlockItem::new);

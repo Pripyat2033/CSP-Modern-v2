@@ -19,7 +19,8 @@ public final class MachineSpecs {
     public static final MachineSpec STEAM_SEPARATOR = new MachineSpec(
         "steam_separator", "steam separator drum (барабан-сепаратор)",
         ModBlocks.STEAM_SEPARATOR_BLOCK,
-        124, 11, 11, MachineSpec.Shape.CYLINDER_X);
+        MachineSizes.SEPARATOR_X, MachineSizes.SEPARATOR_Y, MachineSizes.SEPARATOR_Z,
+        MachineSpec.Shape.CYLINDER_X);
 
     // ---- turbogenerator K-500-65/3000 + TVV-500 generator (one shaft) ----
     // Real figures (docs/RBMK-MACHINE-GEOMETRY.md): 39 m overall, one HP + four LP
@@ -35,7 +36,7 @@ public final class MachineSpecs {
 
     public static final MachineSpec TURBINE = MachineSpec.composite(
         "turbine", "turbogenerator K-500-65/3000 + ТВВ-500",
-        TURB_SIZE_X, TURB_FOUNDATION_H + TURB_COVER_DIA, TURB_COVER_DIA,
+        MachineSizes.TURBINE_X, MachineSizes.TURBINE_Y, MachineSizes.TURBINE_Z,
         turbineParts());
 
     private static List<MachineSpec.Part> turbineParts() {
@@ -69,7 +70,8 @@ public final class MachineSpecs {
     public static final MachineSpec CONDENSER = new MachineSpec(
         "condenser", "condenser (конденсатор)",
         ModBlocks.CONDENSER_BLOCK,
-        80, 20, 48, MachineSpec.Shape.BOX_SHELL);
+        MachineSizes.CONDENSER_X, MachineSizes.CONDENSER_Y, MachineSizes.CONDENSER_Z,
+        MachineSpec.Shape.BOX_SHELL);
 
     /**
      * Main circulating pump (ГЦН): the pump body with its 6 kV drive motor mounted
@@ -77,7 +79,7 @@ public final class MachineSpecs {
      */
     public static final MachineSpec MCP = MachineSpec.composite(
         "mcp", "main circulating pump (ГЦН) + 6 kV motor",
-        3, 6, 3, List.of(
+        MachineSizes.MCP_X, MachineSizes.MCP_Y, MachineSizes.MCP_Z, List.of(
             new MachineSpec.Part("pump body", ModBlocks.MCP_BLOCK,
                 0, 0, 0, 3, 3, 3, MachineSpec.Shape.BOX_SHELL),
             new MachineSpec.Part("6 kV motor", ModBlocks.MCP_MOTOR_BLOCK,
@@ -87,11 +89,13 @@ public final class MachineSpecs {
     public static final MachineSpec DEAERATOR = new MachineSpec(
         "deaerator", "deaerator / feedwater tank (деаэратор)",
         ModBlocks.FEEDWATER_BLOCK,
-        24, 40, 24, MachineSpec.Shape.BOX_SHELL);
+        MachineSizes.DEAERATOR_X, MachineSizes.DEAERATOR_Y, MachineSizes.DEAERATOR_Z,
+        MachineSpec.Shape.BOX_SHELL);
 
     /** ECCS accumulator: high-pressure nitrogen-blanketed tank. */
     public static final MachineSpec ECCS_ACCUMULATOR = new MachineSpec(
         "eccs_accumulator", "ECCS accumulator (САОР)",
         ModBlocks.ECCS_ACCUMULATOR_BLOCK,
-        3, 6, 3, MachineSpec.Shape.BOX_SHELL);
+        MachineSizes.ECCS_X, MachineSizes.ECCS_Y, MachineSizes.ECCS_Z,
+        MachineSpec.Shape.BOX_SHELL);
 }
