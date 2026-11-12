@@ -41,6 +41,10 @@ public class ModBlockEntities {
         SkalaTapeDriveBlockEntity.SKALA_TAPE_DRIVE_BLOCK_ENTITY_TYPE;
     public static final BlockEntityType<SkalaRequestDeviceBlockEntity> SKALA_REQUEST_DEVICE_BLOCK_ENTITY =
         SkalaRequestDeviceBlockEntity.SKALA_REQUEST_DEVICE_BLOCK_ENTITY_TYPE;
+    public static final BlockEntityType<PlantValveBlockEntity> PLANT_VALVE_BLOCK_ENTITY =
+        PlantValveBlockEntity.TYPE;
+    public static final BlockEntityType<PlantMeterBlockEntity> PLANT_METER_BLOCK_ENTITY =
+        PlantMeterBlockEntity.TYPE;
 
     public static void registerAll() {
         reg("chiseled_block_entity", CHISELED_BLOCK_ENTITY);
@@ -56,6 +60,8 @@ public class ModBlockEntities {
         reg("skala_core_block_entity", SKALA_CORE_BLOCK_ENTITY);
         reg("skala_tape_drive_block_entity", SKALA_TAPE_DRIVE_BLOCK_ENTITY);
         reg("skala_request_device_block_entity", SKALA_REQUEST_DEVICE_BLOCK_ENTITY);
+        reg("plant_valve_block_entity", PLANT_VALVE_BLOCK_ENTITY);
+        reg("plant_meter_block_entity", PLANT_METER_BLOCK_ENTITY);
     }
 
     private static void reg(String name, BlockEntityType<?> type) {

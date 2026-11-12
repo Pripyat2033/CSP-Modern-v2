@@ -34,6 +34,14 @@ sourceSets {
     }
 }
 
+// The self-tests live in the `test` source set but are run by a standalone
+// javac/java harness, not `gradle test`. Give the test source set the main
+// classpath so tests that touch Minecraft types (e.g. MachineValidatorSelfTest,
+// which names net.minecraft.block.Block through MachineSpec) compile; the
+// harness still compiles only the Minecraft-free subset it can run headless.
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
+
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"

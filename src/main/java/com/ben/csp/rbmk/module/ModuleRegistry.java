@@ -63,14 +63,23 @@ public final class ModuleRegistry {
         Set<Long> machines = new HashSet<>();
         fillWalls(walls);
         fillMachines(machines);
+        Set<Long> mine = new HashSet<>();
+        for (PlantCell c : m.cells()) {
+            mine.add(key(c.x(), c.y(), c.z()));
+        }
 
         int n = 0;
         for (PlantCell c : m.cells()) {
             n++;
             long k = key(c.x(), c.y(), c.z());
             if (walls.contains(k)) {
-                problems.add("cell " + c.x() + "," + c.y() + "," + c.z()
-                    + " is inside a compartment wall");
+                // a wall cell is allowed only where the module passes straight
+                // through — pipe on both sides along one axis. That is a real
+                // penetration, not the module sitting embedded in the concrete.
+                if (!isThroughPipe(mine, c)) {
+                    problems.add("cell " + c.x() + "," + c.y() + "," + c.z()
+                        + " is embedded in a compartment wall (not a penetration)");
+                }
             } else if (machines.contains(k)) {
                 problems.add("cell " + c.x() + "," + c.y() + "," + c.z()
                     + " is inside a machine");
@@ -80,6 +89,24 @@ public final class ModuleRegistry {
             problems = problems.subList(0, 8);
         }
         return new Audit(problems.isEmpty(), n, problems);
+    }
+
+    /**
+     * Is this wall cell part of a straight through-pipe? True when the module also
+     * occupies the cells immediately before and after it along one axis — so the
+     * pipe enters one side of the wall and leaves the other. A pipe that merely
+     * stops inside a wall fails this and is refused.
+     */
+    private static boolean isThroughPipe(Set<Long> mine, PlantCell c) {
+        int[][] axes = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+        for (int[] a : axes) {
+            long before = key(c.x() - a[0], c.y() - a[1], c.z() - a[2]);
+            long after = key(c.x() + a[0], c.y() + a[1], c.z() + a[2]);
+            if (mine.contains(before) && mine.contains(after)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Every wall cell of every sealed box, minus the channel penetrations. */

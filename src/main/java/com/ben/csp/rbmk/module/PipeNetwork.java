@@ -55,6 +55,10 @@ public final class PipeNetwork implements PlantModule {
     static final int UPPER_METER_Y = CORE_TOP + 2;
     /** Steam collector, above the reactor cavity. */
     static final int STEAM_Y = 48;
+    /** Feedwater trunk level, in the lower galleries. */
+    static final int FEEDWATER_Y = -2;
+    /** Turbine steam mains run above the boxes. */
+    static final int STEAM_MAIN_Y = 34;
 
     private final int columns;
     private final int step;
@@ -162,6 +166,39 @@ public final class PipeNetwork implements PlantModule {
             int roomCentreZ = (room.z0() + room.z1()) / 2;
             zLine(acc, gz, roomCentreZ, gx, STEAM_Y);
             yLine(acc, room.outerBox()[4], STEAM_Y, gx, roomCentreZ);
+        }
+
+        // ---- the drum connections: feedwater in, downcomers out, steam out ----
+        Compartment fw = EnergoblokLayout.feedwaterIsland();
+        int fwWestX = fw.x0() - 1;          // 149, just west of the deaerator row
+        int feedCorridorX = 90;             // between the machines and the boxes
+        for (int side = -1; side <= 1; side += 2) {
+            Compartment sep = EnergoblokLayout.separatorRoom(side);
+            int drumZ = sep.z0() + 7;       // the inner drum's axis (z)
+            int capX = 61;                  // the drum's east end cap (a shell cell)
+            int riserX = capX + 1;          // the riser approaches to just beside it
+
+            // feedwater: deaerator -> west in the central gap -> north/south ->
+            // up beside the drum's east cap (the pipe meets the cap, never inside it)
+            xLine(acc, fwWestX, feedCorridorX, FEEDWATER_Y, 0);
+            zLine(acc, 0, drumZ, feedCorridorX, FEEDWATER_Y);
+            xLine(acc, feedCorridorX, riserX, FEEDWATER_Y, drumZ);
+            yLine(acc, FEEDWATER_Y, 21, riserX, drumZ);
+
+            // downcomer: the drum's underside down into the pump room
+            int pumpZ = side > 0 ? 56 : -56;
+            yLine(acc, 15, 13, 0, drumZ);
+            zLine(acc, drumZ, pumpZ, 0, 13);
+            yLine(acc, 13, -8, 0, pumpZ);
+
+            // steam main: up off the drum top, over to the turbogenerator, down
+            int unit = side > 0 ? 1 : 0;
+            int turbZ = unit == 0 ? -EnergoblokLayout.TURBINE_HALL_GAP
+                                  : EnergoblokLayout.TURBINE_HALL_GAP;
+            yLine(acc, 27, STEAM_MAIN_Y, 0, drumZ);
+            xLine(acc, 0, EnergoblokLayout.HALL_X0, STEAM_MAIN_Y, drumZ);
+            zLine(acc, drumZ, turbZ, EnergoblokLayout.HALL_X0, STEAM_MAIN_Y);
+            yLine(acc, STEAM_MAIN_Y, 19, EnergoblokLayout.HALL_X0, turbZ);
         }
 
         List<PlantCell> out = new ArrayList<>(acc.size());

@@ -340,3 +340,18 @@ the standalone harness). Rebuilt jar 739,464 B; deployed to `mcserver/mods/`.
 
 **Still open:** Ben's geometry/scale critique (fuel-channel cube, UBS thickness,
 MCP in the annular tank, no UBS penetrations, real layout) is NOT addressed.
+
+## PLANT INSTRUMENTS (valve + meter BEs) — DONE 2026-11-09
+
+`PLANT_VALVE_BLOCK` / `PLANT_METER_BLOCK` are no longer stateless blocks: they are
+`PlantInstrumentBlock` (BlockWithEntity) that binds on placement to the nearest
+`RbmkLattice.channels()` cell and reads live state via **`PlantInstruments`** (pure,
+no MC types, so it is headless-testable). The meter shows the plant's own
+`Rotameter` flow (nominal 5.34 kg/s); the valve shows the circuit `Valve` position.
+BEs sync via NBT + `updateListeners(...,3)` on change; client renderers draw a
+tinted cuboid (valve handwheel rises with position; meter float height = reading,
+green/red starving). `/rbmk instrument [pos]` reads it.
+
+LESSON: a server console command batch runs INSIDE one tick — block-entity ticks
+run at END of tick, so `rbmk instrument` in the SAME batch as `setblock`/`plant
+start` reads stale. Stage console input ~3 s apart when verifying live BEs.

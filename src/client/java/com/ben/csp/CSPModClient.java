@@ -75,5 +75,7 @@ public class CSPModClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.SKALA_CORE_BLOCK_ENTITY, SkalaCoreBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SKALA_TAPE_DRIVE_BLOCK_ENTITY, SkalaTapeDriveBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.GRAPHITE_BLOCK_ENTITY, GraphiteBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.PLANT_VALVE_BLOCK_ENTITY, PlantValveBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.PLANT_METER_BLOCK_ENTITY, PlantMeterBlockRenderer::new);
     }
 }

@@ -40,8 +40,12 @@ public class ModBlocks {
     public static final Block FEEDWATER_BLOCK = PlantEquipmentBlock.feedwater();
     public static final Block ECCS_ACCUMULATOR_BLOCK = PlantEquipmentBlock.accumulator();
     public static final Block PLANT_PIPE_BLOCK = PlantEquipmentBlock.pipe();
-    public static final Block PLANT_VALVE_BLOCK = PlantEquipmentBlock.valve();
-    public static final Block PLANT_METER_BLOCK = PlantEquipmentBlock.meter();
+    public static final Block PLANT_VALVE_BLOCK = new PlantInstrumentBlock(
+        PlantInstrumentBlock.Kind.VALVE,
+        net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings.copyOf(net.minecraft.block.Blocks.COPPER_BLOCK));
+    public static final Block PLANT_METER_BLOCK = new PlantInstrumentBlock(
+        PlantInstrumentBlock.Kind.METER,
+        net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings.copyOf(net.minecraft.block.Blocks.LIGHT_GRAY_CONCRETE));
     // the reactor's structural sections (the "Schema"): UBS, LBS, vessel, water tank
     public static final Block UBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.UPPER_SHIELD);
     public static final Block LBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.LOWER_SHIELD);

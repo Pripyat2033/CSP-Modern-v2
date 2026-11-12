@@ -110,6 +110,12 @@ public final class RbmkTestCommand {
                             .executes(ctx -> moduleBuild(ctx, true, true)))))
                 .then(CommandManager.literal("remove")
                     .executes(RbmkTestCommand::moduleRemove)))
+            .then(CommandManager.literal("instrument")
+                .executes(ctx -> instrument(ctx, null))
+                .then(CommandManager.argument("pos",
+                        net.minecraft.command.argument.BlockPosArgumentType.blockPos())
+                    .executes(ctx -> instrument(ctx,
+                        net.minecraft.command.argument.BlockPosArgumentType.getBlockPos(ctx, "pos")))))
             .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine)));
     }
 
@@ -187,6 +193,40 @@ public final class RbmkTestCommand {
         feedback(s, String.format("removed the modules: %d blocks cleared (only the "
             + "modules' own cells)", n), Formatting.GOLD);
         return 1;
+    }
+
+    /**
+     * {@code /rbmk instrument} — read the plant instrument under the player. Shows
+     * the channel it is bound to and its live value, so the block entity's synced
+     * state can be checked in the world (not just on paper).
+     */
+    private static int instrument(CommandContext<ServerCommandSource> ctx, BlockPos given) {
+        ServerCommandSource s = ctx.getSource();
+        BlockPos pos = given != null ? given : BlockPos.ofFloored(s.getPosition());
+        BlockState st = s.getWorld().getBlockState(pos);
+        if (st.getBlock() == ModBlocks.PLANT_VALVE_BLOCK) {
+            if (s.getWorld().getBlockEntity(pos)
+                    instanceof com.ben.csp.block.entity.PlantValveBlockEntity be) {
+                feedback(s, String.format("valve on channel (%d,%d): %s, position %.2f",
+                    be.channelX(), be.channelZ(), be.live() ? "LIVE" : "no plant",
+                    be.reading()), be.live() ? Formatting.GREEN : Formatting.GRAY);
+                return 1;
+            }
+        } else if (st.getBlock() == ModBlocks.PLANT_METER_BLOCK) {
+            if (s.getWorld().getBlockEntity(pos)
+                    instanceof com.ben.csp.block.entity.PlantMeterBlockEntity be) {
+                feedback(s, String.format(
+                    "meter on channel (%d,%d): %s, flow %.2f kg/s, float %.2f%s",
+                    be.channelX(), be.channelZ(), be.live() ? "LIVE" : "no plant",
+                    be.flowKgS(), be.reading(), be.starving() ? "  STARVING" : ""),
+                    be.starving() ? Formatting.RED
+                        : (be.live() ? Formatting.GREEN : Formatting.GRAY));
+                return 1;
+            }
+        }
+        feedback(s, "No plant instrument here — stand on a valve or a meter block.",
+            Formatting.YELLOW);
+        return 0;
     }
 
     private static int machine(CommandContext<ServerCommandSource> ctx) {

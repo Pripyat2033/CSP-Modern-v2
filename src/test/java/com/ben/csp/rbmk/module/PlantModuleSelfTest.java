@@ -26,7 +26,70 @@ public final class PlantModuleSelfTest {
         carriesValvesAndMetersPerChannel();
         isDeterministic();
         detailLevelScales();
+        connectsTheWholeCircuit();
+        auditRefusesEmbeddedPipe();
         System.out.println("PlantModuleSelfTest: " + checks + " checks passed.");
+    }
+
+    /** The module must actually reach the separators, the machines and the drums. */
+    private static void connectsTheWholeCircuit() {
+        PipeNetwork net = new PipeNetwork();
+        boolean separatorRooms = false, machineHall = false, downcomer = false;
+        for (PlantCell c : net.cells()) {
+            if (Math.abs(c.z()) >= 45 && Math.abs(c.z()) <= 77 && c.y() >= 10 && c.y() <= 48) {
+                separatorRooms = true;
+            }
+            if (c.x() >= 120 && c.y() > 20) {
+                machineHall = true;
+            }
+            if (Math.abs(c.z()) >= 50 && c.y() < 13 && c.y() >= -8) {
+                downcomer = true;
+            }
+        }
+        check(separatorRooms, "the pipework reaches the separator rooms");
+        check(machineHall, "the steam mains reach the machine hall (turbogenerators)");
+        check(downcomer, "the downcomers drop into the pump rooms");
+    }
+
+    /** A pipe that stops inside a wall is refused; a straight through-pipe is allowed. */
+    private static void auditRefusesEmbeddedPipe() {
+        // the reactor cavity's +x wall is at x = 43..44 (inner x1 = 43, wall 2)
+        PlantModule embedded = new PlantModule() {
+            public String id() {
+                return "test_embedded";
+            }
+
+            public String label() {
+                return "embedded pipe";
+            }
+
+            public List<PlantCell> cells() {
+                // a single pipe cell sitting in the cavity wall, no continuation
+                return List.of(new PlantCell(43, 0, 0, PlantCell.Role.PIPE));
+            }
+        };
+        check(!ModuleRegistry.audit(embedded).ok(),
+            "a pipe embedded in a wall (no penetration) is refused");
+
+        PlantModule through = new PlantModule() {
+            public String id() {
+                return "test_through";
+            }
+
+            public String label() {
+                return "through pipe";
+            }
+
+            public List<PlantCell> cells() {
+                // a pipe passing straight through the wall along x
+                return List.of(new PlantCell(42, 0, 0, PlantCell.Role.PIPE),
+                    new PlantCell(43, 0, 0, PlantCell.Role.PIPE),
+                    new PlantCell(44, 0, 0, PlantCell.Role.PIPE),
+                    new PlantCell(45, 0, 0, PlantCell.Role.PIPE));
+            }
+        };
+        check(ModuleRegistry.audit(through).ok(),
+            "a straight through-pipe penetration is allowed");
     }
 
     private static void moduleIsDisjoint() {
