@@ -1,7 +1,7 @@
 package com.ben.csp.rbmk.tools;
 
 import com.ben.csp.rbmk.RbmkGeometry;
-import com.ben.csp.rbmk.physics.ReactorCore;
+import com.ben.csp.rbmk.physics.RbmkTransientSolver;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -9,25 +9,30 @@ import java.io.InputStreamReader;
 /**
  * A live, steerable Blok you can operate from a terminal — no Minecraft.
  *
- * <p>This exists to answer one question with something you can actually run: can
- * the reactor be simulated live, at a fine timestep, with the operator free to
- * deviate? It uses the real physics ({@link ReactorCore}: point kinetics +
- * reactivity feedback + void + xenon), advanced at a fixed 1 ms step, and lets
- * you drive the rods, set the regulator, and scram — then watch the core respond.
+ * <p>This drives the <b>time-dependent two-group spatial solver</b>
+ * ({@link RbmkTransientSolver}): the neutron flux over all 1,872 channels is the
+ * state, with delayed neutrons per node. There is NO point kinetics and no lumped
+ * reactivity — the power is the mean fission over the flux field, so moving a rod
+ * changes the flux where the geometry says it should.
  *
- * <p>It is the bench, not the game. Run:
+ * <p>Run:
  * <pre>
  *   gradle build
  *   java -cp build/classes/java/main com.ben.csp.rbmk.tools.ReactorConsole demo
  * </pre>
- * Commands: rod, auto, manual, scram, run, status, help, quit. Start with "help".
+ * Commands: rod, scram, run, status, reset, help, quit.
+ *
+ * <p>NOT YET IN: the thermal-hydraulic feedback (void, fuel/graphite temperature)
+ * is not closed back into the cells here, so this bench shows the neutronics of a
+ * rod motion, not yet the full accident feedback loop. That loop is the next piece.
  */
 public final class ReactorConsole {
 
-    private static final double DT = 0.001;          // fixed 1 ms physics step
-    private static final double REPORT_EVERY = 1.0;  // print a line every sim second
+    private static final double DT = 0.001;     // fixed 1 ms step
+    private static final int SWEEPS = 2;        // Gauss-Seidel passes per step
+    private static final double REPORT_EVERY = 1.0;
 
-    private final ReactorCore core = new ReactorCore();
+    private RbmkTransientSolver core = new RbmkTransientSolver();
     private double simTime = 0;
 
     private ReactorConsole() {}
@@ -44,11 +49,11 @@ public final class ReactorConsole {
 
     private void banner() {
         System.out.println("================================================================");
-        System.out.println("  RBMK-1000  ·  live reactor bench  ·  fixed step 1 ms");
-        System.out.println("  real lattice: " + RbmkGeometry.TOTAL_CHANNELS + " channels, "
-            + RbmkGeometry.CORE_HEIGHT_M + " m active height");
+        System.out.println("  RBMK-1000  ·  spatial transient bench  ·  flux is the state");
+        System.out.println("  time-dependent 2-group diffusion over "
+            + RbmkGeometry.TOTAL_CHANNELS + " channels x 28 nodes, 1 ms step");
         System.out.println("================================================================");
-        System.out.println("  type 'help' for commands; 'status' shows the core now.");
+        System.out.println("  type 'help'; 'status' shows the core now.");
         System.out.println();
     }
 
@@ -69,10 +74,9 @@ public final class ReactorConsole {
                 case "help" -> help();
                 case "status" -> status();
                 case "rod" -> rod(t);
-                case "auto" -> auto(t);
-                case "manual" -> { core.setAutoRegulator(false); System.out.println("  regulator: MANUAL"); }
                 case "scram", "az5" -> scram();
                 case "run" -> run(t);
+                case "reset" -> { core = new RbmkTransientSolver(); simTime = 0; System.out.println("  core reset to critical"); }
                 case "quit", "exit" -> { return; }
                 default -> System.out.println("  ? unknown command; try 'help'");
             }
@@ -81,12 +85,11 @@ public final class ReactorConsole {
 
     private void help() {
         System.out.println("""
-              rod <0..1>   set the rod bank target (0 = fully out, 1 = fully in)
-              auto         automatic regulator on, holding the current power
-              manual       regulator off — you drive the rods directly
+              rod <0..1>   set the rod bank (0 = fully out, 1 = fully in)
               scram        AZ-5: drive all rods fully in
               run <sec>    advance the core that many simulated seconds
               status       print the current core state
+              reset        return to the critical state
               quit         leave
             """);
     }
@@ -97,20 +100,13 @@ public final class ReactorConsole {
             return;
         }
         double v = clamp01(Double.parseDouble(t[1]));
-        core.setAutoRegulator(false);
-        core.setRodTarget(v);
-        System.out.printf("  rods -> %.2f (manual)%n", v);
-    }
-
-    private void auto(String[] t) {
-        core.setAutoRegulator(true);
-        System.out.printf("  regulator: AUTO, holding at current power (~%.2f)%n", core.power());
+        core.setRodInsertion(v);
+        System.out.printf("  rods -> %.2f%n", v);
     }
 
     private void scram() {
-        core.setAutoRegulator(false);
-        core.setRodTarget(1.0);
-        System.out.println("  AZ-5: driving all rods fully in");
+        core.setRodInsertion(1.0);
+        System.out.println("  AZ-5: all rods fully in");
     }
 
     private void run(String[] t) {
@@ -121,9 +117,9 @@ public final class ReactorConsole {
         }
         int steps = (int) Math.round(secs / DT);
         double nextReport = simTime + REPORT_EVERY;
-        System.out.println("  time(s)   power    rods   void   fuel(C)  xenon");
+        System.out.println("  time(s)   power     peak    step(ms)");
         for (int i = 0; i < steps; i++) {
-            core.step(DT);
+            core.step(DT, SWEEPS);
             simTime += DT;
             if (simTime + 1e-9 >= nextReport) {
                 report();
@@ -134,42 +130,32 @@ public final class ReactorConsole {
     }
 
     private void report() {
-        System.out.printf("  %7.1f  %6.3f  %5.2f  %5.3f  %7.1f  %5.3f%n",
-            simTime, core.power(), core.insertion(), core.voidFraction(),
-            core.fuelTempC(), core.xenonRatio());
+        System.out.printf("  %7.1f  %8.4f  %8.4f  %7.2f%n",
+            simTime, core.power(), core.peakFission(), core.lastStepMs());
     }
 
     private void status() {
-        System.out.printf("  t=%.1fs  power=%.3f  rods=%.2f  void=%.3f  fuel=%.1fC  xenon=%.3f  rho=%.5f%n",
-            simTime, core.power(), core.insertion(), core.voidFraction(),
-            core.fuelTempC(), core.xenonRatio(), core.reactivity());
+        System.out.printf("  t=%.1fs  power=%.4f  peak=%.4f  step=%.2f ms%n",
+            simTime, core.power(), core.peakFission(), core.lastStepMs());
     }
 
-    /** A scripted run that shows the core holding, then being pushed, then scrammed. */
     private void demo() {
-        System.out.println("  DEMO: hold at power, pull the rods, watch the void push back, scram.");
+        System.out.println("  DEMO: critical -> pull rods -> excursion -> AZ-5.");
         System.out.println();
-        core.setAutoRegulator(true);
-        System.out.println("  [1] regulator ON — holding nominal power");
+        System.out.println("  [1] hold at the critical state (rods 0.80)");
+        run(new String[]{"run", "10"});
+
+        System.out.println();
+        System.out.println("  [2] rods to 0.70 — the flux grows where the rods leave");
+        core.setRodInsertion(0.70);
         run(new String[]{"run", "20"});
 
         System.out.println();
-        System.out.println("  [2] regulator OFF, rods pulled out to 0.60 — power rises");
-        core.setAutoRegulator(false);
-        core.setRodTarget(0.60);
-        run(new String[]{"run", "30"});
-
-        System.out.println();
-        System.out.println("  [3] rods to 0.40 — deeper excursion; void feedback bites");
-        core.setRodTarget(0.40);
-        run(new String[]{"run", "30"});
-
-        System.out.println();
-        System.out.println("  [4] AZ-5 scram — rods fully in");
+        System.out.println("  [3] AZ-5 — all rods in");
         scram();
-        run(new String[]{"run", "20"});
+        run(new String[]{"run", "10"});
         System.out.println();
-        System.out.println("  done. That is a live core, steered by hand, at a 1 ms step.");
+        System.out.println("  done: the power came from the flux field, not a fitted curve.");
     }
 
     private static double clamp01(double v) {
