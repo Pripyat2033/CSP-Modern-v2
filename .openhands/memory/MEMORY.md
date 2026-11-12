@@ -258,3 +258,42 @@ spatial physics must run live. Bottom line: the engine has ~10x headroom on a
 real 1:1 RBMK-1000 (~20-30k blocks); the earlier "kids' art piece" feeling was a
 MODEL problem (1:4 makes the avatar 4x too small and every block 0.25 m), not an
 engine problem.
+
+## FULL 3D CORE RUNS LIVE (2026-11-09, commit 5533b75) — the DOA question, answered
+
+The gap was real: the plant ran a reaction, but the **live core was spatially
+lumped** (point kinetics); `RbmkSolver3D` ran only once (`/rbmk test`). Now the
+plant can run on the **full 3D solver, ticked live**. `SpatialReactorCore`
+implements the new `ReactorModel` interface (which `ReactorCore` also
+implements), so `PlantSystem` holds either. `/rbmk plant start 3d` selects it;
+`/rbmk plant status` prints k_eff and ms/tick.
+
+**Measured live in-server:** power ~1.0 (3000-3500 MWt), fuel 641 C, xenon at
+equilibrium, k_eff ~0.689, **4.4 ms/tick over 52,416 nodes**, zero tick-lag
+warnings over a 78 s run. So a spatially resolved RBMK reaction DOES run live
+inside Minecraft with ~10x headroom on the 50 ms tick.
+
+**What it took to make it a reactor, not just a solver** (this is the expensive
+knowledge):
+- `RbmkXsec` cell feedbacks were ~40x too strong (Doppler -5e-4/K vs real
+  ~-1e-5/K), so power collapsed. Calibrated with `VOID_FEEDBACK_SCALE=0.41`,
+  `DOPPLER_FEEDBACK_SCALE=0.020` to match `ReactivityModel` (void +0.030/unit,
+  Doppler ~-2e-5/K). The spatial and lumped cores now agree on the physics.
+- The spatial rod worth is **-0.93 per unit insertion** (vs the lumped core's
+  0.035) — the automatic regulator MUST use the spatial value or it hunts. The
+  fix that finally stabilised it: add the core's own **power coefficient**
+  (POWER_COEFF=-0.005, as in `ReactivityModel`) to the spatial reactivity, and a
+  reactivity-nulling АР with `powerGain=0.002` (gain 0.001-0.005 all give
+  +/-9% hold; 0.01+ hunts). Result: mean power 1.00, holds 0.91-1.09.
+- `calibrate()` MUST leave the solver flux converged (`solve(300,1e-7)`) — a
+  looser reference solve leaves the shape wrong and the first live tick reads a
+  bad k_eff and the core collapses.
+- `RbmkSolver3D.setRodInsertion` now puts `RbmkGeometry.rodMaterials` axial
+  material (B4C / water telescope / graphite displacer) on control channels, so
+  the rod's axial geometry — and therefore the positive scram — is visible.
+
+Test: `src/test/.../physics/SpatialReactorCoreSelfTest.java` (12 checks; run in
+the standalone harness). Rebuilt jar 739,464 B; deployed to `mcserver/mods/`.
+
+**Still open:** Ben's geometry/scale critique (fuel-channel cube, UBS thickness,
+MCP in the annular tank, no UBS penetrations, real layout) is NOT addressed.
