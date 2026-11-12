@@ -20,6 +20,26 @@ core gameplay is a construction-workforce / agent system. Repo
 `Pripyat2033/CSP-Modern-v2`, working branch `OpenHands`. Read `AGENTS.md` for
 project conventions.
 
+## Energoblok = sealed compartments (Ben's correction, 2026-11-09, commit 59ca3c7)
+An RBMK energoblok is **separate pressure-resistant concrete boxes**, and **the
+boxes ARE the containment** (the "RBMK has no containment" claim is false). Pumps
+in their own rooms left+right; reactor in its own room; turbines/feedwater/
+condensers on islands in the Turbine Hall; **two separators per box** left+right.
+Code: `rbmk/plant/Compartment.java` (sealed box, real design pressure: pump rooms
+0.45, cavity/separator 0.18, header 0.08 MPa), `EnergoblokLayout.java` (7 sealed
+boxes + 5 islands + `Placement` records), `MachineSizes.java` (dimensions split
+out of MachineSpecs so layout stays MC-free), `HoleMask.java` +
+`ConstructionJob.Mode.PIERCED_RADIAL` (UBS = disc minus 1,872 channel holes),
+`block/ContainmentBlock.java` + assets. `RbmkWorldBuilder.planPlant` builds box
+shells then places machines inside their rooms.
+
+**Standalone-test rule:** the javac harness compiles ONLY MC-free classes against
+`build/classes/java/main`. A class a self-test loads must not touch net.minecraft
+at class-load (`static Block` fields fail `<clinit>` even if unused). The mapped MC
+jar is NOT on disk; `gradle compileJava` is the real gate. `MachineValidatorSelfTest`
+names `MachineSpec` so it is NOT in the harness and `gradle compileTestJava` already
+fails on it — pre-existing, not a regression. `EnergoblokLayoutSelfTest` = 231 checks.
+
 ## Build & run (cheap checks; use these constantly)
 ```
 export JAVA_HOME=$(ls -d $HOME/jdk/jdk-* | head -1)
