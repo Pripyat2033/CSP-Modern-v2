@@ -87,7 +87,8 @@ public final class RbmkTestCommand {
             .then(CommandManager.literal("plant")
                 .then(CommandManager.literal("start")
                     .executes(RbmkTestCommand::plantStart)
-                    .then(CommandManager.literal("3d").executes(RbmkTestCommand::plantStart3d)))
+                    .then(CommandManager.literal("3d").executes(RbmkTestCommand::plantStart3d))
+                    .then(CommandManager.literal("spatial").executes(RbmkTestCommand::plantStartSpatial)))
                 .then(CommandManager.literal("scram").executes(RbmkTestCommand::plantScram))
                 .then(CommandManager.literal("build")
                     .executes(ctx -> plantBuild(ctx, false))
@@ -605,6 +606,26 @@ public final class RbmkTestCommand {
         return 1;
     }
 
+    /**
+     * {@code /rbmk plant start spatial} — run the plant on the TIME-DEPENDENT
+     * spatial core: the flux over the real lattice is the state, stepped at 1 ms
+     * on its own thread. The live proof that a fully spatial RBMK core runs in
+     * Minecraft without owning the tick.
+     */
+    private static int plantStartSpatial(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        long t0 = System.nanoTime();
+        PlantTicker.startPlantTransient();
+        double bootMs = (System.nanoTime() - t0) / 1e6;
+        feedback(s, "RBMK-1000 plant started on the TIME-DEPENDENT SPATIAL core",
+            Formatting.GOLD);
+        feedback(s, String.format("  flux is the state: 1872 channels x 28 nodes, "
+            + "1 ms step on its own thread (boot %.0f ms)", bootMs), Formatting.WHITE);
+        feedback(s, "  /rbmk plant status shows the sim-rate and the physics step cost",
+            Formatting.GRAY);
+        return 1;
+    }
+
     private static int plantScram(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource s = ctx.getSource();
         if (PlantTicker.plant() == null) {
@@ -647,6 +668,14 @@ public final class RbmkTestCommand {
             feedback(s, String.format("  3D solver: k_eff %.5f, %.1f ms/tick "
                 + "(1 outer iteration over %d nodes)",
                 sp.keff(), sp.lastSolveMs(), sp.solver().activeNodes()), Formatting.WHITE);
+        }
+        if (p.core() instanceof com.ben.csp.rbmk.physics.TransientReactorCore tc) {
+            feedback(s, String.format("  spatial core: flux %s, peak %.3f, "
+                + "%.1f ms per 1 ms step, running %.2fx real time",
+                tc.reactivity() == 0 ? "is the state" : "state",
+                tc.peakFission(), tc.stepMs(), tc.realTimeFactor()), Formatting.WHITE);
+            feedback(s, String.format("  physics clock: %.1f s simulated on its own thread",
+                tc.simSeconds()), Formatting.WHITE);
         }
         feedback(s, String.format("  pumps:     %.0f m3/h total, %d running",
             flowM3h, runningPumps(p)), Formatting.WHITE);

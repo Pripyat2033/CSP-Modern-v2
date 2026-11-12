@@ -63,7 +63,20 @@ public final class PlantSystem {
      * by the lumped point-kinetics core.
      */
     public PlantSystem(boolean spatial) {
-        this.core = spatial ? new SpatialReactorCore() : new ReactorCore();
+        this(spatial ? new SpatialReactorCore() : new ReactorCore());
+    }
+
+    /**
+     * Build the plant around a given core — used to run the time-dependent
+     * spatial solver ({@link com.ben.csp.rbmk.physics.TransientReactorCore}) as
+     * the reactor, so the plant's heat, steam and turbine all follow the flux.
+     */
+    public PlantSystem(ReactorModel core) {
+        this.core = core;
+        initEquipment();
+    }
+
+    private void initEquipment() {
         for (int c = 0; c < PlantPhysics.CIRCUITS; c++) {
             for (int p = 0; p < PlantPhysics.MCP_PER_CIRCUIT; p++) {
                 MainCirculatingPump pump = new MainCirculatingPump(p);
@@ -178,6 +191,13 @@ public final class PlantSystem {
     /** The manual "start the unit" control: hand the rods to the auto-regulator. */
     public void startUp() {
         core.setAutoRegulator(true);
+    }
+
+    /** Release the core's resources — stops the physics thread when there is one. */
+    public void shutdown() {
+        if (core instanceof com.ben.csp.rbmk.physics.TransientReactorCore t) {
+            t.close();
+        }
     }
 
     // ------------------------------------------------------------------ step

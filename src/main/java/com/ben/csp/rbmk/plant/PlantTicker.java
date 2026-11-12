@@ -40,12 +40,27 @@ public final class PlantTicker {
         return plant;
     }
 
+    /**
+     * Start the plant on the TIME-DEPENDENT spatial core: the flux over the real
+     * lattice is the state, stepped at 1 ms on its own thread. This is the live
+     * test of "can Minecraft carry a fully spatial RBMK core".
+     */
+    public static PlantSystem startPlantTransient() {
+        plant = new PlantSystem(new com.ben.csp.rbmk.physics.TransientReactorCore());
+        plant.startUp();
+        lastTickNs = 0;
+        return plant;
+    }
+
     /** True when the running plant is driven by the full 3D spatial solver. */
     public static boolean isSpatial() {
         return plant != null && plant.core() instanceof SpatialReactorCore;
     }
 
     public static void stopPlant() {
+        if (plant != null) {
+            plant.shutdown();
+        }
         plant = null;
     }
 

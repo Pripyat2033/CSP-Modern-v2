@@ -355,3 +355,14 @@ green/red starving). `/rbmk instrument [pos]` reads it.
 LESSON: a server console command batch runs INSIDE one tick — block-entity ticks
 run at END of tick, so `rbmk instrument` in the SAME batch as `setblock`/`plant
 start` reads stale. Stage console input ~3 s apart when verifying live BEs.
+
+## LIVE CORE = SPATIAL FLUX, NOT POINT KINETICS (2026-11-09, commit 85a3b6a)
+
+The live reactor must run `physics/RbmkTransientSolver`: time-dependent 2-group
+diffusion over the real lattice (1872 ch x 28 nodes) with six delayed groups per
+node — the FLUX is the state. NO point kinetics. `ReactorCore` (lumped) and
+`SpatialReactorCore` (spatial rho fed to point kinetics) are now superseded for
+the live core; do not use them as the reactor. `tools/ReactorConsole` runs it
+headless (rod/scram/run) — `java -cp build/classes/java/main ...ReactorConsole demo`.
+Verified: steady 1.0000; rods 0.80->0.70 => power 1->9.98 in 20 s; ~1.9 ms per
+1 ms step. Still to close: thermal-hydraulic feedback into the cells.
