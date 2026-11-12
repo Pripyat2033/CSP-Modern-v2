@@ -14,9 +14,9 @@ import java.util.Arrays;
  * <p>This is the spatial solver of {@link DiffusionSolver} extended to the axial
  * direction, so the flux is resolved in all three dimensions — the shape that
  * the rod-worth and the accident depend on. The mesh is the physical one:
- * {@code 47 x 47} radial cells (one per 250 mm lattice pitch at 1:4) by
+ * {@code 51 x 51} radial cells (one per 250 mm lattice pitch at 1:4) by
  * {@link RbmkCore#AXIAL_NODES} axial nodes, with the active core circle masking
- * the cells outside it. Active nodes: 1,741 cells x 28 nodes.
+ * the cells outside it. Active nodes: 1,872 channels x 28 nodes = 52,416.
  *
  * <p>Two groups, 7-point stencil, red-black Gauss-Seidel inner sweeps, fission
  * source iteration for k_eff — the same method already validated in 2D, now on
