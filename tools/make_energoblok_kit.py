@@ -70,6 +70,22 @@ It reports "formed" only when the real casing is present, and "incomplete — N 
 M shell blocks missing" otherwise. The world builder places exactly the cells the
 validator checks, so a machine that reads "formed" really is the machine.
 
+## Field instruments (new): valves and flow meters
+
+The pipework now carries two working instruments, one bound to each fuel channel:
+
+    plant_valve   - a flow-control valve: the handwheel rises as it opens
+    plant_meter   - a ball flow meter: the float rises with the channel flow
+
+Both read the **running plant**, not a constant. Stand on one and run:
+
+    /rbmk instrument
+
+With no plant running they read "no plant". Run `/rbmk plant start` and they read
+live: the meter shows the channel flow (about 5.34 kg/s at full power), the valve
+shows its position. `/rbmk plant status` prints the whole plant — power, drum
+levels, pumps, feedwater, and how many channels are starving.
+
 ## What is NOT done yet (so you don't have to find it)
 
 - The exact K-500-65/3000 cylinder lengths and cover diameter are a block
