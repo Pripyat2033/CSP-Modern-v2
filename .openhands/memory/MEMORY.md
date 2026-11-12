@@ -40,6 +40,16 @@ jar is NOT on disk; `gradle compileJava` is the real gate. `MachineValidatorSelf
 names `MachineSpec` so it is NOT in the harness and `gradle compileTestJava` already
 fails on it — pre-existing, not a regression. `EnergoblokLayoutSelfTest` = 231 checks.
 
+## The plant-platform question — OPEN (Ben, 2026-11-09)
+A reactor-only bench is NOT the platform question. The whole **energoblok** must
+run: pipework, valves, pumps, tanks, meters, their block entities, and rendering,
+all at once. A real RBMK-1000 is mostly piping (22 group distribution headers per
+circuit x 38-41 channels; a flow-control valve AND a ball flow meter on EVERY one
+of the 1,661 channels). `planPlant` currently places **walls + machine shells
+only**; `Part.PIPES` is counted but never placed. The authoritative test is **Ben
+running the full energoblok in Minecraft himself** (same form as the 608-worker
+GO), never a headless bench. Recorded in `docs/CHARTER.md` §4.
+
 ## Build & run (cheap checks; use these constantly)
 ```
 export JAVA_HOME=$(ls -d $HOME/jdk/jdk-* | head -1)

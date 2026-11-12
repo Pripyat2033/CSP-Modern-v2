@@ -61,6 +61,13 @@ question is a **render** decision; the physics has always run at 1:1.
 
 ## 5. The measured budget (the engine turns over)
 
+> **Scope of these numbers — read this first.** They measure the **neutron solver's
+> arithmetic only**: CPU time to step the core. They say **nothing** about the whole
+> energoblok — the pipework, valves, pumps, tanks and meters, their block entities,
+> or their rendering. The platform question (can Minecraft carry the *whole
+> building*) is **open**, and the only authoritative test is the Director running it
+> in-game. See `CHARTER.md` §4.
+
 Single-thread, in-sandbox JDK, on this machine:
 
 | What | Cost | Budget | Verdict |
