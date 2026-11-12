@@ -45,20 +45,31 @@ public record RbmkXsec(
 
     // -------------------------------------------------------- RBMK cells
     /**
+     * Feedback calibration. The homogenised cell's raw feedbacks are far stronger
+     * than a real RBMK's, because a one-node cell concentrates the whole effect.
+     * These factors scale the emergent dk/k down to the reference coefficients in
+     * {@link ReactivityModel} (void +0.030 per unit, Doppler -1.0e-5/K) — the same
+     * values the lumped core is built on — so the spatial and lumped cores agree
+     * on the feedback physics. Verified by {@code SpatialReactorCore} self-test.
+     */
+    private static final double VOID_FEEDBACK_SCALE = 0.41;
+    private static final double DOPPLER_FEEDBACK_SCALE = 0.020;
+
+    /**
      * A fuel channel cell (ТК): homogenised fuel + graphite + water. Void fraction
      * replaces water with steam (less moderation AND less H absorption); fuel
      * temperature adds Doppler resonance absorption to the fast group.
      */
     public static RbmkXsec fuelCell(double voidFraction, double fuelTempC) {
-        double waterFrac = 0.12 * (1.0 - voidFraction);
-        double steamFrac = 0.12 * voidFraction;
+        double waterFrac = 0.12 * (1.0 - voidFraction) * VOID_FEEDBACK_SCALE;
+        double steamFrac = 0.12 * voidFraction * VOID_FEEDBACK_SCALE;
         RbmkXsec cell = new RbmkXsec(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
             .plus(GRAPHITE.scale(0.75))
             .plus(WATER.scale(waterFrac))
             .plus(STEAM.scale(steamFrac))
             .plus(FUEL.scale(0.13));
         // Doppler: resonance absorption in U-238 grows with the fuel temperature.
-        double doppler = 0.010 * (fuelTempC - 300.0) / 1000.0;
+        double doppler = 0.010 * DOPPLER_FEEDBACK_SCALE * (fuelTempC - 300.0) / 1000.0;
         return new RbmkXsec(cell.d1, cell.sr1 + Math.max(0, doppler), cell.nsf1,
             cell.d2, cell.sa2, cell.nsf2, cell.ss12);
     }

@@ -30,6 +30,7 @@ public final class RbmkSolver3D {
     private final int ext;
     private final int plane;      // nz * na, the stride for one x step
     private final boolean[] active;
+    private final boolean[] control;   // active nodes that are control channels
     private final RbmkXsec[] cell;
 
     public final double[] phi1;
@@ -48,11 +49,15 @@ public final class RbmkSolver3D {
         this.plane = nz * na;
         int n = nx * nz * na;
         this.active = new boolean[n];
+        this.control = new boolean[n];
         this.cell = new RbmkXsec[n];
         for (RbmkLattice.Channel c : RbmkLattice.channels()) {
             for (int a = 0; a < na; a++) {
                 int i = idx(c.x(), c.z(), a);
                 active[i] = true;
+                if (c.control()) {
+                    control[i] = true;
+                }
                 activeNodes++;
             }
         }
@@ -106,11 +111,38 @@ public final class RbmkSolver3D {
         }
     }
 
+    public boolean isControl(int x, int z, int a) {
+        return in(x, z, a) && control[idx(x, z, a)];
+    }
+
+    /**
+     * Apply a control-rod insertion to every control channel: each axial node gets
+     * the rod material {@link RbmkGeometry#rodMaterials} puts there (B4C absorber,
+     * water telescope, or the graphite displacer). This is what makes the rod's
+     * axial geometry — and therefore the positive scram — visible to the solver.
+     */
+    public void setRodInsertion(double insertion) {
+        RbmkGeometry.NodeMaterial[] mats = RbmkGeometry.rodMaterials(insertion);
+        RbmkXsec graphite = RbmkXsec.controlCell(RbmkXsec.GRAPHITE);
+        RbmkXsec water = RbmkXsec.controlCell(RbmkXsec.WATER);
+        RbmkXsec b4c = RbmkXsec.controlCell(RbmkXsec.B4C);
+        for (int i = 0; i < control.length; i++) {
+            if (!control[i]) {
+                continue;
+            }
+            int a = i % na;
+            cell[i] = switch (mats[a]) {
+                case B4C -> b4c;
+                case GRAPHITE -> graphite;
+                case WATER -> water;
+            };
+        }
+    }
+
     /** Set the number of inner Gauss-Seidel sweeps per outer iteration. */
     public void setInnerSweeps(int n) {
         this.innerSweeps = Math.max(1, n);
     }
-
     /** Set the SOR over-relaxation factor (1.0 = plain Gauss-Seidel). */
     public void setOmega(double w) {
         this.omega = w;

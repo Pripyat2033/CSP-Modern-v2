@@ -1,6 +1,8 @@
 package com.ben.csp.rbmk.plant;
 
+import com.ben.csp.rbmk.physics.ReactorModel;
 import com.ben.csp.rbmk.physics.ReactorCore;
+import com.ben.csp.rbmk.physics.SpatialReactorCore;
 
 /**
  * The whole RBMK-1000 plant as a set of coupled, working systems — not one
@@ -27,7 +29,7 @@ import com.ben.csp.rbmk.physics.ReactorCore;
  */
 public final class PlantSystem {
 
-    private final ReactorCore core = new ReactorCore();
+    private final ReactorModel core;
 
     private final MainCirculatingPump[] pumps =
         new MainCirculatingPump[PlantPhysics.CIRCUITS * PlantPhysics.MCP_PER_CIRCUIT];
@@ -50,7 +52,18 @@ public final class PlantSystem {
     private String tripReason = null;
     private double timeS = 0;
 
+    /** Build the plant with the lumped core (fast, spatially averaged). */
     public PlantSystem() {
+        this(false);
+    }
+
+    /**
+     * Build the plant, choosing the core. With {@code spatial} true the reaction
+     * is driven by the full 3D two-group diffusion solver, ticked live; otherwise
+     * by the lumped point-kinetics core.
+     */
+    public PlantSystem(boolean spatial) {
+        this.core = spatial ? new SpatialReactorCore() : new ReactorCore();
         for (int c = 0; c < PlantPhysics.CIRCUITS; c++) {
             for (int p = 0; p < PlantPhysics.MCP_PER_CIRCUIT; p++) {
                 MainCirculatingPump pump = new MainCirculatingPump(p);
@@ -75,7 +88,7 @@ public final class PlantSystem {
     }
 
     // ---------------------------------------------------------------- access
-    public ReactorCore core() {
+    public ReactorModel core() {
         return core;
     }
 

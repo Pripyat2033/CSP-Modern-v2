@@ -2,6 +2,7 @@ package com.ben.csp.rbmk.plant;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
+import com.ben.csp.rbmk.physics.SpatialReactorCore;
 
 /**
  * Runs the whole plant on the server clock: one {@link PlantSystem} advanced
@@ -28,10 +29,20 @@ public final class PlantTicker {
     }
 
     public static PlantSystem startPlant() {
-        plant = new PlantSystem();
+        return startPlant(false);
+    }
+
+    /** Start the plant, choosing the core: lumped (false) or full 3D (true). */
+    public static PlantSystem startPlant(boolean spatial) {
+        plant = new PlantSystem(spatial);
         plant.startUp();
         lastTickNs = 0;
         return plant;
+    }
+
+    /** True when the running plant is driven by the full 3D spatial solver. */
+    public static boolean isSpatial() {
+        return plant != null && plant.core() instanceof SpatialReactorCore;
     }
 
     public static void stopPlant() {

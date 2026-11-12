@@ -20,7 +20,7 @@ import com.ben.csp.rbmk.RbmkGeometry;
  * This is the structure of an operator-training simulator: a reference critical
  * state plus the deltas that drive the power.
  */
-public final class ReactorCore {
+public final class ReactorCore implements ReactorModel {
 
     private final PointKinetics kinetics = new PointKinetics();
     private final Xenon xenon = new Xenon(1.0);

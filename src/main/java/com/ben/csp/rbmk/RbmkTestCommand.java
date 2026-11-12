@@ -17,6 +17,7 @@ import com.ben.csp.rbmk.plant.PlantTicker;
 import com.ben.csp.rbmk.plant.SteamSeparator;
 import com.ben.csp.rbmk.physics.ReactorCore;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
+import com.ben.csp.rbmk.physics.SpatialReactorCore;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -82,7 +83,9 @@ public final class RbmkTestCommand {
                     .then(CommandManager.literal("plant").executes(RbmkTestCommand::stressPlant))))
             .then(CommandManager.literal("status").executes(RbmkTestCommand::status))
             .then(CommandManager.literal("plant")
-                .then(CommandManager.literal("start").executes(RbmkTestCommand::plantStart))
+                .then(CommandManager.literal("start")
+                    .executes(RbmkTestCommand::plantStart)
+                    .then(CommandManager.literal("3d").executes(RbmkTestCommand::plantStart3d)))
                 .then(CommandManager.literal("scram").executes(RbmkTestCommand::plantScram))
                 .then(CommandManager.literal("build")
                     .executes(ctx -> plantBuild(ctx, false))
@@ -456,6 +459,26 @@ public final class RbmkTestCommand {
         return 1;
     }
 
+    /**
+     * {@code /rbmk plant start 3d} — run the plant with the reaction driven by the
+     * full 3D two-group diffusion solver: the flux is resolved over the real
+     * lattice every tick, not averaged to a point. This is the live cost test for
+     * "can Minecraft carry a spatially resolved RBMK".
+     */
+    private static int plantStart3d(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        long t0 = System.nanoTime();
+        PlantTicker.startPlant(true);
+        double calMs = (System.nanoTime() - t0) / 1e6;
+        feedback(s, "RBMK-1000 plant started on the FULL 3D solver (spatially resolved)",
+            Formatting.GOLD);
+        feedback(s, String.format("  reference critical solve: %.0f ms; "
+            + "1 outer iteration per tick", calMs), Formatting.WHITE);
+        feedback(s, "  /rbmk plant status shows k_eff and the per-tick solve cost",
+            Formatting.GRAY);
+        return 1;
+    }
+
     private static int plantScram(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource s = ctx.getSource();
         if (PlantTicker.plant() == null) {
@@ -494,6 +517,11 @@ public final class RbmkTestCommand {
             p.scrammed() ? Formatting.RED : Formatting.GOLD);
         feedback(s, String.format("  core:      power %.3f  (%.0f MWt), rods %.2f, k-eff state",
             p.core().power(), thermalMw, p.core().insertion()), Formatting.WHITE);
+        if (p.core() instanceof SpatialReactorCore sp) {
+            feedback(s, String.format("  3D solver: k_eff %.5f, %.1f ms/tick "
+                + "(1 outer iteration over %d nodes)",
+                sp.keff(), sp.lastSolveMs(), sp.solver().activeNodes()), Formatting.WHITE);
+        }
         feedback(s, String.format("  pumps:     %.0f m3/h total, %d running",
             flowM3h, runningPumps(p)), Formatting.WHITE);
         feedback(s, String.format("  drums:     level %.2f-%.2f, %.1f MPa",
