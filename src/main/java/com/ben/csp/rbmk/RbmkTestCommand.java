@@ -15,6 +15,8 @@ import com.ben.csp.rbmk.plant.MachineSpec;
 import com.ben.csp.rbmk.plant.MachineValidator;
 import com.ben.csp.rbmk.plant.PlantTicker;
 import com.ben.csp.rbmk.plant.SteamSeparator;
+import com.ben.csp.rbmk.module.ModuleRegistry;
+import com.ben.csp.rbmk.module.PlantModule;
 import com.ben.csp.rbmk.physics.ReactorCore;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
 import com.ben.csp.rbmk.physics.SpatialReactorCore;
@@ -96,14 +98,97 @@ public final class RbmkTestCommand {
                         .then(CommandManager.literal("immediate")
                             .executes(ctx -> plantBuild(ctx, true, true)))))
                 .then(CommandManager.literal("status").executes(RbmkTestCommand::plantStatus)))
+            .then(CommandManager.literal("module")
+                .then(CommandManager.literal("list").executes(RbmkTestCommand::moduleList))
+                .then(CommandManager.literal("build")
+                    .executes(ctx -> moduleBuild(ctx, false, false))
+                    .then(CommandManager.literal("immediate")
+                        .executes(ctx -> moduleBuild(ctx, false, true)))
+                    .then(CommandManager.literal("demo")
+                        .executes(ctx -> moduleBuild(ctx, true, false))
+                        .then(CommandManager.literal("immediate")
+                            .executes(ctx -> moduleBuild(ctx, true, true)))))
+                .then(CommandManager.literal("remove")
+                    .executes(RbmkTestCommand::moduleRemove)))
             .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine)));
     }
 
     /**
-     * {@code /rbmk machine} — stand on a machine controller and it validates the
-     * machine's shell: the machine is "formed" only when the real casing is
-     * present. Read-only, so it is not gated.
+     * {@code /rbmk module list} — the swappable modules, with their audit result
+     * and size. Read-only, so it is not gated.
      */
+    private static int moduleList(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        feedback(s, "Swappable plant modules", Formatting.GOLD);
+        for (PlantModule m : ModuleRegistry.all()) {
+            ModuleRegistry.Audit a = ModuleRegistry.audit(m);
+            feedback(s, String.format("  %-16s %s", m.id(), m.label()), Formatting.WHITE);
+            feedback(s, "    " + a.describe(), a.ok() ? Formatting.GREEN : Formatting.RED);
+        }
+        feedback(s, "  /rbmk module build [immediate|demo]  ·  /rbmk module remove",
+            Formatting.GRAY);
+        return 1;
+    }
+
+    /**
+     * {@code /rbmk module build} — builds the МЦК pipework as its own module. The
+     * audit runs first: if the module is not disjoint from the core, the boxes and
+     * the machines, nothing is built. That is the guarantee that it can be removed
+     * again without breaking anything else.
+     */
+    private static int moduleBuild(CommandContext<ServerCommandSource> ctx, boolean demo,
+                                   boolean immediate) {
+        ServerCommandSource s = ctx.getSource();
+        if (!authorise(s, demo)) {
+            return 0;
+        }
+        ServerWorld world = s.getWorld();
+        BlockPos origin = BlockPos.ofFloored(s.getPosition());
+
+        for (PlantModule m : ModuleRegistry.all()) {
+            ModuleRegistry.Audit a = ModuleRegistry.audit(m);
+            if (!a.ok()) {
+                feedback(s, "module " + m.id() + " REFUSED by the audit — nothing built",
+                    Formatting.RED);
+                feedback(s, "  " + a.describe(), Formatting.GRAY);
+                return 0;
+            }
+            if (immediate) {
+                long t0 = System.nanoTime();
+                RbmkWorldBuilder.Counts c =
+                    RbmkWorldBuilder.countsOf(RbmkWorldBuilder.placeModule(world, origin, m));
+                double ms = (System.nanoTime() - t0) / 1e6;
+                feedback(s, String.format("%s: %d pipe, %d valve, %d meter = %d blocks "
+                    + "in %.0f ms", m.id(), c.pipes, c.valves, c.meters, c.total, ms),
+                    Formatting.GOLD);
+            } else {
+                ConstructionJob job = RbmkWorldBuilder.planModule(world, origin, m);
+                ConstructionScheduler.enqueue(job);
+                double etaS = job.planTotal()
+                    / (double) ConstructionScheduler.blocksPerTick() / 20.0;
+                feedback(s, String.format("%s queued: %d blocks (about %.0f s)",
+                    m.id(), job.planTotal(), etaS), Formatting.GOLD);
+            }
+        }
+        feedback(s, "remove it again with /rbmk module remove — it clears only its own cells",
+            Formatting.GRAY);
+        return 1;
+    }
+
+    /** {@code /rbmk module remove} — clears the modules, and nothing else. */
+    private static int moduleRemove(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        ServerWorld world = s.getWorld();
+        BlockPos origin = BlockPos.ofFloored(s.getPosition());
+        long n = 0;
+        for (PlantModule m : ModuleRegistry.all()) {
+            n += RbmkWorldBuilder.clearModule(world, origin, m);
+        }
+        feedback(s, String.format("removed the modules: %d blocks cleared (only the "
+            + "modules' own cells)", n), Formatting.GOLD);
+        return 1;
+    }
+
     private static int machine(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource s = ctx.getSource();
         BlockPos pos = BlockPos.ofFloored(s.getPosition());

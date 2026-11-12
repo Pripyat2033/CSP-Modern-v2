@@ -1,16 +1,22 @@
 package com.ben.csp.rbmk;
 
 import com.ben.csp.block.ModBlocks;
+import com.ben.csp.rbmk.module.ModuleRegistry;
+import com.ben.csp.rbmk.module.PlantCell;
+import com.ben.csp.rbmk.module.PlantModule;
 import com.ben.csp.rbmk.plant.Compartment;
 import com.ben.csp.rbmk.plant.EnergoblokLayout;
 import com.ben.csp.rbmk.plant.MachineSpec;
 import com.ben.csp.rbmk.plant.MachineSpecs;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Describes the RBMK-1000 core and the rest of the plant as real blocks at 1:4.
@@ -32,8 +38,8 @@ public final class RbmkWorldBuilder {
     /** Block counts from a build. */
     public static final class Counts {
         public long graphite, fuel, rods, ubs, lbs, vessel, waterTank,
-            separators, turbines, condensers, pumps, feedwater, accumulators, pipes,
-            containment, controllers, total;
+            separators, turbines, condensers, pumps, feedwater, accumulators,
+            pipes, valves, meters, containment, controllers, total;
     }
 
     private static Counts counts(ConstructionJob job) {
@@ -52,11 +58,14 @@ public final class RbmkWorldBuilder {
         c.feedwater = job.placed(ConstructionJob.Part.FEEDWATER);
         c.accumulators = job.placed(ConstructionJob.Part.ACCUMULATORS);
         c.pipes = job.placed(ConstructionJob.Part.PIPES);
+        c.valves = job.placed(ConstructionJob.Part.VALVES);
+        c.meters = job.placed(ConstructionJob.Part.METERS);
         c.containment = job.placed(ConstructionJob.Part.CONTAINMENT);
         c.controllers = job.placed(ConstructionJob.Part.CONTROLLERS);
         c.total = c.graphite + c.fuel + c.rods + c.ubs + c.lbs + c.vessel + c.waterTank
             + c.separators + c.turbines + c.condensers + c.pumps + c.feedwater
-            + c.accumulators + c.pipes + c.containment + c.controllers;
+            + c.accumulators + c.pipes + c.valves + c.meters + c.containment
+            + c.controllers;
         return c;
     }
 
@@ -178,7 +187,93 @@ public final class RbmkWorldBuilder {
             addMachine(regions, p.part(), spec, ox + p.x(), oy + p.y(), oz + p.z(), ctl);
         }
 
+        // ---- the swappable modules (the МЦК pipework today), composed in ----
+        for (PlantModule m : ModuleRegistry.all()) {
+            regions.addAll(moduleRegions(origin, m));
+        }
+
         return ConstructionJob.of(world, "energoblok", regions);
+    }
+
+    // --------------------------------------------------------------- modules
+
+    /**
+     * Plan one swappable module as its own job. A module is pure data (origin-
+     * relative cells with a material role), so this maps each role to its block
+     * and returns a {@link ConstructionJob} the scheduler can build on its own.
+     */
+    public static ConstructionJob planModule(ServerWorld world, BlockPos origin, PlantModule m) {
+        return ConstructionJob.of(world, "module:" + m.id(), moduleRegions(origin, m));
+    }
+
+    /** The regions a module contributes, grouped by material role. */
+    private static List<ConstructionJob.Region> moduleRegions(BlockPos origin, PlantModule m) {
+        List<ConstructionJob.Region> regions = new ArrayList<>();
+        Map<PlantCell.Role, List<PlantCell>> byRole = new EnumMap<>(PlantCell.Role.class);
+        for (PlantCell c : m.cells()) {
+            byRole.computeIfAbsent(c.role(), k -> new ArrayList<>()).add(c);
+        }
+        for (Map.Entry<PlantCell.Role, List<PlantCell>> e : byRole.entrySet()) {
+            List<PlantCell> list = e.getValue();
+            int n = list.size();
+            int[] xs = new int[n];
+            int[] ys = new int[n];
+            int[] zs = new int[n];
+            for (int i = 0; i < n; i++) {
+                PlantCell c = list.get(i);
+                xs[i] = origin.getX() + c.x();
+                ys[i] = origin.getY() + c.y();
+                zs[i] = origin.getZ() + c.z();
+            }
+            regions.add(ConstructionJob.cells(partFor(e.getKey()), blockFor(e.getKey()),
+                xs, ys, zs));
+        }
+        return regions;
+    }
+
+    /**
+     * Remove a module: clear exactly its own cells, and nothing else. This is what
+     * makes a module swappable — the audit ({@link ModuleRegistry#audit}) has
+     * already proved the cells are disjoint from the core, the boxes and the
+     * machines, so clearing them cannot touch anything the module does not own.
+     */
+    public static long clearModule(ServerWorld world, BlockPos origin, PlantModule m) {
+        long n = 0;
+        for (PlantCell c : m.cells()) {
+            world.setBlockState(new BlockPos(origin.getX() + c.x(),
+                origin.getY() + c.y(), origin.getZ() + c.z()),
+                Blocks.AIR.getDefaultState(), 2);
+            n++;
+        }
+        return n;
+    }
+
+    /** Place a whole module at once (the immediate path), returning its job. */
+    public static ConstructionJob placeModule(ServerWorld world, BlockPos origin, PlantModule m) {
+        ConstructionJob job = planModule(world, origin, m);
+        job.fill(Long.MAX_VALUE);
+        return job;
+    }
+
+    /** The counts of a finished job (for the command feedback). */
+    public static Counts countsOf(ConstructionJob job) {
+        return counts(job);
+    }
+
+    private static ConstructionJob.Part partFor(PlantCell.Role role) {
+        return switch (role) {
+            case VALVE -> ConstructionJob.Part.VALVES;
+            case METER -> ConstructionJob.Part.METERS;
+            default -> ConstructionJob.Part.PIPES;
+        };
+    }
+
+    private static Block blockFor(PlantCell.Role role) {
+        return switch (role) {
+            case VALVE -> ModBlocks.PLANT_VALVE_BLOCK;
+            case METER -> ModBlocks.PLANT_METER_BLOCK;
+            default -> ModBlocks.PLANT_PIPE_BLOCK;
+        };
     }
 
     private static MachineSpec specFor(ConstructionJob.Part part) {

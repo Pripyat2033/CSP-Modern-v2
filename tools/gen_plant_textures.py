@@ -195,6 +195,44 @@ def gen_pipe():
     return px
 
 
+def gen_valve():
+    """A flow-control valve (регулирующий клапан): a brass body with a handwheel
+    boss and a stem, so it reads as a valve, not a pipe segment."""
+    px = new(shade(BRASS, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(BRASS, 0.85))
+    # the pipe run through the body
+    for y in range(5, 11):
+        rect(px, 0, y, S - 1, y, shade(COPPER, 0.9 if 6 <= y <= 9 else 0.7))
+    # the valve body / bonnet (a raised square boss)
+    rect(px, 4, 3, 11, 12, shade(BRASS, 1.05))
+    frame(px, shade(BLACK, 1.3))
+    rect(px, 4, 3, 11, 3, shade(BRASS, 1.2))
+    # the handwheel seen from above: a bright cross
+    rect(px, 6, 0, 9, 2, shade(STEEL, 1.15))
+    rect(px, 7, 0, 8, 4, shade(RED, 1.0))
+    put(px, 7, 1, shade(RED, 1.2))
+    put(px, 8, 1, shade(RED, 1.2))
+    return px
+
+
+def gen_meter():
+    """A ball flow meter (шариковый расходомер): a glass tube with a steel cap and
+    a visible float ball, one per channel."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.8))
+    # glass sight tube down the middle
+    rect(px, 5, 0, 10, S - 1, (150, 190, 205, 255))
+    rect(px, 6, 1, 9, S - 2, (120, 165, 185, 255))
+    # the float ball, near the top of the tube
+    rect(px, 6, 3, 9, 6, (235, 235, 240, 255))
+    put(px, 7, 4, (200, 205, 215, 255))
+    # steel end caps
+    rect(px, 2, 0, 13, 1, shade(STEEL, 0.7))
+    rect(px, 2, S - 2, 13, S - 1, shade(STEEL, 0.7))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
 def gen_control_rod():
     """A control-rod channel (СУЗ): a graphite column with a bright absorber rod."""
     px = new(DARK)
@@ -401,6 +439,8 @@ TEXTURES = {
     "feedwater": gen_feedwater,
     "eccs_accumulator": gen_eccs,
     "plant_pipe": gen_pipe,
+    "plant_valve": gen_valve,
+    "plant_meter": gen_meter,
     "control_rod": gen_control_rod,
     "ubs": gen_ubs,
     "lbs": gen_lbs,

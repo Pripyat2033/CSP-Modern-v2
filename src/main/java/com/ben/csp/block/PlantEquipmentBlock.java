@@ -68,4 +68,14 @@ public class PlantEquipmentBlock extends Block {
     public static PlantEquipmentBlock pipe() {
         return new PlantEquipmentBlock(Blocks.COPPER_BLOCK);
     }
+
+    /** A flow-control valve (регулирующий клапан): brass/steel, one per channel. */
+    public static PlantEquipmentBlock valve() {
+        return new PlantEquipmentBlock(Blocks.COPPER_BLOCK);
+    }
+
+    /** A ball flow meter (шариковый расходомер): glass-and-steel, one per channel. */
+    public static PlantEquipmentBlock meter() {
+        return new PlantEquipmentBlock(Blocks.LIGHT_GRAY_CONCRETE);
+    }
 }

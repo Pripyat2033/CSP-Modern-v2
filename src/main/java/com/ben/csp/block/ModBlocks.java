@@ -40,6 +40,8 @@ public class ModBlocks {
     public static final Block FEEDWATER_BLOCK = PlantEquipmentBlock.feedwater();
     public static final Block ECCS_ACCUMULATOR_BLOCK = PlantEquipmentBlock.accumulator();
     public static final Block PLANT_PIPE_BLOCK = PlantEquipmentBlock.pipe();
+    public static final Block PLANT_VALVE_BLOCK = PlantEquipmentBlock.valve();
+    public static final Block PLANT_METER_BLOCK = PlantEquipmentBlock.meter();
     // the reactor's structural sections (the "Schema"): UBS, LBS, vessel, water tank
     public static final Block UBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.UPPER_SHIELD);
     public static final Block LBS_BLOCK = SchemaBlock.of(SchemaBlock.Section.LOWER_SHIELD);
@@ -94,6 +96,8 @@ public class ModBlocks {
         registerWithItem("feedwater", FEEDWATER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("eccs_accumulator", ECCS_ACCUMULATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("plant_pipe", PLANT_PIPE_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("plant_valve", PLANT_VALVE_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("plant_meter", PLANT_METER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("control_rod", CONTROL_ROD_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("ubs", UBS_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("lbs", LBS_BLOCK, PlantEquipmentBlockItem::new);

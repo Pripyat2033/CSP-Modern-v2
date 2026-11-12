@@ -43,12 +43,25 @@ fails on it — pre-existing, not a regression. `EnergoblokLayoutSelfTest` = 231
 ## The plant-platform question — OPEN (Ben, 2026-11-09)
 A reactor-only bench is NOT the platform question. The whole **energoblok** must
 run: pipework, valves, pumps, tanks, meters, their block entities, and rendering,
-all at once. A real RBMK-1000 is mostly piping (22 group distribution headers per
-circuit x 38-41 channels; a flow-control valve AND a ball flow meter on EVERY one
-of the 1,661 channels). `planPlant` currently places **walls + machine shells
-only**; `Part.PIPES` is counted but never placed. The authoritative test is **Ben
-running the full energoblok in Minecraft himself** (same form as the 608-worker
-GO), never a headless bench. Recorded in `docs/CHARTER.md` §4.
+all at once. The authoritative test is **Ben running the full energoblok in
+Minecraft himself** (same form as the 608-worker GO), never a headless bench.
+Recorded in `docs/CHARTER.md` §4.
+
+**Pipework module — BUILT 2026-11-09** (`com.ben.csp.rbmk.module`): `PlantModule`
+(interface, pure data) + `PlantCell(x,y,z,Role)` + `PipeNetwork` (МЦК; params
+`columns`=group-distribution-headers, `step`=channels per valve+meter pair) +
+`ModuleRegistry` (`all()` + `audit()`). Real result **56,003 cells** = 48,515
+pipe + 3,744 valve + 3,744 meter (2 valves + 2 meters per each of the 1,872
+channels). `audit` is the modularity guarantee: refuses a module hitting a
+compartment wall or a machine; the reactor cavity is modelled PIERCED (free if
+y<=-4, or (x,z) is a channel column). `planPlant` now composes modules in (was:
+`Part.PIPES` counted but never placed — fixed). `ConstructionJob` gained
+`Mode.CELLS` + `Part.VALVES/METERS`; builder gained plan/place/clear/countsOf
+module; new blocks `PLANT_VALVE_BLOCK`/`PLANT_METER_BLOCK`; command
+`/rbmk plant module list|build [immediate|demo]|remove`. Verified live: build
+demo immediate 56,003 blocks/250 ms; remove cleared exactly its own cells.
+Still missing for a full energoblok: pumps/tanks/drums as BLOCKS are placed as
+shells already; their block ENTITIES + rendering are not yet in scope of a test.
 
 ## Build & run (cheap checks; use these constantly)
 ```

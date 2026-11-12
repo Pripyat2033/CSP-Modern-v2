@@ -28,11 +28,11 @@ public final class ConstructionJob {
     /** What a region is, so the counts stay meaningful. */
     public enum Part {
         GRAPHITE, FUEL, RODS, SEPARATORS, TURBINES, CONDENSERS, PUMPS,
-        FEEDWATER, ACCUMULATORS, PIPES, UBS, LBS, VESSEL, WATER_TANK, CONTROLLERS,
-        CONTAINMENT
+        FEEDWATER, ACCUMULATORS, PIPES, VALVES, METERS, UBS, LBS, VESSEL,
+        WATER_TANK, CONTROLLERS, CONTAINMENT
     }
 
-    private enum Mode { BOX, SHELL, COLUMNS, RADIAL, PIERCED_RADIAL, CYLINDER }
+    private enum Mode { BOX, SHELL, COLUMNS, CELLS, RADIAL, PIERCED_RADIAL, CYLINDER }
 
     /** A region to fill. */
     public static final class Region {
@@ -47,6 +47,7 @@ public final class ConstructionJob {
         private final int cylRadius;                // cylinder mode: radius
         private final char cylAxis;                 // cylinder mode: axis 'x'
         private final HoleMask holes;               // pierced-radial mode: (x,z) to skip
+        private final int[] cellX, cellY, cellZ;    // cells mode: explicit positions
         private final long iterLen;                 // positions to walk
         private final long placeTotal;              // blocks actually placed
         private long idx;                           // cursor
@@ -57,7 +58,7 @@ public final class ConstructionJob {
                        int ccx, int ccz, long rIn2, long rOut2,
                        int cylRadius, char cylAxis) {
             this(part, block, mode, x0, y0, z0, x1, y1, z1, colX, colZ, colHeight,
-                ccx, ccz, rIn2, rOut2, cylRadius, cylAxis, null, null);
+                ccx, ccz, rIn2, rOut2, cylRadius, cylAxis, null, null, null, null, null);
         }
 
         private Region(Part part, Block block, Mode mode,
@@ -65,6 +66,16 @@ public final class ConstructionJob {
                        int[] colX, int[] colZ, int colHeight,
                        int ccx, int ccz, long rIn2, long rOut2,
                        int cylRadius, char cylAxis, int[] holeX, int[] holeZ) {
+            this(part, block, mode, x0, y0, z0, x1, y1, z1, colX, colZ, colHeight,
+                ccx, ccz, rIn2, rOut2, cylRadius, cylAxis, holeX, holeZ, null, null, null);
+        }
+
+        private Region(Part part, Block block, Mode mode,
+                       int x0, int y0, int z0, int x1, int y1, int z1,
+                       int[] colX, int[] colZ, int colHeight,
+                       int ccx, int ccz, long rIn2, long rOut2,
+                       int cylRadius, char cylAxis, int[] holeX, int[] holeZ,
+                       int[] cellX, int[] cellY, int[] cellZ) {
             this.part = part;
             this.block = block;
             this.mode = mode;
@@ -83,6 +94,9 @@ public final class ConstructionJob {
             this.rOut2 = rOut2;
             this.cylRadius = cylRadius;
             this.cylAxis = cylAxis;
+            this.cellX = cellX;
+            this.cellY = cellY;
+            this.cellZ = cellZ;
             if (holeX == null) {
                 this.holes = new HoleMask(null, null);
             } else {
@@ -91,6 +105,9 @@ public final class ConstructionJob {
             if (mode == Mode.COLUMNS) {
                 this.iterLen = (long) colX.length * colHeight;
                 this.placeTotal = iterLen;
+            } else if (mode == Mode.CELLS) {
+                this.iterLen = cellX.length;
+                this.placeTotal = cellX.length;
             } else {
                 long dx = Math.max(0, x1 - x0);
                 long dy = Math.max(0, y1 - y0);
@@ -182,6 +199,16 @@ public final class ConstructionJob {
                     int c = (int) (idx / colHeight);
                     int y = (int) (idx % colHeight);
                     world.setBlockState(new BlockPos(colX[c], y0 + y, colZ[c]),
+                        block.getDefaultState(), 2);
+                    placed++;
+                    idx++;
+                }
+                return placed;
+            }
+            if (mode == Mode.CELLS) {
+                while (idx < iterLen && placed < budget) {
+                    int i = (int) idx;
+                    world.setBlockState(new BlockPos(cellX[i], cellY[i], cellZ[i]),
                         block.getDefaultState(), 2);
                     placed++;
                     idx++;
@@ -290,6 +317,17 @@ public final class ConstructionJob {
         long rOut2 = (long) outerRadius * outerRadius;
         return new Region(part, block, Mode.PIERCED_RADIAL, x0, y0, z0, x1, y1, z1,
             null, null, 0, cx, cz, rIn2, rOut2, 0, 'x', holeX, holeZ);
+    }
+
+    /**
+     * An explicit set of block positions (absolute world coordinates) — used by a
+     * {@code PlantModule}, which plans a network of pipes, valves and meters that
+     * no box/shell/radial shape describes.
+     */
+    public static Region cells(Part part, Block block,
+                               int[] xs, int[] ys, int[] zs) {
+        return new Region(part, block, Mode.CELLS, 0, 0, 0, 0, 0, 0,
+            null, null, 0, 0, 0, 0, 0, 0, 'x', null, null, xs, ys, zs);
     }
 
     /**
