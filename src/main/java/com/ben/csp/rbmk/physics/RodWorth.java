@@ -28,7 +28,11 @@ public final class RodWorth {
     private static final double SA_WATER = 0.020;
     private static final double SA_GRAPHITE = 0.0005;
     private static final double SA_B4C = 0.450;
-    /** Scale to dk/k: the fractional worth of one full B4C column (reference). */
+    /**
+     * Scale to dk/k: the fractional worth of one full B4C column. A reference
+     * value ({@link PhysicsProvenance} {@code rodworth.scale}, {@code to_verify});
+     * replace with a measured/design rod-worth curve before freezing.
+     */
     private static final double SCALE = 0.08;
 
     private final double[] flux2;

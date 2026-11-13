@@ -85,7 +85,10 @@ public final class ReactorCore implements ReactorModel {
             + xenonTerm(xe);
     }
 
-    /** Xenon worth relative to the nominal full-power equilibrium. */
+    /**
+     * Xenon worth relative to the nominal full-power equilibrium. A reference value
+     * ({@link PhysicsProvenance} {@code xenon.coeff}, {@code to_verify}).
+     */
     private static final double XENON_COEFF = 0.024;
 
     private double xenonTerm(double xeRatio) {

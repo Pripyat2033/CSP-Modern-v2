@@ -1,0 +1,99 @@
+{
+  "_comment": "Registry of the numeric constants the RBMK model rests on, with their source. Mission rule 2: nothing is guessed. status is one of: verified (cites a source), to_verify (a reference value not yet confirmed against a primary/NIKIET source), placeholder (a value with no source at all). A placeholder is allowed only when it is a FALLBACK that is not used while real data is present. The build gate warns on to_verify and FAILS on any non-fallback placeholder.",
+  "entries": {
+    "delayed.beta_eff": {
+      "value": 0.0065,
+      "unit": "dk/k",
+      "status": "to_verify",
+      "source": "RBMK literature (value commonly quoted); to confirm against a NIKIET/design document"
+    },
+    "delayed.generation_time": {
+      "value": 0.0007,
+      "unit": "s",
+      "status": "to_verify",
+      "source": "RBMK literature (prompt generation time ~0.7 ms); to confirm"
+    },
+    "delayed.lambda_i": {
+      "value": [
+        0.0124,
+        0.0305,
+        0.111,
+        0.301,
+        1.14,
+        3.01
+      ],
+      "unit": "1/s",
+      "status": "to_verify",
+      "source": "Keepin six-group set (Western evaluation). The RBMK used its own six-group set \u2014 replace from a NIKIET/ABBN source."
+    },
+    "delayed.beta_fractions": {
+      "value": [
+        0.038,
+        0.213,
+        0.188,
+        0.407,
+        0.128,
+        0.026
+      ],
+      "unit": "fraction of beta",
+      "status": "to_verify",
+      "source": "Keepin six-group set (Western evaluation). RBMK-specific set to be sourced."
+    },
+    "feedback.void_coeff": {
+      "value": 0.03,
+      "unit": "dk/k per unit void",
+      "status": "to_verify",
+      "source": "RBMK reference value (strongly positive at operating burnup); to confirm against NIKIET data"
+    },
+    "feedback.doppler_coeff": {
+      "value": -1e-05,
+      "unit": "dk/k per degC",
+      "status": "to_verify",
+      "source": "RBMK reference value; to confirm"
+    },
+    "feedback.graphite_coeff": {
+      "value": -2e-05,
+      "unit": "dk/k per degC",
+      "status": "to_verify",
+      "source": "RBMK reference value; to confirm"
+    },
+    "feedback.power_coeff": {
+      "value": -0.005,
+      "unit": "dk/k per unit power",
+      "status": "to_verify",
+      "source": "Reference value; to confirm"
+    },
+    "xenon.coeff": {
+      "value": 0.024,
+      "unit": "dk/k per unit xenon ratio",
+      "status": "to_verify",
+      "source": "Reference value; to confirm against a NIKIET/design source"
+    },
+    "rodworth.scale": {
+      "value": 0.08,
+      "unit": "dk/k (full B4C column)",
+      "status": "to_verify",
+      "source": "Reference worth used to scale the perturbation sum; to replace with a measured/design rod-worth curve"
+    },
+    "xsec.void_feedback_scale": {
+      "value": 0.41,
+      "unit": "dimensionless",
+      "status": "placeholder",
+      "fallback": true,
+      "source": "Hand-set scale used only by the legacy fallback cell when the derived lattice table is missing. Not used when rbmk_lattice.json is present."
+    },
+    "xsec.doppler_feedback_scale": {
+      "value": 0.02,
+      "unit": "dimensionless",
+      "status": "placeholder",
+      "fallback": true,
+      "source": "Hand-set scale used only by the legacy fallback cell. Not used when the derived lattice table is present."
+    },
+    "lattice.library": {
+      "value": "ENDF/B-VIII.0",
+      "unit": "library name",
+      "status": "to_verify",
+      "source": "Currently ENDF/B-VIII.0 via the openmc-data-storage JSON mirror. AGREED TARGET: ROSFOND / ABBN-RF (NIKIET lineage). Swap via tools/lattice --source rosfond."
+    }
+  }
+}

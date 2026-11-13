@@ -61,6 +61,9 @@ public record RbmkXsec(
      */
     private static final double VOID_FEEDBACK_SCALE = 0.41;
     private static final double DOPPLER_FEEDBACK_SCALE = 0.020;
+    // Both scales above are PLACEHOLDERS used only by legacyFuelCell below, i.e.
+    // only when the derived lattice table is absent. See PhysicsProvenance
+    // (xsec.void_feedback_scale, xsec.doppler_feedback_scale, marked fallback).
 
     /**
      * A fuel channel cell (ТК): homogenised fuel + graphite + water.

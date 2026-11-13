@@ -10,6 +10,10 @@ package com.ben.csp.rbmk.physics;
  * strongly positive at operating burnup); the method — summing independent
  * feedbacks into a reactivity, and showing that the net coefficient turns positive
  * with void — is what is validated.
+ *
+ * <p>Each coefficient is registered in {@link PhysicsProvenance} under
+ * {@code feedback.*} as {@code to_verify}: reference values awaiting a NIKIET /
+ * design source, flagged by the build, never presented as measured fact.
  */
 public final class ReactivityModel {
 

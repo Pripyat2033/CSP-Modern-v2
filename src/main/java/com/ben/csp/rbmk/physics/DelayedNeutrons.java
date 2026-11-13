@@ -10,6 +10,10 @@ package com.ben.csp.rbmk.physics;
  * (Keepin) set for thermal fission of U-235. beta_eff for the RBMK-1000 is taken
  * as 0.0065 (the value the RBMK literature quotes); mark/verify against a NIKIET
  * source before the physics is frozen.
+ *
+ * <p>These are NOT frozen facts: each is registered in {@link PhysicsProvenance}
+ * under {@code delayed.*} as {@code to_verify}, so the build flags them until a
+ * primary source replaces them.
  */
 public final class DelayedNeutrons {
 

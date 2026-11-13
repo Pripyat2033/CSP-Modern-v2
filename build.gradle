@@ -83,6 +83,42 @@ jar {
     }
 }
 
+// Provenance gate (mission rule 2: nothing is guessed). Fails the build if any
+// physics constant is an unresolved placeholder; prints a notice for every
+// reference value still flagged to_verify. See src/main/resources/provenance.json.
+tasks.register('checkProvenance') {
+    description = 'Fails if a physics constant is a guessed (unresolved placeholder) value.'
+    group = 'verification'
+    def registry = file('src/main/resources/provenance.json')
+    doLast {
+        if (!registry.exists()) {
+            throw new GradleException("provenance.json is missing — the constants are untracked")
+        }
+        def json = new groovy.json.JsonSlurper().parseText(registry.text)
+        def unresolved = []
+        def toVerify = []
+        json.entries.each { key, e ->
+            def status = (e.status ?: 'placeholder').toString().toLowerCase()
+            if (status == 'placeholder' && !(e.fallback as boolean)) {
+                unresolved << key
+            } else if (status == 'to_verify') {
+                toVerify << key
+            }
+        }
+        if (!unresolved.isEmpty()) {
+            throw new GradleException("Unresolved placeholder constants (no source, no fallback): "
+                + unresolved.join(', ') + "\nCite a source or mark it to_verify.")
+        }
+        if (!toVerify.isEmpty()) {
+            logger.lifecycle("Provenance: " + toVerify.size()
+                + " reference constants still TO VERIFY against a NIKIET/design source:")
+            toVerify.each { logger.lifecycle("  - " + it) }
+        }
+    }
+}
+
+tasks.named('check') { dependsOn 'checkProvenance' }
+
 // configure the maven publication
 publishing {
     publications {
