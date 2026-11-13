@@ -446,3 +446,34 @@ conda-forge. Cross-section DATA is separate: `openmc.org/data/` and
 `github.com/openmc-dev/data` (200 OK). NNDC ENDF/B-VIII.0 dir is 404 from here.
 So the earlier "lattice pipeline is Ben-side only" note is now FALSE for OpenMC
 proper; the numpy/scipy gap is also closed by conda (conda-forge has numpy).
+
+## OpenMC = the MECHANICS engine; Minecraft = VISUALISATION only - PROVEN (2026-11-13)
+
+Ben's "true test" is met. The neutron physics is computed OUTSIDE Minecraft by
+OpenMC (real Monte Carlo, ENDF/B-VIII.0), and the mod only DISPLAYS it.
+
+- Install: micromamba env `omc` at `/workspace/tools/mamba/envs/omc` (bin/python,
+  bin/openmc run directly - do NOT depend on the ephemeral `/tmp/mm`). Data:
+  `/workspace/tools/openmc_data/endfb-viii.0-hdf5` (3.4 GB tar.xz from anl.box.com
+  -> 6.6 GB; 556 neutron + 100 photon + 31 thermal; `c_Graphite` S(a,b) present).
+  Point `OPENMC_CROSS_SECTIONS` at its `cross_sections.xml`.
+- Model: `openmc/rbmk_cell.py` = one RBMK channel (250 mm graphite cell, 18-rod
+  assembly homogenised in the 80 mm bore) as an infinite reflective lattice cell.
+  `openmc/rbmk_void_coeff.py` sweeps coolant density and derives the VOID
+  COEFFICIENT FROM FIRST PRINCIPLES - no tabulated coefficient is fed in.
+- RESULT: k RISES as the channel voids (1.3107 full water -> 1.3324 near full
+  void), turning over ONLY at full void (1.2917) because water is also a
+  moderator. Operating-point void coeff = **+0.015 dk/k per unit void**, vs the
+  documented INSAG-7/NUREG-1250 +0.02. Independent corroboration, and it confirms
+  the Java spatial solver's +0.105 is ~5x too strong.
+- BRIDGE: `openmc_void_coeff.json` copied to `src/main/resources/`; read by
+  `OpenMcResult.java`; `/rbmk openmc` prints it. `OpenMcBridgeSelfTest` = 11
+  checks. VERIFIED LIVE: `gradle runServer` boots the Fabric server, the console
+  command prints the whole sweep.
+- Two OpenMC gotchas: (1) `mix_materials` REJECTS materials carrying S(a,b) -
+  mix first, then `add_s_alpha_beta` on the mix; (2) every surface needs a
+  `boundary_type` or the run errors out.
+- Physics note: a single 13.6 mm rod in a 250 mm cell gives k=0.46 (wrong); the
+  channel must carry the full 18-rod assembly (k=1.31, sensible).
+- STILL OPEN: re-anchor the Java model (`GRAPHITE_COEFF` is negative; the spatial
+  void feedback is +0.105) to these OpenMC/sourced values - needs Ben's go-ahead.
