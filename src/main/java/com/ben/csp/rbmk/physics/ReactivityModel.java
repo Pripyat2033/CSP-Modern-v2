@@ -6,27 +6,36 @@ package com.ben.csp.rbmk.physics;
  * are what make the RBMK behave the way it does — most importantly the
  * <em>positive</em> void coefficient, which is the core of the accident.
  *
- * <p>The coefficients are marked reference values (the RBMK void coefficient is
- * strongly positive at operating burnup); the method — summing independent
- * feedbacks into a reactivity, and showing that the net coefficient turns positive
- * with void — is what is validated.
- *
- * <p>Each coefficient is registered in {@link PhysicsProvenance} under
- * {@code feedback.*} as {@code to_verify}: reference values awaiting a NIKIET /
- * design source, flagged by the build, never presented as measured fact.
+ * <p>The coefficients are drawn from INSAG-7 Table II-I (p. 105), the main design
+ * table for Chernobyl Unit 4, and are registered in {@link PhysicsProvenance}:
+ * the void and Doppler coefficients are {@code verified} (sourced, with a quote);
+ * the rest remain {@code to_verify} and are flagged by the build. One value is
+ * knowingly unresolved: INSAG-7 gives the <em>graphite</em> temperature
+ * coefficient as <em>positive</em> (+6e-5 per degC, a documented RBMK
+ * destabilising property), whereas this model still carries it negative — a
+ * conflict recorded, not silently changed.
  */
 public final class ReactivityModel {
 
     /** Reference temperature for all coefficients, °C. */
     public static final double T_REF = 300.0;
 
-    /** Void coefficient, dk/k per unit void. POSITIVE — the RBMK's fatal property. */
-    public static final double VOID_COEFF = 0.030;
-    /** Doppler (fuel temperature) coefficient, dk/k per °C. Negative. */
-    public static final double DOPPLER_COEFF = -1.0e-5;
-    /** Graphite temperature coefficient, dk/k per °C. Negative. */
+    /**
+     * Void coefficient, dk/k per unit void. POSITIVE — the RBMK's fatal property.
+     * INSAG-7 Table II-I: +2.0e-4 per % void = 0.020 per unit void fraction.
+     */
+    public static final double VOID_COEFF = 0.020;
+    /** Doppler (fuel temperature) coefficient, dk/k per °C. Negative.
+     *  INSAG-7 Table II-I: -1.2e-5 per degC. */
+    public static final double DOPPLER_COEFF = -1.2e-5;
+    /**
+     * Graphite temperature coefficient, dk/k per °C.
+     * CONFLICT: INSAG-7 Table II-I gives +6e-5 (positive); this model still uses
+     * a negative value. See PhysicsProvenance {@code feedback.graphite_coeff}.
+     * TO VERIFY.
+     */
     public static final double GRAPHITE_COEFF = -2.0e-5;
-    /** Power coefficient, dk/k per unit power. Small and negative. */
+    /** Power coefficient, dk/k per unit power. Small and negative. TO VERIFY. */
     public static final double POWER_COEFF = -0.005;
 
     private ReactivityModel() {}

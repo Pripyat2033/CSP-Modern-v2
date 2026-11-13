@@ -55,9 +55,9 @@ public record RbmkXsec(
      * Feedback calibration. The homogenised cell's raw feedbacks are far stronger
      * than a real RBMK's, because a one-node cell concentrates the whole effect.
      * These factors scale the emergent dk/k down to the reference coefficients in
-     * {@link ReactivityModel} (void +0.030 per unit, Doppler -1.0e-5/K) — the same
-     * values the lumped core is built on — so the spatial and lumped cores agree
-     * on the feedback physics. Verified by {@code SpatialReactorCore} self-test.
+     * {@link ReactivityModel} (void +0.020 per unit, Doppler -1.2e-5/K, per INSAG-7
+     * Table II-I) — the same values the lumped core is built on — so the spatial and
+     * lumped cores agree on the feedback physics. Verified by {@code SpatialReactorCore} self-test.
      */
     private static final double VOID_FEEDBACK_SCALE = 0.41;
     private static final double DOPPLER_FEEDBACK_SCALE = 0.020;

@@ -11,6 +11,8 @@ import java.util.List;
  * <ul>
  *   <li>the registry loads and covers the core constants;</li>
  *   <li>every {@code to_verify} entry states what it must be verified against;</li>
+ *   <li>every {@code verified} entry carries a machine-checkable citation
+ *       (a sourceUrl and a quote) — "verified" cannot mean "we said so";</li>
  *   <li>there is NO unresolved placeholder — no guessed number in the model;</li>
  *   <li>the registered value agrees with the constant in the code (beta_eff).</li>
  * </ul>
@@ -39,6 +41,19 @@ public final class PhysicsProvenanceSelfTest {
         }
         check(!PhysicsProvenance.toVerify().isEmpty(),
             "the reference values are flagged to_verify, not passed off as verified");
+
+        // every VERIFIED entry must carry a citation we can check: a source URL
+        // and a verbatim quote. This is what stops "verified" from being an
+        // assertion with no evidence behind it.
+        for (String key : PhysicsProvenance.verified()) {
+            PhysicsProvenance.Entry e = PhysicsProvenance.get(key);
+            check(e.sourceUrl() != null && e.sourceUrl().startsWith("http"),
+                "verified entry '" + key + "' cites a source URL");
+            check(e.quote() != null && e.quote().length() > 10,
+                "verified entry '" + key + "' carries a verbatim quote");
+        }
+        check(!PhysicsProvenance.verified().isEmpty(),
+            "at least one constant is now sourced from a primary document");
 
         // no guessed number may sit in the model unexplained
         List<String> unresolved = PhysicsProvenance.unresolvedPlaceholders();

@@ -366,3 +366,59 @@ the live core; do not use them as the reactor. `tools/ReactorConsole` runs it
 headless (rod/scram/run) — `java -cp build/classes/java/main ...ReactorConsole demo`.
 Verified: steady 1.0000; rods 0.80->0.70 => power 1->9.98 in 20 s; ~1.9 ms per
 1 ms step. Still to close: thermal-hydraulic feedback into the cells.
+
+## SPATIAL CORE RUNS LIVE IN MINECRAFT (commit cfaacf2)
+`/rbmk plant start spatial` runs the time-dependent spatial flux core at 1 ms on a
+daemon thread (TransientReactorCore); server thread only reads state. Verified:
+20.34 TPS, 0 lag, 0 exceptions, live AZ-5 works. The physics is DECOUPLED from the
+tick - Minecraft hosts the RBMK, it does not have to "cope" with it. Runs ~0.42x
+real time (2 ms CPU / 1 ms physics) on one thread here. Build with the SYSTEM
+gradle (`gradle build -x test --offline`); ./gradlew is broken (wrapper jar
+missing). Server+harness at /workspace/mcserver (drive.py + /tmp/mc_cmd).
+
+## PROVENANCE IS NOW MACHINE-CHECKED; LIBRARY IS A CHOICE (2026-11-09)
+
+Mission rule 2 ("nothing is guessed") is now enforced, not just remembered.
+`src/main/resources/provenance.json` registers every physics constant with a
+status: `verified` | `to_verify` | `placeholder` (placeholder legal only as a
+marked `fallback`). `physics/PhysicsProvenance.java` loads it; the gradle task
+`checkProvenance` (in `check`) WARNS on `to_verify` and FAILS on an unresolved
+placeholder. 11 reference constants are currently flagged to_verify — that list
+IS the "what still needs a NIKIET/design source" answer. Do not overload
+`enterprise/Provenance.java` (binary, facility-scoped) for this; physics needs
+the `to_verify` middle state.
+
+The lattice data source is selectable: `tools/lattice/sources.py` + `--source
+endf|rosfond` (or env `LATTICE_SOURCE`). `endf` = ENDF/B-VIII.0 from the openmc
+JSON mirror (unattended). `rosfond` = ROSFOND-2010, LOCAL only: drop ENDF-6 files
+in `tools/lattice/rosfond_raw/`, run `fetch_rosfond.py`; `endf6.py` is a
+numpy-free MF=3 parser that refuses LR!=0 rather than mis-read. emit_constants.py
+stamps `library`/`libraryStatus` into rbmk_lattice.json; `LatticeTable.library()`
+carries it into the game.
+
+BIG SANDBOX GOTCHA: **there is NO numpy/scipy in the sandbox Python.** So the
+lattice pipeline (emit_constants, rbmk_spectrum, verify.py) CANNOT run here — it
+is a BEN-SIDE step. Write any new lattice tooling numpy-free so it is testable
+here. Consequence: the committed rbmk_lattice.json is hand-maintained until Ben
+re-runs the generator.
+
+ROSFOND (Ben's question): we do NOT strictly need it; it is a PROVENANCE win, not
+an accuracy one. The NIKIET-specific values (beta_eff, rod worth, ORM depth, void
+coeff) live in DESIGN documents, not in any evaluated library — a library swap
+cannot supply them. ABBN-RF (few-group) beats pointwise ROSFOND for us. Size is
+UNVERIFIED (all portals 403/timeout from here); do not assert a number.
+
+## PHYSICS CONSTANTS SOURCED FROM INSAG-7; TWO STUBS FOUND (2026-11-09 cont.)
+Primary source: INSAG-7, `https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf`
+(HTTP 200, no bot wall). Table II-I (printed p.105) = ChNPP Unit 4 design table.
+Sourced + applied: VOID_COEFF 0.030->0.020, DOPPLER_COEFF -1.0e-5->-1.2e-5
+(ReactivityModel). provenance.json entries now carry `sourceUrl`+`quote`;
+PhysicsProvenanceSelfTest REQUIRES a URL+quote on every `verified` entry.
+Open sign conflict: INSAG-7 says the GRAPHITE temp coeff is POSITIVE (+6e-5); the
+code has -2.0e-5. Recorded to_verify, not silently changed (it flips a self-test).
+PRE-EXISTING REGRESSION (bisected to ebaab1c, NOT from this session):
+SpatialReactorCoreSelfTest AZ-5 check FAILS on baseline. Cause: the derived lattice
+feedbacks are ~5-7x too strong (dk/d(void)=+0.105 vs INSAG-7 0.020), so the fuel
+cooldown after a scram adds more positive reactivity than the rod worth removes.
+The legacy VOID/DOPPLER_FEEDBACK_SCALE that tamed this was dropped when the derived
+constants were wired in. Recorded as provenance `spatial.void_feedback` (to_verify).

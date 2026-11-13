@@ -1,17 +1,26 @@
 {
-  "_comment": "Registry of the numeric constants the RBMK model rests on, with their source. Mission rule 2: nothing is guessed. status is one of: verified (cites a source), to_verify (a reference value not yet confirmed against a primary/NIKIET source), placeholder (a value with no source at all). A placeholder is allowed only when it is a FALLBACK that is not used while real data is present. The build gate warns on to_verify and FAILS on any non-fallback placeholder.",
+  "_comment": "Registry of the numeric constants the RBMK model rests on, with their source. Mission rule 2: nothing is guessed. status is one of: verified (cites a primary source, with sourceUrl + quote), to_verify (a reference value not yet confirmed against a primary source), placeholder (a value with no source at all, allowed only as a FALLBACK that is unused while real data is present). The build gate warns on to_verify and FAILS on any non-fallback placeholder; the self-test additionally requires every verified entry to carry a sourceUrl and a quote.",
+  "_primarySources": {
+    "INSAG-7": {
+      "title": "IAEA Safety Series No. 75-INSAG-7, The Chernobyl Accident: Updating of INSAG-1",
+      "publisher": "International Atomic Energy Agency, Vienna, 1992",
+      "url": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf"
+    }
+  },
   "entries": {
     "delayed.beta_eff": {
       "value": 0.0065,
       "unit": "dk/k",
       "status": "to_verify",
-      "source": "RBMK literature (value commonly quoted); to confirm against a NIKIET/design document"
+      "source": "RBMK literature (value commonly quoted for the RBMK-1000). INSAG-7 uses beta_eff as the reactivity unit but does not tabulate its numeric value.",
+      "note": "To confirm against a NIKIET/design source. The RBMK used its own six-group delayed-neutron set (see delayed.lambda_i)."
     },
     "delayed.generation_time": {
       "value": 0.0007,
       "unit": "s",
       "status": "to_verify",
-      "source": "RBMK literature (prompt generation time ~0.7 ms); to confirm"
+      "source": "RBMK literature (prompt-neutron generation time ~0.7 ms).",
+      "note": "To confirm against a NIKIET/design source."
     },
     "delayed.lambda_i": {
       "value": [
@@ -24,7 +33,8 @@
       ],
       "unit": "1/s",
       "status": "to_verify",
-      "source": "Keepin six-group set (Western evaluation). The RBMK used its own six-group set \u2014 replace from a NIKIET/ABBN source."
+      "source": "Keepin six-group set (Western evaluation).",
+      "note": "The RBMK used its own six-group set \u2014 replace from a NIKIET/ABBN source. INSAG-7 Annex II notes the accident analyses used 18 delayed-neutron groups, so a higher-group RBMK set exists."
     },
     "delayed.beta_fractions": {
       "value": [
@@ -37,43 +47,61 @@
       ],
       "unit": "fraction of beta",
       "status": "to_verify",
-      "source": "Keepin six-group set (Western evaluation). RBMK-specific set to be sourced."
+      "source": "Keepin six-group set (Western evaluation).",
+      "note": "RBMK-specific group abundances to be sourced (see delayed.lambda_i)."
     },
     "feedback.void_coeff": {
-      "value": 0.03,
+      "value": 0.02,
       "unit": "dk/k per unit void",
-      "status": "to_verify",
-      "source": "RBMK reference value (strongly positive at operating burnup); to confirm against NIKIET data"
+      "status": "verified",
+      "source": "INSAG-7 Table II-I (p. 105), 'Void coefficient of reactivity at the working point' = +2.0e-4 per % void; +2.0e-4 per 1% = 0.020 per unit void fraction. INSAG-7 sec. 2.1 gives the full range: -1.3e-4 (fresh fuel) to +(2.0-2.5)e-4 per % void (steady-state refuelling).",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "Void coefficient of reactivity af at the working point (%-' (5k/k) void) +2.0 x 10\"4"
     },
     "feedback.doppler_coeff": {
-      "value": -1e-05,
+      "value": -1.2e-05,
       "unit": "dk/k per degC",
-      "status": "to_verify",
-      "source": "RBMK reference value; to confirm"
+      "status": "verified",
+      "source": "INSAG-7 Table II-I (p. 105), 'Fuel temperature coefficient of reactivity' = -1.2e-5 per degC.",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "Fuel temperature coefficient of reactivity aT (\"C\"1) -1.2 x 10'5"
     },
     "feedback.graphite_coeff": {
       "value": -2e-05,
       "unit": "dk/k per degC",
       "status": "to_verify",
-      "source": "RBMK reference value; to confirm"
+      "source": "CONFLICT WITH PRIMARY SOURCE. The code carries -2.0e-5 (negative). INSAG-7 Table II-I (p. 105) states the graphite temperature coefficient as +6e-5 (POSITIVE), and INSAG-7 sec. 4.7.3 twice calls it 'the positive graphite temperature coefficient of reactivity'.",
+      "note": "A POSITIVE graphite coefficient is a genuine, documented RBMK destabilising property; a negative value is not. The sign is left as-is here (changing it alters the accident model and the RbmkSpatialSelfTest temperature assertion) pending the Director's decision. RESOLVE against a NIKIET/design source.",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "Graphite temperature coefficient of reactivity ac (CC~') 6 x 10~5"
     },
     "feedback.power_coeff": {
       "value": -0.005,
       "unit": "dk/k per unit power",
       "status": "to_verify",
-      "source": "Reference value; to confirm"
+      "source": "Lumped damping term in the model. NOT the INSAG-7 'fast power coefficient' (-0.5e-4 dk/k per MW(th), Table II-I): that is per MW and gives ~-0.16 dk/k at 3200 MW(th), a different quantity in different units. The model's per-unit-power coefficient still needs a source.",
+      "note": "Confirm the intended definition (per unit power fraction vs per MW) and source the value."
     },
     "xenon.coeff": {
       "value": 0.024,
       "unit": "dk/k per unit xenon ratio",
       "status": "to_verify",
-      "source": "Reference value; to confirm against a NIKIET/design source"
+      "source": "Reference value; INSAG-7 does not tabulate a xenon worth.",
+      "note": "To confirm against a NIKIET/design source. (Note: Xenon.java uses a -0.03 equilibrium scale, and ReactorCore/SpatialReactorCore hard-code 0.024 separately \u2014 these should be reconciled to one sourced value.)"
     },
     "rodworth.scale": {
       "value": 0.08,
       "unit": "dk/k (full B4C column)",
       "status": "to_verify",
-      "source": "Reference worth used to scale the perturbation sum; to replace with a measured/design rod-worth curve"
+      "source": "Reference worth used to scale the perturbation sum. INSAG-7 Table II-I gives per-rod efficiencies instead: 'Minimum efficiency of RCPS rods 10.5%' and 'Efficiency of manual control rods 7.5%' (of the core's reactivity), plus rod travel speed 0.4 m/s (Annex II).",
+      "note": "Replace with a measured/design rod-worth curve. The INSAG-7 efficiencies (10.5% / 7.5%) are the calibration target."
+    },
+    "spatial.void_feedback": {
+      "value": 0.105,
+      "unit": "dk/k per unit void (measured from the 3D solver)",
+      "status": "to_verify",
+      "source": "Measured from RbmkSolver3D: dk/d(void) = +0.105/unit, i.e. ~5x the INSAG-7 value (+0.020/unit). The derived one-node lattice cell overstates the feedback; the calibration the legacy path applied (VOID_FEEDBACK_SCALE) was removed when the derived constants were wired in (commit ebaab1c).",
+      "note": "This is why SpatialReactorCoreSelfTest's AZ-5 check ('the core is shut down after AZ-5') FAILS: after a scram the fuel cooldown contributes ~+0.039 dk/k of positive reactivity (Doppler also ~7x strong), cancelling the ~0.038 dk/k rod worth. The spatial feedbacks must be re-anchored to INSAG-7 before the spatial core can be called correct."
     },
     "xsec.void_feedback_scale": {
       "value": 0.41,

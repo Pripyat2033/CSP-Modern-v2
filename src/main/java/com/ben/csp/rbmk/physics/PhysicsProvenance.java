@@ -55,7 +55,7 @@ public final class PhysicsProvenance {
 
     /** One registered constant. {@code value} is NaN for a non-scalar entry. */
     public record Entry(String key, double value, String unit, Status status,
-                        boolean fallback, String source) {
+                        boolean fallback, String source, String sourceUrl, String quote) {
         public boolean unresolved() {
             return status == Status.PLACEHOLDER && !fallback;
         }
@@ -99,6 +99,17 @@ public final class PhysicsProvenance {
         return out;
     }
 
+    /** Keys that are taken from a cited primary source. */
+    public static List<String> verified() {
+        List<String> out = new ArrayList<>();
+        for (Entry e : ENTRIES.values()) {
+            if (e.status() == Status.VERIFIED) {
+                out.add(e.key());
+            }
+        }
+        return out;
+    }
+
     /**
      * Keys that are placeholders with no source AND no fallback justification —
      * the values the build gate refuses. An empty list means no guessed number is
@@ -134,7 +145,9 @@ public final class PhysicsProvenance {
                     o.has("unit") ? o.get("unit").getAsString() : "",
                     Status.parse(o.has("status") ? o.get("status").getAsString() : null),
                     o.has("fallback") && o.get("fallback").getAsBoolean(),
-                    o.has("source") ? o.get("source").getAsString() : ""));
+                    o.has("source") ? o.get("source").getAsString() : "",
+                    o.has("sourceUrl") ? o.get("sourceUrl").getAsString() : "",
+                    o.has("quote") ? o.get("quote").getAsString() : ""));
             }
         } catch (Exception e) {
             map.clear();
