@@ -14,14 +14,17 @@ Reactions (ENDF MT numbers):
     18  fission
     102 radiative capture (n,gamma)
 
-Usage:  python3 fetch_endf.py [--force]
+Usage:  python3 fetch_endf.py [--source endf|rosfond] [--force]
 """
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
 import urllib.request
+
+import sources
 
 BASE = ("https://raw.githubusercontent.com/openmc-data-storage/"
         "ENDF-B-VIII.0-NNDC-json/main/json_files/")
@@ -43,8 +46,8 @@ NUCLIDES = {
 MTS = [1, 2, 4, 16, 18, 102, 452]
 
 
-def fetch(nuclide: str, mt: int, force: bool = False) -> bool:
-    out = os.path.join(CACHE, f"{NUCLIDES[nuclide]}_{mt}.json")
+def fetch(nuclide: str, mt: int, cache: str, force: bool = False) -> bool:
+    out = os.path.join(cache, f"{NUCLIDES[nuclide]}_{mt}.json")
     if os.path.exists(out) and not force:
         return True
     url = f"{BASE}{nuclide}_ENDFB-8.0_n_{mt}_294K.json"
@@ -63,17 +66,29 @@ def fetch(nuclide: str, mt: int, force: bool = False) -> bool:
 
 
 def main() -> int:
-    force = "--force" in sys.argv
-    os.makedirs(CACHE, exist_ok=True)
+    ap = argparse.ArgumentParser(description="Fetch/cache evaluated nuclear data for the lattice.")
+    ap.add_argument("--source", choices=sorted(sources.SOURCES), default=None,
+                    help="data library (default: %s; or LATTICE_SOURCE)" % sources.DEFAULT)
+    ap.add_argument("--force", action="store_true", help="re-download even if cached")
+    args = ap.parse_args()
+
+    src = sources.get(args.source)
+    if src.mode == "local":
+        print(f"source '{src.name}' ({src.library}) is local: {src.note}")
+        print("Provide ENDF-6 files and run  python3 fetch_rosfond.py  to build the cache.")
+        return 0
+
+    force = args.force
+    os.makedirs(src.cache_dir, exist_ok=True)
     got = 0
     for nuc, label in NUCLIDES.items():
         line = []
         for mt in MTS:
-            if fetch(nuc, mt, force):
+            if fetch(nuc, mt, src.cache_dir, force):
                 line.append(str(mt))
                 got += 1
         print(f"  {label:6s}: MT {', '.join(line) if line else '(none)'}")
-    print(f"\n{got} files cached in {CACHE}")
+    print(f"\n{got} files cached in {src.cache_dir}  [{src.library}]")
     return 0
 
 

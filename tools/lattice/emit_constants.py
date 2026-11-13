@@ -10,6 +10,7 @@ Output: ../../src/main/resources/rbmk_lattice.json
 """
 from __future__ import annotations
 
+import argparse
 import json
 import os
 
@@ -18,6 +19,7 @@ import numpy as np
 import endf
 import rbmk_cell1d as c1d
 import rbmk_spectrum as spectrum
+import sources
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                    "..", "..", "src", "main", "resources", "rbmk_lattice.json")
@@ -82,6 +84,13 @@ def control_constants(flux, geom):
 
 
 def main():
+    ap = argparse.ArgumentParser(description="Emit the lattice-derived reactor constants.")
+    ap.add_argument("--source", choices=sorted(sources.SOURCES), default=None,
+                    help="data library to derive from (default: %s; or LATTICE_SOURCE)"
+                         % sources.DEFAULT)
+    args = ap.parse_args()
+    src = sources.get(args.source)
+
     voids = [round(v, 3) for v in np.linspace(0.0, 1.0, 11)]
     table = []
     for vf in voids:
@@ -100,7 +109,9 @@ def main():
               f"D2={m['d2']:.4f} Sa2={m['sa2']:.5f} Ss12={m['ss12']:.5f}")
 
     doc = {
-        "source": "tools/lattice (ENDF/B-VIII.0 + RBMK channel geometry)",
+        "source": f"tools/lattice ({src.library} + RBMK channel geometry)",
+        "library": src.library,
+        "libraryStatus": "to_verify" if src.name == "endf" else "verified",
         "groups": 2,
         "thermalCutEV": c1d.spec.THERMAL_CUT,
         "betaEff": 0.0065,

@@ -1,5 +1,7 @@
 {
   "source": "tools/lattice (ENDF/B-VIII.0 + RBMK channel geometry)",
+  "library": "ENDF/B-VIII.0",
+  "libraryStatus": "to_verify",
   "groups": 2,
   "thermalCutEV": 0.625,
   "betaEff": 0.0065,

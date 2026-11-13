@@ -53,6 +53,15 @@ public final class LatticeTableSelfTest {
         RbmkXsec hot = RbmkXsec.fuelCell(0.0, 1500.0);
         check(hot.sr1() > fc.sr1(), "Doppler adds fast removal when the fuel is hot");
 
+        // the data's provenance is carried into the game, not lost at the boundary
+        check(LatticeTable.library() != null && !LatticeTable.library().equals("unknown"),
+            "the source library is recorded (" + LatticeTable.library() + ")");
+        check(LatticeTable.libraryStatus().equals("to_verify")
+                || LatticeTable.libraryStatus().equals("verified"),
+            "the library carries a provenance status (" + LatticeTable.libraryStatus() + ")");
+        check(LatticeTable.libraryStatus().equals("to_verify"),
+            "the current library is flagged to_verify until the NIKIET-lineage source is used");
+
         System.out.println("LatticeTableSelfTest: " + checks + " checks passed.");
     }
 }

@@ -34,6 +34,8 @@ public final class LatticeTable {
     private static final java.util.Map<String, RbmkXsec> CONTROLS = new java.util.HashMap<>();
     private static final double THERMAL_CUT_EV;
     private static final double BETA_EFF;
+    private static String LIBRARY = "unknown";
+    private static String LIBRARY_STATUS = "unknown";
 
     static {
         double cut = 0.625, beta = 0.0065;
@@ -43,6 +45,9 @@ public final class LatticeTable {
                     new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
                 cut = root.get("thermalCutEV").getAsDouble();
                 beta = root.get("betaEff").getAsDouble();
+                LIBRARY = root.has("library") ? root.get("library").getAsString() : "unknown";
+                LIBRARY_STATUS = root.has("libraryStatus")
+                    ? root.get("libraryStatus").getAsString() : "unknown";
                 JsonArray table = root.getAsJsonArray("table");
                 for (var el : table) {
                     JsonObject o = el.getAsJsonObject();
@@ -64,6 +69,8 @@ public final class LatticeTable {
         } catch (Exception e) {
             ROWS.clear();
             CONTROLS.clear();
+            LIBRARY = "unknown";
+            LIBRARY_STATUS = "unknown";
         }
         THERMAL_CUT_EV = cut;
         BETA_EFF = beta;
@@ -90,6 +97,16 @@ public final class LatticeTable {
 
     public static double betaEff() {
         return BETA_EFF;
+    }
+
+    /** The evaluated-data library the constants were derived from (e.g. "ENDF/B-VIII.0"). */
+    public static String library() {
+        return LIBRARY;
+    }
+
+    /** "verified" if the library is the agreed NIKIET-lineage source, else "to_verify". */
+    public static String libraryStatus() {
+        return LIBRARY_STATUS;
     }
 
     /** The derived cell constants at a void fraction (0 = water, 1 = steam). */

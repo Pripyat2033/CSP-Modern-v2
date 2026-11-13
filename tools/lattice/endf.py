@@ -14,11 +14,17 @@ import os
 
 import numpy as np
 
+import sources
+
 HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(HERE, "endf_cache")
 
 # material labels produced by fetch_endf.py
 MT_TOTAL, MT_ELASTIC, MT_INELASTIC, MT_N2N, MT_FISSION, MT_CAPTURE = 1, 2, 4, 16, 18, 102
+
+
+def cache_dir() -> str:
+    """The active source's cache directory (LATTICE_SOURCE / --source selects it)."""
+    return sources.current().cache_dir
 
 
 class Xs:
@@ -40,7 +46,7 @@ class Xs:
 
 def load(label: str, mt: int):
     """Load a cached reaction, or None if it was not available."""
-    path = os.path.join(CACHE, f"{label}_{mt}.json")
+    path = os.path.join(cache_dir(), f"{label}_{mt}.json")
     if not os.path.exists(path):
         return None
     with open(path) as f:
