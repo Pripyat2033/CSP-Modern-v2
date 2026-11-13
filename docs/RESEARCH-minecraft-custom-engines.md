@@ -27,15 +27,17 @@ So the honest answer splits into three, and you should keep them separate:
    There is even an abandoned attempt of exactly this already in your repo
    (`rbmk_solver.c` + `librbmk_solver.dylib` + `REKORD*`). See §5.
 3. **"A different engine with Minecraft as a front-end, or no Minecraft at all"**
-   — *possible, and it is the only thing that breaks the 1 m cube limit.* If the
-   forensic mesh must hold a 114 mm bore, Minecraft's 1 m cube is a hard ceiling
-   (§7), and no amount of native code changes that. That is a *substrate*
-   question, not an *engine* question.
+   — *possible, but not needed.* The bit engine (sub-block geometry with dynamic
+   shapes) already lets Minecraft itself hold the 114 mm bore and the 250 mm
+   lattice; see `SCALE-DECISION.md`. A different substrate is an option only if
+   you ever want the individual 13.6 mm fuel rod drawn, which the physics does not
+   require. That is a *substrate* question, not an *engine* question.
 
 **The one-sentence version:** Minecraft can absolutely run a custom engine
-alongside it (you've proven it); it can even run native code underneath it; but
-neither of those can make a 1-metre cube hold a 114-millimetre hole. Engine
-speed is not your wall. Voxel resolution is.
+alongside it (you've proven it), and it can be built at true 1:1 in bit-scale
+(62.5 mm bits) inside Minecraft itself — so no different engine or substrate is
+needed. Engine speed is not your wall, and neither is resolution, once the build
+is bit-scale.
 
 ---
 
@@ -176,22 +178,28 @@ is ~20–30k blocks — roughly **10× headroom**. The engine is not the bottlen
 These are the walls. None of them are about "can an engine run" — they are about
 Minecraft's representation:
 
-1. **The 1 m cube is the voxel floor.** A Minecraft block model is built from
-   cuboids on a **16×16×16 pixel grid** (element `from`/`to` coordinates are
-   limited to −16..32 in 1/16 units; Minecraft Wiki, https://minecraft.wiki/w/Model ).
-   So the *smallest honest feature* is 1/16 of a block. At 1:4 (1 block = 0.25 m),
-   1/16 block = **15.6 mm** — fine for detail. But a **1 m block cannot be a
-   114 mm fuel-channel bore**; that is 0.114 of a block. Sub-block *models*
-   (LittleTiles-style microblocks, https://github.com/CreativeMD/LittleTiles )
-   and sub-block *rendering* (Immersive Portals-style render surgery) can draw
-   smaller geometry, but the **collision and the block grid stay 1 m**. You can
-   *draw* a 114 mm hole; you cannot make the world *be* one.
+1. **The 1 m block is the storage grid, not the resolution floor.** A block model
+   is built from cuboids on a **16×16×16 pixel grid** (element `from`/`to`
+   coordinates are limited to −16..32 in 1/16 units; Minecraft Wiki,
+   https://minecraft.wiki/w/Model ). So the *smallest honest feature* is 1/16 of a
+   block = **62.5 mm at 1:1** — which is exactly the **bit**. Crucially, sub-block
+   mods (LittleTiles, Chisels & Bits) give a block a **dynamic `VoxelShape`**
+   computed from the bits it contains, so the **collision and outline shapes ARE
+   sub-block** — a 114 mm hole can be a real hole you walk into and click. The
+   engine still *stores* the world on the 1 m grid; it does not force the
+   *geometry* to be 1 m cubes. (Correction: an earlier draft claimed collision
+   stays 1 m — that is wrong; LittleTiles-class mods make it sub-block.)
+   So the plant is built from bits, as `PROJECT_NOTES.md` mandates; the 1 m block
+   is only the container for 16³ of them.
 2. **The tick is single-threaded and fixed at 50 ms.** You can offload maths to
    another thread, but world mutation happens on the server thread, in ticks.
-3. **Mixin changes behaviour, not the engine.** It cannot resize the voxel grid,
-   change the tick rate, or give you true sub-block collision.
-4. **Native code cannot fix the voxel problem.** A native solver is still feeding
-   a 1 m voxel world. It makes maths faster; it does not make blocks smaller.
+3. **Mixin changes behaviour, not the engine.** It cannot resize the storage grid,
+   change the tick rate, or give you true sub-block collision on its own — that
+   comes from a sub-block block type (a dynamic shape), which is what the bit
+   engine is.
+4. **Native code cannot fix a resolution problem.** A native solver is still feeding
+   a voxel world. It makes maths faster; it does not make bits smaller. (Not needed
+   here anyway — the bit engine is a storage/render/interaction job, pure Java.)
 
 ---
 
@@ -203,23 +211,19 @@ Mapped onto your situation:
   headroom and 64 cores ran without a crash. The engine can stay pure Java.
 - **Native code — not needed, and not recommended.** It would buy speed you don't
   need, at the cost of per-OS binaries and crash-the-game risk. The repo's old
-  `rbmk_solver.c`/`.dylib` should be deleted or explicitly parked, not revived.
-- **The real wall is the 1 m cube for core *internals*.** This is a *representation*
-  decision, and it is exactly the fork the last agent message put to you:
-  - **(a) The model is the artefact** (physics is real-size and validated; the
-    Minecraft build is a labelled *view*). Fully achievable today, in Java, no
-    engine change. Recommended if the deliverable to your team is the forensic
-    *simulation* of the accident programme.
-  - **(b) The visual mesh is the artefact** (a real-size reconstruction). Then
-    Minecraft's 1 m cube is the wrong substrate for the *core internals*, and the
-    options are a custom sub-block renderer/collision system on top of MC
-    (LittleTiles-class work), or a different engine with sub-metre cells
-    (Minestom is still 1 m; you'd need a fine-voxel engine). This is the "sit
-    down and choose" moment, and it is a *substrate* choice, not an *engine* one.
+  `rbmk_solver.c`/`.dylib` should be parked, not revived.
+- **The build is bit-scale (1:1), per `PROJECT_NOTES.md`.** Not metre blocks —
+  that is forbidden on the main site, and geometrically impossible for the core
+  (88 mm channel on a 250 mm lattice). The work is the **bit engine**: sparse
+  paletted storage, boxed solids, LOD rendering, and *block-click / bit-act*
+  interaction. This is a *storage and interaction* job inside Minecraft, not a
+  substrate change. See `SCALE-DECISION.md`.
+- **The physics is unaffected.** It already runs at 1:1 in real metres; the bit
+  build makes the drawing match it.
 
 **In one line:** you can run any engine you like inside or under Minecraft — you
-already run a good one — but the 1 m cube is Minecraft's floor, and only a
-different substrate (or a custom sub-block layer) can go below it.
+already run a good one — and the build is bit-scale inside Minecraft itself; no
+different substrate is needed.
 
 ---
 

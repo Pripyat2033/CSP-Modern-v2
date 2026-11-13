@@ -106,15 +106,17 @@ Per `docs/SPECIMEN-SHEET.md` — *invented → fail, missing → fail*:
 The physics is 1:1 already. What is *not* yet 1:1 is the **build you can check**:
 at 1:4 a channel is a stand-in block, so the world cannot be measured against a
 drawing at true scale. At bit scale (N = 16 → 62.5 mm bits) a channel is a real
-~0.35-block tube in a real 0.25-block cell — the core you walk through *is* the
+~1.4-bit tube in a real 4-bit lattice cell — the core you walk through *is* the
 core the solver reads, at true scale. That is the argument for the bit engine:
 not looks, but that it makes the build **verifiable against the design**, which is
 the whole point of the field this doc is about.
 
-Two layers, then:
-
-- **Shell (1 m blocks):** boxes, halls, rooms — architecture, where 1 m is right.
-- **Core (bit scale, N = 16):** the stack + 1,872 channels at true 1:1.
+**The whole site is bit-scale.** `PROJECT_NOTES.md` makes bit-scale "the default
+and mandatory standard" and forbids Block-Scale (plain 1 m blocks) on the main
+ChNPP site — because the plant's working parts (88 mm channel on a 250 mm lattice,
+6 m construction grid) are smaller than a metre and cannot be placed with a 1 m
+tool. There is no "1 m block shell": the metre block is only the engine's storage
+container for 16³ bits. See `SCALE-DECISION.md`.
 
 Items §4.1–§4.4 are the reactor-geometry work and need no bit engine; the bit
 engine is the presentation layer that closes the loop in §6.

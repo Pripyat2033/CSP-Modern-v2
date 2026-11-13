@@ -40,10 +40,14 @@ vertical hole.
 - **Coolant/reflector annulus**: the pressure tube sits in that hole with a small
   clearance, held by alternating split graphite rings (see §2).
 
-> **THE BUILDABILITY WALL.** One lattice cell is **250 mm** — a quarter of a
-> Minecraft block. A control-rod channel is 1:1 with a *4-block-tall* column only if
-> we scale; at true 1:1 the channel is **0.25 × 0.25 blocks** in plan. This is the
-> crux of the Director's objection: TK and СУЗ channels are **not** 1 m³ blocks.
+> **THE BUILDABILITY WALL — and how the bit engine clears it.** One lattice cell is
+> **250 mm**. A 1 m block is 1,000 mm, so a cell cannot be placed with a 1 m tool,
+> and the ТК/СУЗ channels are **not** 1 m³ blocks — this is the crux of the
+> Director's objection, and he is right. The answer is the **bit**: at 1/16 block =
+> **62.5 mm**, one cell is **4 bits** (exact), the 88 mm bore is ~1.4 bits, and the
+> plant's **6 m grid** is 96 bits. The whole site is therefore built bit-scale
+> (as `PROJECT_NOTES.md` mandates); the 1 m block is only the engine's storage
+> container for 16³ bits. See `SCALE-DECISION.md`.
 
 ### 1a. The lattice arithmetic — an OPEN ITEM (marked, not hidden)
 
@@ -193,47 +197,60 @@ rod channels")*
 
 ---
 
-## 7. Scale table — mm to Minecraft blocks
+## 7. Scale table — real mm to Minecraft, correctly stated
 
-Because the channels are sub-block, a decision must be made **once** and applied
-everywhere (core, cooling, drives, renderer).
+Because the channels are sub-block, the **construction unit** must be chosen once
+and applied everywhere (core, cooling, drives, renderer).
 
-| Feature | Real size | @1:1 (1 block = 1 m) | @1:4 (1 block = 0.25 m) | @1:8 |
-|---|---|---|---|---|
-| Lattice pitch | 250 mm | 0.25 block | **1 block** | 2 blocks |
-| Channel bore (ТК) | 88 mm | 0.088 block | 0.35 block | 0.7 block |
-| Active core diameter | 11.8 m | 11.8 blocks | 47 blocks | 94 blocks |
-| Active core height | 7 m | 7 blocks | 28 blocks | 56 blocks |
-| Fuel assembly length | 10.025 m | 10 blocks | 40 blocks | 80 blocks |
-| Graphite stack | Ø14 × 8 m | 14 × 8 | 56 × 32 | 112 × 64 |
-| Control rod (B₄C) section | ~? m | — | — | — |
-| Graphite displacer | 4.5 m | 4.5 | 18 | 36 |
-| Telescope gap | 1.25 m | 1.25 | 5 | 10 |
+**The correction (Director, 2026-11-13).** "1:1" does **not** mean "1 block = 1
+metre." A 1 m block is the engine's *storage* container only; the *construction*
+unit is the **bit** = 1/16 block = **62.5 mm**. At 1:1 the build matches the real
+drawings and the plant's **6 m construction grid** exactly. The table below is the
+corrected one: the middle column is the true 1:1 build, expressed in bits.
 
-**Reading the table:** at **1:4**, one lattice cell = one block, the core is a
-**47 × 47 × 28** block cylinder (≈ 62k blocks), and each channel is a 1-block column.
-That is the only scale at which "one channel = one block entity" is even
-representable. At **1:1** a whole lattice cell is a quarter-block and the core is
-**~11.8 blocks across** — the channels physically cannot each be a block.
+| Feature | Real size | @1:1 bit-scale (1 bit = 62.5 mm) | @1:4 (coarse stand-in, today) |
+|---|---|---|---|
+| Lattice pitch | 250 mm | **4 bits** (exact) | 1 block |
+| Channel bore (ТК) | 88 mm | ~1.4 bits (→1–2) | 0.35 block |
+| Graphite block hole | 114 mm | ~1.8 bits (→2) | 0.46 block |
+| **Plant construction grid** | **6 m** | **96 bits = 6 blocks** (exact) | 24 blocks |
+| Active core diameter | 11.8 m | 188.8 bits ≈ 11.8 blocks | 47 blocks |
+| Active core height | 7 m | 112 bits = 7 blocks | 28 blocks |
+| Fuel assembly length | 10.025 m | 160 bits ≈ 10 blocks | 40 blocks |
+| Graphite stack | Ø14 × 8 m | 224 × 128 bits | 56 × 32 |
+| Graphite displacer | 4.5 m | 72 bits | 18 blocks |
+| Telescope gap | 1.25 m | 20 bits | 5 blocks |
+
+**Reading the table:** at **1:1 bit-scale** one lattice cell is **4 bits**, one 1 m
+block holds a 4×4 grid of cells (16 channels), and the active core is **~11.8
+blocks across × 7 tall**. Every internal feature is drawn at 62.5 mm, so the build
+can be measured against the real drawing. The 1:4 column is the current coarse
+stand-in (one cell = one whole block), which is **not** verifiable at true scale
+and is to be replaced by the bit build.
+
+> The 88 mm bore is the one feature that rounds (1.4 bits → 1–2). If it must be
+> exact, use 1/32 (31.25 mm bits). The physics does not require it — it homogenises
+> the assembly inside the tube. See `SCALE-DECISION.md` §6.
 
 ---
 
 ## 8. What this means for the Director's question
 
 1. **The channels are not cubes.** TK = Ø88 mm tube; СУЗ = same lattice, rod inside;
-   fuel = a 10 m × 80 mm pencil. At true 1:1, a lattice cell is 0.25 blocks.
+   fuel = a 10 m × 80 mm pencil. At 1:1 that is a 4-bit cell with a ~1.4-bit tube —
+   why the build must be bit-scale, not metre blocks.
 2. **The core is big in one axis and small in the other.** Active region is a
    **wide, shallow cylinder** (11.8 m across, 7 m tall) — unlike a PWR's squat vessel.
    This shape is forced by the channel refuelling design and is why the stack is
    8 m while the fuel assembly is 10 m.
 3. **The subsystems are coupled through geometry, exactly as the Director says:**
-   the lattice pitch fixes the renderer (sub-block or scaled), the logic (per-channel
+   the lattice pitch fixes the renderer (bit-scale), the logic (per-channel
    state), the physics (spatial coupling across the lattice) and the coolant circuit
    (22 headers × 38–41 channels) all at once. Changing the pitch changes all four.
-4. **The honest scale choice is 1:4** (1 block = 0.25 m): it makes one lattice cell
-   exactly one block and the core a manageable ~62k-block cylinder — the only scale
-   at which a *full* multiblock core (1,661 TKs + 211 СУЗ, each a real block) is
-   representable at all.
+4. **The correct build is 1:1 bit-scale**: the real 250 mm lattice as 4-bit cells,
+   the whole site on the 6 m grid, verifiable against the design drawings. It is
+   **not** built from 1 m blocks (forbidden on the main site). The physics is
+   already 1:1 and unaffected by the build.
 
 ---
 
