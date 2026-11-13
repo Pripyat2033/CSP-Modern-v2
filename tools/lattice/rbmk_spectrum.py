@@ -44,6 +44,12 @@ EU = BOUNDS[::-1][1:]        # EU[g] = upper energy bound of array group g
 
 # per-nuclide average neutrons per fission (evaluated thermal/fast values)
 NUBAR = {"U235": 2.4367, "U238": 2.4930, "Pu239": 2.8766, "Pu241": 2.9345}
+# nuclide -> mass number, for the elastic kinematics of the transfer kernel
+MASS = {"U235": 235.0, "U238": 238.0, "O16": 16.0, "Zr90": 90.0,
+        "C12": 12.0, "C13": 13.0, "H1": 1.0, "Pu239": 239.0, "Pu241": 241.0,
+        "B10": 10.0, "B11": 11.0, "Fe56": 56.0, "Ni58": 58.0, "Cr52": 52.0,
+        "Gd155": 155.0, "Gd157": 157.0, "Er166": 166.0, "Er167": 167.0,
+        "Nb93": 93.0, "N14": 14.0, "He4": 4.0}
 # fissioning labels
 FISSILE = ("U235", "U238", "Pu239", "Pu241")
 
@@ -117,6 +123,52 @@ def elastic_transfer_full(A, weight, T=600.0):
     return P
 
 
+def mixture_macros(spec, flux_weight, sigma0=None):
+    """Fine-group macroscopic constants for one homogeneous mixture.
+
+    spec is a list of (nuclide_label, atom_density /b-cm, shield_capture bool).
+    Returns dict with St, Sa, Sf, nuSf, Ss (fast-first, Ss rows sum to 1 * density).
+    """
+    St = np.zeros(G); Sa = np.zeros(G); Sf = np.zeros(G); nuSf = np.zeros(G)
+    Ss = np.zeros((G, G))
+    res_groups = np.array([g for g in range(G)
+                           if EG[g] >= 0.625 and EU[g] <= 1.0e5 * 1.01])
+
+    for label, dens, shield_cap in spec:
+        if dens <= 0:
+            continue
+        st = endf.group_average(endf.load(label, 1), BOUNDS, flux_weight)
+        se = endf.group_average(endf.load(label, 2), BOUNDS, flux_weight)
+        ine = endf.load(label, 4)
+        if ine:
+            se = se + endf.group_average(ine, BOUNDS, flux_weight)
+        # Absorption is everything that is not elastic/inelastic scattering. Taking
+        # it as total-minus-scattering catches channels a capture-only (MT=102)
+        # lookup misses -- e.g. B-10's dominant (n,alpha), without which a control
+        # rod looks ~1000x too weak. The capture channel is then self-shielded and
+        # the rest (fission, (n,alpha), ...) kept unshielded, which leaves the
+        # already-validated fuel cell unchanged.
+        sa_total = np.maximum(st - se, 0.0)
+        sa = sa_total.copy()
+        if shield_cap and sigma0 is not None:
+            cap = endf.group_average(endf.load(label, 102), BOUNDS, flux_weight)
+            eff = endf.effective_capture(endf.load(label, 102), BOUNDS,
+                                         endf.weight_1_over_e, sigma0)
+            sa[res_groups] += eff[res_groups] - cap[res_groups]
+        sa = np.maximum(sa, 0.0)
+        xs_f = endf.load(label, 18)
+        sf = endf.group_average(xs_f, BOUNDS, flux_weight) if xs_f else np.zeros(G)
+        # scattering = total - absorption, so the solver's St = Ss + Sa holds and
+        # neutrons are conserved.
+        ss = np.maximum(st - sa, 0.0)
+        St += dens * st
+        Sa += dens * sa
+        Sf += dens * sf
+        nuSf += dens * sf * NUBAR.get(label, 0.0)
+        Ss += dens * (ss[:, None] * elastic_transfer_full(MASS[label], flux_weight))
+    return dict(St=St, Sa=Sa, Sf=Sf, nuSf=nuSf, Ss=Ss)
+
+
 def build_zones(flux_weight, void_fraction, fuel_temp_c=600.0):
     """Per-zone fine-group macroscopic constants for the cell.
 
@@ -126,16 +178,6 @@ def build_zones(flux_weight, void_fraction, fuel_temp_c=600.0):
     sig_pot = 10.0
     nd_u = nd["U238"] + nd["U235"]
     sigma0 = max((1 - cell.dancoff()) * sig_pot * (nd["C12"] + 0.3 * nd["O16"]) / max(nd_u, 1e-9), 1.0)
-    res_lo, res_hi = 0.625, 1.0e5
-    res_groups = np.array([g for g in range(G)
-                           if EG[g] >= res_lo and EU[g] <= res_hi * 1.01])
-
-    def shield(xs_cap):
-        base = endf.group_average(xs_cap, BOUNDS, flux_weight)
-        eff = endf.effective_capture(xs_cap, BOUNDS, endf.weight_1_over_e, sigma0)
-        out = base.copy()
-        out[res_groups] = eff[res_groups]
-        return out
 
     zones = {
         "fuel":  [("U235", nd["U235"], True), ("U238", nd["U238"], True), ("O16", nd["O16"], False)],
@@ -144,30 +186,7 @@ def build_zones(flux_weight, void_fraction, fuel_temp_c=600.0):
         "graph": [("C12", nd["C12"], False), ("C13", nd["C13"], False)],
         "cool":  [("H1", nd["H1"], False), ("O16", nd["O16_w"], False)],
     }
-    MASS = {"U235": 235.0, "U238": 238.0, "O16": 16.0, "Zr90": 90.0,
-            "C12": 12.0, "C13": 13.0, "H1": 1.0, "Pu239": 239.0, "Pu241": 241.0}
-
-    zone_out = {}
-    for zname, spec_ in zones.items():
-        St = np.zeros(G); Sa = np.zeros(G); Sf = np.zeros(G); nuSf = np.zeros(G)
-        Ss = np.zeros((G, G))
-        for label, dens, shield_cap in spec_:
-            if dens <= 0:
-                continue
-            xs_t = endf.load(label, 1)
-            xs_c = endf.load(label, 102)
-            xs_f = endf.load(label, 18)
-            st = endf.group_average(xs_t, BOUNDS, flux_weight)
-            sc = shield(xs_c) if shield_cap else endf.group_average(xs_c, BOUNDS, flux_weight)
-            sf = endf.group_average(xs_f, BOUNDS, flux_weight) if xs_f else np.zeros(G)
-            ss = np.maximum(st - sc - sf, 0.0)
-            St += dens * st
-            Sa += dens * (sc + sf)
-            Sf += dens * sf
-            nuSf += dens * sf * NUBAR.get(label, 0.0)
-            P = elastic_transfer_full(MASS[label], flux_weight)
-            Ss += dens * (ss[:, None] * P)
-        zone_out[zname] = dict(St=St, Sa=Sa, Sf=Sf, nuSf=nuSf, Ss=Ss)
+    zone_out = {z: mixture_macros(spec_, flux_weight, sigma0) for z, spec_ in zones.items()}
 
     vols = {"fuel": A["fuel"], "clad": A["clad"], "tube": A["tube"],
             "graph": A["graphite"], "cool": A["coolant"] + A["gap"]}

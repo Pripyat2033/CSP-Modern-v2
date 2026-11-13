@@ -185,13 +185,13 @@ public final class RbmkTransientSolver {
                         double nsf2s = nsfScale * xs.nsf2();
                         double a1 = 1.0 + c * (xs.sr1() - (1 - beta) * nsf1s) + c * xs.d1() * nb;
                         double b1 = c * xs.d1();
-                        double f2 = c * (1 - beta) * nsf2s;
+                        double f2 = c * ((1 - beta) * nsf2s + xs.ss21());
                         double rhs1 = old1[i] + c * delayed + f2 * phi2[i];
                         double t1 = (rhs1 + b1 * sum(phi1, x, z, a)) / a1;
                         phi1[i] = t1;
 
                         // --- group 2 ---
-                        double a2 = 1.0 + c * xs.sa2() + c * xs.d2() * nb;
+                        double a2 = 1.0 + c * (xs.sa2() + xs.ss21()) + c * xs.d2() * nb;
                         double b2 = c * xs.d2();
                         double f1 = c * xs.ss12();
                         double t2 = (old2[i] + f1 * phi1[i] + b2 * sum(phi2, x, z, a)) / a2;

@@ -150,9 +150,10 @@ public final class DiffusionSolver {
                 int n = activeNeighbours(x, z);
 
                 double s2 = xs.ss12() * phi1[i];
-                phi2[i] = (s2 + xs.d2() * neighbourFlux(phi2, x, z)) / (xs.sa2() + n * xs.d2());
+                phi2[i] = (s2 + xs.d2() * neighbourFlux(phi2, x, z))
+                    / (xs.sa2() + xs.ss21() + n * xs.d2());
 
-                double s1 = fission(i) / keff;
+                double s1 = fission(i) / keff + xs.ss21() * phi2[i];
                 phi1[i] = (s1 + xs.d1() * neighbourFlux(phi1, x, z)) / (xs.sr1() + n * xs.d1());
             }
         }

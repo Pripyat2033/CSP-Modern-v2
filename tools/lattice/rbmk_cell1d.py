@@ -165,6 +165,14 @@ def homogenise_2group(flux, data):
         for g in np.where(grp == 1)[0]:
             s12 += np.sum(Ss[gp, g, :] * flux[gp, :] * V)
     out["Ss12"] = s12 / max(np.sum(flux[grp == 0] * V[None, :]), 1e-30)
+    # up-scatter thermal -> fast. Not small in a well-moderated lattice (it is
+    # ~10x the thermal absorption here), so a two-group model that omits it is
+    # inconsistent with the multigroup eigenvalue.
+    s21 = 0.0
+    for gp in np.where(grp == 1)[0]:
+        for g in np.where(grp == 0)[0]:
+            s21 += np.sum(Ss[gp, g, :] * flux[gp, :] * V)
+    out["Ss21"] = s21 / max(np.sum(flux[grp == 1] * V[None, :]), 1e-30)
     return out
 
 

@@ -16,15 +16,22 @@ package com.ben.csp.rbmk.physics;
 public record RbmkXsec(
     double d1, double sr1, double nsf1,
     double d2, double sa2, double nsf2,
-    double ss12) {
+    double ss12, double ss21) {
+
+    /** Legacy 7-argument form: no up-scatter (fallback constants only). */
+    public RbmkXsec(double d1, double sr1, double nsf1,
+                    double d2, double sa2, double nsf2, double ss12) {
+        this(d1, sr1, nsf1, d2, sa2, nsf2, ss12, 0.0);
+    }
 
     public RbmkXsec plus(RbmkXsec o) {
         return new RbmkXsec(d1 + o.d1, sr1 + o.sr1, nsf1 + o.nsf1,
-            d2 + o.d2, sa2 + o.sa2, nsf2 + o.nsf2, ss12 + o.ss12);
+            d2 + o.d2, sa2 + o.sa2, nsf2 + o.nsf2, ss12 + o.ss12, ss21 + o.ss21);
     }
 
     public RbmkXsec scale(double f) {
-        return new RbmkXsec(d1 * f, sr1 * f, nsf1 * f, d2 * f, sa2 * f, nsf2 * f, ss12 * f);
+        return new RbmkXsec(d1 * f, sr1 * f, nsf1 * f, d2 * f, sa2 * f, nsf2 * f,
+            ss12 * f, ss21 * f);
     }
 
     public static RbmkXsec mix(double wa, RbmkXsec a, double wb, RbmkXsec b) {
@@ -56,11 +63,33 @@ public record RbmkXsec(
     private static final double DOPPLER_FEEDBACK_SCALE = 0.020;
 
     /**
-     * A fuel channel cell (ТК): homogenised fuel + graphite + water. Void fraction
-     * replaces water with steam (less moderation AND less H absorption); fuel
-     * temperature adds Doppler resonance absorption to the fast group.
+     * A fuel channel cell (ТК): homogenised fuel + graphite + water.
+     *
+     * <p>The constants come from the lattice calculation in {@code tools/lattice}
+     * (evaluated ENDF/B-VIII.0 data + the real channel geometry), loaded by
+     * {@link LatticeTable}. The void dependence — including the positive void
+     * coefficient — is a property of that physics, not a fitted factor. The old
+     * hand-set cross sections and feedback scales are kept only as a fallback for
+     * the case where the resource is missing.
      */
     public static RbmkXsec fuelCell(double voidFraction, double fuelTempC) {
+        RbmkXsec derived = LatticeTable.cell(voidFraction);
+        if (derived != null) {
+            // Doppler: resonance absorption in U-238 grows with fuel temperature,
+            // which ADDS to the fast removal (a NEGATIVE reactivity feedback). The
+            // scale is the U-238 resonance width; the lattice self-shielding fixes
+            // the rest.
+            double doppler = DOPPLER_REMOVAL_PER_K * (fuelTempC - 300.0) * derived.sr1();
+            return new RbmkXsec(derived.d1(), derived.sr1() + doppler, derived.nsf1(),
+                derived.d2(), derived.sa2(), derived.nsf2(), derived.ss12(), derived.ss21());
+        }
+        return legacyFuelCell(voidFraction, fuelTempC);
+    }
+
+    /** Fractional increase in fast removal per kelvin (U-238 Doppler). */
+    private static final double DOPPLER_REMOVAL_PER_K = 1.0e-5;
+
+    private static RbmkXsec legacyFuelCell(double voidFraction, double fuelTempC) {
         double waterFrac = 0.12 * (1.0 - voidFraction) * VOID_FEEDBACK_SCALE;
         double steamFrac = 0.12 * voidFraction * VOID_FEEDBACK_SCALE;
         RbmkXsec cell = new RbmkXsec(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
@@ -68,7 +97,6 @@ public record RbmkXsec(
             .plus(WATER.scale(waterFrac))
             .plus(STEAM.scale(steamFrac))
             .plus(FUEL.scale(0.13));
-        // Doppler: resonance absorption in U-238 grows with the fuel temperature.
         double doppler = 0.010 * DOPPLER_FEEDBACK_SCALE * (fuelTempC - 300.0) / 1000.0;
         return new RbmkXsec(cell.d1, cell.sr1 + Math.max(0, doppler), cell.nsf1,
             cell.d2, cell.sa2, cell.nsf2, cell.ss12);
@@ -76,7 +104,19 @@ public record RbmkXsec(
 
     /** A control channel cell holding the given rod material, plus graphite. */
     public static RbmkXsec controlCell(RbmkXsec rodMaterial) {
-        return GRAPHITE.scale(0.75).plus(rodMaterial.scale(0.25));
+        return controlGraphite().scale(0.75).plus(rodMaterial.scale(0.25));
+    }
+
+    /** Graphite in the control channel: derived if available, else hand-set. */
+    public static RbmkXsec controlGraphite() {
+        RbmkXsec d = LatticeTable.control("graphite");
+        return d != null ? d : GRAPHITE;
+    }
+
+    /** B4C rod material: derived if available, else hand-set. */
+    public static RbmkXsec controlB4C() {
+        RbmkXsec d = LatticeTable.control("b4c");
+        return d != null ? d : B4C;
     }
 
     /** Fuel material (UO2 + clad, homogenised contribution). */

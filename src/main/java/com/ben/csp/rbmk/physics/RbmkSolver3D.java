@@ -41,6 +41,10 @@ public final class RbmkSolver3D {
     private int innerSweeps = 3;
     private double omega = 1.0;
 
+    /** 1/h^2 for the mesh pitch (one lattice cell), cm^-2. */
+    private static final double INV_H2 =
+        1.0 / Math.pow(RbmkGeometry.LATTICE_PITCH_M * 100.0, 2.0);
+
     public RbmkSolver3D() {
         this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS / 2.0);
         this.nx = 2 * ext + 1;
@@ -123,9 +127,9 @@ public final class RbmkSolver3D {
      */
     public void setRodInsertion(double insertion) {
         RbmkGeometry.NodeMaterial[] mats = RbmkGeometry.rodMaterials(insertion);
-        RbmkXsec graphite = RbmkXsec.controlCell(RbmkXsec.GRAPHITE);
+        RbmkXsec graphite = RbmkXsec.controlCell(RbmkXsec.controlGraphite());
         RbmkXsec water = RbmkXsec.controlCell(RbmkXsec.WATER);
-        RbmkXsec b4c = RbmkXsec.controlCell(RbmkXsec.B4C);
+        RbmkXsec b4c = RbmkXsec.controlCell(RbmkXsec.controlB4C());
         for (int i = 0; i < control.length; i++) {
             if (!control[i]) {
                 continue;
@@ -199,6 +203,36 @@ public final class RbmkSolver3D {
         return xs.nsf1() * phi1[i] + xs.nsf2() * phi2[i];
     }
 
+    /**
+     * Eigenvalue from the neutron balance evaluated with the current flux and cross
+     * sections: {@code k = production / (fast removal - up-scatter + fast leakage)}.
+     *
+     * <p>Unlike the power-iteration {@link #keff()}, which measures how fast the flux
+     * is converging and therefore lags a cross-section change by thousands of outer
+     * iterations, this responds to a rod move on the very next tick — which is what a
+     * live regulator must read. At convergence the two agree.
+     */
+    public double balanceKeff() {
+        double prod = 0;
+        double loss = 0;
+        for (int x = -ext; x <= ext; x++) {
+            for (int z = -ext; z <= ext; z++) {
+                for (int a = 0; a < na; a++) {
+                    int i = idx(x, z, a);
+                    if (!active[i]) {
+                        continue;
+                    }
+                    RbmkXsec xs = cell[i];
+                    int n = neighbours(x, z, a);
+                    prod += xs.nsf1() * phi1[i] + xs.nsf2() * phi2[i];
+                    double leak = xs.d1() * INV_H2 * (n * phi1[i] - sum(phi1, x, z, a));
+                    loss += xs.sr1() * phi1[i] - xs.ss21() * phi2[i] + leak;
+                }
+            }
+        }
+        return loss > 0 ? prod / loss : 0;
+    }
+
     /** One red-black half-sweep of the coupled two-group system. */
     private void sweep(boolean red) {
         for (int x = -ext; x <= ext; x++) {
@@ -218,12 +252,22 @@ public final class RbmkSolver3D {
                     RbmkXsec xs = cell[i];
                     int n = neighbours(x, z, a);
 
+                    // The cross sections and D are in cm, but the mesh pitch is one
+                    // lattice cell = 25 cm, so the Laplacian carries a 1/h^2 factor.
+                    // (Treating the pitch as 1 made leakage ~h^2 = 625x too strong.)
+                    double d1h = xs.d1() * INV_H2;
+                    double d2h = xs.d2() * INV_H2;
+
+                    // Thermal group: fed by down-scatter from the fast group; lost
+                    // by thermal absorption and up-scatter back to fast.
                     double s2 = xs.ss12() * phi1[i];
-                    double t2 = (s2 + xs.d2() * sum(phi2, x, z, a)) / (xs.sa2() + n * xs.d2());
+                    double t2 = (s2 + d2h * sum(phi2, x, z, a))
+                        / (xs.sa2() + xs.ss21() + n * d2h);
                     phi2[i] = phi2[i] + omega * (t2 - phi2[i]);
 
-                    double s1 = fission(i) / keff;
-                    double t1 = (s1 + xs.d1() * sum(phi1, x, z, a)) / (xs.sr1() + n * xs.d1());
+                    // Fast group: fed by fission and by up-scatter from thermal.
+                    double s1 = fission(i) / keff + xs.ss21() * phi2[i];
+                    double t1 = (s1 + d1h * sum(phi1, x, z, a)) / (xs.sr1() + n * d1h);
                     phi1[i] = phi1[i] + omega * (t1 - phi1[i]);
                 }
             }

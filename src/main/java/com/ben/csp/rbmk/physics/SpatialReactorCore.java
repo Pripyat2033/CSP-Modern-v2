@@ -58,10 +58,24 @@ public final class SpatialReactorCore implements ReactorModel {
      */
     private double ctrlTau = 30.0;
 
-    private static final double ROD_GAIN = 0.93;
-    private double powerGain = 0.002;
-    private static final double INTEGRAL_GAIN = 0.0001;
-    private static final double INTEGRAL_LIMIT = 0.05;
+    /**
+     * Rod worth, d(rho)/d(insertion), for the full 211-rod bank. Measured from the
+     * 3D solver (rho goes +0.1045 at full withdrawal to +0.0284 at full insertion,
+     * a span of 0.076 over the unit travel), not hand-set.
+     */
+    private static final double ROD_GAIN = 0.076;
+    /** Reactivity demanded per unit power error (the operator's authority). */
+    private double powerGain = 0.01;
+    /** АР proportional gain: fraction of full reactivity nulling per tick. */
+    private double arGain = 0.1;
+    /** Integral gain: the АР trims out the steady-state power offset. */
+    private double integralGain = 0.0002;
+    /**
+     * Anti-windup clamp on the integral term. In reactivity units, so it must be
+     * small: at 0.4 (the lumped core's value, where the rod worth is O(1)) the
+     * integral saturates the whole 0.076 rod range and the loop limit-cycles.
+     */
+    private double integralLimit = 0.004;
 
     private static final double ROD_RATE =
         RbmkGeometry.ROD_SPEED_M_PER_S / RbmkGeometry.CORE_HEIGHT_M;
@@ -89,7 +103,7 @@ public final class SpatialReactorCore implements ReactorModel {
         solver.setRodInsertion(NOMINAL_INSERTION);
         // This both fixes the reactivity zero AND leaves the solver's flux at the
         // converged critical shape, so the first live tick is already meaningful.
-        solver.solve(300, 1e-7);
+        solver.solve(6000, 1e-10);
         kRef = solver.keff();
         keff = kRef;
     }
@@ -162,6 +176,7 @@ public final class SpatialReactorCore implements ReactorModel {
     public void setAutoRegulator(boolean on) {
         this.autoRod = on;
         this.powerSetpoint = power;
+        this.rodIntegral = 0;
     }
 
     private double xenonEquilibrium() {
@@ -172,16 +187,12 @@ public final class SpatialReactorCore implements ReactorModel {
     @Override
     public void step(double dt) {
         if (autoRod) {
-            // Reactivity-nulling АР: drive the spatial reactivity to a small target
-            // set by the power error. dk/dins = -ROD_GAIN, so the insertion needed
-            // to change rho by (want - now) is -(want - now)/ROD_GAIN. Nulling the
-            // fast variable (reactivity) each tick is stable; a power-error-only
-            // controller oscillates against the 3 s void lag.
-            double now = reactivity();
-            double want = -powerGain * (power - powerSetpoint);
-            double dIns = -(want - now) / ROD_GAIN;
-            dIns = Math.max(-ROD_RATE * dt, Math.min(ROD_RATE * dt, dIns));
-            insertionTarget = clamp01(insertion + dIns);
+            // АР: a plain integral regulator on the power error. The rod drive moves
+            // the bank at a rate proportional to the error, so the loop has a single
+            // tunable gain and no direct-reactivity feedback to ring against the
+            // plant. Power below setpoint drives the rods out (insertion down).
+            double error = powerSetpoint - power;
+            insertionTarget = clamp01(insertion - powerGain * error * dt);
         }
         moveRod(dt);
 
@@ -192,7 +203,12 @@ public final class SpatialReactorCore implements ReactorModel {
         for (int i = 0; i < itersPerTick; i++) {
             solver.stepOnce();
         }
-        keff = solver.keff();
+        // Read the reactivity from the neutron balance, not the power-iteration
+        // eigenvalue: the latter only tracks how fast the flux is converging and
+        // lags a rod move by thousands of iterations, which a live regulator cannot
+        // use. The balance eigenvalue responds on the same tick and equals the
+        // power-iteration value once converged.
+        keff = solver.balanceKeff();
         lastSolveMs = (System.nanoTime() - t0) / 1e6;
 
         kinetics.setReactivity(reactivity());
