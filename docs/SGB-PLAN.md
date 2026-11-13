@@ -14,30 +14,46 @@ Here are the three straight answers, then the plan.
 
 ---
 
-## 1. ROSFOND — you are right, and here is the honest position
+## 1. ROSFOND — you are right, and here is the corrected position
 
-**You do not need to download ROSFOND, and it is not the thing standing between
-you and an SGB plant.** It is one input to one sub-step. Drop it.
+**Correction (2026-11-13), superseding the earlier draft of this section.** Two
+things in the first draft were wrong, and Ben caught both:
 
-What it is: ROSFOND-2010 is Russia's national nuclear data library — the numbers
-that say how likely a neutron is to hit uranium, graphite or water. OpenMC (the
-Monte Carlo engine) can run on two libraries: **ENDF/B-VIII.0** (the US/international
-one, already installed and working here) or **ROSFOND** (the Russian one).
+1. It said ROSFOND was a ~70 GB download to hunt for. **Wrong.** Ben already has
+   ROSFOND installed, and it is not 70 GB. There is nothing to download.
+2. It treated ROSFOND as a "nice-to-have, parked" item and leaned on
+   ENDF/B-VIII.0 as the working library. **Wrong, and against the mission rule.**
+   Ben's rule is now hard: **no US/Western nuclear data** — the numbers that drive
+   the reactor must be Soviet, verified, cross-referenced. ENDF/B-VIII.0 is US
+   data and is **not acceptable as the source of record**.
 
-Why it looked important: the "Algorithmic Heritage" rule in `PROJECT_NOTES.md`
-says we should use the *same methods and data* the Soviet designers used. ROSFOND
-is a descendant of the Soviet data. That is a *provenance* win — it lets us say
-"computed on Russian data" — **not an accuracy win.** The two libraries agree on
-the big numbers. On ENDF/B-VIII.0, OpenMC already reproduces the lattice k-inf of
-**1.31074** and the **positive void coefficient** — the single defining feature of
-an RBMK — from first principles. That is the SGB-relevant result, and we already
-have it.
+**So ROSFOND is not parked. It is the required data source.**
 
-So: ROSFOND is a **nice-to-have for the physics-provenance checklist**, parked.
-The importer I built last session means that *if* the files ever appear, it is a
-three-command job. It is not on the critical path, and you should not spend an
-evening hunting a 70 GB download that we have not been able to reach from here
-either. **Park it.**
+What it is: ROSFOND-2010 is Russia's national evaluated nuclear data library
+(IPPE lineage) — the numbers that say how likely a neutron is to hit uranium,
+graphite or water. OpenMC is the Monte Carlo calculator; **ROSFOND is the physics.**
+OpenMC holds no data of its own, so "OpenMC is US software" does not put US
+physics into the answer — but the *library* absolutely does, which is exactly why
+the library must be ROSFOND.
+
+**The path now works, and is tested.** OpenMC cannot read ROSFOND's ENDF-6 files
+directly, and (a real trap) its Python API refuses to write its HDF5 format from
+an ENDF-origin object. The supported route is NJOY2016, which ships with OpenMC
+from conda-forge. That route is now implemented and verified end-to-end:
+
+```
+tools/openmc/rosfond_to_openmc.py      # ROSFOND ENDF-6 -> OpenMC HDF5 + cross_sections.xml
+tools/openmc/test_rosfond_to_openmc.py # 15/15 checks pass
+docs/OPENMC-WINDOWS-WSL.md             # how to install OpenMC on Windows 11 (WSL2)
+```
+
+A real ENDF-6 evaluation converts in ~30 s per nuclide. When a needed element is
+absent from the ROSFOND set, the converter **says so** — it never silently falls
+back to a Western library.
+
+The earlier "nice-to-have" framing was wrong. ROSFOND is the source of record;
+ENDF/B-VIII.0, if used at all, is only a temporary stand-in to prove the pipeline
+runs before the ROSFOND conversion is finished.
 
 ---
 
@@ -143,8 +159,8 @@ the geometry itself must produce 1.0.
 
 - **C1.** Replace hand-set cross sections (`RbmkXsec` "representative … TO VERIFY")
   with a **cited lattice calculation** — which is exactly what the OpenMC work in
-  `openmc/` is for. (This is where ROSFOND *would* slot in, if it ever appears —
-  and where ENDF/B-VIII.0 is doing the job today.)
+  `openmc/` is for, now fed by ROSFOND via `tools/openmc/rosfond_to_openmc.py`
+  (see §1).
 - **C2.** Remove the calibration clamp: make k_eff = 1.0 **emerge** from the
   geometry at the operating point.
 - **C3.** Make the **positive void coefficient emerge from the lattice** (OpenMC
