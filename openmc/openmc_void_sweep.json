@@ -1,0 +1,10 @@
+{"sweep": [
+ {"density": 0.65, "void_fraction": 0.0,   "k": 1.31074, "sigma": 0.00097},
+ {"density": 0.55, "void_fraction": 0.154, "k": 1.31470, "sigma": 0.00107},
+ {"density": 0.45, "void_fraction": 0.308, "k": 1.31649, "sigma": 0.00121},
+ {"density": 0.35, "void_fraction": 0.462, "k": 1.31902, "sigma": 0.00101},
+ {"density": 0.25, "void_fraction": 0.615, "k": 1.32326, "sigma": 0.00113},
+ {"density": 0.15, "void_fraction": 0.769, "k": 1.32709, "sigma": 0.00085},
+ {"density": 0.05, "void_fraction": 0.923, "k": 1.33236, "sigma": 0.00130},
+ {"density": 0.0,  "void_fraction": 1.0,   "k": 1.29171, "sigma": 0.00123}
+]}

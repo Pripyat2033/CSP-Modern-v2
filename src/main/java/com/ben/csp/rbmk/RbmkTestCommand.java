@@ -18,6 +18,7 @@ import com.ben.csp.rbmk.plant.SteamSeparator;
 import com.ben.csp.rbmk.module.ModuleRegistry;
 import com.ben.csp.rbmk.module.PlantModule;
 import com.ben.csp.rbmk.physics.ReactorCore;
+import com.ben.csp.rbmk.physics.OpenMcResult;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
 import com.ben.csp.rbmk.physics.SpatialReactorCore;
 import com.mojang.brigadier.CommandDispatcher;
@@ -117,7 +118,39 @@ public final class RbmkTestCommand {
                         net.minecraft.command.argument.BlockPosArgumentType.blockPos())
                     .executes(ctx -> instrument(ctx,
                         net.minecraft.command.argument.BlockPosArgumentType.getBlockPos(ctx, "pos")))))
-            .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine)));
+            .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine))
+            .then(CommandManager.literal("openmc").executes(RbmkTestCommand::openmc)));
+    }
+
+    /**
+     * {@code /rbmk openmc} — display the result of the external OpenMC
+     * calculation. Minecraft shows the numbers; it does not compute them. The
+     * neutron physics lives in {@code openmc/rbmk_void_coeff.py}, run against
+     * ENDF/B-VIII.0 data, and its output is read here.
+     */
+    private static int openmc(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        feedback(s, "OpenMC mechanics result (Minecraft = visualisation only)", Formatting.GOLD);
+        if (!OpenMcResult.available()) {
+            feedback(s, "  no OpenMC result resource found "
+                + "(/openmc_void_coeff.json missing from the mod jar)", Formatting.RED);
+            return 0;
+        }
+        double coeff = OpenMcResult.voidCoeffOperating();
+        boolean positive = "positive".equalsIgnoreCase(OpenMcResult.sign());
+        feedback(s, String.format("  void coefficient = %+.5f dk/k per unit void  [%s]",
+            coeff, OpenMcResult.sign().toUpperCase()), positive ? Formatting.RED : Formatting.GREEN);
+        feedback(s, String.format("  k(full water) = %.5f   k(full void) = %.5f",
+            OpenMcResult.kFullWater(), OpenMcResult.kFullVoid()), Formatting.WHITE);
+        feedback(s, "  coolant-density sweep (OpenMC Monte Carlo):", Formatting.YELLOW);
+        for (OpenMcResult.Point p : OpenMcResult.sweep()) {
+            feedback(s, String.format("    rho=%.2f  void=%5.3f  k=%.5f +/- %.5f",
+                p.density(), p.voidFraction(), p.k(), p.sigma()), Formatting.GRAY);
+        }
+        feedback(s, "  " + OpenMcResult.note(), Formatting.DARK_GRAY);
+        feedback(s, "  cross-check: INSAG-7 / NUREG-1250 give +0.02 dk/k per unit void",
+            Formatting.DARK_GRAY);
+        return 1;
     }
 
     /**

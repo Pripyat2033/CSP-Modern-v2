@@ -1,0 +1,6 @@
+__pycache__/
+_run/
+*.h5
+geometry.xml
+materials.xml
+settings.xml

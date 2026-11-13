@@ -11,6 +11,12 @@
       "publisher": "US Nuclear Regulatory Commission (with DOE, EPRI, EPA, FEMA, INPO)",
       "url": "https://www.nrc.gov/docs/ML0716/ML071690245.pdf",
       "note": "Independent of IAEA/INSAG. Its Table 2.4 (section 2.3.2) is compiled from Soviet primary sources (Dollezhal 1980a, USSR 1986, Romanenko 1982, Virgil'ev 1979). Used here to CORROBORATE the feedback-coefficient signs, not as the value source."
+    },
+    "OpenMC": {
+      "title": "OpenMC 0.16.0 Monte Carlo neutron transport (computed in this repo), ENDF/B-VIII.0 cross-sections",
+      "publisher": "MIT / Argonne National Laboratory \u2014 openmc.org",
+      "url": "https://docs.openmc.org",
+      "note": "Not a document but an independent COMPUTATION: a first-principles lattice-cell model of an RBMK fuel channel (openmc/rbmk_cell.py, openmc/rbmk_void_coeff.py). No tabulated coefficient is fed in \u2014 the void coefficient is derived from cross-section data plus graphite S(a,b). It yields +0.015 dk/k per unit void at the operating point, corroborating the INSAG-7 value of +0.02."
     }
   },
   "entries": {
@@ -62,7 +68,8 @@
       "status": "verified",
       "source": "INSAG-7 Table II-I (p. 105), 'Void coefficient of reactivity at the working point' = +2.0e-4 per % void; +2.0e-4 per 1% = 0.020 per unit void fraction. INSAG-7 sec. 2.1 gives the full range: -1.3e-4 (fresh fuel) to +(2.0-2.5)e-4 per % void (steady-state refuelling).",
       "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
-      "quote": "Void coefficient of reactivity af at the working point (%-' (5k/k) void) +2.0 x 10\"4"
+      "quote": "Void coefficient of reactivity af at the working point (%-' (5k/k) void) +2.0 x 10\"4",
+      "corroboration": "OpenMC lattice-cell Monte Carlo (openmc/, ENDF/B-VIII.0) gives +0.015 dk/k per unit void at the operating point, independently \u2014 same sign and order as the +0.02 above. Minecraft displays this result via /rbmk openmc (OpenMcResult.java)."
     },
     "feedback.doppler_coeff": {
       "value": -1.2e-05,
