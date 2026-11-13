@@ -422,3 +422,27 @@ feedbacks are ~5-7x too strong (dk/d(void)=+0.105 vs INSAG-7 0.020), so the fuel
 cooldown after a scram adds more positive reactivity than the rod worth removes.
 The legacy VOID/DOPPLER_FEEDBACK_SCALE that tamed this was dropped when the derived
 constants were wired in. Recorded as provenance `spatial.void_feedback` (to_verify).
+
+## NON-INSAG SOURCE FOR THE FEEDBACK SIGNS: NUREG-1250 (2026-11-09)
+Ben distrusts INSAG (INSAG-1 was misled), so corroborate independently.
+**NUREG-1250** = US NRC "Report on the Accident at the Chernobyl Nuclear Power
+Station", Jan 1987, `https://www.nrc.gov/docs/ML0716/ML071690245.pdf` (22.7 MB,
+215 pp, text layer extractable with pypdf). Sec. 2.3.2.2 says verbatim: "The
+graphite temperature coefficient is positive." Sec. 2.3.2.3: fuel-temp coeff is
+"the only coefficient that is negative". Table 2.4 (scanned, degraded) reads
+graphite ~+3.2e-5 (fresh) .. +6e-5 (equilibrium) /degC — agrees with INSAG-7
++6e-5. Its coefficients are compiled from SOVIET primary sources (Dollezhal 1980a
+[the RBMK chief designer], USSR 1986, Romanenko 1982, Virgil'ev 1979), so it is
+not two Western agencies echoing each other. Registered as `NUREG-1250` in
+provenance.json `_primarySources`. Verdict: the code's NEGATIVE graphite coeff
+has zero support; flip it (only the magnitude is open: fresh vs equilibrium).
+
+## OpenMC IS INSTALLABLE IN-SANDBOX (verified 2026-11-09, NOT yet installed)
+pip has no openmc wheel ("No matching distribution found"), but **micromamba from
+conda-forge solves it**: download `https://micro.mamba.pm/api/micromamba/linux-64/latest`
+(tar.bz2, extract bin/micromamba), then `micromamba create -n omc -c conda-forge
+openmc` — dry-run resolved: 157 packages, 208 MB download. OpenMC 0.16.0 on
+conda-forge. Cross-section DATA is separate: `openmc.org/data/` and
+`github.com/openmc-dev/data` (200 OK). NNDC ENDF/B-VIII.0 dir is 404 from here.
+So the earlier "lattice pipeline is Ben-side only" note is now FALSE for OpenMC
+proper; the numpy/scipy gap is also closed by conda (conda-forge has numpy).
