@@ -5,6 +5,12 @@
       "title": "IAEA Safety Series No. 75-INSAG-7, The Chernobyl Accident: Updating of INSAG-1",
       "publisher": "International Atomic Energy Agency, Vienna, 1992",
       "url": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf"
+    },
+    "NUREG-1250": {
+      "title": "Report on the Accident at the Chernobyl Nuclear Power Station (NUREG-1250), US Nuclear Regulatory Commission, January 1987",
+      "publisher": "US Nuclear Regulatory Commission (with DOE, EPRI, EPA, FEMA, INPO)",
+      "url": "https://www.nrc.gov/docs/ML0716/ML071690245.pdf",
+      "note": "Independent of IAEA/INSAG. Its Table 2.4 (section 2.3.2) is compiled from Soviet primary sources (Dollezhal 1980a, USSR 1986, Romanenko 1982, Virgil'ev 1979). Used here to CORROBORATE the feedback-coefficient signs, not as the value source."
     }
   },
   "entries": {
@@ -70,8 +76,8 @@
       "value": -2e-05,
       "unit": "dk/k per degC",
       "status": "to_verify",
-      "source": "CONFLICT WITH PRIMARY SOURCE. The code carries -2.0e-5 (negative). INSAG-7 Table II-I (p. 105) states the graphite temperature coefficient as +6e-5 (POSITIVE), and INSAG-7 sec. 4.7.3 twice calls it 'the positive graphite temperature coefficient of reactivity'.",
-      "note": "A POSITIVE graphite coefficient is a genuine, documented RBMK destabilising property; a negative value is not. The sign is left as-is here (changing it alters the accident model and the RbmkSpatialSelfTest temperature assertion) pending the Director's decision. RESOLVE against a NIKIET/design source.",
+      "source": "CONFLICT WITH PRIMARY SOURCE. The code carries -2.0e-5 (negative). INSAG-7 Table II-I (p. 105) states the graphite temperature coefficient as +6e-5 (POSITIVE), and INSAG-7 sec. 4.7.3 twice calls it 'the positive graphite temperature coefficient of reactivity'. INDEPENDENTLY CORROBORATED: NUREG-1250 (US NRC, Jan 1987) sec. 2.3.2.2 states 'The graphite temperature coefficient is positive', and its Table 2.4 gives +3.2e-5 (fresh) to +6e-5 (steady-state) per degC, compiled from Soviet primary sources (Dollezhal, Romanenko, Virgil'ev). Two independent agencies agree the sign is positive; the code's negative value has no support.",
+      "note": "A POSITIVE graphite coefficient is a genuine, documented RBMK destabilising property; a negative value is not. Both INSAG-7 and NUREG-1250 agree the sign is positive. The sign is left as-is here (changing it alters the accident model and the RbmkSpatialSelfTest temperature assertion) pending the Director's decision. RESOLVE by flipping the sign; the only open question is magnitude (3.2e-5 fresh vs 6e-5 equilibrium).",
       "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
       "quote": "Graphite temperature coefficient of reactivity ac (CC~') 6 x 10~5"
     },
