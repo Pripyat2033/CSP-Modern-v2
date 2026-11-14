@@ -29,6 +29,10 @@ public class ModBlocks {
     public static final Block TELETYPE_PRINTER_BLOCK = new TeletypePrinterBlock();
     public static final Block FUEL_CHANNEL_BLOCK = FuelChannelBlock.INSTANCE;
     public static final Block GRAPHITE_BLOCK = GraphiteBlock.INSTANCE;
+    /** Measurement aid: the six real graphite axial lengths (200-600 mm), bit scale. */
+    public static final Block GRAPHITE_AXIAL_DEMO_BLOCK = new Block(
+        net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings
+            .copyOf(net.minecraft.block.Blocks.IRON_BLOCK).nonOpaque());
     public static final Block CONTROL_ROD_BLOCK = ControlRodBlock.INSTANCE;
     public static final Block STEAM_SEPARATOR_BLOCK = PlantEquipmentBlock.steamSeparator();
     public static final Block TURBINE_BLOCK = PlantEquipmentBlock.turbine();
@@ -90,6 +94,7 @@ public class ModBlocks {
         register("teletype_printer", TELETYPE_PRINTER_BLOCK);
         register("fuel_channel", FUEL_CHANNEL_BLOCK);
         register("graphite", GRAPHITE_BLOCK);
+        register("graphite_axial_demo", GRAPHITE_AXIAL_DEMO_BLOCK);
         registerWithItem("steam_separator", STEAM_SEPARATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("turbine", TURBINE_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("turbine_cover", TURBINE_COVER_BLOCK, PlantEquipmentBlockItem::new);

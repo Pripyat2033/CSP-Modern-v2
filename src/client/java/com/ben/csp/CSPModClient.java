@@ -62,6 +62,16 @@ public class CSPModClient implements ClientModInitializer {
         
         ModMessages.registerS2CPackets();
         com.ben.csp.client.EntityRendererGuard.report();
+
+        String script = System.getProperty("csp.autopilot");
+        if (script == null) {
+            script = System.getenv("CSP_AUTOPILOT");
+        }
+        if (script != null) {
+            com.ben.csp.client.Autopilot.install(script,
+                System.getProperty("csp.autopilot.world",
+                    System.getenv().getOrDefault("CSP_AUTOPILOT_WORLD", "cspdemo")));
+        }
     }
 
     private void registerBlockEntityRenderers() {
