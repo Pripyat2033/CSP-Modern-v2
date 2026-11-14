@@ -38,6 +38,8 @@ public final class ReactorCore implements ReactorModel {
     private double fuelTempC = NOMINAL_FUEL_C;
     private double graphiteTempC = NOMINAL_GRAPHITE_C;
     private double power = 1.0;
+    /** Fission-product decay heat: the heat that survives the chain reaction. */
+    private final DecayHeat decayHeat = new DecayHeat(1.0);
     private double rhoExcess;
     private boolean autoRod = false;
     private double powerSetpoint = 1.0;
@@ -125,6 +127,15 @@ public final class ReactorCore implements ReactorModel {
     }
 
     public double power() {
+        // Total thermal power = fission + decay heat. At the reference state this is
+        // exactly 1.0 (0.935 fission + 0.065 decay); after a scram the fission term
+        // dies but the decay term holds a few percent — the heat that cannot be
+        // switched off.
+        return DecayHeat.FISSION_SHARE * power + decayHeat.total();
+    }
+
+    /** Fission power alone, as a fraction of nominal (the chain reaction). */
+    public double fissionPower() {
         return power;
     }
 
@@ -157,11 +168,17 @@ public final class ReactorCore implements ReactorModel {
         kinetics.step(dt);
         power = Math.max(0, kinetics.power());
 
-        // Thermal-hydraulics: void and temperatures follow the power with lags.
-        double voidEq = voidFromPower(power);
+        // The decay heat follows the fission power (it is produced BY the fissions),
+        // and does not stop when the chain reaction does.
+        decayHeat.step(dt, power);
+
+        // Thermal-hydraulics: void and temperatures follow the TOTAL heat (fission +
+        // decay), so a scrammed core still boils and still sits hot.
+        double total = DecayHeat.FISSION_SHARE * power + decayHeat.total();
+        double voidEq = voidFromPower(total);
         voidFraction += (voidEq - voidFraction) * (dt / TAU_VOID);
         voidFraction = clamp01(voidFraction);
-        double fuelEq = tempFromPower(power);
+        double fuelEq = tempFromPower(total);
         fuelTempC += (fuelEq - fuelTempC) * (dt / TAU_FUEL);
         graphiteTempC += (fuelEq * 0.95 - graphiteTempC) * (dt / TAU_GRAPHITE);
 

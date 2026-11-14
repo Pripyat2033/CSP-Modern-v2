@@ -135,6 +135,13 @@
       "unit": "library name",
       "status": "to_verify",
       "source": "Currently ENDF/B-VIII.0 via the openmc-data-storage JSON mirror. AGREED TARGET: ROSFOND / ABBN-RF (NIKIET lineage). Swap via tools/lattice --source rosfond."
+    },
+    "decayheat.equilibrium": {
+      "value": 0.065,
+      "unit": "fraction of nominal thermal power",
+      "status": "to_verify",
+      "source": "Way-Wigner decay-heat law H(t)/P0 = 0.066 t^-0.2 for long operation (standard thermal-reactor value; see Glasstone & Sesonske). The 6.5% equilibrium figure is the value at shutdown after long operation.",
+      "note": "The group constants (lambda_i, c_i) in DecayHeat.java are a least-squares fit of this curve over 1 s..1 day, with sum(c_i) fixed to this value. To confirm the 6.5% figure against a NIKIET/SKALA source."
     }
   }
 }

@@ -699,8 +699,10 @@ public final class RbmkTestCommand {
         feedback(s, String.format("RBMK-1000 plant, t = %.1f s%s", p.timeS(),
             p.scrammed() ? "  [SCRAM: " + p.tripReason() + "]" : ""),
             p.scrammed() ? Formatting.RED : Formatting.GOLD);
-        feedback(s, String.format("  core:      power %.3f  (%.0f MWt), rods %.2f, k-eff state",
-            p.core().power(), thermalMw, p.core().insertion()), Formatting.WHITE);
+        double fissionMw = PlantPhysics.P_THERMAL_W * p.core().fissionPower() / 1e6;
+        feedback(s, String.format("  core:      power %.3f  (%.0f MWt: %.1f fission + %.1f decay heat), rods %.2f",
+            p.core().power(), thermalMw, fissionMw, thermalMw - fissionMw, p.core().insertion()),
+            Formatting.WHITE);
         if (p.core() instanceof SpatialReactorCore sp) {
             feedback(s, String.format("  3D solver: k_eff %.5f, %.1f ms/tick "
                 + "(1 outer iteration over %d nodes)",

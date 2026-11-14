@@ -23,6 +23,13 @@ public interface ReactorModel {
     /** Current thermal power, as a fraction of nominal (1.0 = 100 %). */
     double power();
 
+    /**
+     * Fission power alone, as a fraction of nominal — the chain reaction, excluding
+     * the fission-product decay heat that {@link #power()} includes. This is what
+     * goes to ~0 on a scram.
+     */
+    double fissionPower();
+
     /** Current reactivity, dk/k, measured against the reference critical state. */
     double reactivity();
 

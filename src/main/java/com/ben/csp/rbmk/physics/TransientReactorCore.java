@@ -24,6 +24,8 @@ public final class TransientReactorCore implements ReactorModel, AutoCloseable {
     private static final int SWEEPS = 2;         // Gauss-Seidel passes per step
 
     private final RbmkTransientSolver solver = new RbmkTransientSolver();
+    /** Fission-product decay heat: the heat that survives the chain reaction. */
+    private final DecayHeat decayHeat = new DecayHeat(1.0);
     private volatile boolean running = true;
     private Thread thread;
 
@@ -75,6 +77,7 @@ public final class TransientReactorCore implements ReactorModel, AutoCloseable {
 
             insertion = ins;
             power = solver.power();
+            decayHeat.step(DT, power);
             peak = solver.peakFission();
             stepMs = (t1 - t0) / 1e6;
             simSeconds += DT;
@@ -91,7 +94,12 @@ public final class TransientReactorCore implements ReactorModel, AutoCloseable {
         // intentionally empty — the background thread advances the core
     }
 
-    @Override public double power() { return power; }
+    @Override public double power() {
+        // Total thermal power = fission + decay heat (see ReactorCore.power()).
+        return DecayHeat.FISSION_SHARE * power + decayHeat.total();
+    }
+    /** Fission power alone, as a fraction of nominal (the chain reaction). */
+    public double fissionPower() { return power; }
     @Override public double reactivity() { return 0; }
     @Override public double insertion() { return insertion; }
     @Override public double voidFraction() { return voidFraction; }

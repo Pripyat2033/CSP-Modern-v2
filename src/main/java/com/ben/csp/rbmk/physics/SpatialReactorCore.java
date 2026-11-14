@@ -48,6 +48,8 @@ public final class SpatialReactorCore implements ReactorModel {
     private double fuelTempC = NOMINAL_FUEL_C;
     private double graphiteTempC = NOMINAL_GRAPHITE_C;
     private double power = 1.0;
+    /** Fission-product decay heat: the heat that survives the chain reaction. */
+    private final DecayHeat decayHeat = new DecayHeat(1.0);
     private boolean autoRod = false;
     private double powerSetpoint = 1.0;
     private double rodIntegral = 0;
@@ -134,6 +136,12 @@ public final class SpatialReactorCore implements ReactorModel {
     // -------------------------------------------------------------- ReactorModel
     @Override
     public double power() {
+        // Total thermal power = fission + decay heat (see ReactorCore.power()).
+        return DecayHeat.FISSION_SHARE * power + decayHeat.total();
+    }
+
+    /** Fission power alone, as a fraction of nominal (the chain reaction). */
+    public double fissionPower() {
         return power;
     }
 
@@ -215,10 +223,14 @@ public final class SpatialReactorCore implements ReactorModel {
         kinetics.step(dt);
         power = Math.max(0, kinetics.power());
 
-        double voidEq = voidFromPower(power);
+        // Decay heat follows the fission power and outlives the chain reaction; the
+        // thermal-hydraulics follow the TOTAL heat, so a scrammed core stays hot.
+        decayHeat.step(dt, power);
+        double total = DecayHeat.FISSION_SHARE * power + decayHeat.total();
+        double voidEq = voidFromPower(total);
         voidFraction += (voidEq - voidFraction) * (dt / TAU_VOID);
         voidFraction = clamp01(voidFraction);
-        double fuelEq = tempFromPower(power);
+        double fuelEq = tempFromPower(total);
         fuelTempC += (fuelEq - fuelTempC) * (dt / TAU_FUEL);
         graphiteTempC += (fuelEq * 0.95 - graphiteTempC) * (dt / TAU_GRAPHITE);
 
