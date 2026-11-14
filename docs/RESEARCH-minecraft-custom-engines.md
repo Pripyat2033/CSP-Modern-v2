@@ -150,6 +150,15 @@ engine. If you ever revisit native code, **do not resurrect this as-is** — use
 FFM API (JEP 454) instead of JNA, and remember the C in that file duplicates maths
 that `RbmkSolver3D` already does correctly in Java.
 
+**Caveat, specific to this repo (2026-11-14):** FFM (JEP 454) is final only on
+**JDK 22+**, and this project targets **Java 17** (`build.gradle`: `options.release
+= 17`, toolchain 17). On Java 17 the FFM API is only an **incubator** (JEP 412,
+module `jdk.incubator.foreign`) and needs `--add-modules jdk.incubator.foreign`,
+which a Fabric mod cannot rely on. It became a *preview* only at JDK 19 (JEP 424),
+and final at JDK 22. So on the current target, native code would mean **JNI or
+JNA** (the brittle options) — another reason to keep the engine pure Java, as it
+already is.
+
 ---
 
 ## 6. Threading reality (what can run off the tick thread)
