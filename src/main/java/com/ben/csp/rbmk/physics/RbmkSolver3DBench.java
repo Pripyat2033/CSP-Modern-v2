@@ -13,8 +13,8 @@ package com.ben.csp.rbmk.physics;
  */
 public final class RbmkSolver3DBench {
 
-    /** SOR factor found by scanning; 1.85 nearly halves the sweeps of plain GS. */
-    private static final double OMEGA = 1.85;
+    /** SOR factor; {@link RbmkSolver3D#SAFE_OMEGA} is the validated ceiling (1.85 diverges). */
+    private static final double OMEGA = RbmkSolver3D.SAFE_OMEGA;
     private static final int INNER = 3;
 
     public static void main(String[] args) {

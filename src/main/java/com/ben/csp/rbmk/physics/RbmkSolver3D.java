@@ -40,6 +40,18 @@ public final class RbmkSolver3D {
     private int sweeps;
     private int innerSweeps = 3;
     private double omega = 1.0;
+    private boolean diverged = false;
+
+    /**
+     * A validated SOR over-relaxation factor. It must stay below the divergence
+     * threshold of the 3D two-group system, which is not a fixed number: it falls
+     * as the core departs from the nominal state. Measured worst case across the
+     * void (0-1.0), fuel temperature (300-900 C) and rod (0-1.0) envelope is
+     * ~1.65; at 1.70 one state already fails and at 1.85 the flux goes negative
+     * and k_eff returns a meaningless value. 1.5 keeps a margin below the ceiling
+     * while still roughly halving the sweeps of plain Gauss-Seidel (omega = 1.0).
+     */
+    public static final double SAFE_OMEGA = 1.5;
 
     /** 1/h^2 for the mesh pitch (one lattice cell), cm^-2. */
     private static final double INV_H2 =
@@ -147,9 +159,14 @@ public final class RbmkSolver3D {
     public void setInnerSweeps(int n) {
         this.innerSweeps = Math.max(1, n);
     }
-    /** Set the SOR over-relaxation factor (1.0 = plain Gauss-Seidel). */
+    /** Set the SOR over-relaxation factor, clamped to the validated safe ceiling. */
     public void setOmega(double w) {
-        this.omega = w;
+        this.omega = Math.min(w, SAFE_OMEGA);
+    }
+
+    /** True if the last solve left the flux non-physical (negative or non-finite). */
+    public boolean diverged() {
+        return diverged;
     }
 
     /** Solve for k_eff and the 3D flux shape; returns the outer iteration count. */
@@ -158,6 +175,7 @@ public final class RbmkSolver3D {
         Arrays.fill(phi2, 1.0);
         keff = 1.0;
         sweeps = 0;
+        diverged = false;
         int it = 0;
         for (; it < maxOuter; it++) {
             double delta = stepOnce();
@@ -192,7 +210,17 @@ public final class RbmkSolver3D {
                 newSum += fission(i);
             }
         }
+        // A negative or non-finite flux sum means the iteration has left the
+        // physical domain (over-relaxation past the divergence threshold, or a
+        // bad cross section). Flag it rather than returning a meaningless k_eff
+        // that a caller might scale a fission source by.
+        if (!(srcSum > 0) || !(newSum > 0)) {
+            diverged = true;
+        }
         double newK = keff * newSum / srcSum;
+        if (!Double.isFinite(newK)) {
+            diverged = true;
+        }
         double delta = Math.abs(newK - keff);
         keff = newK;
         return delta;

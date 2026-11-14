@@ -114,12 +114,19 @@ public final class RbmkTransientSolver {
         setCoreState(0.0, 300.0);
         setRodInsertion(NOMINAL_INSERTION);
         RbmkSolver3D stat = new RbmkSolver3D();
-        stat.setOmega(1.85);
+        stat.setOmega(RbmkSolver3D.SAFE_OMEGA);
         stat.setInnerSweeps(3);
         stat.setCoreState(0.0, 300.0);
         stat.setRodInsertion(NOMINAL_INSERTION);
         stat.solve(600, 1e-7);
         double k = stat.keff();
+        // Guard: a non-physical k (diverged solve) must never be used to scale the
+        // fission source — a negative k would seed a negative, unphysical flux.
+        if (stat.diverged() || !(k > 0) || !Double.isFinite(k)) {
+            throw new IllegalStateException(
+                "seedCritical: static solve did not converge to a physical k_eff (k="
+                    + k + "); refusing to scale the fission source");
+        }
         nsfScale = 1.0 / k;
         // copy the shape
         System.arraycopy(stat.phi1, 0, phi1, 0, phi1.length);

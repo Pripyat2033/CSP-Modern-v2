@@ -51,8 +51,12 @@ public final class RbmkTestCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("csp-modern/rbmk");
 
-    /** SOR factor; 1.85 nearly halves the sweeps of plain Gauss-Seidel. */
-    private static final double OMEGA = 1.85;
+    /**
+     * SOR factor; {@link RbmkSolver3D#SAFE_OMEGA} is the validated ceiling. The old
+     * value 1.85 was past the divergence threshold and produced a negative flux and
+     * a meaningless k_eff (see {@code RbmkSolver3D}).
+     */
+    private static final double OMEGA = RbmkSolver3D.SAFE_OMEGA;
 
     private static RbmkSolver3D solver;
     private static ReactorCore core;
@@ -335,8 +339,8 @@ public final class RbmkTestCommand {
             side, side, side * side * 28), Formatting.WHITE);
         feedback(s, String.format("  active nodes: %d  (1,872 channels x 28)", nodes),
             Formatting.WHITE);
-        feedback(s, String.format("  cold solve: k_eff = %.5f in %d iters, %.0f ms",
-            kEffCold, iters, coldMs), Formatting.WHITE);
+        feedback(s, String.format("  cold solve: k_eff = %.5f in %d iters, %.0f ms%s",
+            kEffCold, iters, coldMs, solver.diverged() ? "  [DIVERGED]" : ""), Formatting.WHITE);
         feedback(s, String.format("  running core: %.2f ms per tick (one iteration + kinetics)",
             lastMspt), lastMspt < 25 ? Formatting.GREEN : Formatting.RED);
         feedback(s, String.format("  power: %.3f   reactivity: %+.5f",
