@@ -149,10 +149,11 @@ plus the **thermal-scattering** files for graphite and water (`c_Graphite`,
 automatically.
 
 If your ROSFOND distribution is the per-isotope ZIP form, the repo's importer
-unpacks it first:
+unpacks it first (it identifies each isotope by its ENDF head record, so it does
+not care what IPPE named the files):
 
 ```bash
-python3 tools/lattice/import_rosfond.py --from /path/to/rosfond/zips
+python3 tools/lattice/import_rosfond.py --from /path/to/rosfond/zips --out tools/lattice/rosfond_raw
 ```
 
 ### 3c. Tell OpenMC where the library is
