@@ -77,15 +77,32 @@ is computed from metres and material fractions, never from block counts:
 
 - **`RbmkGeometry`** holds the real SI numbers and derives every `*_BLOCKS` from
   them via `toBlocks()`.
-- **`RbmkSolver3D`** builds its mesh from `LATTICE_PITCH_M` (the real 250 mm in
-  cm) — **not** from a block count.
+- **`RbmkSolver3D`** builds its mesh from the **lattice-cell** counts
+  (`CHANNEL_REGION_DIAMETER_CELLS`, `CORE_HEIGHT_CELLS`) — real metres divided by
+  the real 250 mm pitch, **not** from a block count.
 - **`RbmkCore`** says it outright: *"the core is data, not geometry — so its
   granularity does not depend on how many blocks the world spends on it."*
 - Only **`RbmkWorldBuilder`** reads `*_BLOCKS`. The solver and core never do.
 
-So the simulation has always run at true 1:1; the bit build makes the **drawing**
-match it too, so the two finally agree. Changing the drawing cannot change the
-reaction.
+> **Corrected 2026-11-14.** This section previously claimed the physics "already
+> runs at 1:1 and cannot be affected by the build". That was **not true of the
+> code as it stood**: the physics mesh was built from the `*_BLOCKS` constants,
+> which are derived from `METRES_PER_BLOCK`. That is correct only while
+> `METRES_PER_BLOCK == LATTICE_PITCH_M` (true at 1:4 today, a coincidence), and
+> §7's instruction to "set `METRES_PER_BLOCK = 1.0`" would have **silently
+> collapsed the mesh 4x** — 49 cells → 12, 28 axial nodes → 7, 52,416 active nodes
+> → 13,104, an effective mesh pitch of 942 mm instead of 250 mm. The physics would
+> have been wrong, the opposite of what this section promised.
+>
+> The trap is now closed: `RbmkGeometry` carries explicit `*_CELLS` constants
+> (`CORE_HEIGHT_CELLS` = 28, `CHANNEL_REGION_DIAMETER_CELLS` = 49,
+> `STACK_DIAMETER_CELLS` = 56, `CORE_DIAMETER_CELLS` = 47) computed from metres /
+> pitch, and the solver, `RbmkCore`, `RodWorth` and `RbmkLattice` read those. The
+> numbers are identical today, so nothing changed in behaviour; but the build
+> scale can now move to 1:1 without touching the physics.
+> `ScaleIndependenceSelfTest` pins it: it passes at `METRES_PER_BLOCK` = 0.25
+> **and** 1.0. This is exactly the class of hidden simplification the SGB rule
+> exists to forbid.
 
 ---
 

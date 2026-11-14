@@ -58,7 +58,7 @@ public final class RbmkSolver3D {
         1.0 / Math.pow(RbmkGeometry.LATTICE_PITCH_M * 100.0, 2.0);
 
     public RbmkSolver3D() {
-        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS / 2.0);
+        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_CELLS / 2.0);
         this.nx = 2 * ext + 1;
         this.nz = 2 * ext + 1;
         this.na = RbmkCore.AXIAL_NODES;

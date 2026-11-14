@@ -22,7 +22,7 @@ import com.ben.csp.rbmk.RbmkGeometry;
  */
 public final class RodWorth {
 
-    private static final int NODES = RbmkGeometry.CORE_HEIGHT_BLOCKS;
+    private static final int NODES = RbmkGeometry.CORE_HEIGHT_CELLS;
     private static final double CORE_H = RbmkGeometry.CORE_HEIGHT_M;
 
     private static final double SA_WATER = 0.020;

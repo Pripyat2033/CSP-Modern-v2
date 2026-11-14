@@ -61,13 +61,13 @@ public final class RbmkLattice {
 
     /** The graphite stack: every cell out to 14 m (56 blocks). */
     public static List<Cell> graphiteCells() {
-        return circle(RbmkGeometry.STACK_DIAMETER_BLOCKS);
+        return circle(RbmkGeometry.STACK_DIAMETER_CELLS);
     }
 
     /** The reflector: the graphite ring outside the channel region, no channels. */
     public static List<Cell> reflectorCells() {
         List<Cell> out = new ArrayList<>();
-        double r = RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS / 2.0;
+        double r = RbmkGeometry.CHANNEL_REGION_DIAMETER_CELLS / 2.0;
         for (Cell c : graphiteCells()) {
             if (c.x() * c.x() + c.z() * c.z() > r * r) {
                 out.add(c);
@@ -90,7 +90,7 @@ public final class RbmkLattice {
      * inner cells; the outermost 13 cells of the region carry no channel.
      */
     public static List<Channel> channels() {
-        List<Cell> region = circle(RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS);
+        List<Cell> region = circle(RbmkGeometry.CHANNEL_REGION_DIAMETER_CELLS);
         region.sort((a, b) -> Double.compare(radius(a), radius(b)));
 
         // 1. control cells: the distributed sub-lattice

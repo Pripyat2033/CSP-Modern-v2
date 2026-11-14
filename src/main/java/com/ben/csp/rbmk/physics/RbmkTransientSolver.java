@@ -50,7 +50,7 @@ public final class RbmkTransientSolver {
     public static final double NOMINAL_INSERTION = 0.80;
 
     public RbmkTransientSolver() {
-        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS / 2.0);
+        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_CELLS / 2.0);
         int nx = 2 * ext + 1;
         int nz = 2 * ext + 1;
         this.plane = nz * na;

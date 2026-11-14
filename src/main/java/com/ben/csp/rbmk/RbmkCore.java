@@ -20,7 +20,7 @@ import java.util.List;
 public final class RbmkCore {
 
     /** Axial mesh of the core: the solver's nodes per channel. */
-    public static final int AXIAL_NODES = RbmkGeometry.CORE_HEIGHT_BLOCKS; // 28 = 7 m at 250 mm
+    public static final int AXIAL_NODES = RbmkGeometry.CORE_HEIGHT_CELLS; // 28 = 7 m at 250 mm
 
     /** What fills one axial node of a channel. */
     public enum Material { GRAPHITE, WATER, FUEL, B4C, STEEL }

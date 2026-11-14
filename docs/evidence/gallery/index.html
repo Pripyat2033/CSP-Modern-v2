@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSP-Modern-v2 — RBMK graphite: the "1 m cube" question, answered</title>
+<style>
+  :root { --ink:#e8eaf0; --dim:#a2a9b8; --bg:#0f1218; --panel:#171c26; --line:#28303f; --accent:#f0b429; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+  header { padding:38px 26px 22px; border-bottom:1px solid var(--line); }
+  h1 { margin:0 0 8px; font-size:26px; letter-spacing:.2px; }
+  h2 { margin:38px 0 10px; font-size:20px; border-left:4px solid var(--accent); padding-left:12px; }
+  h3 { margin:26px 0 6px; font-size:17px; color:var(--accent); }
+  .wrap { max-width:1180px; margin:0 auto; padding:0 26px 90px; }
+  .lede { color:var(--dim); max-width:900px; }
+  .lede strong { color:var(--ink); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:16px; }
+  @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
+  figure { margin:0; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  figure img { width:100%; display:block; background:#0a0d12; }
+  figcaption { padding:11px 14px; font-size:13.5px; color:var(--dim); }
+  figcaption b { color:var(--ink); }
+  .tag { display:inline-block; font-size:11px; letter-spacing:.6px; text-transform:uppercase;
+         padding:2px 7px; border-radius:99px; margin-bottom:6px; }
+  .t-ingame { background:#1d3a24; color:#8ee6a0; border:1px solid #2f6b3d; }
+  .t-render { background:#2a2438; color:#c3a8ff; border:1px solid #4b3d70; }
+  .t-schem  { background:#3a2a1d; color:#f0b429; border:1px solid #6b4d2f; }
+  table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14.5px; }
+  th,td { text-align:left; padding:9px 11px; border-bottom:1px solid var(--line); }
+  th { color:var(--dim); font-weight:600; }
+  .ok { color:#8ee6a0; } .warn { color:var(--accent); }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-top:16px; }
+  .kv { display:grid; grid-template-columns:220px 1fr; gap:6px 16px; font-size:14.5px; }
+  .kv div:nth-child(odd){ color:var(--dim); }
+  code { background:#0a0d12; border:1px solid var(--line); padding:1px 6px; border-radius:5px; font-size:13.5px; }
+  .bar { height:9px; background:#0a0d12; border-radius:99px; overflow:hidden; border:1px solid var(--line); }
+  .bar > i { display:block; height:100%; background:linear-gradient(90deg,#3f9e5a,#8ee6a0); }
+  .bar.w > i { background:linear-gradient(90deg,#9e6b3f,#f0b429); }
+  footer { color:var(--dim); font-size:13px; margin-top:50px; border-top:1px solid var(--line); padding-top:16px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding-bottom:0">
+    <h1>RBMK graphite — the "1 m cube" question, answered on screen</h1>
+    <p class="lede">Ben's question: <em>"can Minecraft model an RBMK-1000 as its real, historically
+    compliant separate parts — the graphite core is separate individual blocks of various sizes, not one
+    lump."</em> Below are <strong>real pixels from a headless Fabric client</strong> and
+    <strong>faithful renders of the actual block-model JSON the game loads</strong>. Nothing here is an
+    artist's impression.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <b>What 1:4 is for.</b> The 1:4 core is not a dumbed-down mod. It is a <b>conservative stress test</b>
+    that asks one question: <b>can Minecraft cope with a science-grade reactor at all, without hanging or
+    crashing?</b> If yes → green light to build the full 1:1 core. If no → we stop and decide the way
+    forward together. Fidelity is the gate; it is not a licensing question.
+  </div>
+
+  <h2>1. The graphite is separate blocks, each with its own bore</h2>
+  <p class="lede">The block model <code>graphite.json</code> is <b>not a cube</b>: it is a frame of four
+  walls around an open shaft, with a lip on top where blocks interlock. The core builder lays one such
+  block per lattice cell (250 × 250 mm at true scale).</p>
+
+  <div class="grid">
+    <figure>
+      <img src="img/schematic-lattice.png" alt="schematic lattice">
+      <figcaption><span class="tag t-schem">schematic</span><br>
+        <b>8×8 lattice, each cell a separate block.</b> Rendered from the real model JSON; each block is
+        coloured differently so the individual units and the gaps between them are unmistakable.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/render-lattice.png" alt="real texture lattice">
+      <figcaption><span class="tag t-render">render · real texture</span><br>
+        <b>The same lattice with the real graphite texture.</b> Graphite is a genuinely near-black
+        material (mean RGB ≈ 36/255), so it is gamma-lifted here purely to make the geometry visible.</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid">
+    <figure>
+      <img src="img/shot-70-lattice-closeup.png" alt="in-game lattice">
+      <figcaption><span class="tag t-ingame">in-game</span><br>
+        <b>Real Fabric client, real world.</b> Graphite blocks placed in-world with
+        <code>csp-modern:graphite</code> and verified with <code>execute if block</code> before the shot.
+        You can see the block seams.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/render-lattice-side.png" alt="lattice side">
+      <figcaption><span class="tag t-render">render</span><br>
+        <b>From the side:</b> individual blocks in a row, the seam between each, and the interlock lip on
+        top — the shape that makes the core a stack of parts, not a lump.</figcaption>
+    </figure>
+  </div>
+
+  <h2>2. The 200–600 mm axial variation is expressible</h2>
+  <p class="lede">A real RBMK graphite block is <b>250 × 250 mm</b> across and <b>200–600 mm long</b>
+  along the channel, depending on its position in the stack. At 1:4 that cannot be shown (200 mm is 0.8 of
+  a block, 600 mm is 2.4 blocks). On the <b>bit scale</b> — 1 unit = 62.5 mm — it fits exactly: the
+  250 mm cross-section is 4 units and the longest block is 9.6 units, all inside one Minecraft block's
+  16-unit model space.</p>
+
+  <div class="grid">
+    <figure>
+      <img src="img/schematic-heights.png" alt="heights schematic">
+      <figcaption><span class="tag t-schem">schematic</span><br>
+        <b>One block at each real length:</b> 200, 250, 300, 400, 500, 600 mm, side by side, to scale.
+        Each colour is a different length. This is the shape the full core will have.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/render-heights.png" alt="heights real texture">
+      <figcaption><span class="tag t-render">render · real texture</span><br>
+        <b>The same six lengths with the real texture.</b> The stepped profile is the real axial variation
+        of the RBMK graphite stack.</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid">
+    <figure>
+      <img src="img/shot-72-axial-veryclose.png" alt="in-game axial demo">
+      <figcaption><span class="tag t-ingame">in-game</span><br>
+        <b>Built and running in Minecraft:</b> the six-length block registered as
+        <code>csp-modern:graphite_axial_demo</code>, placed in-world and photographed by the client.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/render-parts.png" alt="bore detail">
+      <figcaption><span class="tag t-render">render</span><br>
+        <b>The bore in detail:</b> the graphite frame, the fuel channel that fills it, and the control-rod
+        channel — the three separate parts of one lattice cell.</figcaption>
+    </figure>
+  </div>
+
+  <h2>3. Can Minecraft cope? — what the benchmarks say</h2>
+  <p class="lede">These are in-sandbox measurements (4 GB heap, flat world). The one test that settles it
+  is <b>Ben running it on a real gaming PC</b> — that is the next step, not another benchmark.</p>
+  <table>
+    <tr><th>Build</th><th>Real blocks</th><th>MSPT after build</th><th>Verdict</th></tr>
+    <tr><td>1 core at 1:4</td><td>253,780</td><td>10.1 ms</td><td class="ok">comfortable</td></tr>
+    <tr><td>8 cores at 1:4</td><td>2,030,240</td><td>9.1 ms</td><td class="ok">comfortable</td></tr>
+    <tr><td>16 cores at 1:4</td><td>4,060,480</td><td>15.7 ms</td><td class="ok">comfortable</td></tr>
+    <tr><td>32 cores at 1:4</td><td>8,120,960</td><td>34.5 ms</td><td class="ok">comfortable</td></tr>
+    <tr><td>64 cores at 1:4</td><td>16,241,920</td><td>67.7 ms</td><td class="warn">overloaded, no crash</td></tr>
+    <tr><td>1 full plant (core + equipment)</td><td>353,292</td><td>2.3 ms</td><td class="ok">comfortable</td></tr>
+  </table>
+  <p class="lede" style="margin-top:12px">A tick is 50 ms. Block placement runs at ~250,000 blocks/s. The
+  live 3D neutron solver ticks at <b>4.4 ms/tick over 52,416 nodes</b>. The realistic 1:1 RBMK-1000 core is
+  only ~20,000–30,000 blocks — roughly <b>10× headroom</b>. Minecraft did not crash at 64 cores; it got
+  slow, which is the expected, recoverable behaviour.</p>
+
+  <h2>4. The honest gap (not hidden)</h2>
+  <div class="card">
+    <p style="margin:0 0 10px">The <b>whole stack is still laid out at 1:4</b>
+    (<code>RbmkGeometry.METRES_PER_BLOCK = 0.25</code>), where one Minecraft block <em>is</em> one graphite
+    block. Two consequences, stated plainly:</p>
+    <ul style="margin:0 0 10px">
+      <li>At 1:4 the 200–600 mm variation <b>cannot</b> be shown — exactly your objection, and correct for
+      the 1:4 layout.</li>
+      <li>Minecraft draws every block at 1 m on screen, so at 1:4 a 250 mm block looks 4× oversized and the
+      avatar 4× too small.</li>
+    </ul>
+    <p style="margin:0">The <b>bit scale</b> removes both: one Minecraft block = 1 m, and sub-block
+    geometry places the true 250 mm cell and the true axial lengths. The demonstration above proves the
+    geometry works inside Minecraft. What remains is to <b>wire the bit engine into
+    <code>RbmkWorldBuilder</code></b> so the whole core is built that way — an engine-wiring task, not an
+    open question about whether Minecraft can hold it.</p>
+  </div>
+
+  <h2>5. The 1:4 stress test — and the bug it caught</h2>
+  <div class="card">
+    <p style="margin:0 0 10px"><b>1:4 is a question, not a compromise.</b> It asks:
+    <em>can Minecraft cope with a science-grade reactor at all, without hanging or
+    crashing?</em> Yes → green light for the full 1:1 core. No → we stop and decide
+    together. The only test that counts is <b>you running it</b>, and the jar is
+    ready:</p>
+    <p style="margin:0 0 14px">
+      <a href="download/csp-modern-0.0.1.jar" download
+         style="display:inline-block;background:var(--accent);color:#1a1206;
+                font-weight:700;padding:10px 18px;border-radius:8px;
+                text-decoration:none">⬇ Download csp-modern-0.0.1.jar</a>
+      <span style="color:var(--dim);font-size:14px;margin-left:10px">Fabric · Minecraft 1.20.1 · needs Fabric API 0.91.0+1.20.1</span>
+    </p>
+    <p style="margin:0 0 8px"><b>Run it:</b> flat creative world, then</p>
+    <p style="margin:0"><code>/rbmk build demo</code> → <code>/rbmk plant build demo</code>
+    → <code>/rbmk plant start</code> → <code>/rbmk plant status</code> →
+    <code>/rbmk status</code></p>
+  </div>
+
+  <div class="card" style="border-color:#6b4d2f">
+    <p style="margin:0 0 10px"><b class="warn">The test has already earned its keep.</b>
+    Reviewing it found that the <b>physics mesh was silently tied to the build
+    scale</b> — exactly the hidden simplification the SGB rule forbids:</p>
+    <ul style="margin:0 0 10px">
+      <li>The solver mesh and the core's axial node count were built from
+      <code>*_BLOCKS</code>, which derive from <code>METRES_PER_BLOCK</code> (the
+      <em>drawing</em> scale).</li>
+      <li>Correct only while <code>METRES_PER_BLOCK == LATTICE_PITCH_M</code> — true
+      at 1:4 today, but a coincidence.</li>
+      <li><code>SCALE-DECISION.md</code> §7 says to set <code>METRES_PER_BLOCK = 1.0</code>
+      for 1:1. That would have collapsed the mesh 4× (49 cells → 12, 28 axial nodes
+      → 7, 52,416 → 13,104 active nodes; effective pitch 942 mm, not 250 mm) and the
+      physics would have been <b>wrong</b> — while the code still looked fine.</li>
+    </ul>
+    <p style="margin:0 0 10px"><b class="ok">Fixed.</b> <code>RbmkGeometry</code> now
+    carries explicit lattice-<b>cell</b> constants (28 / 49 / 56 / 47) computed from
+    real metres ÷ real pitch; the solver, core, rod-worth and lattice read those; only
+    the world builder reads <code>*_BLOCKS</code>. Numbers identical today, so
+    behaviour is unchanged — but the build can now go to 1:1 without touching the
+    physics.</p>
+    <p style="margin:0"><b>Proof:</b> <code>ScaleIndependenceSelfTest</code> passes at
+    <code>METRES_PER_BLOCK</code> = 0.25 <b>and</b> 1.0. Before the fix it
+    <b class="warn">failed</b> at 1.0 (verified against a modified copy).</p>
+  </div>
+
+  <footer>
+    Generated for Ben (Director, ChSZO) by OpenHands, 2026-11-12. Images: real Fabric-client framebuffer
+    captures + renders of <code>src/main/resources/assets/csp-modern/models/block/*.json</code> via
+    <code>tools/render_block_models.py</code>. Committed on branch <code>OpenHands</code> as
+    <code>ca79d8f</code> (not pushed).
+  </footer>
+</div>
+</body>
+</html>

@@ -52,7 +52,7 @@ public final class RbmkSolverMG {
             throw new IllegalArgumentException("need at least two groups");
         }
         this.groups = groups;
-        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS / 2.0);
+        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_CELLS / 2.0);
         int nx = 2 * ext + 1;
         int nz = 2 * ext + 1;
         this.na = RbmkCore.AXIAL_NODES;

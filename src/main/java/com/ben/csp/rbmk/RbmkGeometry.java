@@ -30,6 +30,7 @@ public final class RbmkGeometry {
     /** Square lattice pitch, 250 mm — the figure the whole core hangs off. */
     public static final double LATTICE_PITCH_M = 0.250;
     public static final int LATTICE_PITCH_BLOCKS = 1;
+
     /** Graphite moderator block: 250 x 250 mm in plan. */
     public static final double GRAPHITE_BLOCK_M = 0.250;
     /** The 114 mm hole drilled through each graphite block. */
@@ -129,7 +130,7 @@ public final class RbmkGeometry {
         double absorberBottom = telescopeTop;
         double absorberTop = absorberBottom + ROD_ABSORBER_M;
 
-        int nodes = CORE_HEIGHT_BLOCKS;
+        int nodes = CORE_HEIGHT_CELLS;
         double nodeH = CORE_HEIGHT_M / nodes;
         NodeMaterial[] out = new NodeMaterial[nodes];
         for (int z = 0; z < nodes; z++) {
@@ -149,6 +150,30 @@ public final class RbmkGeometry {
     public static double rodTravelBlocks(double seconds) {
         return toBlocks(ROD_SPEED_M_PER_S * seconds);
     }
+
+    // ------------------------------------------------------- lattice cells
+    // The physics is meshed in LATTICE CELLS (one node per 250 mm lattice cell),
+    // NOT in drawn blocks. The two counts coincide only while
+    // METRES_PER_BLOCK == LATTICE_PITCH_M (true at 1:4 today). The build scale may
+    // change (1:1 bit-scale later); the physics must not. So the physics reads
+    // *CELLS and the world builder reads *BLOCKS. Never cross them.
+    //
+    // These are declared after every *_M constant so their initialisers see the
+    // real metres, not zero.
+
+    /** Count of lattice cells across a metre dimension. */
+    public static int toCells(double metres) {
+        return (int) Math.round(metres / LATTICE_PITCH_M);
+    }
+
+    /** Active core height: 7 m / 250 mm = 28 lattice cells. */
+    public static final int CORE_HEIGHT_CELLS = toCells(CORE_HEIGHT_M);
+    /** Active core diameter: 11.8 m / 250 mm = 47 lattice cells. */
+    public static final int CORE_DIAMETER_CELLS = toCells(CORE_DIAMETER_M);
+    /** Channel region: 12.25 m / 250 mm = 49 lattice cells. */
+    public static final int CHANNEL_REGION_DIAMETER_CELLS = toCells(CHANNEL_REGION_DIAMETER_M);
+    /** Graphite stack: 14 m / 250 mm = 56 lattice cells. */
+    public static final int STACK_DIAMETER_CELLS = toCells(STACK_DIAMETER_M);
 
     private static double clamp01(double v) {
         return v < 0 ? 0 : (v > 1 ? 1 : v);

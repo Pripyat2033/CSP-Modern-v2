@@ -35,7 +35,7 @@ public final class DiffusionSolver {
     private int channels;
 
     public DiffusionSolver() {
-        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_BLOCKS / 2.0);
+        this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_CELLS / 2.0);
         this.nx = 2 * ext + 1;
         this.nz = 2 * ext + 1;
         this.active = new boolean[nx * nz];
