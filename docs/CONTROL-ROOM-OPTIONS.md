@@ -71,10 +71,15 @@ Ben places the boards; a tool keeps him honest — a checklist per board, record
 provenance, and a verification step.
 - **Verdict:** directly addresses "I'll make a mistake."
 
-### H. Virtual board (render, not blocks)
+### H. Virtual board (render, not blocks) — **REJECTED**
 Stand at a console and read a **rendered** annunciator panel in the UI.
-- **Verdict:** full pattern language with no need to place thousands of lamps;
-  can later be replaced by real blocks.
+- **Rejected by Ben, correctly.** In 1986 the room is **entirely physical** — every
+  lamp is a real lamp cover with a real cable threaded to it. Rendered video walls
+  are a **late-1990s / 2000s** development, when the physical МТК makets were torn
+  out and replaced by video display walls. That is (a) anachronistic for 1986 and
+  (b) a downgrade — the lamp-cover maket is tactile and beautiful; the video wall
+  is not.
+- **Verdict: not an option for this reconstruction.**
 
 ### I. Split the goals
 - **Goal 1 — prove/disprove the rundown test.** Needs RBMK + SKALA + procedure.
@@ -84,15 +89,32 @@ Stand at a console and read a **rendered** annunciator panel in the UI.
 
 ## Recommendation: a sequence, not a choice
 
-1. **Now:** I + B — run the experiment on RBMK + SKALA; record that the room is
+1. **Now:** B — run the experiment on RBMK + SKALA; record that the room is
    deferred, not abandoned.
 2. **Next:** C + D — build the annunciator grammar and generate the room's content
    from the plant's signals.
-3. **Interim room:** H — a rendered board that speaks the pattern language.
+3. **The spec itself:** J — document the boards with the people who worked them.
+   This is the only route to a placement spec, because none exists in any archive
+   (see below).
 4. **Physical room, over time:** E + F + G — Unit 3 as the proxy source, placement
    by convention where documented and flagged, Ben placing with a tool that
    catches errors. Then A — the enterprises take over construction once the spec
    exists.
 
+### J. Document the boards with the people who worked them
+
+The spec does not exist, but the reason is not classification — the plant is
+remarkably open, and the panels are publicly famous. **The reason is that nobody
+ever sat down and documented them.** A spec that was never written cannot be
+*found*; it has to be *made*.
+
+The untapped source is **people** — the operators and engineers who stood at the
+boards, including people Ben knows who worked at the plant in 1986. The layout
+lives in their hands and memory even though it was never recorded. Turning that
+memory into a spec — which lamp, which column, how high — is a real method, and it
+is the only one that produces a *sourced* placement spec rather than an inferred
+one.
+
 Options A and B are not alternatives. B is what unblocks the science today; A is
-what builds the room later. C is the piece that makes the room a room.
+what builds the room later. C is the piece that makes the room a room. J is the
+piece that makes it *correct*.
