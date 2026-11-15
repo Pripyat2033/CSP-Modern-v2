@@ -124,7 +124,15 @@ investigators had.
 
 ## What we build
 
-- `Instrumentation` — the analogue front end: **7,013 sourced signals**.
+- `Instrumentation` — the analogue front end: **7,013 signals in the current
+  model**. This is the **reactor-side analogue** set only, and the number is a
+  **modelling count, not a sourced figure** (1661 fuel × 4 + 211 control × 1 +
+  drums/MCPs/turbines/DKE/scalars). It omits **all discrete signals** (valve and
+  gate positions, pump running/stopped, switch and protection contacts, alarm
+  annunciator lamps) and the **whole non-reactor block** (turbine hall,
+  deaerators, feedwater, condensers, generator, electrical). The real plant's
+  signal count is **much larger**; the SKALA register is filled to its own
+  capacity, not to 7,013. See `docs/INSTRUMENTATION-SCOPE.md`.
 - `com.ben.csp.skala.core.*` — the machine: `SkalaComplex`, `DregRecorder`,
   `RequestCode`, `SkalaProgram`, `SkalaTapeDrive`, `FunctionalGroup`,
   `SkalaStatusDisplay`.
