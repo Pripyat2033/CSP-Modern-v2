@@ -84,6 +84,10 @@ public final class DregRecorder {
                  DRUM_LEVEL, DRUM_PRESSURE, PUMP_FLOW, PUMP_SPEED, TURBINE_SPEED,
                  TURBINE_POWER, CONDENSER_TEMP, MCP_HEADER_FLOW, FEEDWATER_FLOW,
                  SPD -> SignalType.INDIVIDUAL_ANALOG;
+            // The per-rod limit switches, overcompensation drive and selsyn lamps
+            // are on/off points, which is exactly what DREG's discrete class is for.
+            case ROD_LIMIT_LOWER, ROD_LIMIT_UPPER, ROD_OVERCOMP,
+                 ROD_LAMP_DEPTH, ROD_LAMP_TOP -> SignalType.DISCRETE;
             case CORE_POWER, CORE_REACTIVITY, CORE_ORM, CORE_PERIOD ->
                 SignalType.DISCRETE;
         };

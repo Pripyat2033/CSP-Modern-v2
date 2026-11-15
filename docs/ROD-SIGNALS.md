@@ -91,3 +91,20 @@ times larger, before the discrete signals of the rest of the plant are counted a
 all. This is one concrete instance of the general finding in
 `docs/INSTRUMENTATION-SCOPE.md`: **the model carries the analogue reactor core and
 almost none of the discrete signals SKALA actually monitored.**
+
+## Implemented (15 Nov)
+
+The control-rod family is now in the model:
+
+- `com.ben.csp.rbmk.RodType` — the seven rod types with their regulation counts,
+  summing to 211; `hasOvercompensation()` marks ПК-АЗ / ПК-РР.
+- `Instrumentation` builds, per control channel: **position, НК, ВК, the ПК signal
+  where the type has one, and the two selsyn lamps** — **1,091** rod signals in
+  place of the old 211. Register total rose from **7,013 to 7,893**.
+- `DregRecorder` classifies the new on/off points as discrete.
+- `RodSignalsSelfTest` — 13 checks, all passing.
+
+**Still open:** the exact rod-type **cartogram** (which physical cell holds which
+type) is a placeholder laid out in radial bands; the counts are sourced, the
+placement is not. The two **selsyn lamps** await confirmation against a photograph
+of an indicator. The **ПК** drive reads `NaN` until per-rod insertion exists.

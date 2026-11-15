@@ -1,6 +1,8 @@
 package com.ben.csp.rbmk.plant;
 
+import com.ben.csp.rbmk.RbmkGeometry;
 import com.ben.csp.rbmk.RbmkLattice;
+import com.ben.csp.rbmk.RodType;
 
 /**
  * The plant's instrumentation register: every analogue signal a real RBMK-1000
@@ -18,7 +20,10 @@ import com.ben.csp.rbmk.RbmkLattice;
  *       channel — INSAG-7 §2.9 "Each channel has a flow control valve"), outlet
  *       steam quality, void, channel outlet temperature. The per-channel flow is
  *       the reading that made a blocked or boiling channel visible.</li>
- *   <li><b>Per control channel (211):</b> rod position / insertion.</li>
+ *   <li><b>Per control channel (211):</b> the rod signals — position, the two limit
+ *       switches (НК / ВК), the overcompensation (ПК) drive where the rod type has
+ *       one, and the two selsyn dial lamps. The 211 rods are seven types
+ *       ({@link RodType}, regulation §2.11.6), not one.</li>
  *   <li><b>In-core power-distribution detectors (SPD, ~112 radial + axial):</b>
  *       the PPDDCS detectors (INSAG-7 §2.4), which is how the spatial power map
  *       was measured.</li>
@@ -46,17 +51,52 @@ public final class Instrumentation {
                        ROD_POSITION, SPD, DRUM_LEVEL, DRUM_PRESSURE,
                        PUMP_FLOW, PUMP_SPEED, TURBINE_SPEED, TURBINE_POWER,
                        CONDENSER_TEMP, MCP_HEADER_FLOW, FEEDWATER_FLOW, CORE_POWER,
-                       CORE_REACTIVITY, CORE_ORM, CORE_PERIOD }
+                       CORE_REACTIVITY, CORE_ORM, CORE_PERIOD,
+                       // --- per control-rod signals (regulation-sourced) ---
+                       // Each rod carries more than a position: limit switches at
+                       // the ends of its travel, an overcompensation (ПК) drive where
+                       // its type has one, and two selsyn dial lamps. See docs/ROD-SIGNALS.md.
+                       ROD_LIMIT_LOWER,   // НК — нижний концевик
+                       ROD_LIMIT_UPPER,   // ВК — верхний концевик
+                       ROD_OVERCOMP,      // ПК — перекомпенсация (АЗ / РР rods)
+                       ROD_LAMP_DEPTH,    // selsyn lamp, green, 6 o'clock — rod at full depth
+                       ROD_LAMP_TOP }     // selsyn lamp, orange, 12 o'clock — rod at top of stops
 
     /** Build the full signal list for the current plant layout. */
     public static java.util.List<Signal> all() {
         java.util.List<Signal> out = new java.util.ArrayList<>(5000);
         int ch = 0;
+        int rod = 0;                       // control-rod ordinal (0..210)
+        java.util.List<RodType> cartogram = RodType.cartogram(RbmkGeometry.CONTROL_CHANNELS);
         for (RbmkLattice.Channel c : RbmkLattice.channels()) {
             if (c.control()) {
-                out.add(new Signal(code("SUZ", c.x(), c.z()) + ".POS",
-                    "Положение стержня СУЗ", "Control-rod position", "%",
-                    Kind.ROD_POSITION, ch));
+                String base = code("SUZ", c.x(), c.z());
+                RodType type = cartogram.get(rod);
+                out.add(new Signal(base + ".POS", "Положение стержня СУЗ (" + type.abbr + ")",
+                    "Control-rod position (" + type.abbr + ")", "%",
+                    Kind.ROD_POSITION, rod));
+                // Limit switches at the ends of travel (ВК / НК). §2.11.6-2.11.7.
+                out.add(new Signal(base + ".NK", "Нижний концевик (" + type.abbr + ")",
+                    "Lower limit switch (" + type.abbr + ")", "-",
+                    Kind.ROD_LIMIT_LOWER, rod));
+                out.add(new Signal(base + ".VK", "Верхний концевик (" + type.abbr + ")",
+                    "Upper limit switch (" + type.abbr + ")", "-",
+                    Kind.ROD_LIMIT_UPPER, rod));
+                // Overcompensation (ПК) drive — only for types that carry it.
+                if (type.hasOvercompensation()) {
+                    out.add(new Signal(base + ".PK", "Перекомпенсация (" + type.abbr + ")",
+                        "Overcompensation (" + type.abbr + ")", "-",
+                        Kind.ROD_OVERCOMP, rod));
+                }
+                // Selsyn dial lamps: green at 6 o'clock (full depth), orange at
+                // 12 o'clock (top of stops). Recollection, see docs/ROD-SIGNALS.md.
+                out.add(new Signal(base + ".LAMP_NIZ", "Лампа 'на глубине' (" + type.abbr + ")",
+                    "Selsyn lamp, full depth (" + type.abbr + ")", "-",
+                    Kind.ROD_LAMP_DEPTH, rod));
+                out.add(new Signal(base + ".LAMP_VERH", "Лампа 'на упоре' (" + type.abbr + ")",
+                    "Selsyn lamp, top of stops (" + type.abbr + ")", "-",
+                    Kind.ROD_LAMP_TOP, rod));
+                rod++;
             } else {
                 String base = code("TK", c.x(), c.z());
                 out.add(new Signal(base + ".FLOW", "Расход воды в ТК",
@@ -189,6 +229,14 @@ public final class Instrumentation {
                 return s.index() < c.length ? c[s.index()].coolingWaterOutC() : Double.NaN;
             }
             case ROD_POSITION -> { return p.core().insertion() * 100.0; }
+            // The core model currently carries ONE lumped rod insertion, so the
+            // per-rod limit switches and selsyn lamps are derived from it. When
+            // per-rod insertion lands, these read the individual rod.
+            case ROD_LIMIT_LOWER -> { return p.core().insertion() >= 0.99 ? 1.0 : 0.0; }
+            case ROD_LIMIT_UPPER -> { return p.core().insertion() <= 0.01 ? 1.0 : 0.0; }
+            case ROD_OVERCOMP -> { return Double.NaN; } // ПК drive not yet modelled
+            case ROD_LAMP_DEPTH -> { return p.core().insertion() >= 0.99 ? 1.0 : 0.0; }
+            case ROD_LAMP_TOP -> { return p.core().insertion() <= 0.01 ? 1.0 : 0.0; }
             default -> { return Double.NaN; }
         }
     }
