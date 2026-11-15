@@ -565,3 +565,28 @@ answer "can Minecraft run a custom engine alongside/under it?": yes — the mod 
 IS the alongside case (pure-Java engine ticked live, ~10× headroom). Native/JNI/FFM
 possible but unnecessary; FFM is final only on JDK 22 and the project targets Java 17,
 so FFM is out. Don't re-research this.
+
+## SALVAGE RECIPE (2026-11-15) — recovering a lost sandbox from its trajectory
+When a sandbox vanishes mid-task, the work is recoverable from the trajectory
+files (`/tmp/traj/event_*.json`). Replay every terminal action into a clean
+worktree at the branch point with a script (`/tmp/replay4.py`): heredoc cat,
+python3 heredocs, `python3 -c` writers, `sed -i`, `mkdir -p`, `cp/mv`, `rm -f`,
+`curl -o <repo path>`, then `git add`+`git commit`. **Order matters**: downloads
+and copies must run BEFORE the python that consumes them, and `rm` must be
+honoured or commits include files the session had deleted. Recovered 35 commits
+with byte-identical subjects + the uncommitted ROSFOND fix (commit ed52052 on
+`recover/rosfond-data-path`). Verified: `gradlew compileJava` OK, all 12 Java
+self-tests PASS, provenance gate OK, lattice py tests 9/9+11/11+8/8.
+Two env traps: the fabric-loom lock can be held by an unreapable zombie gradle
+(use a fresh `GRADLE_USER_HOME`); the gradle wrapper jar is gitignored and must
+be fetched. Full detail in `.openhands/memory/2026-11-15.md`.
+
+## ROSFOND DATA PATH (the fix Ben was mid-way through, 2026-11-15)
+ROSFOND neutron files carry their thermal/epithermal resonances in MF=2 and their
+MF=3 pointwise XS is ZERO below the resonance range (U-235 fission 0.0 b at
+0.0253 eV). Read raw, you get a moderator-only cell. The fix is NJOY
+RECONR->BROADR reconstruction into the pointwise JSON cache
+(`tools/lattice/reconstruct_rosfond.py`). Also fixed: natural carbon (ROSFOND has
+graphite as one ZA-6000 eval, so prefer `Cnat` where present, else the C-12+C-13
+split), metastable isomers (prefer ground state over the 'M' file), and ENDF-6
+floats with a space in the exponent.
