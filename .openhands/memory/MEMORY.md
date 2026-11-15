@@ -1,5 +1,18 @@
 # CSP-Modern-v2 — project memory
 
+## KEYSTONE SOURCE IN HAND: the 1983 regulation (2026-11-15, commit 60bf8dd)
+`docs/primary-sources/Reglament-1E-S-II-1983-ChAES-RBMK-1000.pdf` — the actual
+«Технологический регламент по эксплуатации 3 и 4 энергоблоков ЧАЭС с реакторами
+РБМК-1000» (1Э-С-II, Союзатомэнерго, in force 15.12.1983; signed Bryukhanov/
+Fomin/Dyatlov/Lyutov/Gellerman). 99 pp; text at `.../reglament-1E-S-II-1983.txt`.
+Found via Reddit (r/chernobyl 1hagr52 -> public Google Drive folder). Use it as
+the citation authority for the equipment register AND the control room. It gives:
+Ch.3 = АЗ-1..АЗ-5 protections (incl. turbine stop-valve -> АЗ-5 within 30 s — the
+test's exact coupling); Ch.9 = ORM 26-30 rods, shutdown at 15; the abbreviation
+list = ~110-term equipment taxonomy (БЩУ-О/Н, ЦЩУ, РПУ, пульт «А»/«Т», СФКРЭ, СЦК,
+КЦТК, МТК/МТО...). Discussion doc: `docs/CONTROL-ROOM-DISCUSSION.md`.
+See daily log 2026-11-12 for the research method (Arctic Shift + Drive).
+
 ## MISSION (corrected by Ben 2026-11-09) — read before every decision
 This is a **forensic, 1:1, Science Grade or Better (SGB) reconstruction of the
 RBMK-1000 at ChNPP and the night of 26 April 1986**. End state = stand in the
