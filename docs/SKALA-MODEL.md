@@ -138,12 +138,45 @@ investigators had.
   `groups`, `tape`, `teletype [job]`, `print [cartogram|rods|deviations]`,
   `divt`, `alarm`, `request <code>`.
 
-## Note on the name "SDVIT"
+## Personnel: the "S positions" (С-должности)
 
-The request refers to the "SDVIT console". The source describes the chief
-computer engineer's workplace as the **DIVT** (ДИВТ — "главный инженер
-вычислительной техники", chief computer-engineering engineer), whose station
-includes the request device and the two punch-tape devices. The control room also
-has three operator workplaces, **VIUR / VIUB / VIUT**, each with its own request
-device. If "SDVIT" is a different, separate console, it has not been described in
-the sources read so far and should be pointed at specifically.
+The role abbreviations are **Soviet terminology**, taken verbatim from the
+plant's own regulation — *Технологический регламент эксплуатации АЭС с реакторами
+РБМК-1000, 1Э-С-II-1983*, ЧАЭС, **for units 3 and 4** ("по эксплуатации 3 и 4
+энергоблоков Чернобыльской АЭС"). Chapter 1 and the page-8 abbreviation list give
+them exactly. **С** = *старший* (senior); **Н** = *начальник* (chief).
+
+| Abbr | Full | Role | Workplace |
+|------|------|------|-----------|
+| ГИС | главный инженер станции | chief engineer of the station | — |
+| ЗГИС | заместитель главного инженера | deputy chief engineer | — |
+| НСС | начальник смены станции | station shift chief (all modes) | ЦЩУ |
+| ЗНСС | заместитель начальника смены станции | deputy station shift chief | БЩУ-О |
+| НСБ | начальник смены блока | unit shift chief | БЩУ-О |
+| НСЦ | начальник смены цеха | shop shift chief | shop |
+| НСЭЦ | начальник смены электроцеха | electrical-shop shift chief | ЭЦ |
+| **СИУБ** | старший инженер управления блоком | senior unit-control engineer | pults "П","Д" |
+| **СИУР** | старший инженер управления реактором | senior reactor-control engineer | pult "А" |
+| **СИУТ** | старший инженер управления турбинами | senior turbine-control engineer | pult "Т" |
+| СИМ | старший инженер-механик | senior mechanical engineer | — |
+
+The three control-room operating posts each have their own request device, and in
+speech are the **ВИУР / ВИУБ / ВИУТ** — the *ведущий* senior duty engineers of the
+reactor, unit and turbines. So "SDVIT" is read as *старший* + the computer-role
+abbreviation, the same construction as СИУР = старший + ИУР.
+
+## The computer-complex role (DIVT)
+
+The role responsible for the SKALA complex is the **ДИВТ** — *начальник (or
+старший инженер) вычислительной техники* (computer-engineering chief/senior
+engineer), whose workplace is in the **computer room**. The Chornobyl Family
+restoration describes that workplace (fuel-reload preparation, reference entry,
+software/integrity management, its own request device, and the FS-1501 /
+PL-150M punch-tape devices). Note the regulation's **ЦТАИ** (*цех тепловой
+автоматики и измерений*, thermal-automation and measurement shop) is a different
+organisation — it owns the instrumentation and automation, whereas the DIVT runs
+the computers. In the pre-1986 period the computers and the control-system
+electronics were separate services.
+
+The personnel model is `com.ben.csp.skala.core.SkalaRole`; the computer-room
+station is `DivtConsole`.

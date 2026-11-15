@@ -9,6 +9,7 @@ import com.ben.csp.skala.core.FunctionalGroup;
 import com.ben.csp.skala.core.RequestCode;
 import com.ben.csp.skala.core.SkalaComplex;
 import com.ben.csp.skala.core.SkalaProgram;
+import com.ben.csp.skala.core.SkalaRole;
 import com.ben.csp.skala.core.SkalaTapeDrive;
 import com.ben.csp.skala.core.SkalaTicker;
 import com.ben.csp.skala.core.Teletype;
@@ -51,6 +52,7 @@ public final class SkalaCommand {
                 .then(CommandManager.argument("what", StringArgumentType.word())
                     .executes(ctx -> print(ctx, StringArgumentType.getString(ctx, "what")))))
             .then(CommandManager.literal("divt").executes(SkalaCommand::divt))
+            .then(CommandManager.literal("roles").executes(SkalaCommand::roles))
             .then(CommandManager.literal("alarm")
                 .executes(ctx -> alarm(ctx, true))
                 .then(CommandManager.literal("off").executes(ctx -> alarm(ctx, false))))
@@ -181,6 +183,22 @@ public final class SkalaCommand {
         for (DivtConsole.PunchDevice d : DivtConsole.PunchDevice.values()) {
             sb.append("  ").append(d.model).append(" — ").append(d.description).append('\n');
         }
+        feedback(ctx.getSource(), sb.toString().stripTrailing(), Formatting.AQUA);
+        return 1;
+    }
+
+    private static int roles(CommandContext<ServerCommandSource> ctx) {
+        StringBuilder sb = new StringBuilder(
+            "Operating personnel (Soviet abbreviations, per the 1Э-С-II-1983 unit 3/4 regulation):\n");
+        for (SkalaRole r : SkalaRole.values()) {
+            sb.append(String.format("  %-6s %-45s %-18s %s%n",
+                r.abbr, r.ru, r.workplace, r.en));
+        }
+        sb.append("  Control-room posts (each has a request device): ");
+        for (SkalaRole.ControlRoomPost p : SkalaRole.ControlRoomPost.values()) {
+            sb.append(p.abbr).append(' ');
+        }
+        sb.append("\n  Computer-room role: DIVT (chief/senior engineer, computer engineering)");
         feedback(ctx.getSource(), sb.toString().stripTrailing(), Formatting.AQUA);
         return 1;
     }

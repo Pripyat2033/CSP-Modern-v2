@@ -117,6 +117,21 @@ public final class SkalaComplexSelfTest {
             skala.divt().tapeMounted() && skala.divt().mountedTape().equals("LIBRARY"),
             "mounted=" + skala.divt().mountedTape());
 
+        // The operating-personnel roles are the Soviet abbreviations from the
+        // 1Э-С-II-1983 unit 3/4 regulation: С = старший, Н = начальник.
+        check("personnel roles carry the Soviet С-/Н- abbreviations from the regulation",
+            SkalaRole.byAbbr("СИУР") == SkalaRole.SIUR
+                && SkalaRole.byAbbr("СИУБ") == SkalaRole.SIUB
+                && SkalaRole.byAbbr("СИУТ") == SkalaRole.SIUT
+                && SkalaRole.byAbbr("НСС") == SkalaRole.NSS
+                && SkalaRole.byAbbr("ЗНСС") == SkalaRole.ZNSS,
+            "СИУР/СИУБ/СИУТ/НСС/ЗНСС resolved");
+        check("the three control-room posts VIUR/VIUB/VIUT map to СИУР/СИУБ/СИУТ",
+            SkalaRole.ControlRoomPost.VIUR.role == SkalaRole.SIUR
+                && SkalaRole.ControlRoomPost.VIUB.role == SkalaRole.SIUB
+                && SkalaRole.ControlRoomPost.VIUT.role == SkalaRole.SIUT,
+            "3 posts");
+
         System.out.printf("%nSkalaComplexSelfTest: %d checks, %d failures%n", checks, failures);
         if (failures > 0) {
             throw new AssertionError(failures + " check(s) failed");
