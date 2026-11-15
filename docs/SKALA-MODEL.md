@@ -128,6 +128,22 @@ investigators had.
 - `com.ben.csp.skala.core.*` — the machine: `SkalaComplex`, `DregRecorder`,
   `RequestCode`, `SkalaProgram`, `SkalaTapeDrive`, `FunctionalGroup`,
   `SkalaStatusDisplay`.
+- **Output devices (paper):** `Teletype` (RDA-80, four jobs, symbol-by-symbol at
+  ~10 s/line) and `DrumPrinter` (ATsPU-128 — builds the two-half cartogram from
+  the live plant, and the rod-position map).
+- **`DivtConsole`** — the chief computer engineer's station: reference entry,
+  library load, and the FS-1501 reader / PL-150M punch.
 - `SkalaTicker` — runs it on the server clock, reading the live plant.
 - `/skala` — in-game commands: `start`, `halt`, `status`, `programs`, `drives`,
-  `groups`, `tape`, `alarm`, `request <code>`.
+  `groups`, `tape`, `teletype [job]`, `print [cartogram|rods|deviations]`,
+  `divt`, `alarm`, `request <code>`.
+
+## Note on the name "SDVIT"
+
+The request refers to the "SDVIT console". The source describes the chief
+computer engineer's workplace as the **DIVT** (ДИВТ — "главный инженер
+вычислительной техники", chief computer-engineering engineer), whose station
+includes the request device and the two punch-tape devices. The control room also
+has three operator workplaces, **VIUR / VIUB / VIUT**, each with its own request
+device. If "SDVIT" is a different, separate console, it has not been described in
+the sources read so far and should be pointed at specifically.

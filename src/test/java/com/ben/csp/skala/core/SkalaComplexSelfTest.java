@@ -82,6 +82,41 @@ public final class SkalaComplexSelfTest {
         check("DIIS (a 1990s upgrade) is absent from the pre-1986 complex",
             !containsDiis(), "no DIIS in the program set");
 
+        // ---- Output devices (pre-1986 SKALA printed; it had no monitors) ----
+        check("four teletypes exist with their fixed jobs",
+            skala.teletype(Teletype.Job.SETPOINTS) != null
+                && skala.teletype(Teletype.Job.OPERATOR_ACTIONS) != null
+                && skala.teletype(Teletype.Job.MALFUNCTIONS) != null
+                && skala.teletype(Teletype.Job.CONTROL_ROOM) != null,
+            "SETPOINTS/OPERATOR_ACTIONS/MALFUNCTIONS/CONTROL_ROOM");
+
+        // The power-on output must have queued date + diagnostic + program lines.
+        check("power-on prints the date, diagnostics and the programs",
+            skala.teletype(Teletype.Job.CONTROL_ROOM).queued() > 0
+                || !skala.teletype(Teletype.Job.CONTROL_ROOM).paper().isEmpty(),
+            "console paper/queue non-empty");
+
+        // Force a starving channel and confirm a deviation line reaches the teletype.
+        int before = skala.deviationsSeen();
+        skala.forceDeviation("TK001000.FLOW", 1.0);
+        check("a starving channel writes a deviation line to the SETPOINTS teletype",
+            skala.teletype(Teletype.Job.SETPOINTS).queued() > 0
+                || skala.teletype(Teletype.Job.SETPOINTS).paper().size() > 0,
+            "setpoint lines logged");
+
+        // Drum printer: the cartogram must build from the live plant and be split
+        // into two halves.
+        java.util.List<String> carto = skala.drumPrinter(DrumPrinter.Unit.PARAMETERS)
+            .cartogram(plant, skala.signals());
+        long halves = carto.stream().filter(l -> l.contains("HALF")).count();
+        check("drum printer builds a two-half cartogram from the live plant",
+            carto.size() > 40 && halves == 2, "lines=" + carto.size() + " halves=" + halves);
+
+        // DIVT console: loading the library brings up all eight programs.
+        check("DIVT console loads the library and brings up the programs",
+            skala.divt().tapeMounted() && skala.divt().mountedTape().equals("LIBRARY"),
+            "mounted=" + skala.divt().mountedTape());
+
         System.out.printf("%nSkalaComplexSelfTest: %d checks, %d failures%n", checks, failures);
         if (failures > 0) {
             throw new AssertionError(failures + " check(s) failed");

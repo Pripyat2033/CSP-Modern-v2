@@ -5,8 +5,10 @@ import com.ben.csp.rbmk.plant.PlantSystem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The SKALA complex: the pre-1986 computer that watched the reactor. This is the
@@ -55,6 +57,18 @@ public final class SkalaComplex {
     private long signalsScanned;
     private int deviationsSeen;
 
+    // ---- Output devices (paper). Pre-1986 SKALA had no monitors. ----
+    private final Teletype ttSetpoints = new Teletype(Teletype.Job.SETPOINTS, 5_000);
+    private final Teletype ttOperator = new Teletype(Teletype.Job.OPERATOR_ACTIONS, 5_000);
+    private final Teletype ttMalfunctions = new Teletype(Teletype.Job.MALFUNCTIONS, 5_000);
+    private final Teletype ttControlRoom = new Teletype(Teletype.Job.CONTROL_ROOM, 5_000);
+    private final DrumPrinter drumParameters = new DrumPrinter(DrumPrinter.Unit.PARAMETERS);
+    private final DrumPrinter drumDeviations = new DrumPrinter(DrumPrinter.Unit.DEVIATIONS);
+    private final DivtConsole divt = new DivtConsole(ttControlRoom);
+
+    /** Channels currently flagged as deviating, so APPEARED/CLEARED are logged once. */
+    private final Set<String> deviatingChannels = new HashSet<>();
+
     public SkalaComplex() {
         for (int i = 0; i < programDue.length; i++) {
             programDue[i] = MINUTE; // minute-period programs first fire after a minute
@@ -72,10 +86,31 @@ public final class SkalaComplex {
     public int deviationsSeen() { return deviationsSeen; }
     public double timeS() { return timeS; }
 
+    public Teletype teletype(Teletype.Job job) {
+        return switch (job) {
+            case SETPOINTS -> ttSetpoints;
+            case OPERATOR_ACTIONS -> ttOperator;
+            case MALFUNCTIONS -> ttMalfunctions;
+            case CONTROL_ROOM -> ttControlRoom;
+            case RESERVE -> ttSetpoints;
+        };
+    }
+
+    public DrumPrinter drumPrinter(DrumPrinter.Unit unit) {
+        return unit == DrumPrinter.Unit.PARAMETERS ? drumParameters : drumDeviations;
+    }
+
+    public DivtConsole divt() { return divt; }
+
     /** Power-on: processors go ready and the main programs load from tape 1. */
     public void boot() {
         status.setProcessorA(SkalaStatusDisplay.ProcessorState.READY);
         status.setProcessorB(SkalaStatusDisplay.ProcessorState.READY);
+        // The power-on output: a date line, diagnostic messages, then the programs.
+        ttControlRoom.print(Teletype.dated(0, "SKALA  V-3M  DATE 26.04.1986"));
+        ttControlRoom.print(Teletype.dated(0, "DIAG: data channels connected and tested"));
+        divt.loadLibrary();
+        ttControlRoom.print(Teletype.dated(0, "CONSOLE READY"));
     }
 
     /** Start the operational set (configuration 2.0): both processors running. */
@@ -97,6 +132,12 @@ public final class SkalaComplex {
         if (!running) return;
         timeS += dt;
         dreg.tick(dt);
+
+        // The paper devices advance on their own clocks (the teletype prints
+        // symbol by symbol, ~10 s per line).
+        for (Teletype.Job j : Teletype.Job.values()) {
+            teletype(j).tick(dt);
+        }
 
         runDregScan(plant);
         runPeriodicPrograms(plant);
@@ -165,10 +206,14 @@ public final class SkalaComplex {
             if (Double.isNaN(v)) continue;
             scanned.put(s.code(), v);
             signalsScanned++;
-            if (kind == Instrumentation.Kind.CHANNEL_FLOW && v < 4.0) {
-                deviationsSeen++;
-                if (deviationsSeen == 1) {
-                    status.raiseMalfunction();
+            if (kind == Instrumentation.Kind.CHANNEL_FLOW) {
+                boolean low = v < 4.0;
+                boolean was = deviatingChannels.contains(s.code());
+                if (low && !was) {
+                    forceDeviation(s.code(), v);
+                } else if (!low && was) {
+                    deviatingChannels.remove(s.code());
+                    ttSetpoints.print(Teletype.deviation(timeS, false, s.code(), v, s.unit(), 0.0));
                 }
             }
         }
@@ -196,6 +241,19 @@ public final class SkalaComplex {
     /** The last value scanned for a code, or NaN. */
     public double lastScanned(String code) {
         return scanned.getOrDefault(code, Double.NaN);
+    }
+
+    /**
+     * Log a set-point deviation for a code as if the scan had found it. This is
+     * the single path by which a deviation reaches the paper, used both by the
+     * live scan and (for testing) directly.
+     */
+    public void forceDeviation(String code, double value) {
+        if (deviatingChannels.add(code)) {
+            deviationsSeen++;
+            ttSetpoints.print(Teletype.deviation(timeS, true, code, value, "kg/s", value - 5.0));
+            status.raiseMalfunction();
+        }
     }
 
     /** The tape drive whose job matches a program (1,2,3,4,5,6 indexing). */

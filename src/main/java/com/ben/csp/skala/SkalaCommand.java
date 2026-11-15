@@ -2,13 +2,16 @@ package com.ben.csp.skala;
 
 import com.ben.csp.rbmk.plant.PlantSystem;
 import com.ben.csp.rbmk.plant.PlantTicker;
+import com.ben.csp.skala.core.DivtConsole;
 import com.ben.csp.skala.core.DregRecorder;
+import com.ben.csp.skala.core.DrumPrinter;
 import com.ben.csp.skala.core.FunctionalGroup;
 import com.ben.csp.skala.core.RequestCode;
 import com.ben.csp.skala.core.SkalaComplex;
 import com.ben.csp.skala.core.SkalaProgram;
 import com.ben.csp.skala.core.SkalaTapeDrive;
 import com.ben.csp.skala.core.SkalaTicker;
+import com.ben.csp.skala.core.Teletype;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -39,6 +42,15 @@ public final class SkalaCommand {
             .then(CommandManager.literal("drives").executes(SkalaCommand::drives))
             .then(CommandManager.literal("groups").executes(SkalaCommand::groups))
             .then(CommandManager.literal("tape").executes(SkalaCommand::tape))
+            .then(CommandManager.literal("teletype")
+                .executes(ctx -> teletype(ctx, "control"))
+                .then(CommandManager.argument("job", StringArgumentType.word())
+                    .executes(ctx -> teletype(ctx, StringArgumentType.getString(ctx, "job")))))
+            .then(CommandManager.literal("print")
+                .executes(ctx -> print(ctx, "cartogram"))
+                .then(CommandManager.argument("what", StringArgumentType.word())
+                    .executes(ctx -> print(ctx, StringArgumentType.getString(ctx, "what")))))
+            .then(CommandManager.literal("divt").executes(SkalaCommand::divt))
             .then(CommandManager.literal("alarm")
                 .executes(ctx -> alarm(ctx, true))
                 .then(CommandManager.literal("off").executes(ctx -> alarm(ctx, false))))
@@ -122,6 +134,54 @@ public final class SkalaCommand {
                 e.processedAtS(), e.code(), e.type(), e.value(), e.unit(), e.note()));
         }
         feedback(ctx.getSource(), sb.toString().stripTrailing(), Formatting.WHITE);
+        return 1;
+    }
+
+    private static int teletype(CommandContext<ServerCommandSource> ctx, String job) {
+        SkalaComplex c = SkalaTicker.complex();
+        Teletype.Job j = switch (job.toLowerCase()) {
+            case "operator", "actions" -> Teletype.Job.OPERATOR_ACTIONS;
+            case "malfunctions", "faults" -> Teletype.Job.MALFUNCTIONS;
+            case "control", "controlroom" -> Teletype.Job.CONTROL_ROOM;
+            case "reserve" -> Teletype.Job.RESERVE;
+            default -> Teletype.Job.SETPOINTS;
+        };
+        Teletype tt = c.teletype(j);
+        StringBuilder sb = new StringBuilder("RDA-80 teletype [" + j + "] — "
+            + tt.paper().size() + " lines printed, " + tt.queued() + " queued (10 s/line):\n");
+        var paper = tt.paper();
+        int n = Math.min(12, paper.size());
+        for (int i = paper.size() - n; i < paper.size(); i++) {
+            sb.append("  ").append(paper.get(i).text()).append('\n');
+        }
+        if (paper.isEmpty()) {
+            sb.append("  (nothing printed yet — the head is still on its first line)\n");
+        }
+        feedback(ctx.getSource(), sb.toString().stripTrailing(), Formatting.WHITE);
+        return 1;
+    }
+
+    private static int print(CommandContext<ServerCommandSource> ctx, String what) {
+        SkalaComplex c = SkalaTicker.complex();
+        PlantSystem plant = PlantTicker.plant();
+        java.util.List<String> lines = switch (what.toLowerCase()) {
+            case "rods", "rodmap" -> c.drumPrinter(DrumPrinter.Unit.PARAMETERS).rodMap(c.signals());
+            case "deviations" -> c.drumPrinter(DrumPrinter.Unit.DEVIATIONS).cartogram(plant, c.signals());
+            default -> c.drumPrinter(DrumPrinter.Unit.PARAMETERS).cartogram(plant, c.signals());
+        };
+        feedback(ctx.getSource(), String.join("\n", lines), Formatting.WHITE);
+        return 1;
+    }
+
+    private static int divt(CommandContext<ServerCommandSource> ctx) {
+        SkalaComplex c = SkalaTicker.complex();
+        StringBuilder sb = new StringBuilder("DIVT console (chief computer engineer, computer room):\n");
+        sb.append("  library tape mounted: ").append(c.divt().tapeMounted())
+          .append(" (").append(c.divt().mountedTape()).append(")\n");
+        for (DivtConsole.PunchDevice d : DivtConsole.PunchDevice.values()) {
+            sb.append("  ").append(d.model).append(" — ").append(d.description).append('\n');
+        }
+        feedback(ctx.getSource(), sb.toString().stripTrailing(), Formatting.AQUA);
         return 1;
     }
 
