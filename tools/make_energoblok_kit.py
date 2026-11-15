@@ -28,85 +28,55 @@ FABRIC_JAR_NAME = "fabric-api-0.92.12+1.20.1.jar"
 OUT_DIR = "/workspace/serve_energoblok"
 ZIP_NAME = "Energoblok-Test-Kit.zip"
 
-README = r"""# Energoblok — the plant machines as real multiblocks. LOOK, don't just run.
+README = r"""# Energoblok — the RBMK-1000 plant, built and RUNNING. LOOK, don't just run.
 
-Ben — the turbines and pumps are no longer single textured cubes. They are real
-machines now, built from their real sizes and validated. You spawn on a glass
-platform; the row of specimen blocks is right in front of you, and the whole
-plant (core + equipment) is to your east.
+Ben — this world has the whole energoblok in it: the reactor core (stack + UBS +
+LBS + vessel), the seven sealed compartments and five islands, 4 steam separator
+drams, 2 turbogenerators, 2 condensers, 8 ГЦН pumps, 4 deaerators and the САОР
+accumulators — **585,307 blocks**, placed to the real counts.
+
+You spawn on a **glass viewing platform**. The plant is to your **north** (turn
+around / look for it, or `/tp 0 70 0`).
 
 **The world opens in creative mode with cheats ON** — fly (double-tap space),
-use `/gamemode creative`, `/tp`, anything you need. If it still opens in
-survival for you, run `/gamemode creative` yourself (cheats are already enabled).
+`/gamemode creative`, `/tp`, anything you need.
 
-## What to look at first (the specimen row, ~5 blocks ahead)
+## Run it (this is the point)
 
-In a line, so you can compare them side by side:
+    /rbmk plant start        # boot the core: time-dependent spatial flux, feedback CLOSED
+    /rbmk plant status       # watch it hold — power, k_eff, void, drums, turbines
 
-    turbine_cover     - the white cylinder cover. This is the thing you said must
-                        be white and circular: the K-500-65/3000 has FIVE of these
-                        (1 HP + 4 LP), and only they show in the hall.
-    generator         - the ТВВ-500 body, on the same shaft as the covers.
-    mcp_motor         - the ГЦН's 6 kV drive motor (grey, finned), above the pump.
-    turbine           - the casing block the foundation/shaft are made of.
-    mcp               - the pump body block.
-    steam_separator   - the drum shell block (2.8 m dia x 31 m).
-    *_controller      - the controller: the machine's brain. Stand on one and run
-                        /rbmk machine to see it validate its own shell.
+With the fix in this jar the core **holds**: expect `k_eff ~ 1.0000`, power ~0.99,
+void ~0.63, ~4 ms/step. That is the physics change (self-consistent axial seed);
+it is a *number* you read, not a thing you see.
 
-## What to look at second (the machines, to the east)
-
-Look east from the platform: two **turbogenerators**, each five white circular
-covers in a row plus the generator, on a foundation, with a condenser underneath.
-Around the core are the eight **ГЦН** — each a pump body with its motor on top —
-and the four steam **separator** drums (124 blocks long, 11 across).
-
-Every one of these is a **multiblock**: a casing of the right shape with a
-controller. Stand on any controller block and run:
-
-    /rbmk machine
-
-It reports "formed" only when the real casing is present, and "incomplete — N of
-M shell blocks missing" otherwise. The world builder places exactly the cells the
-validator checks, so a machine that reads "formed" really is the machine.
-
-## Field instruments (new): valves and flow meters
-
-The pipework now carries two working instruments, one bound to each fuel channel:
-
-    plant_valve   - a flow-control valve: the handwheel rises as it opens
-    plant_meter   - a ball flow meter: the float rises with the channel flow
-
-Both read the **running plant**, not a constant. Stand on one and run:
-
-    /rbmk instrument
-
-With no plant running they read "no plant". Run `/rbmk plant start` and they read
-live: the meter shows the channel flow (about 5.34 kg/s at full power), the valve
-shows its position. `/rbmk plant status` prints the whole plant — power, drum
-levels, pumps, feedwater, and how many channels are starving.
+    /rbmk plant scram        # AZ-5: watch the scram
+    /rbmk machine            # stand on a *_controller block to validate a machine's shell
+    /rbmk instrument         # stand on a valve / flow meter: reads the RUNNING plant
 
 ## What is NOT done yet (so you don't have to find it)
 
 - The exact K-500-65/3000 cylinder lengths and cover diameter are a block
-  approximation. The sources give the 39 m overall, the 5-cylinder count and the
-  Ду-1200 exhausts, not each cylinder's length — see docs/RBMK-MACHINE-GEOMETRY.md.
-- The machines are placed to their real size and count, but the hall's exact
-  placement (600 m machine hall, bay spacing) still needs the building drawings.
+  approximation (docs/RBMK-MACHINE-GEOMETRY.md).
+- The hall's exact placement (600 m machine hall, bay spacing) still needs the
+  building drawings.
+- The pipework, per-channel valves and meters are placed but the full pipe routing
+  (Phase D1) is not built.
+- The equipment register (docs/EQUIPMENT-REGISTER.md) is the honest list of what is
+  still only *named* rather than modelled — read it before deciding what is missing.
 
 ## What to tell me
 
-1. Do the five white covers read as the turbogenerator? Does the row look right?
-2. Does the ГЦН read as a pump with its motor on top?
-3. Does /rbmk machine read "formed" for you? (break a cover block and re-run — it
-   should say "incomplete — 1 of ...")
-4. fps (F3) — still the one number I cannot get.
+1. Does the plant start and HOLD for you? (paste `/rbmk plant status`)
+2. Do the machines read "formed" from their controllers?
+3. fps (F3) — still the one number I cannot get.
+4. The first three things that are wrong.
 
 ## Install
 - Minecraft Java 1.20.1 + Fabric Loader 1.20.1
 - both jars from mods/ into %appdata%\.minecraft\mods\
-- the world/ folder into %appdata%\.minecraft\saves\Energoblok-Machines\
-- open the world, you spawn on the platform looking at the specimen row
+- the world/ folder into %appdata%\.minecraft\saves\Energoblok-Test\
+- open the world, you spawn on the platform
 
 - built by an AI agent (OpenHands) on Ben's behalf.
 """

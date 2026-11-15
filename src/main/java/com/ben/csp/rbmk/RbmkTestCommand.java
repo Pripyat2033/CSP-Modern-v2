@@ -9,6 +9,7 @@ import com.ben.csp.prombaza.PrombazaRegistry;
 import com.ben.csp.prombaza.PrombazaState;
 import com.ben.csp.zone.ZoneState;
 import com.ben.csp.rbmk.plant.Condenser;
+import com.ben.csp.rbmk.plant.EquipmentRegister;
 import com.ben.csp.rbmk.plant.PlantPhysics;
 import com.ben.csp.rbmk.plant.PlantSystem;
 import com.ben.csp.rbmk.plant.MachineSpec;
@@ -123,7 +124,47 @@ public final class RbmkTestCommand {
                     .executes(ctx -> instrument(ctx,
                         net.minecraft.command.argument.BlockPosArgumentType.getBlockPos(ctx, "pos")))))
             .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine))
+            .then(CommandManager.literal("register").executes(RbmkTestCommand::register))
             .then(CommandManager.literal("openmc").executes(RbmkTestCommand::openmc)));
+    }
+
+    /**
+     * {@code /rbmk register} — the equipment register: the completeness gate. It
+     * prints how much of the energoblok a real operator would recognise is built,
+     * and names what is still only sourced. This is the machine-checkable form of
+     * "an item the Director did not name must not silently vanish".
+     */
+    private static int register(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        if (!EquipmentRegister.available()) {
+            feedback(s, "no equipment register resource found (equipment-register.json)",
+                Formatting.RED);
+            return 0;
+        }
+        feedback(s, "Energoblok equipment register (completeness gate)", Formatting.GOLD);
+        feedback(s, "  " + EquipmentRegister.summary(), Formatting.WHITE);
+        feedback(s, "  systems: " + String.join(", ", EquipmentRegister.systems()),
+            Formatting.GRAY);
+        feedback(s, String.format("  modelled (%d):", EquipmentRegister.modelled().size()),
+            Formatting.GREEN);
+        for (EquipmentRegister.Item it : EquipmentRegister.modelled()) {
+            feedback(s, "    · " + it.nameEn(), Formatting.GRAY);
+        }
+        feedback(s, String.format("  named-only, not yet built (%d):",
+            EquipmentRegister.namedOnly().size()), Formatting.YELLOW);
+        for (EquipmentRegister.Item it : EquipmentRegister.namedOnly()) {
+            feedback(s, String.format("    · %s [%s]", it.nameEn(), it.source()),
+                Formatting.GRAY);
+        }
+        List<EquipmentRegister.Item> unsourced = EquipmentRegister.unsourced();
+        if (!unsourced.isEmpty()) {
+            feedback(s, String.format("  UNSOURCED — must be resolved (%d):",
+                unsourced.size()), Formatting.RED);
+            for (EquipmentRegister.Item it : unsourced) {
+                feedback(s, "    · " + it.nameEn(), Formatting.RED);
+            }
+        }
+        return 1;
     }
 
     /**
