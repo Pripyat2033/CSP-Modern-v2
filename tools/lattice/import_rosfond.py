@@ -27,6 +27,7 @@ import argparse
 import glob
 import io
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -39,7 +40,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 NUCLIDES = {
     "U235": 92235, "U238": 92238, "U234": 92234, "U236": 92236,
     "Pu239": 94239, "Pu240": 94240, "Pu241": 94241,
-    "O16": 8016, "H1": 1001, "C12": 6012, "C13": 6013, "N14": 7014,
+    "O16": 8016, "H1": 1001, "Cnat": 6000, "N14": 7014,
     "Zr90": 40090, "Zr91": 40091, "Zr92": 40092, "Zr94": 40094, "Zr96": 40096,
     "Nb93": 41093, "B10": 5010, "B11": 5011, "Fe56": 26056, "Ni58": 28058,
     "Cr52": 24052, "Gd155": 64155, "Gd157": 64157, "Er166": 68166, "Er167": 68167,
@@ -47,17 +48,21 @@ NUCLIDES = {
 }
 ZA_TO_LABEL = {za: label for label, za in NUCLIDES.items()}
 
-# ROSFOND ships natural carbon as one file (ZA 6000), not as C-12 (ZA 6012).
-# Graphite is natural carbon, so 6000 is the correct source for the "C12" slot;
-# the label stays "C12" because that is the name the downstream converters and the
-# lattice model use. Without this alias the carbon slot reports missing even
-# though the library has it.
-ZA_TO_LABEL[6000] = "C12"
+# The moderator is graphite, i.e. NATURAL carbon. ROSFOND ships it as one
+# evaluation (ZA 6000) that already contains C-12 and C-13; it does not ship a
+# usable C-13 (its C-13 file has no elastic scattering). So the carbon slot is
+# natural carbon, and the model composes the moderator from this single nuclide
+# rather than an artificial C-12 + C-13 split.
 
 
 def _endf_float(field: str) -> float:
-    """Parse an ENDF-6 float such as ' 2.906300+4' (implicit exponent, no 'e')."""
-    s = field.strip()
+    """Parse an ENDF-6 float such as ' 2.906300+4' (implicit exponent, no 'e').
+
+    ROSFOND also emits the exponent with an embedded space, e.g. '2.60560+ 4'
+    (= 2.60560e+4). The space is removed before the sign is located, so both
+    forms parse.
+    """
+    s = field.strip().replace(" ", "")
     for i in range(len(s) - 1, 0, -1):
         if s[i] in "+-":
             s = s[:i] + "e" + s[i:]
@@ -131,7 +136,7 @@ def main() -> int:
     if not os.path.exists(args.src):
         sys.exit(f"not found: {args.src}")
 
-    found: dict[str, str] = {}          # label -> source name
+    found: dict[str, str] = {}          # label -> source name (chosen)
     for name, text in _iter_candidates(args.src):
         za = head_za(text)
         if za is None:
@@ -139,8 +144,15 @@ def main() -> int:
         label = ZA_TO_LABEL.get(za)
         if label is None:
             continue
+        # A metastable isomer shares its ZA with the ground state (Nb-93M and
+        # Nb-93 are both 41093), and ROSFOND marks the isomer with 'M' after the
+        # mass in the file name. Prefer the ground state: keep an existing match
+        # unless this file is the ground state and the existing one is an isomer.
+        is_isomer = bool(re.search(r"-\d+M\b", os.path.basename(name), re.IGNORECASE))
         if label in found:
-            continue
+            was_isomer = bool(re.search(r"-\d+M\b", os.path.basename(found[label]), re.IGNORECASE))
+            if not (was_isomer and not is_isomer):
+                continue
         found[label] = name
         if not args.list:
             os.makedirs(args.out, exist_ok=True)

@@ -46,7 +46,8 @@ EU = BOUNDS[::-1][1:]        # EU[g] = upper energy bound of array group g
 NUBAR = {"U235": 2.4367, "U238": 2.4930, "Pu239": 2.8766, "Pu241": 2.9345}
 # nuclide -> mass number, for the elastic kinematics of the transfer kernel
 MASS = {"U235": 235.0, "U238": 238.0, "O16": 16.0, "Zr90": 90.0,
-        "C12": 12.0, "C13": 13.0, "H1": 1.0, "Pu239": 239.0, "Pu241": 241.0,
+        "C12": 12.0, "C13": 13.0, "Cnat": 12.011, "H1": 1.0,
+        "Pu239": 239.0, "Pu241": 241.0,
         "B10": 10.0, "B11": 11.0, "Fe56": 56.0, "Ni58": 58.0, "Cr52": 52.0,
         "Gd155": 155.0, "Gd157": 157.0, "Er166": 166.0, "Er167": 167.0,
         "Nb93": 93.0, "N14": 14.0, "He4": 4.0}
@@ -177,13 +178,13 @@ def build_zones(flux_weight, void_fraction, fuel_temp_c=600.0):
     nd, A = cell.number_densities(void_fraction, fuel_temp_c)
     sig_pot = 10.0
     nd_u = nd["U238"] + nd["U235"]
-    sigma0 = max((1 - cell.dancoff()) * sig_pot * (nd["C12"] + 0.3 * nd["O16"]) / max(nd_u, 1e-9), 1.0)
+    sigma0 = max((1 - cell.dancoff()) * sig_pot * (nd["C"] + 0.3 * nd["O16"]) / max(nd_u, 1e-9), 1.0)
 
     zones = {
         "fuel":  [("U235", nd["U235"], True), ("U238", nd["U238"], True), ("O16", nd["O16"], False)],
         "clad":  [("Zr90", nd["Zr"] * 0.5145, False)],
         "tube":  [("Zr90", nd["Zr"] * 0.5145, False)],
-        "graph": [("C12", nd["C12"], False), ("C13", nd["C13"], False)],
+        "graph": cell.carbon_spec(nd["C"]),
         "cool":  [("H1", nd["H1"], False), ("O16", nd["O16_w"], False)],
     }
     zone_out = {z: mixture_macros(spec_, flux_weight, sigma0) for z, spec_ in zones.items()}

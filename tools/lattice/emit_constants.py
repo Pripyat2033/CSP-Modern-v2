@@ -17,6 +17,7 @@ import os
 import numpy as np
 
 import endf
+import rbmk_cell as cell
 import rbmk_cell1d as c1d
 import rbmk_spectrum as spectrum
 import sources
@@ -53,11 +54,15 @@ def control_constants(flux, geom):
     """
     n_c = 1.65 / 12.011 * 6.022e23 / 1e24          # graphite, 1.65 g/cm^3
     n_b4c = 2.52 / (4 * 10.811 + 12.011) * 6.022e23 / 1e24   # B4C, 2.52 g/cm^3
+    # graphite and B4C both contain carbon; use the same moderator treatment as
+    # the cell (natural carbon where the library ships it, isotopes otherwise).
+    carbon = cell.carbon_spec(1.0)                 # unit density; scaled per use
+    def scaled(scale):
+        return [(lab, dens * scale, shield) for lab, dens, shield in carbon]
     mixtures = {
-        "graphite": [("C12", n_c, False)],
+        "graphite": scaled(n_c),
         "b4c": [("B10", 0.199 * 4 * n_b4c, False),
-                ("B11", 0.801 * 4 * n_b4c, False),
-                ("C12", n_b4c, False)],
+                ("B11", 0.801 * 4 * n_b4c, False)] + scaled(n_b4c),
     }
     r, _, _, _, _, _, _, V, _ = geom
     n_nodes = len(V)

@@ -41,10 +41,24 @@ SOURCES = {
 
 DEFAULT = "endf"
 
+_active: str | None = None
+
 
 def get(name: str | None) -> Source:
-    """Resolve a source by name, or from LATTICE_SOURCE, or the default."""
-    key = (name or os.environ.get("LATTICE_SOURCE") or DEFAULT).strip().lower()
+    """Resolve a source by name, or from LATTICE_SOURCE, or the default.
+
+    Naming a source explicitly also makes it the ACTIVE source, so that
+    ``endf.load()`` (which has no source argument) reads the same library the
+    caller asked for. Without this, ``--source rosfond`` would select the cache
+    only where the return value is used and every cross-section lookup would
+    silently fall back to the default library.
+    """
+    global _active
+    if name is None:
+        key = (os.environ.get("LATTICE_SOURCE") or _active or DEFAULT).strip().lower()
+    else:
+        key = name.strip().lower()
+        _active = key
     if key not in SOURCES:
         raise SystemExit(f"unknown source '{key}' (have: {', '.join(SOURCES)})")
     return SOURCES[key]

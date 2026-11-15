@@ -26,6 +26,8 @@ Units: energy eV, cross section barns, length cm, density g/cm^3.
 """
 from __future__ import annotations
 
+import os
+
 import numpy as np
 
 import endf
@@ -81,10 +83,8 @@ def number_densities(void_fraction, fuel_temp_c=600.0):
     # clad + tube: Zr-2.5%Nb, 6.56 g/cm^3
     n_zr = 6.56 / 91.22 * AVOG / 1e24
     nd["Zr"] = n_zr
-    # graphite: 1.65 g/cm^3
-    n_c = 1.65 / 12.011 * AVOG / 1e24
-    nd["C12"] = n_c * 0.9893
-    nd["C13"] = n_c * 0.0107
+    # graphite: 1.65 g/cm^3 — the moderator is NATURAL carbon (see carbon_spec)
+    nd["C"] = 1.65 / 12.011 * AVOG / 1e24
     # water: liquid 0.75 g/cm^3, steam ~0.036 g/cm^3 at 7 MPa/284 C
     rho_liq, rho_steam = 0.75, 0.036
     rho_w = rho_liq * (1 - void_fraction) + rho_steam * void_fraction
@@ -108,6 +108,27 @@ def dancoff():
     layout; see docs/RBMK-CORE-GEOMETRY.md."""
     return 0.60
 
+
+def carbon_spec(n_c):
+    """The moderator, as a list of (label, atom density, shield) for graphite.
+
+    Graphite is NATURAL carbon. Libraries differ in how they ship it, and both
+    descriptions are the same physical moderator:
+
+      * ROSFOND ships natural carbon as ONE evaluation (ZA 6000) that already
+        contains C-12 and C-13. Its separate C-13 file carries no elastic
+        scattering, so the isotopic split cannot be built from ROSFOND at all.
+      * ENDF/B-VIII.0 ships the isotopes separately (C-12, C-13), each complete.
+
+    So the moderator is taken as natural carbon when the library has it, and as
+    the isotopic split otherwise. The switch is on which files are present, not
+    on the source name, so a new library is handled without a code change.
+    """
+    if endf.available("Cnat"):
+        return [("Cnat", n_c, False)]
+    # natural carbon: 98.93 at.% C-12, 1.07 at.% C-13
+    return [("C12", n_c * 0.9893, False), ("C13", n_c * 0.0107, False)]
+
 def group_xs(label, mt, sigma0=None):
     """Flux-weighted group cross sections for one nuclide/reaction."""
     xs = lib(label, mt)
@@ -126,7 +147,7 @@ def build_macroscopic(void_fraction, fuel_temp_c=600.0):
     sig_pot = 10.0                                     # barns, U-238 potential
     nd_u = (nd["U238"] + nd["U235"])                   # /barn-cm
     # escape from the lump: sigma0 = (1-C) * N_potential_scatter / N_U
-    sigma0 = (1 - dancoff()) * sig_pot * (nd["C12"] + nd["O16"] * 0.3) / max(nd_u, 1e-9)
+    sigma0 = (1 - dancoff()) * sig_pot * (nd["C"] + nd["O16"] * 0.3) / max(nd_u, 1e-9)
     sigma0 = max(sigma0, 1.0)
 
     zones = {}
@@ -154,7 +175,9 @@ def build_macroscopic(void_fraction, fuel_temp_c=600.0):
     add(fuel, "O16", nd["O16"])
     clad = newzone(); add(clad, "Zr", nd["Zr"])
     tube = newzone(); add(tube, "Zr", nd["Zr"])
-    graph = newzone(); add(graph, "C12", nd["C12"]); add(graph, "C13", nd["C13"])
+    graph = newzone()
+    for label, dens, shield in carbon_spec(nd["C"]):
+        add(graph, label, dens, shield)
     cool = newzone(); add(cool, "H1", nd["H1"]); add(cool, "O16", nd["O16_w"])
 
     # volume-weighted homogenisation to the cell

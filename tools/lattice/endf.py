@@ -54,6 +54,11 @@ def load(label: str, mt: int):
     return Xs(np.asarray(d["energy"], dtype=float), np.asarray(d["cross section"], dtype=float))
 
 
+def available(label: str) -> bool:
+    """True if the active library cached the nuclide's total cross section."""
+    return os.path.exists(os.path.join(cache_dir(), f"{label}_{MT_TOTAL}.json"))
+
+
 def group_average(xs, bounds, weight):
     """Flux-weighted average of xs over each energy group.
 
