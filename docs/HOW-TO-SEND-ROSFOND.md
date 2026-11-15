@@ -13,24 +13,36 @@ public exposure.
 
 ## The facts (verified 2026-11-15)
 
-- `GITHUB_TOKEN` here = GitHub account **`Pripyat2033`** (yours).
-- It can **read private repos** (`granichny-vri`, `Ant_Warz` both resolve).
-- It **cannot create** a new repo (returns 403 "Resource not accessible"), so
+- The sandbox token is a **GitHub App** token: app **`openhands-ai`**, prefix
+  **`ghu_`**, installation id 172670240, `repository_selection: selected`.
+- **It is scoped to only the repos granted to the OpenHands app**: verified
+  `CSP-Modern-v2`, `granichny-vri`, `Ant_Warz`. A new repo returns **404** to the
+  agent until it is added to the app.
+- So the fix is **one click in the OpenHands GitHub App**, not a new tool:
+  **github.com/settings/installations → OpenHands → Configure → Repository
+  access → select the new repo (or "All repositories") → Save.**
+- It **cannot create** a repo (403 "Resource not accessible by integration"), so
   **you** create the staging repo; I read from it.
 - **`CSP-Modern-v2` is PUBLIC** — do not put the data there.
-- The sandbox **can reach the internet** (GitHub, PyPI reachable), but **cannot
-  reach your PC** and **cannot download ROSFOND** (IPPE/Rosatom/IAEA/OECD-NEA all
-  403 or unreachable).
+- The sandbox **can reach the internet** (GitHub, PyPI, and file hosts such as
+  catbox/pixeldrain/dropbox/gofile all reachable), but **cannot reach your PC** and
+  **cannot download ROSFOND** (IPPE/Rosatom/IAEA/OECD-NEA all 403 or unreachable).
 
 ---
 
 ## Route 1 — private repo, whole folder (simplest)
 
+**First, grant the agent access to the repo** (one click, see "facts" above):
+`github.com/settings/installations → OpenHands → Configure → Repository access →
+add your staging repo → Save`. Without this the agent gets a 404.
+
 1. On GitHub, create a **new private repository**, e.g. **`rosfond-2010`**.
    (Do **not** initialise it with a README — keeps it clean.)
-2. Open it, click **Add file → Upload files**.
-3. Drag in the needed `.zip` files from
-   `C:\Users\Ben\Downloads\ROSFOND-2010_n_MAT\` (list below), then **Commit**.
+2. **Do NOT upload 686 files.** Right-click `ROSFOND-2010_n_MAT` in Windows →
+   **Send to → Compressed (zipped) folder**. You now have one file, e.g.
+   `ROSFOND-2010_n_MAT.zip`.
+3. In the repo: **Add file → Upload files**, drag in that **one zip**, **Commit**.
+   (If the zip exceeds GitHub's **100 MB** web-upload limit, use **Route 2**.)
 4. Tell me the repo name. I then run:
 
 ```bash
@@ -40,21 +52,27 @@ python3 tools/lattice/fetch_rosfond.py          # build the cache
 python3 tools/lattice/emit_constants.py --source rosfond
 ```
 
-If you upload the **entire** `ROSFOND-2010_n_MAT` folder instead, step 4 is
-identical — `import_rosfond.py` reads a directory of zips recursively and picks
-out the 28 it needs.
+`import_rosfond.py` unpacks the zip in memory and picks out the 28 it needs — the
+other 658 files are simply ignored. (It also reads a directory of zips
+recursively, so uploading the unzipped folder works too.)
 
-## Route 2 — private repo, release asset (best for a large single archive)
+## Route 2 — private repo, release asset (best for a large archive)
 
-If you would rather zip the whole library into one file, create the private repo
-as above, then **Releases → Draft a new release → attach the archive → Publish**.
-Tell me the repo and tag; I download the asset with `gh release download`.
+If the single zip is over 100 MB, don't use **Upload files** — use a **release**,
+which allows **2 GB per file**:
 
-## Route 3 — you run it on your WSL2
+1. Grant the app access as in Route 1, and create the private repo.
+2. **Releases → Draft a new release** → give it a tag (e.g. `v1`) → drag the zip
+   into the **"Attach binaries"** box → **Publish release**.
+3. Tell me the repo and tag. I run `gh release download <tag> -R Pripyat2033/<repo>`
+   and then the same three pipeline commands.
 
-If you prefer not to hand the data over at all, run the same four commands inside
-your own WSL2 (commands in `docs/OPENMC-WINDOWS-WSL.md`). The result is a
-`rbmk_lattice.json` you can commit yourself. I cannot see or verify it directly.
+## Route 3 — a file-sharing link (no repo at all)
+
+If you would rather not use GitHub, any host works: upload the single zip to
+**catbox.moe** (up to 200 MB), **pixeldrain.com**, **gofile.io** or **Dropbox**,
+and paste me the **direct link**. All four are reachable from the sandbox. Prefer a
+service with a delete button, and delete the file once I confirm the import.
 
 ---
 
