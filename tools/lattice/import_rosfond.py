@@ -47,6 +47,13 @@ NUCLIDES = {
 }
 ZA_TO_LABEL = {za: label for label, za in NUCLIDES.items()}
 
+# ROSFOND ships natural carbon as one file (ZA 6000), not as C-12 (ZA 6012).
+# Graphite is natural carbon, so 6000 is the correct source for the "C12" slot;
+# the label stays "C12" because that is the name the downstream converters and the
+# lattice model use. Without this alias the carbon slot reports missing even
+# though the library has it.
+ZA_TO_LABEL[6000] = "C12"
+
 
 def _endf_float(field: str) -> float:
     """Parse an ENDF-6 float such as ' 2.906300+4' (implicit exponent, no 'e')."""

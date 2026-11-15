@@ -1,0 +1,35 @@
+ROSFOND-2010 - the ONLY 28 files the lattice needs
+(from C:\Users\Ben\Downloads\ROSFOND-2010_n_MAT\ )
+Select just these 28, then drag them into GitHub's uploader (no zip needed).
+
+n_0101_1-H-1.zip
+n_0204_2-He-4.zip
+n_0510_5-B-10.zip
+n_0511_5-B-11.zip
+n_0600_6-C-0.zip
+n_0613_6-C-13.zip
+n_0714_7-N-14.zip
+n_0816_8-O-16.zip
+n_2452_24-Cr-52.zip
+n_2656_26-FE-56.zip
+n_2858_28-Ni-58.zip
+n_4090_40-Zr-90.zip
+n_4091_40-Zr-91.zip
+n_4092_40-Zr-92.zip
+n_4094_40-Zr-94.zip
+n_4096_40-Zr-96.zip
+n_4193_41-Nb-93.zip
+n_6455_64-Gd-155.zip
+n_6457_64-Gd-157.zip
+n_6866_68-Er-166.zip
+n_6867_68-Er-167.zip
+n_9234_92-U-234.zip
+n_9235_92-U-235.zip
+n_9236_92-U-236.zip
+n_9238_92-U-238.zip
+n_9439_94-Pu-239.zip
+n_9440_94-Pu-240.zip
+n_9441_94-Pu-241.zip
+
+That is 28 files. The other 658 in the library are ignored.
+C12 uses natural carbon n_0600_6-C-0.zip (the library has no C-12 file).
