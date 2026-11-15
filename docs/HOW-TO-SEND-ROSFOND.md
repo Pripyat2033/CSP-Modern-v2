@@ -56,16 +56,39 @@ python3 tools/lattice/emit_constants.py --source rosfond
 other 658 files are simply ignored. (It also reads a directory of zips
 recursively, so uploading the unzipped folder works too.)
 
-## Route 2 — private repo, release asset (best for a large archive)
+## Route 2 — release asset (THIS is the answer for a big archive)
 
-If the single zip is over 100 MB, don't use **Upload files** — use a **release**,
-which allows **2 GB per file**:
+GitHub's **web uploader caps at 100 MB per file** and **git push blocks files over
+100 MB**, which is why a single big zip fails. A **release asset allows 2 GB per
+file** — so this is the way to send the whole library if you want to.
 
-1. Grant the app access as in Route 1, and create the private repo.
-2. **Releases → Draft a new release** → give it a tag (e.g. `v1`) → drag the zip
-   into the **"Attach binaries"** box → **Publish release**.
-3. Tell me the repo and tag. I run `gh release download <tag> -R Pripyat2033/<repo>`
-   and then the same three pipeline commands.
+1. Create the private repo, and grant the app access (see "facts").
+2. **Releases → Draft a new release** → tag e.g. `v1` → drag the zip into the
+   **"Attach binaries"** box → **Publish release**.
+3. Tell me the repo and tag. I run:
+
+```bash
+gh release download v1 -R Pripyat2033/<repo> -D /tmp/rosfond
+```
+
+then the same three pipeline commands as Route 1.
+
+## Route 2b — upload the folder (no zip at all)
+
+If you want everything in the repo rather than a release, **do not zip it** — drag
+the **folder** in. The web uploader takes ~100 files per drop, so it is 7 drops for
+686; **GitHub Desktop** does the whole folder in one commit. Each individual
+isotope zip is far under 100 MB, so nothing is blocked. (The repo would be roughly
+0.5–1 GB — under GitHub's 1 GB recommendation, but big. A release asset is tidier.)
+
+## Do you need all 686? — no, and here is the honest reason
+
+The **28** are what the lattice cell needs *today*. The other 658 are **fission
+products and minor actinides** — Cs, I, Xe, Ba, Sr, the transuranics — which are
+needed for a *different* stage that does not exist yet: **fuel burn-up, decay heat,
+and the radiation field** (the "radiation" signal family). Ben's instinct to keep
+the whole inventory is **correct for that stage** — bring it in when we build it.
+Uploading all 686 now buys nothing today and costs bandwidth and repo space.
 
 ## Route 3 — a file-sharing link (no repo at all)
 
