@@ -2,17 +2,20 @@ package com.ben.csp.rbmk.physics;
 
 /**
  * The reactor core as the plant sees it: one object that evolves in time and
- * reports its state. Two implementations exist:
+ * reports its state. Three implementations exist:
  *
  * <ul>
+ *   <li>{@link UnifiedReactorCore} — <b>the core.</b> The time-dependent spatial
+ *       flux (the state itself) with the void / temperature / xenon feedback loop
+ *       CLOSED. This is what {@code /rbmk plant start} runs;</li>
  *   <li>{@link ReactorCore} — the lumped point-kinetics core: fast, spatially
- *       averaged, good for a quick run and for the accident-sequence tests;</li>
- *   <li>{@link SpatialReactorCore} — the same reaction driven by the full 3D
- *       two-group diffusion solver: the flux is resolved over the real lattice
- *       every tick, which is what "simulating an RBMK-1000 in full 3D" means.</li>
+ *       averaged, still used by {@code /rbmk stress} and the accident-sequence
+ *       tests;</li>
+ *   <li>{@link SpatialReactorCore} — a 3D static eigenvalue feeding a lumped
+ *       amplitude, kept for comparison ({@code /rbmk plant start 3d}).</li>
  * </ul>
  *
- * <p>Both expose the same state, so the plant, the commands and the status read
+ * <p>All expose the same state, so the plant, the commands and the status read
  * are identical whichever core is running.
  */
 public interface ReactorModel {

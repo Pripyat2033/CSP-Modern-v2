@@ -140,3 +140,49 @@ retired. **The accurate one is the spatial one — specifically the time-depende
 solver, once its feedback loop is closed — and the default you have been testing
 (the lumped `ReactorCore`) is the least accurate.** Collapse to one; the rest
 requires your say-so to remove.
+
+---
+
+## 6. DONE — the unified core exists (2026-11-12)
+
+`UnifiedReactorCore` (`physics/UnifiedReactorCore.java`) is the one core. It is
+the plan of §4, executed: the time-dependent flux is the state
+(`RbmkTransientSolver`), the void / fuel / graphite / xenon feedbacks are CLOSED
+(each step computes them from the power and feeds them back through
+`RbmkXsec.fuelCell`), and `/rbmk plant start` now selects it.
+
+Two real bugs were found and fixed on the way, both in `RbmkTransientSolver`:
+
+1. **The diffusion term was missing the mesh scale `1/h²`.** `RbmkSolver3D` carries
+   `INV_H2 = 1/(25 cm)²`; the transient solver did not, so its leakage was
+   **h² = 625× too strong** and the flux collapsed. Symptom: power fell −29 % to
+   −99 % in 10 s at a frozen state, *worse* with more sweeps. This is why the old
+   `TransientReactorCore` never looked right.
+2. **The static shape is not the time operator's fixed point.** Copying
+   `RbmkSolver3D`'s eigenfunction seeds a shape that decays ~0.5 %/10 s, because
+   the two discretisations differ by ~0.6 % in k. `seedCritical()` now iterates
+   (settle the shape under the transient operator) × (rescale the source to
+   balance = 1.0) to that operator's own fixed point. Hold drift is now ~1.3 %/30 s.
+   The seed is an initial *shape* only; a loose static solve (400 iters) is enough,
+   which keeps construction at ~4 s (the previous cores were also multi-second).
+
+`UnifiedReactorCoreSelfTest` (6 checks, all pass):
+
+| check | result |
+|---|---|
+| holds nominal power (30 s) | 1.013 (1.3 %) |
+| rod withdrawal 0.80→0.70 RAISES power | 1.001 → 2.082 |
+| AZ-5 shuts fission down | 0.144 |
+| **void coefficient POSITIVE** (k vs void) | +0.0343 (0.0→0.4) |
+| **scram POSITIVE at low insertion** (graphite displacer) | +0.0197 (ins 0.0→0.2) |
+| decay-heat floor after scram | total 0.199 |
+
+The last two are the point. **Both mechanisms are DERIVED from the geometry and
+the evaluated cross sections, not fitted.** The lumped core could only assert them
+from a hand-set curve; this core produces them, so it can be wrong in the right
+way. This is what "physics drives the reactor, not code" means here.
+
+**Still open:** `ReactorCore` and `SpatialReactorCore` are NOT removed (ZERO
+DELETION POLICY — they stay until the Director confirms). They are no longer
+reachable from `/rbmk plant start`, but `/rbmk plant start 3d` and `spatial` still
+run them for comparison, and `/rbmk stress` still uses the lumped core.

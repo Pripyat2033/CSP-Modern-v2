@@ -616,9 +616,13 @@ public final class RbmkTestCommand {
     }
     private static int plantStart(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource s = ctx.getSource();
+        long t0 = System.nanoTime();
         PlantTicker.startPlant();
-        feedback(s, "RBMK-1000 plant started: rods on auto-regulator, plant running live",
-            Formatting.GOLD);
+        double bootMs = (System.nanoTime() - t0) / 1e6;
+        feedback(s, "RBMK-1000 plant started on THE core: time-dependent spatial flux, "
+            + "feedback loop CLOSED", Formatting.GOLD);
+        feedback(s, String.format("  flux is the state; void, temperature and xenon feed back "
+            + "through the cross sections (boot %.0f ms)", bootMs), Formatting.WHITE);
         feedback(s, "  watch it hold — or fail to — with /rbmk plant status", Formatting.GRAY);
         return 1;
     }
@@ -707,6 +711,15 @@ public final class RbmkTestCommand {
             feedback(s, String.format("  3D solver: k_eff %.5f, %.1f ms/tick "
                 + "(1 outer iteration over %d nodes)",
                 sp.keff(), sp.lastSolveMs(), sp.solver().activeNodes()), Formatting.WHITE);
+        }
+        if (p.core() instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore uc) {
+            feedback(s, String.format("  THE core:  k_eff %.5f, void %.3f, fuel %.0f C, "
+                + "xenon %.2f, %.1f ms/step, %.2fx real time",
+                uc.keff(), uc.voidFraction(), uc.fuelTempC(), uc.xenonRatio(),
+                uc.lastStepMs(), uc.realTimeFactor()), Formatting.WHITE);
+            feedback(s, String.format("  physics clock: %.1f s simulated on its own thread "
+                + "(flux is the state; feedback loop CLOSED)", uc.simSeconds()),
+                Formatting.WHITE);
         }
         if (p.core() instanceof com.ben.csp.rbmk.physics.TransientReactorCore tc) {
             feedback(s, String.format("  spatial core: flux %s, peak %.3f, "

@@ -43,11 +43,19 @@ public final class RbmkTransientSolver {
     /** Six delayed-neutron precursor concentrations, per node. */
     private final double[][] precursor = new double[DelayedNeutrons.GROUPS][];
 
+    /** 1/h^2 for the mesh pitch (one lattice cell), cm^-2 — the diffusion mesh scale. */
+    private static final double INV_H2 =
+        1.0 / Math.pow(RbmkGeometry.LATTICE_PITCH_M * 100.0, 2.0);
+
     private double nsfScale = 1.0;      // scaled so the initial state is critical
     private double lastStepMs;
 
     /** Rod insertion of the reference critical state (matches the other cores). */
     public static final double NOMINAL_INSERTION = 0.80;
+    /** Coolant void fraction of the reference critical state (matches the others). */
+    public static final double NOMINAL_VOID = 0.05;
+    /** Fuel temperature of the reference critical state, degrees C. */
+    public static final double NOMINAL_FUEL_C = 640.0;
 
     public RbmkTransientSolver() {
         this.ext = (int) Math.ceil(RbmkGeometry.CHANNEL_REGION_DIAMETER_CELLS / 2.0);
@@ -106,32 +114,39 @@ public final class RbmkTransientSolver {
     }
 
     /**
-     * Find the static critical flux with {@link RbmkSolver3D} at the current state,
-     * copy it in as the initial flux, scale the fission source so it is exactly
-     * critical, and set the precursors to equilibrium.
+     * Seed the transient solver to its OWN critical fixed point at the reference
+     * operating point.
+     *
+     * <p>It is not enough to copy the static ({@link RbmkSolver3D}) flux shape: the
+     * static eigenfunction and the time-dependent operator's fixed point differ by a
+     * small discretization amount (~0.6 % in k), so a shape borrowed from the static
+     * solve decays instead of holding. This calibrates the pair (shape, fission
+     * source scale) so that the transient operator itself is stationary: it repeatedly
+     * (a) settles the shape under the operator at the frozen state, and (b) rescales
+     * the fission source so the neutron-balance eigenvalue is exactly 1.0. The two
+     * converge together to the operator's true fixed point.
      */
     public void seedCritical() {
-        setCoreState(0.0, 300.0);
+        setCoreState(NOMINAL_VOID, NOMINAL_FUEL_C);
         setRodInsertion(NOMINAL_INSERTION);
+
+        // Start from the static solve — only an initial SHAPE; the calibration loop
+        // below converges it, so a loose solve is enough and saves ~2 s of boot.
         RbmkSolver3D stat = new RbmkSolver3D();
         stat.setOmega(RbmkSolver3D.SAFE_OMEGA);
         stat.setInnerSweeps(3);
-        stat.setCoreState(0.0, 300.0);
+        stat.setCoreState(NOMINAL_VOID, NOMINAL_FUEL_C);
         stat.setRodInsertion(NOMINAL_INSERTION);
-        stat.solve(600, 1e-7);
+        stat.solve(400, 1e-7);
         double k = stat.keff();
-        // Guard: a non-physical k (diverged solve) must never be used to scale the
-        // fission source — a negative k would seed a negative, unphysical flux.
         if (stat.diverged() || !(k > 0) || !Double.isFinite(k)) {
             throw new IllegalStateException(
                 "seedCritical: static solve did not converge to a physical k_eff (k="
                     + k + "); refusing to scale the fission source");
         }
         nsfScale = 1.0 / k;
-        // copy the shape
         System.arraycopy(stat.phi1, 0, phi1, 0, phi1.length);
         System.arraycopy(stat.phi2, 0, phi2, 0, phi2.length);
-        // normalise to unit mean fission over active nodes
         double mean = meanFission();
         if (mean > 0) {
             for (int i = 0; i < phi1.length; i++) {
@@ -139,7 +154,40 @@ public final class RbmkTransientSolver {
                 phi2[i] /= mean;
             }
         }
-        // precursors at equilibrium: C_k = beta_k Sf / lam_k
+
+        // Iterate (shape, source scale) to the transient operator's own fixed point.
+        // The state is frozen at the operating point throughout, so the only thing
+        // moving is the flux shape and the source scale. A coarse step is used: the
+        // fixed point is step-size independent, and this runs once at construction.
+        final double calDt = 0.1;
+        for (int round = 0; round < 4; round++) {
+            for (int i = 0; i < phi1.length; i++) {
+                if (!active[i]) {
+                    continue;
+                }
+                double sf = fission(i);
+                for (int g = 0; g < DelayedNeutrons.GROUPS; g++) {
+                    precursor[g][i] = DelayedNeutrons.beta(g) * sf / DelayedNeutrons.LAMBDA[g];
+                }
+            }
+            for (int step = 0; step < 250; step++) {
+                step(calDt, 2);
+            }
+            double bal = balanceKeff();
+            if (bal > 0 && Double.isFinite(bal)) {
+                nsfScale /= bal;
+            }
+        }
+
+        // Renormalise to unit mean fission and reset the precursors to equilibrium,
+        // so t=0 is exactly the critical reference state with a physical flux scale.
+        double m2 = meanFission();
+        if (m2 > 0) {
+            for (int i = 0; i < phi1.length; i++) {
+                phi1[i] /= m2;
+                phi2[i] /= m2;
+            }
+        }
         for (int i = 0; i < phi1.length; i++) {
             if (!active[i]) {
                 continue;
@@ -190,16 +238,16 @@ public final class RbmkTransientSolver {
                         double sf1 = xs.nsf1() * phi1[i] + xs.nsf2() * phi2[i];
                         double nsf1s = nsfScale * xs.nsf1();
                         double nsf2s = nsfScale * xs.nsf2();
-                        double a1 = 1.0 + c * (xs.sr1() - (1 - beta) * nsf1s) + c * xs.d1() * nb;
-                        double b1 = c * xs.d1();
+                        double a1 = 1.0 + c * (xs.sr1() - (1 - beta) * nsf1s) + c * xs.d1() * INV_H2 * nb;
+                        double b1 = c * xs.d1() * INV_H2;
                         double f2 = c * ((1 - beta) * nsf2s + xs.ss21());
                         double rhs1 = old1[i] + c * delayed + f2 * phi2[i];
                         double t1 = (rhs1 + b1 * sum(phi1, x, z, a)) / a1;
                         phi1[i] = t1;
 
                         // --- group 2 ---
-                        double a2 = 1.0 + c * (xs.sa2() + xs.ss21()) + c * xs.d2() * nb;
-                        double b2 = c * xs.d2();
+                        double a2 = 1.0 + c * (xs.sa2() + xs.ss21()) + c * xs.d2() * INV_H2 * nb;
+                        double b2 = c * xs.d2() * INV_H2;
                         double f1 = c * xs.ss12();
                         double t2 = (old2[i] + f1 * phi1[i] + b2 * sum(phi2, x, z, a)) / a2;
                         phi2[i] = t2;
@@ -244,6 +292,36 @@ public final class RbmkTransientSolver {
     /** Milliseconds the last {@link #step} took. */
     public double lastStepMs() {
         return lastStepMs;
+    }
+
+    /**
+     * Eigenvalue from the neutron balance with the current flux and cross sections:
+     * {@code k = production / loss}, the same balance form as
+     * {@link RbmkSolver3D#balanceKeff()}. It responds to a rod move or a feedback
+     * change on the very next step (unlike a power-iteration eigenvalue, which lags
+     * thousands of iterations), so it is what a live reactivity read must use. The
+     * fission source is scaled by {@code nsfScale}, so this is the true eigenvalue
+     * of the seeded system: 1.0 at the reference critical state.
+     */
+    public double balanceKeff() {
+        double prod = 0;
+        double loss = 0;
+        for (int x = -ext; x <= ext; x++) {
+            for (int z = -ext; z <= ext; z++) {
+                for (int a = 0; a < na; a++) {
+                    int i = idx(x, z, a);
+                    if (!active[i]) {
+                        continue;
+                    }
+                    RbmkXsec xs = cell[i];
+                    int nb = neighbours(x, z, a);
+                    prod += nsfScale * (xs.nsf1() * phi1[i] + xs.nsf2() * phi2[i]);
+                    double leak = xs.d1() * INV_H2 * (nb * phi1[i] - sum(phi1, x, z, a));
+                    loss += xs.sr1() * phi1[i] - xs.ss21() * phi2[i] + leak;
+                }
+            }
+        }
+        return loss > 0 ? prod / loss : 0;
     }
 
     private double meanFission() {

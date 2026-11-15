@@ -191,12 +191,19 @@ public final class PlantSystem {
     /** The manual "start the unit" control: hand the rods to the auto-regulator. */
     public void startUp() {
         core.setAutoRegulator(true);
+        // The unified core owns its own physics thread when running live.
+        if (core instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u) {
+            u.startThreaded();
+        }
     }
 
     /** Release the core's resources — stops the physics thread when there is one. */
     public void shutdown() {
         if (core instanceof com.ben.csp.rbmk.physics.TransientReactorCore t) {
             t.close();
+        }
+        if (core instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u) {
+            u.close();
         }
     }
 

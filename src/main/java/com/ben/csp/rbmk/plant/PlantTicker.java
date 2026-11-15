@@ -29,12 +29,24 @@ public final class PlantTicker {
     }
 
     public static PlantSystem startPlant() {
-        return startPlant(false);
+        return startUnified();
     }
 
     /** Start the plant, choosing the core: lumped (false) or full 3D (true). */
     public static PlantSystem startPlant(boolean spatial) {
         plant = new PlantSystem(spatial);
+        plant.startUp();
+        lastTickNs = 0;
+        return plant;
+    }
+
+    /**
+     * Start the plant on THE core: the unified time-dependent spatial core with the
+     * feedback loop closed (void, temperature and xenon feeding back through the
+     * cross sections). This is the default plant.
+     */
+    public static PlantSystem startUnified() {
+        plant = new PlantSystem(new com.ben.csp.rbmk.physics.UnifiedReactorCore());
         plant.startUp();
         lastTickNs = 0;
         return plant;
