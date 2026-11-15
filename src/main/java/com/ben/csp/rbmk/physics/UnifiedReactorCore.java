@@ -37,6 +37,15 @@ import com.ben.csp.rbmk.RbmkGeometry;
  * core its actual coolant flow ({@link #setCoolantFlowKgS}), so a pump trip raises the
  * void and the power with no accident flag anywhere.
  *
+ * <p><b>The void is coupled per axial node, and the seed is self-consistent.</b> The
+ * derived void profile is fed to the neutronics node by node, and the flux shape it
+ * produces in turn decides where the channel heat is deposited — so flux, heat and
+ * void are one closed loop with no fitted map. Because the profile the core runs on
+ * (mean void ~0.64) differs from the cosine fallback it would otherwise be seeded at
+ * (mean void ~0.35), the reference critical state is found by iterating the two to a
+ * fixed point at construction ({@link #selfConsistentVoid()}); seeding at the wrong
+ * profile was the actual cause of the old nominal drift.
+ *
  * <p><b>One honest calibration.</b> The derived lattice cell's whole-core void worth
  * is 4.3x the sourced INSAG-7 figure, so the void DEPENDENCE is scaled to the source
  * ({@code RbmkXsec.VOID_WORTH_SCALE}, registered {@code xsec.void_worth_scale}). The
@@ -94,6 +103,14 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     private double keff = 1.0;
     private double simSeconds = 0;
 
+    /**
+     * Whether the neutronics sees the void PER AXIAL NODE (the derived profile) or
+     * as a core average. The axial profile is the physically right thing — the RBMK
+     * flux is bottom-peaked precisely because the coolant boils up the channel — so
+     * this is the target state; the uniform path is the coarse fallback.
+     */
+    private boolean axialCoupling = true;
+
     // --- control ---
     private boolean autoRod = false;
     private double powerSetpoint = 1.0;
@@ -108,16 +125,73 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     private volatile double realTimeFactor = 1.0;
 
     public UnifiedReactorCore() {
-        // Seed the coolant at nominal power and full flow, take its axial void
-        // profile, and seed the neutronics at THAT state — so the reference critical
-        // state the reactivity is measured against is the one the live loop runs,
-        // not a uniform placeholder. Then solve for the reactivity zero.
+        // Seed at the SELF-CONSISTENT nominal fixed point: the void profile the
+        // channel energy balance produces and the flux shape that void produces must
+        // agree, or the core starts off-critical and drifts. A single cosine-void seed
+        // (mean 0.355) does not match the shape-void it actually runs at (~0.64), so
+        // the two are iterated to a fixed point before the reactivity zero is taken.
         cooling.solve(1.0, NOMINAL_FLOW_KGS);
-        voidFraction = cooling.meanVoid();
-        solver.seedCritical(voidFraction, NOMINAL_FUEL_C);
+        if (axialCoupling) {
+            double[] prof = selfConsistentVoid();
+            voidFraction = mean(prof);
+            solver.seedCriticalAxial(prof, NOMINAL_FUEL_C);
+        } else {
+            voidFraction = cooling.meanVoid();
+            solver.seedCritical(voidFraction, NOMINAL_FUEL_C);
+        }
         kRef = solver.balanceKeff();
         keff = kRef;
         fission = solver.power();
+    }
+
+    /**
+     * Iterate (void profile from the channel energy balance) against (flux shape that
+     * void produces) to the fixed point at nominal power and full flow. Converges in
+     * a handful of passes; each pass is one static solve. Returns the converged
+     * per-node void profile.
+     */
+    private double[] selfConsistentVoid() {
+        RbmkSolver3D stat = new RbmkSolver3D();
+        stat.setOmega(RbmkSolver3D.SAFE_OMEGA);
+        stat.setInnerSweeps(3);
+        for (int pass = 0; pass < 3; pass++) {
+            double[] prof = cooling.voidFraction().clone();
+            for (int x = -stat.extent(); x <= stat.extent(); x++) {
+                for (int z = -stat.extent(); z <= stat.extent(); z++) {
+                    for (int a = 0; a < RbmkCore.AXIAL_NODES; a++) {
+                        if (stat.isActive(x, z, a) && !stat.isControl(x, z, a)) {
+                            stat.setCell(x, z, a, RbmkXsec.fuelCell(prof[a], NOMINAL_FUEL_C));
+                        }
+                    }
+                }
+            }
+            stat.setRodInsertion(NOMINAL_INSERTION);
+            stat.solve(400, 1e-9);
+            if (stat.diverged()) {
+                break;   // keep the last good profile
+            }
+            cooling.setShape(stat.axialShape());
+            cooling.solve(1.0, NOMINAL_FLOW_KGS);
+        }
+        return cooling.voidFraction().clone();
+    }
+
+    private static double mean(double[] v) {
+        double s = 0;
+        for (double x : v) {
+            s += x;
+        }
+        return v.length == 0 ? 0 : s / v.length;
+    }
+
+    /** Select per-node (true, default) or core-average (false) void coupling. */
+    public void setAxialCoupling(boolean on) {
+        this.axialCoupling = on;
+    }
+
+    /** True if the neutronics is fed the per-node void profile. */
+    public boolean axialCoupling() {
+        return axialCoupling;
     }
 
     // ------------------------------------------------------------ threading
@@ -197,8 +271,13 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         moveRod(dt);
 
         // Feedbacks enter through the cross sections, not a fitted term. The void is
-        // the derived axial profile from the previous step.
-        solver.setCoreState(voidFraction, fuelTempC);
+        // the derived axial profile from the previous step; per node when axial
+        // coupling is on, as a core average otherwise.
+        if (axialCoupling) {
+            solver.setAxialState(cooling.voidFraction(), fuelTempC);
+        } else {
+            solver.setCoreState(voidFraction, fuelTempC);
+        }
         solver.setRodInsertion(insertion);
         solver.step(dt, SWEEPS);
 
@@ -210,9 +289,13 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         decayHeat.step(dt, fission);
         double total = DecayHeat.FISSION_SHARE * fission + decayHeat.total();
 
-        // Coolant: solve the channel energy balance for the heat just produced and the
-        // current flow. The derived void is applied uniformly (the model's feedback
-        // resolution); see the class note on the axial profile.
+        // Coolant: the flux shape decides where the heat is deposited, so the channel
+        // energy balance marches up THAT shape, not an assumed cosine. This closes the
+        // loop: flux -> heat -> void -> cross sections -> flux.
+        double[] fluxShape = solver.axialShape();
+        if (fluxShape != null) {
+            cooling.setShape(fluxShape);
+        }
         cooling.solve(total, coolantFlowKgS);
         double tau = Math.max(0.05, ChannelCooling.transitTimeS(
             coolantFlowKgS, RbmkGeometry.CORE_HEIGHT_M, RbmkGeometry.FUEL_CHANNELS));
@@ -320,6 +403,11 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     /** The derived coolant state: void, quality, temperature per node. */
     public ChannelCooling cooling() {
         return cooling;
+    }
+
+    /** The live axial flux shape (group 1, mean over fuel channels), bottom to top. */
+    public double[] axialFluxShape() {
+        return solver.axialShape();
     }
 
     // ---------------------------------------------------------------- helpers

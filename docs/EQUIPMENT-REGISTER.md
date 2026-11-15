@@ -54,18 +54,53 @@ register had drifted out of date**, which is the exact failure this exists to st
 From `EquipmentRegisterSelfTest`:
 
 ```
-equipment register: 106 items — 25 modelled, 0 specified, 78 named-only, 3 unsourced
+equipment register: 140 items — 25 modelled, 0 specified, 114 named-only, 1 unsourced
 ```
 
-**The three `unsourced` items are deliberate and correct** — they are real
-equipment that the project has not yet traced to a source:
+**One `unsourced` item remains** — real equipment the project has not yet traced
+to a source:
 
-- Instrument compressed-air supply system
-- Generator hydrogen cooling system
 - Fire suppression system (plant-wide)
 
-Under the "nothing is guessed" rule they are **flagged, not filled in**. Resolving
-them (or removing them if they were not present) is a real, named task.
+The other two former `unsourced` items were **resolved against the 1983 operating
+regulation** (see below): the instrument compressed-air system is the compressor
+station (Reglament §8.4.18), and the generator hydrogen cooling is named in the
+regulation's §8.4. The fire-suppression system is *not* named in the regulation,
+so it stays flagged. Under the "nothing is guessed" rule it is **flagged, not
+filled in**.
+
+## The 1983 operating regulation as a source (added 2026-11-15)
+
+The plant's own **Технологический регламент по эксплуатации 3 и 4 энергоблоков
+ЧАЭС с реакторами РБМК-1000, 1Э-С-II (Союзатомэнерго, введён 15.12.1983)** —
+99 pages, signed by Bryukhanov, Fomin and Dyatlov — is now in-repo
+(`docs/primary-sources/`) and is a primary source for the register. It names
+equipment the earlier sources missed:
+
+| Item | Regulation reference | Status |
+|---|---|---|
+| **Главная паровая задвижка (ГПЗ)** — main steam stop valve; closing it trips АЗ-5 | Ch.3 п), §2.4.2 | named-only |
+| **Стопорно-регулирующий клапан (СРК)** — turbine stop/control valve | Ch.3 п), Ch.10 | named-only |
+| **Маслонасос уплотнений (МНУ)** — MCP seal-oil pump | Ch.10 | named-only |
+| **Гидростатический подшипник (ГСП)** — MCP hydrostatic bearing | §ГЦН | named-only |
+| **Валоповоротное устройство (ВПУ)** — turbine turning gear | Ch.13 | named-only |
+| **Насосно-теплообменная установка (НТУ)** — pump/heat-exchanger unit, schemes Л/Д | §2.4 | named-only |
+| **Азотно-кислородная станция (АКС)** — nitrogen-oxygen station | Ch.10 | named-only |
+| **Мокрый газгольдер (МГ)** — wet gas holder | abbreviation list | named-only |
+| **Компрессорная станция** — compressor station, 6 kgf/cm² air | §8.4.18 | named-only |
+| **Бак / насос чистого конденсата (БЧК/НЧК)** — clean-condensate reserve, 2000 m³ | §2.4, §8.4.11 | named-only |
+| **Канал охлаждения отражателя (КОО)** — reflector cooling channels | abbreviation list | named-only |
+| **СФКРЭ / СЦК / МТК / МТО** — energy-release monitoring, central monitoring, boards | Ch.18, §9.3 | named-only |
+| **КРБ / СК** — radiation-safety monitoring | abbreviation list | named-only |
+| **БЩУ-О/Н, ЦЩУ, РПУ** — block/central/reserve control rooms, desks А/Т/П/Э | §1.1–1.5, §2.4.10, Ch.21 | named-only |
+| **КАЗ** — AZ-5 scram button | abbreviation list, Ch.3 | named-only |
+| **ИК / КД / ИСС / УП / ИВ** — ionisation & fission chambers, count-rate meters, position/output indicators | §2.11 | named-only |
+| **ПРА / КРУ / ОРУ / МВ / ТСН / АБП** — protection automation, switchgear, switchyard, breakers, transformers, UPS | §8.4 | named-only |
+| **СОС** — sprinkler cooling system of the sealed zone | abbreviation list, Ch.2.6 | named-only |
+
+A first batch of these is now **real in-game blocks** (see below), placed in the
+creative tab: ГПЗ, СРК, МНУ, ВПУ, НТУ, БЧК, компрессорная, МГ, пульт БЩУ, КАЗ,
+КРБ, МВ and ДГ.
 
 ## The items the Director specifically worried about — they ARE here
 
@@ -97,9 +132,11 @@ sourced, and mostly `named-only`:
 
 ## What this does NOT yet do (recorded, not hidden)
 
-- The register is **not yet exhaustive**. INSAG-7 Table II-II and NUREG-1250 cover
-  the major and many minor components; a full energoblok inventory (every valve,
-  every instrument, every cable route) needs the plant's own operational manual and
-  technical description (техническое описание), which we do not have yet.
+- The register is **not yet exhaustive**. INSAG-7 Table II-II, NUREG-1250 and the
+  1983 regulation cover the major and many minor components; a full energoblok
+  inventory (every valve, every instrument, every cable route) still needs the
+  plant's **техническое описание** (technical description) and the equipment
+  datasheets, which we do not have yet. The regulation's abbreviation list is the
+  best taxonomy we have so far, and it is now largely mined.
 - The gate is a **self-test + command**, not yet wired into the SGB "done"
   criterion. The next step is to make "SGB" refuse while any item is `unsourced`.

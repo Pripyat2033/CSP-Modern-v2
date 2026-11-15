@@ -21,7 +21,8 @@ import java.util.Map;
  * pump, valve, crane, fan and panel — must appear here, with a source. This is
  * the machine-checkable answer to the Director's standing concern: an item he
  * did not name must not silently vanish from the build. The register is sourced
- * from INSAG-7 Table II-II "Main equipment for an RBMK unit" and NUREG-1250, so
+ * from INSAG-7 Table II-II "Main equipment for an RBMK unit", NUREG-1250, and the
+ * plant's own <b>Технологический регламент 1Э-С-II (Союзатомэнерго, 1983)</b>, so
  * the list comes from the documents, not from memory.
  *
  * <p>The register is a GATE, not a checklist: {@link #namedOnly()} and

@@ -44,6 +44,21 @@ public class ModBlocks {
     public static final Block FEEDWATER_BLOCK = PlantEquipmentBlock.feedwater();
     public static final Block ECCS_ACCUMULATOR_BLOCK = PlantEquipmentBlock.accumulator();
     public static final Block PLANT_PIPE_BLOCK = PlantEquipmentBlock.pipe();
+
+    // Equipment named by the 1983 operating regulation (1E-S-II).
+    public static final Block STEAM_STOP_VALVE_BLOCK = PlantEquipmentBlock.steamStopValve();
+    public static final Block TURBINE_STOP_VALVE_BLOCK = PlantEquipmentBlock.turbineStopValve();
+    public static final Block SEAL_OIL_PUMP_BLOCK = PlantEquipmentBlock.sealOilPump();
+    public static final Block TURNING_GEAR_BLOCK = PlantEquipmentBlock.turningGear();
+    public static final Block HEAT_EXCHANGER_BLOCK = PlantEquipmentBlock.heatExchanger();
+    public static final Block CLEAN_CONDENSATE_TANK_BLOCK = PlantEquipmentBlock.cleanCondensateTank();
+    public static final Block COMPRESSOR_BLOCK = PlantEquipmentBlock.compressor();
+    public static final Block GAS_HOLDER_BLOCK = PlantEquipmentBlock.gasHolder();
+    public static final Block CONTROL_DESK_BLOCK = PlantEquipmentBlock.controlDesk();
+    public static final Block AZ5_BUTTON_BLOCK = PlantEquipmentBlock.az5Button();
+    public static final Block RADIATION_MONITOR_BLOCK = PlantEquipmentBlock.radiationMonitor();
+    public static final Block CIRCUIT_BREAKER_BLOCK = PlantEquipmentBlock.circuitBreaker();
+    public static final Block DIESEL_GENERATOR_BLOCK = PlantEquipmentBlock.dieselGenerator();
     public static final Block PLANT_VALVE_BLOCK = new PlantInstrumentBlock(
         PlantInstrumentBlock.Kind.VALVE,
         net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings.copyOf(net.minecraft.block.Blocks.COPPER_BLOCK));
@@ -105,6 +120,19 @@ public class ModBlocks {
         registerWithItem("feedwater", FEEDWATER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("eccs_accumulator", ECCS_ACCUMULATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("plant_pipe", PLANT_PIPE_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("steam_stop_valve", STEAM_STOP_VALVE_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("turbine_stop_valve", TURBINE_STOP_VALVE_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("seal_oil_pump", SEAL_OIL_PUMP_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("turning_gear", TURNING_GEAR_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("heat_exchanger", HEAT_EXCHANGER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("clean_condensate_tank", CLEAN_CONDENSATE_TANK_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("compressor", COMPRESSOR_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("gas_holder", GAS_HOLDER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("control_desk", CONTROL_DESK_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("az5_button", AZ5_BUTTON_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("radiation_monitor", RADIATION_MONITOR_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("circuit_breaker", CIRCUIT_BREAKER_BLOCK, PlantEquipmentBlockItem::new);
+        registerWithItem("diesel_generator", DIESEL_GENERATOR_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("plant_valve", PLANT_VALVE_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("plant_meter", PLANT_METER_BLOCK, PlantEquipmentBlockItem::new);
         registerWithItem("control_rod", CONTROL_ROD_BLOCK, PlantEquipmentBlockItem::new);

@@ -32,6 +32,7 @@ public final class EquipmentRegisterSelfTest {
         testSourcesPresent();
         testStatusSplitIsHonest();
         testSummaryAddsUp();
+        testRegulationItemsPresent();
         System.out.printf("%nEquipmentRegisterSelfTest: %d checks, %d failures%n",
             checks, failures);
         if (failures > 0) {
@@ -106,6 +107,32 @@ public final class EquipmentRegisterSelfTest {
         check("status counts add up to the item count",
             total == EquipmentRegister.size(),
             String.format("counted=%d, size=%d", total, EquipmentRegister.size()));
+    }
+
+    /**
+     * 6. The 1983 operating regulation (1Э-С-II) is now a source: the items it
+     * names that the earlier sources (INSAG-7, NUREG-1250) did not — the steam
+     * stop valve that trips АЗ-5, the СУЗ instrumentation, the control-room desks
+     * — must be in the register, sourced to the regulation.
+     */
+    private static void testRegulationItemsPresent() {
+        long reglament = countWhere(it -> it.source() != null
+            && it.source().startsWith("Reglament 1E-S-II 1983"));
+        check("regulation (1E-S-II 1983) is a source for a real batch of items",
+            reglament >= 25, "items sourced to the regulation=" + reglament);
+        check("steam stop valve (ГПЗ) is registered — it trips АЗ-5",
+            hasIdPrefix("steam.gpz"),
+            "gpz entries=" + countWhere(it -> it.id().startsWith("steam.gpz")));
+        check("АЗ-5 scram button (КАЗ) is registered",
+            hasIdPrefix("ctrl.kaz"), "kaz entries=" + countWhere(it -> it.id().equals("ctrl.kaz")));
+        check("control room (БЩУ-О/Н) is registered",
+            hasIdPrefix("ctrl.bscu"), "bscu entries=" + countWhere(it -> it.id().equals("ctrl.bscu")));
+        check("СУЗ instrumentation (ИК/КД/ИСС) is registered",
+            hasIdPrefix("ctrl.ik") && hasIdPrefix("ctrl.kd") && hasIdPrefix("ctrl.iss"),
+            "instrument entries=" + countWhere(it -> it.id().startsWith("ctrl.")));
+        check("only the genuinely unsourced items remain unsourced",
+            EquipmentRegister.unsourced().size() <= 1,
+            "unsourced=" + EquipmentRegister.unsourced().size());
     }
 
     private static boolean hasIdPrefix(String p) {

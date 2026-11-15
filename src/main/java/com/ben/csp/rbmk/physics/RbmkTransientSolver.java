@@ -113,6 +113,63 @@ public final class RbmkTransientSolver {
         }
     }
 
+    /** Set the fuel nodes to a per-axial-node void profile (bottom to top). */
+    public void setAxialState(double[] voidByNode, double fuelTempC) {
+        // One cross section per axial node, reused across every channel — the profile
+        // is the same up every channel, so this is 28 lookups, not 28 x 1,872.
+        RbmkXsec[] byNode = new RbmkXsec[na];
+        for (int a = 0; a < na; a++) {
+            byNode[a] = RbmkXsec.fuelCell(voidByNode[a], fuelTempC);
+        }
+        for (int x = -ext; x <= ext; x++) {
+            for (int z = -ext; z <= ext; z++) {
+                for (int a = 0; a < na; a++) {
+                    int i = idx(x, z, a);
+                    if (active[i] && !control[i]) {
+                        cell[i] = byNode[a];
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean isActive(int x, int z, int a) {
+        return x >= -ext && x <= ext && z >= -ext && z <= ext && a >= 0 && a < na
+            && active[idx(x, z, a)];
+    }
+
+    public boolean isControl(int x, int z, int a) {
+        return x >= -ext && x <= ext && z >= -ext && z <= ext && a >= 0 && a < na
+            && control[idx(x, z, a)];
+    }
+
+    public int extent() {
+        return ext;
+    }
+
+    /** The axial fission shape (group 1, averaged over fuel channels). */
+    public double[] axialShape() {
+        double[] shape = new double[na];
+        int[] count = new int[na];
+        for (int x = -ext; x <= ext; x++) {
+            for (int z = -ext; z <= ext; z++) {
+                for (int a = 0; a < na; a++) {
+                    int i = idx(x, z, a);
+                    if (active[i]) {
+                        shape[a] += phi1[i];
+                        count[a]++;
+                    }
+                }
+            }
+        }
+        for (int a = 0; a < na; a++) {
+            if (count[a] > 0) {
+                shape[a] /= count[a];
+            }
+        }
+        return shape;
+    }
+
     /**
      * Seed the transient solver to its OWN critical fixed point at the reference
      * operating point.
@@ -131,23 +188,33 @@ public final class RbmkTransientSolver {
     }
 
     /**
-     * Seed to the critical fixed point at a given UNIFORM void fraction and fuel
-     * temperature. Seeding at the state the live loop will actually run keeps the
-     * reactivity zero honest — a seed at 0.05 while the loop runs at 0.35 would
-     * start the core badly super-critical.
+     * Seed to the critical fixed point at a given PER-NODE void profile. The profile
+     * is what the live axial-coupled loop runs, so the reference critical state must
+     * be seeded there too — a uniform seed would start the core off-critical.
      */
-    public void seedCritical(double voidFraction, double fuelTempC) {
-        setCoreState(voidFraction, fuelTempC);
+    public void seedCriticalAxial(double[] voidByNode, double fuelTempC) {
+        setAxialState(voidByNode, fuelTempC);
         setRodInsertion(NOMINAL_INSERTION);
 
-        // Start from the static solve — only an initial SHAPE; the calibration loop
-        // below converges it, so a loose solve is enough and saves ~2 s of boot.
         RbmkSolver3D stat = new RbmkSolver3D();
         stat.setOmega(RbmkSolver3D.SAFE_OMEGA);
         stat.setInnerSweeps(3);
-        stat.setCoreState(voidFraction, fuelTempC);
+        for (int x = -stat.extent(); x <= stat.extent(); x++) {
+            for (int z = -stat.extent(); z <= stat.extent(); z++) {
+                for (int a = 0; a < na; a++) {
+                    if (stat.isActive(x, z, a) && !stat.isControl(x, z, a)) {
+                        stat.setCell(x, z, a, RbmkXsec.fuelCell(voidByNode[a], fuelTempC));
+                    }
+                }
+            }
+        }
         stat.setRodInsertion(NOMINAL_INSERTION);
         stat.solve(400, 1e-7);
+        seedFrom(stat);
+    }
+
+    /** Shared tail of the seed: copy the static shape, calibrate to the fixed point. */
+    private void seedFrom(RbmkSolver3D stat) {
         double k = stat.keff();
         if (stat.diverged() || !(k > 0) || !Double.isFinite(k)) {
             throw new IllegalStateException(
@@ -207,6 +274,27 @@ public final class RbmkTransientSolver {
                 precursor[g][i] = DelayedNeutrons.beta(g) * sf / DelayedNeutrons.LAMBDA[g];
             }
         }
+    }
+
+    /**
+     * Seed to the critical fixed point at a given UNIFORM void fraction and fuel
+     * temperature. Seeding at the state the live loop will actually run keeps the
+     * reactivity zero honest — a seed at 0.05 while the loop runs at 0.35 would
+     * start the core badly super-critical.
+     */
+    public void seedCritical(double voidFraction, double fuelTempC) {
+        setCoreState(voidFraction, fuelTempC);
+        setRodInsertion(NOMINAL_INSERTION);
+
+        // Start from the static solve — only an initial SHAPE; the calibration loop
+        // below converges it, so a loose solve is enough and saves ~2 s of boot.
+        RbmkSolver3D stat = new RbmkSolver3D();
+        stat.setOmega(RbmkSolver3D.SAFE_OMEGA);
+        stat.setInnerSweeps(3);
+        stat.setCoreState(voidFraction, fuelTempC);
+        stat.setRodInsertion(NOMINAL_INSERTION);
+        stat.solve(400, 1e-7);
+        seedFrom(stat);
     }
 
     // ---------------------------------------------------------------- step
@@ -373,11 +461,6 @@ public final class RbmkTransientSolver {
         if (a + 1 < na && isActive(x, z, a + 1)) n++;
         if (a - 1 >= 0 && isActive(x, z, a - 1)) n++;
         return n;
-    }
-
-    private boolean isActive(int x, int z, int a) {
-        return x >= -ext && x <= ext && z >= -ext && z <= ext && a >= 0 && a < na
-            && active[idx(x, z, a)];
     }
 
     private int idx(int x, int z, int a) {

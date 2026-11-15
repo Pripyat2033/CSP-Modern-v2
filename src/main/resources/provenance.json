@@ -161,6 +161,19 @@
       "unit": "dimensionless",
       "status": "to_verify",
       "source": "Slip ratio S in alpha = 1/(1+((1-x)/x)(rho_v/rho_l)S). S=1 is homogeneous; real channel flow gives 1.2-2.0. 1.5 is representative. The one number in the coolant path not taken straight from a source."
+    },
+    "coolant.axial_coupled_void": {
+      "value": 0.6364,
+      "unit": "core-average void fraction at nominal power, axial coupling on",
+      "status": "to_verify",
+      "source": "COMPUTED, not guessed: the same channel energy balance as coolant.derived_void, but marched up the flux shape the neutronics actually produces (bottom-peaked) rather than a cosine fallback. The bottom-peaked shape deposits more heat low in the channel, so the mean void is higher than the cosine-shape value (0.355). The reference critical state is seeded at this self-consistent fixed point (UnifiedReactorCore.selfConsistentVoid), which is what stops the old nominal drift.",
+      "measured": "0.6364 mean void; core holds nominal power at 0.0% drift over 30 s"
+    },
+    "xsec.void_worth_axial": {
+      "value": 0.0248,
+      "unit": "dk/k per unit void (whole core, full axial profile)",
+      "status": "to_verify",
+      "source": "Measured: the whole-core void worth with the void applied per axial node (+0.0248) vs as a core average (+0.0222) - only 12% higher, NOT the 'double' an earlier note claimed. Recorded to correct that note; the axial coupling is now the default."
     }
   }
 }

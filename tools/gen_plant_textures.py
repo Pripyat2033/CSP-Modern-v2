@@ -428,6 +428,205 @@ def gen_containment_door():
     return px
 
 
+def gen_steam_stop_valve():
+    """ГПЗ: a big gate valve - a heavy cast-steel body with a large handwheel."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.85))
+    for y in range(4, 12):
+        rect(px, 0, y, S - 1, y, shade(STEEL, 0.95 if 6 <= y <= 9 else 0.7))
+    rect(px, 3, 4, 12, 11, shade(STEEL, 1.05))       # valve body
+    rect(px, 7, 0, 8, 5, shade(BRASS, 1.0))          # stem
+    for (dx, dy) in [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1), (2, 0), (-2, 0), (0, 2), (0, -2)]:
+        put(px, 7 + dx, 2 + dy, shade(RED, 1.0))     # red handwheel
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_turbine_stop_valve():
+    """СРК: a turbine stop/control valve - brass body, domed actuator."""
+    px = new(shade(BRASS, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(BRASS, 0.85))
+    for y in range(5, 11):
+        rect(px, 0, y, S - 1, y, shade(COPPER, 0.9 if 6 <= y <= 9 else 0.7))
+    rect(px, 4, 5, 11, 11, shade(BRASS, 1.1))
+    rect(px, 5, 0, 10, 4, shade(STEEL, 1.0))         # actuator dome
+    rect(px, 6, 1, 9, 3, shade(DARK, 1.1))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_seal_oil_pump():
+    """МНУ: an MCP seal-oil pump - small pump body with an oil reservoir."""
+    px = new(shade(STEEL, 0.5))
+    steel_plate(px, shade(STEEL, 0.9))
+    rect(px, 2, 3, 13, 12, shade(STEEL, 1.05))
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 7.5) ** 2 + (y - 8) ** 2) ** 0.5
+            if d < 2.6:
+                put(px, x, y, shade(COPPER, 1.0))
+    rect(px, 5, 1, 10, 3, (150, 120, 40, 255))       # oil sight
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_turning_gear():
+    """ВПУ: the turbine turning gear - a big toothed wheel."""
+    import math
+    px = new(shade(STEEL, 0.45))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.8))
+    cx, cy = 7.5, 7.5
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            if d < 2.0:
+                put(px, x, y, shade(BRASS, 1.0))     # hub
+            elif d < 5.4:
+                put(px, x, y, shade(STEEL, 0.95))    # wheel
+    for i in range(12):                              # teeth
+        a = i * math.pi / 6
+        tx = int(round(cx + 6.2 * math.cos(a)))
+        ty = int(round(cy + 6.2 * math.sin(a)))
+        put(px, tx, ty, shade(STEEL, 1.15))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_heat_exchanger():
+    """НТУ: a shell-and-tube heat exchanger - a shell with rows of tube ends."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.85))
+    rect(px, 2, 2, 13, 13, shade(STEEL, 0.95))
+    for ry in (4, 7, 10):
+        for rx in (4, 7, 10):
+            put(px, rx, ry, shade(COPPER, 0.8))
+            put(px, rx + 1, ry, shade(COPPER, 1.1))
+    rect(px, 0, 0, S - 1, 1, shade(BLUE, 0.9))
+    rect(px, 0, S - 2, S - 1, S - 1, shade(BLUE, 0.9))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_clean_condensate_tank():
+    """БЧК: the clean-condensate reserve tank - a vessel with a level gauge."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.85))
+    rect(px, 0, 0, S - 1, 3, shade(BLUE, 1.0))
+    rect(px, 3, 5, 5, 14, shade(BLACK, 1.3))         # gauge glass
+    rect(px, 3, 9, 5, 14, (70, 150, 210, 255))       # half full
+    for y in range(6, 15, 2):
+        rect(px, 11, y, 13, y, shade(WHITE, 0.8))    # ladder
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_compressor():
+    """The compressor station: a machine with cooling fins and a motor cap."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade((150, 152, 156, 255), 0.95))
+    for y in range(3, 14, 2):
+        rect(px, 1, y, 14, y, shade((150, 152, 156, 255), 0.75))
+    rect(px, 0, 0, S - 1, 2, shade(BLUE, 1.0))
+    rect(px, 6, 0, 9, 3, shade(DARK, 1.1))
+    frame(px, shade(DARK, 1.2))
+    return px
+
+
+def gen_gas_holder():
+    """МГ: a wet gas holder - a telescopic steel bell over a water seal."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.85))
+    rect(px, 1, 1, 14, 5, shade(STEEL, 1.05))        # bell
+    for x in range(2, 14, 3):
+        rect(px, x, 1, x, 5, shade(STEEL, 0.8))
+    rect(px, 0, 6, S - 1, 7, shade(BLUE, 1.0))       # water seal
+    for y in range(8, 15):
+        for x in range(S):
+            if (x + y) % 2 == 0:
+                put(px, x, y, (54, 112, 168, 255))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_control_desk():
+    """БЩУ-О: an operator's desk - a sloped instrument panel with gauges."""
+    px = new(shade((70, 74, 80, 255), 1.0))
+    rect(px, 0, 0, S - 1, S - 1, shade((70, 74, 80, 255), 0.95))
+    rect(px, 1, 1, 14, 8, shade((40, 44, 50, 255), 1.0))   # instrument face
+    for cx in (3, 6, 9, 12):                                # gauges
+        put(px, cx, 4, shade(WHITE, 0.9))
+        put(px, cx, 3, shade(RED, 1.0))
+    for x in range(2, 14, 2):                               # switch row
+        put(px, x, 11, shade(STEEL, 1.1))
+    rect(px, 1, 9, 14, 10, shade((90, 94, 100, 255), 1.0))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_az5_button():
+    """КАЗ: the AZ-5 scram button - a big red mushroom button on a plate."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.8))
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d < 6.0:
+                put(px, x, y, (196, 172, 60, 255))   # yellow guard ring
+            if d < 4.4:
+                put(px, x, y, shade(RED, 0.95))      # red button
+            if d < 3.0:
+                put(px, x, y, shade(RED, 1.2))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_radiation_monitor():
+    """КРБ: a radiation-safety monitor - a panel with a trefoil and a scale."""
+    px = new(shade((60, 66, 60, 255), 1.0))
+    rect(px, 0, 0, S - 1, S - 1, shade((60, 66, 60, 255), 0.95))
+    # a simple trefoil: three dark wedges around a centre
+    import math
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d < 2.2:
+                put(px, x, y, (220, 190, 60, 255))
+            elif d < 5.5:
+                a = math.atan2(y - 7.5, x - 7.5)
+                if abs(((a + math.pi / 2) % (2 * math.pi / 3)) - math.pi / 3) < 0.55:
+                    put(px, x, y, (220, 190, 60, 255))
+    rect(px, 1, 13, 14, 14, shade(BLACK, 1.3))       # scale strip
+    frame(px, shade(BLACK, 1.2))
+    return px
+
+
+def gen_circuit_breaker():
+    """МВ: an oil circuit breaker - a tank with porcelain bushings on top."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade(STEEL, 0.85))
+    rect(px, 1, 6, 14, 14, shade(STEEL, 0.95))       # oil tank
+    for x in (3, 7, 11):                             # bushings
+        rect(px, x, 1, x + 1, 6, (210, 210, 216, 255))
+        put(px, x, 0, shade(BRASS, 1.0))
+    rect(px, 1, 9, 14, 10, shade(BLUE, 1.0))
+    frame(px, shade(BLACK, 1.3))
+    return px
+
+
+def gen_diesel_generator():
+    """ДГ: a standby diesel generator - engine block with a generator end."""
+    px = new(shade(STEEL, 0.5))
+    rect(px, 0, 0, S - 1, S - 1, shade((150, 152, 156, 255), 0.9))
+    for x in range(1, 9, 2):                          # engine cylinders
+        rect(px, x, 2, x, 12, shade((150, 152, 156, 255), 0.72))
+    rect(px, 9, 2, 14, 13, shade(STEEL, 1.0))        # generator body
+    for y in range(4, 12, 2):
+        rect(px, 10, y, 13, y, shade(STEEL, 0.8))
+    rect(px, 0, 0, S - 1, 1, shade(BLUE, 1.0))
+    frame(px, shade(DARK, 1.2))
+    return px
+
+
 TEXTURES = {
     "steam_separator": gen_steam_separator,
     "turbine": gen_turbine,
@@ -441,6 +640,19 @@ TEXTURES = {
     "plant_pipe": gen_pipe,
     "plant_valve": gen_valve,
     "plant_meter": gen_meter,
+    "steam_stop_valve": gen_steam_stop_valve,
+    "turbine_stop_valve": gen_turbine_stop_valve,
+    "seal_oil_pump": gen_seal_oil_pump,
+    "turning_gear": gen_turning_gear,
+    "heat_exchanger": gen_heat_exchanger,
+    "clean_condensate_tank": gen_clean_condensate_tank,
+    "compressor": gen_compressor,
+    "gas_holder": gen_gas_holder,
+    "control_desk": gen_control_desk,
+    "az5_button": gen_az5_button,
+    "radiation_monitor": gen_radiation_monitor,
+    "circuit_breaker": gen_circuit_breaker,
+    "diesel_generator": gen_diesel_generator,
     "control_rod": gen_control_rod,
     "ubs": gen_ubs,
     "lbs": gen_lbs,

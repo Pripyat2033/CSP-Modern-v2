@@ -200,7 +200,7 @@ many *displayed* quantities we choose to wire up.
 ## 7. Next steps (not started)
 
 1. Fold the regulation's taxonomy into `equipment-register.json`; promote
-   named-only items to specified, resolve the 3 unsourced (task T2).
+   named-only items to specified, resolve the remaining unsourced (task T2); the 1983 regulation has now sourced 36 of them.
 2. On Ben's decision for §4, spec the chosen option before any code.
 3. Keep the regulation text in-repo as the citation source for both the register
    and the control-room build.

@@ -7,6 +7,10 @@ ROOT = "src/main/resources/assets/csp-modern"
 NAMES = ["steam_separator", "turbine", "turbine_cover", "generator", "condenser",
          "mcp", "mcp_motor", "feedwater",
          "eccs_accumulator", "plant_pipe",
+         "steam_stop_valve", "turbine_stop_valve", "seal_oil_pump", "turning_gear",
+         "heat_exchanger", "clean_condensate_tank", "compressor", "gas_holder",
+         "control_desk", "az5_button", "radiation_monitor", "circuit_breaker",
+         "diesel_generator",
          "ubs", "lbs", "vessel", "water_tank"]
 
 os.makedirs(f"{ROOT}/blockstates", exist_ok=True)

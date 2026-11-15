@@ -134,10 +134,48 @@ measurement. The core then holds nominal (1.2 % drift over 30 s) and keeps the
 positive void coefficient.
 
 **Still open:** the axial void profile is computed (`ChannelCooling` gives it node by
-node) but applied to the neutronics as a core average. Coupling the full axial
-profile makes the flux strongly bottom-peaked, which *doubles* the effective void
-worth and re-introduces the runaway — a real coupling, but it needs the lattice
-axial dependence reconciled before it can be switched on. Recorded, not hidden.
+node) and is now applied to the neutronics **per node** (see §5b). The earlier note
+here — that axial coupling "doubles the effective void worth" — was wrong; §5b
+records what the defect actually was.
+
+## 5b. The axial void profile is now coupled per node (2026-11-12)
+
+The void is computed node by node (§5a) but was fed to the neutronics as a core
+average. The stated reason was that coupling the full profile "doubles the effective
+void worth and re-introduces the runaway." **Measurement disproved that.** The
+uniform and axial whole-core void worths were measured directly:
+
+| void coupling | dk/dvoid (0.30 → 0.40) |
+|---|---|
+| core average | **+0.0222** |
+| full axial profile | **+0.0248** |
+
+Only **12 % higher**, not double. The real defect was different, and it was a
+**seed inconsistency**, not a void-worth amplification:
+
+- The core was seeded at the **cosine-void** profile (`ChannelCooling`'s fallback
+  shape, mean void **0.355**).
+- The live loop then ran on the **flux-shape-void** profile — the shape that the
+  neutronics actually produces — with mean void **0.64**.
+- Seeded at 0.355 but running at 0.64, the core started badly super-critical and
+  drifted up (+19 % in 30 s). That drift is what looked like a "runaway."
+
+The fix is to seed at the **self-consistent fixed point**: iterate (void profile from
+the channel energy balance) against (flux shape that void produces) until they agree,
+then take the reactivity zero there. `UnifiedReactorCore.selfConsistentVoid()` does
+this at construction (3 static passes, ~5 s). The core now holds nominal at **0.0 %
+drift over 30 s** (was 1.2 %), and the axial coupling is the **default**.
+
+Two supporting observations from the diagnosis:
+
+- A **uniform-material** core gives a **flat** axial flux, not a cosine — the axial
+  boundary condition is perfectly reflective. That is a legitimate stand-in for the
+  axial graphite reflector (the RBMK's ends are reflected, not bare), so it is left
+  as is; the bottom-peaked shape the accident needs comes from the **rod geometry**
+  (graphite displacer low in the core), which is what the physics intends.
+- The per-node void field is now **normalised with the same shape** the flux
+  produces, so the flux → heat → void → cross-section loop is closed with no fitted
+  map anywhere in it.
 
 ## 6. What this does and does not prove
 

@@ -36,6 +36,7 @@ public final class DerivedVoidSelfTest {
         testVoidCoefficientSourced();
         testCoreHoldsNominal();
         testFlowLossRaisesPower();
+        testAxialCouplingIsDefaultAndHolds();
         System.out.printf("%nDerivedVoidSelfTest: %d checks, %d failures%n", checks, failures);
         if (failures > 0) {
             throw new AssertionError(failures + " check(s) failed");
@@ -125,6 +126,34 @@ public final class DerivedVoidSelfTest {
             c.voidFraction() > v0 + 0.05 && c.fissionPower() > p0 * 1.02,
             String.format("P %.4f->%.4f, void %.4f->%.4f",
                 p0, c.fissionPower(), v0, c.voidFraction()));
+    }
+
+    /** 8. Axial coupling is the default, the void profile is bottom-heavy, and the
+     *  core holds nominal with it — the bug the earlier note mis-attributed. */
+    private static void testAxialCouplingIsDefaultAndHolds() {
+        UnifiedReactorCore c = new UnifiedReactorCore();
+        check("axial (per-node) void coupling is the default", c.axialCoupling(),
+            "axialCoupling=" + c.axialCoupling());
+        double[] prof = c.cooling().voidFraction();
+        check("coupled void profile is bottom-heavy (heat deposited low)",
+            prof[prof.length - 1] > prof[0] + 0.1,
+            String.format("bottom=%.3f top=%.3f", prof[0], prof[prof.length - 1]));
+        double[] shape = c.axialFluxShape();
+        int peak = 0;
+        for (int i = 1; i < shape.length; i++) {
+            if (shape[i] > shape[peak]) {
+                peak = i;
+            }
+        }
+        check("flux is bottom-peaked (the RBMK shape the accident needs)",
+            peak < shape.length / 2, "peak at node " + peak + "/" + shape.length);
+        for (int k = 0; k < 6000; k++) {
+            c.step(0.005);   // 30 s
+        }
+        double drift = Math.abs(c.fissionPower() - 1.0) * 100;
+        check("holds nominal with axial coupling (30 s drift < 2%)",
+            drift < 2.0, String.format("fission=%.4f (%.1f%% off), void=%.4f",
+                c.fissionPower(), drift, c.voidFraction()));
     }
 
     private static double keff(double voidFraction) {
