@@ -18,6 +18,15 @@ import java.util.Map;
  * It manages ~12,000 input channels and updates them with a realistic 2-5 second
  * latency.
  *
+ * <p><b>Superseded:</b> the authoritative pre-1986 SKALA model is now
+ * {@link com.ben.csp.skala.core.SkalaComplex}, which registers the plant's real
+ * {@code Instrumentation} register (thousands of sourced signals), runs the DREG
+ * loop, the eight main programs, the request-code system, the 24 functional
+ * groups and the status display, and is driven by
+ * {@link com.ben.csp.skala.core.SkalaTicker} on the server clock. This class is
+ * kept (zero-deletion) but is no longer wired to anything; new work should use
+ * {@code SkalaComplex}.
+ *
  * <p>Scope note (Chornobyl Family SKALA restoration): the pre-1986 computer had
  * no displays and no DIIS. Every channel was registered by the single DREG loop.
  * The DIIS auxiliary system, which added video monitors and a faster display

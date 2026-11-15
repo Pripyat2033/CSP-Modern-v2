@@ -73,6 +73,7 @@ public class CSPMod implements ModInitializer {
             DirectorateCommand.register(dispatcher);
             CspCommand.register(dispatcher);
             RbmkTestCommand.register(dispatcher);
+            com.ben.csp.skala.SkalaCommand.register(dispatcher);
         });
 
         // Speak to the workers in plain words: the nearest one answers and acts.
@@ -86,6 +87,10 @@ public class CSPMod implements ModInitializer {
 
         // The reactor plant runs live on the server clock.
         com.ben.csp.rbmk.plant.PlantTicker.register();
+
+        // The SKALA process computer runs on the server clock, reading the plant's
+        // instrumentation register (the pre-1986 machine; DIIS is deliberately absent).
+        com.ben.csp.skala.core.SkalaTicker.register();
 
         // Construction runs on the server clock, a few thousand blocks per tick.
         com.ben.csp.rbmk.ConstructionScheduler.register();

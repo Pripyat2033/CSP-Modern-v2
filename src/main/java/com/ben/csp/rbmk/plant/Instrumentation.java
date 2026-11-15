@@ -126,6 +126,18 @@ public final class Instrumentation {
         return String.format("%s%03d%03d", prefix, Math.abs(x), Math.abs(z));
     }
 
+    /** The channel index for a lattice coordinate (x,z), or -1 if none. */
+    public static int channelIndexByCoord(int x, int z) {
+        java.util.List<RbmkLattice.Channel> chs = RbmkLattice.channels();
+        for (int i = 0; i < chs.size(); i++) {
+            RbmkLattice.Channel c = chs.get(i);
+            if (c.x() == x && c.z() == z) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     /**
      * Read a signal's current value from the running plant. The plant is the
      * source of truth; a signal with no live value returns {@link Double#NaN}.
