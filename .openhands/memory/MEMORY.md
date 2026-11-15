@@ -477,3 +477,47 @@ OpenMC (real Monte Carlo, ENDF/B-VIII.0), and the mod only DISPLAYS it.
   channel must carry the full 18-rod assembly (k=1.31, sensible).
 - STILL OPEN: re-anchor the Java model (`GRAPHITE_COEFF` is negative; the spatial
   void feedback is +0.105) to these OpenMC/sourced values - needs Ben's go-ahead.
+
+## DERIVED VOID (not fitted) — commit 0d67c7d, 2026-11-12
+
+`UnifiedReactorCore` no longer uses the fitted `void = 0.05 + 0.08*(power-1)`.
+`ChannelCooling` derives the void from the channel energy balance: 10,000 kg/s,
+320 kJ/kg, ~15% outlet quality → core-average void **0.355** (the fitted 0.05 was
+~7× too low). The void is applied to the neutronics as a **core average** (the
+axial profile is computed but not yet coupled — see below).
+
+**Two-errors-cancel trap (the lesson):** with the void derived, the core ran away.
+Cause: the derived lattice void worth is **+0.086 dk/dvoid = 4.3× INSAG-7's
++0.020**. The old fitted slope was too shallow, hiding it; the two errors cancelled
+to a stable-by-accident −0.005. Fix: `RbmkXsec.VOID_WORTH_SCALE = 0.233` blends the
+derived cell toward its zero-void baseline (`base + f*(cell-base)`) so the SHAPE is
+derived and only the MAGNITUDE is set to the source. Result dk/dvoid = +0.0222.
+
+**Plant coupling is real:** `PlantSystem` → `UnifiedReactorCore.setCoolantFlowKgS`;
+outlet quality read back from `u.cooling().outletQuality()`. Halving flow raises
+void 0.355→0.528 and P 1.00→1.11 with **no accident flag**. This is the payoff.
+
+**provenance.json status enum has NO `derived`** — unknown → PLACEHOLDER, and
+`PhysicsProvenanceSelfTest` fails on a non-fallback placeholder. A computed-but-
+unconfirmed value must be `to_verify`. New keys: `xsec.void_worth_scale`,
+`coolant.derived_void`, `coolant.slip_ratio`.
+
+**Axial coupling is now ON (default), and the old "doubles the void worth" note was
+WRONG.** Measured: axial +0.0248 vs uniform +0.0222 dk/dvoid — only 12% higher. The
+real bug was a **seed inconsistency**: seeded at cosine void (mean 0.355) but running
+at flux-shape void (mean ~0.64), so the core started super-critical and drifted. Fix:
+`UnifiedReactorCore.selfConsistentVoid()` iterates (void profile × flux shape) to a
+fixed point at construction (3 static passes, ~5 s). Nominal hold went 1.2% → **0.0%**
+drift/30 s. A reflective axial BC is CORRECT here (a uniform core gives a FLAT flux =
+perfect reflector = a stand-in for the axial graphite reflector; a leakage BC made it
+worse and was removed). The bottom-peaked accident shape comes from the ROD geometry.
+`DerivedVoidSelfTest` (13 checks) + all 12 rbmk self-tests pass; gradle compileJava
+EXIT 0. Details in `.openhands/memory/2026-11-12.md` and `docs/DERIVED-NOT-FITTED.md`
+§5a/§5b. New provenance keys: `coolant.axial_coupled_void`, `xsec.void_worth_axial`.
+
+## ENGINE RESEARCH is already done (2026-11-12)
+`docs/RESEARCH-minecraft-custom-engines.md` (259 lines, sourced) + `ENGINE-DECISION.md`
+answer "can Minecraft run a custom engine alongside/under it?": yes — the mod already
+IS the alongside case (pure-Java engine ticked live, ~10× headroom). Native/JNI/FFM
+possible but unnecessary; FFM is final only on JDK 22 and the project targets Java 17,
+so FFM is out. Don't re-research this.
