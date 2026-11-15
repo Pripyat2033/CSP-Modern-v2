@@ -180,3 +180,15 @@ electronics were separate services.
 
 The personnel model is `com.ben.csp.skala.core.SkalaRole`; the computer-room
 station is `DivtConsole`.
+
+### Open gap (documented, not guessed)
+
+The regulation refers to per-post **должностные инструкции** (job/staffing
+instructions) that would spell out the computer service exactly — who the DIVT
+reports to, its shift structure, and its boundary with ЦТАИ. **Those instructions
+are not available:** Ben has confirmed he does not hold them and does not know
+where to find them. So the DIVT role and its console are sourced **only** from
+the Chornobyl Family restoration of the computer room, and are flagged as such.
+The eleven operating roles above are unaffected — they come directly from the
+regulation. This gap is recorded so the DIVT is not later mistaken for a
+regulation-sourced role.
