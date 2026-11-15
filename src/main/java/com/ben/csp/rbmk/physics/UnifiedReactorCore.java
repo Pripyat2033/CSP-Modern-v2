@@ -1,5 +1,6 @@
 package com.ben.csp.rbmk.physics;
 
+import com.ben.csp.rbmk.RbmkCore;
 import com.ben.csp.rbmk.RbmkGeometry;
 
 /**
@@ -26,6 +27,22 @@ import com.ben.csp.rbmk.RbmkGeometry;
  * away when it is put into the 26 April configuration, and shut down when it is
  * not, without anyone having told it which is which.
  *
+ * <p><b>The void is derived, not fitted.</b> The core used to be told its void by a
+ * straight line ({@code void = 0.05 + 0.08*(power-1)}). Now the coolant path is
+ * computed from the energy balance in {@link ChannelCooling}: the core power raises
+ * the coolant enthalpy, the coolant boils, and the boiling decides the void. The
+ * fitted line assumed a nominal void of 0.05; the energy balance from the sourced
+ * plant data (10,000 kg/s, 320 kJ/kg, ~15% outlet quality) gives a core-average void
+ * of ~0.35 — the fitted value was about seven times too low. The plant also tells the
+ * core its actual coolant flow ({@link #setCoolantFlowKgS}), so a pump trip raises the
+ * void and the power with no accident flag anywhere.
+ *
+ * <p><b>One honest calibration.</b> The derived lattice cell's whole-core void worth
+ * is 4.3x the sourced INSAG-7 figure, so the void DEPENDENCE is scaled to the source
+ * ({@code RbmkXsec.VOID_WORTH_SCALE}, registered {@code xsec.void_worth_scale}). The
+ * shape stays the derived physics; only the magnitude is set to the measurement. See
+ * {@code docs/DERIVED-NOT-FITTED.md}.
+ *
  * <p><b>Time.</b> The physics advances at a fixed {@code DT} per step; {@link #step}
  * advances the wall clock by {@code dt} and runs however many fixed steps are
  * needed. For the live game the core runs on its own daemon thread (see
@@ -43,12 +60,12 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     public static final double NOMINAL_VOID = RbmkTransientSolver.NOMINAL_VOID;
     public static final double NOMINAL_FUEL_C = RbmkTransientSolver.NOMINAL_FUEL_C;
     public static final double NOMINAL_GRAPHITE_C = 600.0;
+    /** Nominal coolant mass flow through the core, kg/s (6 pumps x 8,000 m3/h). */
+    public static final double NOMINAL_FLOW_KGS = ChannelCooling.NOMINAL_FLOW_KGS;
 
-    // --- feedback time constants and gains (same form as SpatialReactorCore) ---
-    private static final double TAU_VOID = 3.0;
+    // --- feedback time constants and gains ---
     private static final double TAU_FUEL = 10.0;
     private static final double TAU_GRAPHITE = 30.0;
-    private static final double VOID_PER_POWER = 0.08;
     private static final double FUEL_PER_POWER = 600.0;
     private static final double XENON_COEFF = 0.024;
     private static final double POWER_COEFF = ReactivityModel.POWER_COEFF;
@@ -59,6 +76,7 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         RbmkGeometry.ROD_SPEED_M_PER_S / RbmkGeometry.CORE_HEIGHT_M;
 
     private final RbmkTransientSolver solver = new RbmkTransientSolver();
+    private final ChannelCooling cooling = new ChannelCooling(RbmkCore.AXIAL_NODES);
     private final Xenon xenon = new Xenon(1.0);
     private final DecayHeat decayHeat = new DecayHeat(1.0);
 
@@ -71,6 +89,7 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     private double voidFraction = NOMINAL_VOID;
     private double fuelTempC = NOMINAL_FUEL_C;
     private double graphiteTempC = NOMINAL_GRAPHITE_C;
+    private double coolantFlowKgS = NOMINAL_FLOW_KGS;
     private double fission = 1.0;
     private double keff = 1.0;
     private double simSeconds = 0;
@@ -89,8 +108,13 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     private volatile double realTimeFactor = 1.0;
 
     public UnifiedReactorCore() {
-        // The solver seeds itself to the reference critical state in its constructor;
-        // take the reactivity zero from the eigenvalue the balance reads there.
+        // Seed the coolant at nominal power and full flow, take its axial void
+        // profile, and seed the neutronics at THAT state — so the reference critical
+        // state the reactivity is measured against is the one the live loop runs,
+        // not a uniform placeholder. Then solve for the reactivity zero.
+        cooling.solve(1.0, NOMINAL_FLOW_KGS);
+        voidFraction = cooling.meanVoid();
+        solver.seedCritical(voidFraction, NOMINAL_FUEL_C);
         kRef = solver.balanceKeff();
         keff = kRef;
         fission = solver.power();
@@ -172,7 +196,8 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         }
         moveRod(dt);
 
-        // Feedbacks enter through the cross sections, not a fitted term.
+        // Feedbacks enter through the cross sections, not a fitted term. The void is
+        // the derived axial profile from the previous step.
         solver.setCoreState(voidFraction, fuelTempC);
         solver.setRodInsertion(insertion);
         solver.step(dt, SWEEPS);
@@ -181,11 +206,20 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         keff = solver.balanceKeff();
         simSeconds += dt;
 
+        // Heat: fission plus the fission-product decay that cannot be switched off.
         decayHeat.step(dt, fission);
         double total = DecayHeat.FISSION_SHARE * fission + decayHeat.total();
-        double voidEq = voidFromPower(total);
-        voidFraction += (voidEq - voidFraction) * (dt / TAU_VOID);
+
+        // Coolant: solve the channel energy balance for the heat just produced and the
+        // current flow. The derived void is applied uniformly (the model's feedback
+        // resolution); see the class note on the axial profile.
+        cooling.solve(total, coolantFlowKgS);
+        double tau = Math.max(0.05, ChannelCooling.transitTimeS(
+            coolantFlowKgS, RbmkGeometry.CORE_HEIGHT_M, RbmkGeometry.FUEL_CHANNELS));
+        double alpha = Math.min(1.0, dt / tau);
+        voidFraction += (cooling.meanVoid() - voidFraction) * alpha;
         voidFraction = clamp01(voidFraction);
+
         double fuelEq = tempFromPower(total);
         fuelTempC += (fuelEq - fuelTempC) * (dt / TAU_FUEL);
         graphiteTempC += (fuelEq * 0.95 - graphiteTempC) * (dt / TAU_GRAPHITE);
@@ -268,6 +302,26 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         return realTimeFactor;
     }
 
+    /**
+     * Set the coolant mass flow through the core (kg/s). This is the coupling the
+     * plant owns: when pumps throttle or trip, the flow falls, the coolant boils
+     * harder for the same heat, the void rises and the reactivity rises with it.
+     * The core does not decide its own flow; the plant tells it.
+     */
+    public void setCoolantFlowKgS(double kgs) {
+        this.coolantFlowKgS = Math.max(0.0, kgs);
+    }
+
+    /** The coolant mass flow the core is using (kg/s). */
+    public double coolantFlowKgS() {
+        return coolantFlowKgS;
+    }
+
+    /** The derived coolant state: void, quality, temperature per node. */
+    public ChannelCooling cooling() {
+        return cooling;
+    }
+
     // ---------------------------------------------------------------- helpers
 
     private void moveRod(double dt) {
@@ -277,10 +331,6 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         } else if (insertion > insertionTarget) {
             insertion = Math.max(insertionTarget, insertion - step);
         }
-    }
-
-    private double voidFromPower(double p) {
-        return clamp01(NOMINAL_VOID + VOID_PER_POWER * (p - 1.0));
     }
 
     private double tempFromPower(double p) {

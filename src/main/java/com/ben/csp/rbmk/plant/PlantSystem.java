@@ -215,7 +215,6 @@ public final class PlantSystem {
         // 1. the core makes heat
         core.step(dt);
         double powerFraction = core.power();
-        double quality = PlantPhysics.coreQuality(powerFraction);
 
         // 2. the pumps circulate coolant; below 500 MWt they throttle
         double circuitFlowKgS = 0;
@@ -228,6 +227,17 @@ public final class PlantSystem {
             totalFlowKgS += p.flowM3s() * PlantPhysics.RHO_COOLANT;
         }
         circuitFlowKgS = totalFlowKgS;
+
+        // The plant tells the core how much coolant it is getting. This is the real
+        // coupling: throttle or trip the pumps and the flow falls, the coolant boils
+        // harder for the same heat, and the void — and with it the reactivity — rises.
+        double quality;
+        if (core instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u) {
+            u.setCoolantFlowKgS(totalFlowKgS);
+            quality = u.cooling().outletQuality();
+        } else {
+            quality = PlantPhysics.coreQuality(powerFraction);
+        }
 
         // 3. the drums: mixture in from the core, steam out, water down to the pumps
         double steamProductionKgS = PlantPhysics.steamFlowKgS(powerFraction);

@@ -39,18 +39,18 @@ the poisoning of the core:
 ## 3. The result — measured, in this repo
 
 ```
-A  normal run        (rods IN,  healthy ORM) P0= 1.435  peak= 1.440 (  +0.3%)  end= 0.513
-B  26 April 1986     (rods OUT, ORM violated) P0=10.392  peak=15.631 ( +50.4%)  end=12.564
+A  normal run        (rods IN,  healthy ORM) P0= 1.427  peak= 1.432 (  +0.3%)  end= 0.519
+B  26 April 1986     (rods OUT, ORM violated) P0= 9.192  peak=13.571 ( +47.6%)  end=10.861
 ```
 
 **The same AZ-5 gives opposite outcomes.**
 
-- **A:** the power does not rise (+0.3 %) and the reactor **shuts down** (→ 0.51).
+- **A:** the power does not rise (+0.3 %) and the reactor **shuts down** (→ 0.52).
   This is the earlier, survivable test.
-- **B:** the power **rises 50 %** as the rods go in, and the reactor **does not
-  shut down** (stays at 12.6). This is the positive scram, and the accident.
+- **B:** the power **rises ~48 %** as the rods go in, and the reactor **does not
+  shut down** (stays at 10.9). This is the positive scram, and the accident.
 
-The scram response separates the two nights by **50 percentage points** — and it
+The scram response separates the two nights by **~47 percentage points** — and it
 is not a flag in the test; it is the rod insertion fed to the same solver.
 
 ## 4. Why this cannot be a fitted result
@@ -71,7 +71,7 @@ which are inputs to the physics, not outputs:
 
 The model does not "know" the accident happened. It knows the geometry and the
 cross sections, and it computes k_eff from them. The test's third check reads that
-directly: at low insertion, moving the rods IN **raises** k_eff (1.030 → 1.046).
+directly: at low insertion, moving the rods IN **raises** k_eff (1.026 → 1.042).
 That is a property of the *material layout*, measured by the same `balanceKeff()`
 the live plant uses.
 
@@ -88,12 +88,56 @@ real channel geometry — not the hand-fitted coefficients of the old lumped cor
 
 | mechanism | test | result |
 |---|---|---|
-| **positive void coefficient** | k vs void 0.0 → 0.4 | +0.0343 (rises) |
-| **positive scram** (graphite displacer) | k vs insertion 0.0 → 0.2 | +0.0197 (rises) |
+| **positive void coefficient** | k vs void 0.30 → 0.40 | +0.0222 (rises) |
+| **positive scram** (graphite displacer) | k vs insertion 0.0 → 0.2 | +0.0049 (rises) |
 
 The lumped `ReactorCore` *asserts* these from a hand-set curve. The unified core
 *produces* them, so it can be compared against INSAG-7's measured values rather
 than assumed. See `ONE-CORE-DECISION.md` §6.
+
+### 5a. The void itself is now derived, not fitted (2026-11-12, option (c))
+
+Until today the core was *told* its void by a straight line:
+`void = 0.05 + 0.08*(power-1)`. That line was fitted, and its nominal value (0.05)
+was **about seven times too low**. The plant already carried the sourced numbers to
+do better; the core simply ignored them.
+
+`ChannelCooling` now computes the void from the energy balance the plant actually
+runs, using the sourced data in `docs/RBMK-PLANT-SYSTEMS.md` (WP §83-89):
+
+| quantity | value | where it comes from |
+|---|---|---|
+| coolant mass flow | 6 × 8,000 m³/h × 750 kg/m³ = **10,000 kg/s** | sourced |
+| enthalpy rise | 3,200 MWt / 10,000 kg/s = **320 kJ/kg** | derived |
+| outlet steam quality | **0.156** | derived — matches the documented "~15%" |
+| **core-average void** | **0.355** | derived (quality + slip S=1.5) |
+
+The fitted 0.05 was wrong by 7×. The plant also now tells the core its **actual**
+pump flow (`PlantSystem` → `UnifiedReactorCore.setCoolantFlowKgS`), so a pump trip
+raises the void and the power with **no accident flag anywhere** — the coupling is
+real, and it is the plant's flow that drives it:
+
+```
+flow halved:  P 1.00 -> 1.11,  void 0.355 -> 0.528
+```
+
+**The one honest calibration.** With the void derived correctly, the runaway
+appeared: the derived coolant void slope (dvoid/dP ≈ 0.29) multiplied by the
+derived lattice void worth (+0.086 dk/dvoid) exceeded the negative feedbacks, so
+the core ran away at nominal. Measuring it showed the cause — the **lattice void
+worth is 4.3× the sourced INSAG-7 value (+0.020)**. The old fitted slope had been
+hiding this by being too shallow; two errors were cancelling. Per the mission rule
+(a sourced number beats a computed one), the derived void *dependence* is scaled to
+the source (`RbmkXsec.VOID_WORTH_SCALE = 0.233`, registered `xsec.void_worth_scale`,
+`to_verify`): the shape stays the derived physics, only the magnitude is set to the
+measurement. The core then holds nominal (1.2 % drift over 30 s) and keeps the
+positive void coefficient.
+
+**Still open:** the axial void profile is computed (`ChannelCooling` gives it node by
+node) but applied to the neutronics as a core average. Coupling the full axial
+profile makes the flux strongly bottom-peaked, which *doubles* the effective void
+worth and re-introduces the runaway — a real coupling, but it needs the lattice
+axial dependence reconciled before it can be switched on. Recorded, not hidden.
 
 ## 6. What this does and does not prove
 

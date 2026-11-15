@@ -127,7 +127,17 @@ public final class RbmkTransientSolver {
      * converge together to the operator's true fixed point.
      */
     public void seedCritical() {
-        setCoreState(NOMINAL_VOID, NOMINAL_FUEL_C);
+        seedCritical(NOMINAL_VOID, NOMINAL_FUEL_C);
+    }
+
+    /**
+     * Seed to the critical fixed point at a given UNIFORM void fraction and fuel
+     * temperature. Seeding at the state the live loop will actually run keeps the
+     * reactivity zero honest — a seed at 0.05 while the loop runs at 0.35 would
+     * start the core badly super-critical.
+     */
+    public void seedCritical(double voidFraction, double fuelTempC) {
+        setCoreState(voidFraction, fuelTempC);
         setRodInsertion(NOMINAL_INSERTION);
 
         // Start from the static solve — only an initial SHAPE; the calibration loop
@@ -135,7 +145,7 @@ public final class RbmkTransientSolver {
         RbmkSolver3D stat = new RbmkSolver3D();
         stat.setOmega(RbmkSolver3D.SAFE_OMEGA);
         stat.setInnerSweeps(3);
-        stat.setCoreState(NOMINAL_VOID, NOMINAL_FUEL_C);
+        stat.setCoreState(voidFraction, fuelTempC);
         stat.setRodInsertion(NOMINAL_INSERTION);
         stat.solve(400, 1e-7);
         double k = stat.keff();

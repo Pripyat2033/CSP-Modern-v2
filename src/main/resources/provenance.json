@@ -142,6 +142,25 @@
       "status": "to_verify",
       "source": "Way-Wigner decay-heat law H(t)/P0 = 0.066 t^-0.2 for long operation (standard thermal-reactor value; see Glasstone & Sesonske). The 6.5% equilibrium figure is the value at shutdown after long operation.",
       "note": "The group constants (lambda_i, c_i) in DecayHeat.java are a least-squares fit of this curve over 1 s..1 day, with sum(c_i) fixed to this value. To confirm the 6.5% figure against a NIKIET/SKALA source."
+    },
+    "xsec.void_worth_scale": {
+      "value": 0.233,
+      "unit": "dimensionless",
+      "status": "to_verify",
+      "source": "Calibration: the derived lattice cell's whole-core void worth (dk_eff/dvoid = +0.086 per unit void) is 4.3x the sourced INSAG-7 working-point value (+0.020). The derived cell is blended toward its zero-void state by this factor so the whole-core void coefficient matches INSAG-7 (+0.022 measured, within 10%). The SHAPE of the void dependence stays the derived physics; only its magnitude is set to the source. To be reconciled when the lattice void worth is explained.",
+      "measured": "+0.0222 dk/dvoid at the working point, vs INSAG-7 +0.0200"
+    },
+    "coolant.derived_void": {
+      "value": 0.355,
+      "unit": "core-average void fraction at nominal power",
+      "status": "to_verify",
+      "source": "COMPUTED, not guessed: channel energy balance from sourced plant data (docs/RBMK-PLANT-SYSTEMS.md, WP 83-89): 6 x 8000 m3/h at 750 kg/m3 = 10,000 kg/s; 3,200 MWt / 10,000 kg/s = 320 kJ/kg enthalpy rise; outlet steam quality 0.156 (matches the documented ~15%); void from quality with slip S=1.5. Replaces the fitted void = 0.05 + 0.08*(power-1), whose 0.05 was ~7x too low. To confirm against a measured RBMK channel void/quality distribution."
+    },
+    "coolant.slip_ratio": {
+      "value": 1.5,
+      "unit": "dimensionless",
+      "status": "to_verify",
+      "source": "Slip ratio S in alpha = 1/(1+((1-x)/x)(rho_v/rho_l)S). S=1 is homogeneous; real channel flow gives 1.2-2.0. 1.5 is representative. The one number in the coolant path not taken straight from a source."
     }
   }
 }

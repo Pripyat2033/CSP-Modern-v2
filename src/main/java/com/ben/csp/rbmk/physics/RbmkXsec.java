@@ -66,6 +66,36 @@ public record RbmkXsec(
     // (xsec.void_feedback_scale, xsec.doppler_feedback_scale, marked fallback).
 
     /**
+     * Scale on the DERIVED lattice void dependence, to match the sourced whole-core
+     * void coefficient. The lattice calculation gives a whole-core dk_eff/dvoid of
+     * +0.086 per unit void; INSAG-7 Table II-I gives +0.020 at the working point —
+     * 4.3x smaller. The lattice value is the OUTLIER, and until it is explained the
+     * sourced figure is the authority (SGB: a sourced number beats a computed one).
+     * So the derived cell is blended toward its zero-void baseline by this factor:
+     * the SHAPE of the void dependence stays the derived physics, its MAGNITUDE is
+     * set to the source. Measured and registered: {@code xsec.void_worth_scale}.
+     * This is a calibration, not a guess — and it is flagged {@code to_verify}
+     * until the lattice void worth is reconciled.
+     */
+    private static final double VOID_WORTH_SCALE = 0.233;
+
+    /**
+     * Blend a cell toward a baseline by a factor f: {@code base + f*(cell-base)}.
+     * Scaling the void DEPENDENCE while holding the zero-void state exact.
+     */
+    private static RbmkXsec blend(RbmkXsec base, RbmkXsec cell, double f) {
+        return new RbmkXsec(
+            base.d1() + f * (cell.d1() - base.d1()),
+            base.sr1() + f * (cell.sr1() - base.sr1()),
+            base.nsf1() + f * (cell.nsf1() - base.nsf1()),
+            base.d2() + f * (cell.d2() - base.d2()),
+            base.sa2() + f * (cell.sa2() - base.sa2()),
+            base.nsf2() + f * (cell.nsf2() - base.nsf2()),
+            base.ss12() + f * (cell.ss12() - base.ss12()),
+            base.ss21() + f * (cell.ss21() - base.ss21()));
+    }
+
+    /**
      * A fuel channel cell (ТК): homogenised fuel + graphite + water.
      *
      * <p>The constants come from the lattice calculation in {@code tools/lattice}
@@ -78,6 +108,13 @@ public record RbmkXsec(
     public static RbmkXsec fuelCell(double voidFraction, double fuelTempC) {
         RbmkXsec derived = LatticeTable.cell(voidFraction);
         if (derived != null) {
+            // Match the sourced whole-core void worth: blend the derived cell toward
+            // its zero-void state. The SHAPE of the void dependence is the derived
+            // physics; its magnitude is set to INSAG-7 (see VOID_WORTH_SCALE).
+            RbmkXsec baseline = LatticeTable.cell(0.0);
+            if (baseline != null) {
+                derived = blend(baseline, derived, VOID_WORTH_SCALE);
+            }
             // Doppler: resonance absorption in U-238 grows with fuel temperature,
             // which ADDS to the fast removal (a NEGATIVE reactivity feedback). The
             // scale is the U-238 resonance width; the lattice self-shielding fixes
