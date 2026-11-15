@@ -515,6 +515,37 @@ worse and was removed). The bottom-peaked accident shape comes from the ROD geom
 EXIT 0. Details in `.openhands/memory/2026-11-12.md` and `docs/DERIVED-NOT-FITTED.md`
 §5a/§5b. New provenance keys: `coolant.axial_coupled_void`, `xsec.void_worth_axial`.
 
+## EQUIPMENT REGISTER — the completeness authority (commit f4829e9, 2026-11-12)
+
+Ben's fear: "if I don't name every machine you won't model it, and I can't list
+them all." Fix = a register **researched from the documents**, not dictated.
+`src/main/resources/equipment-register.json` (106 items) + `plant/EquipmentRegister.java`
+(gate: `namedOnly()`, `unsourced()`, `summary()`) + `EquipmentRegisterSelfTest` (12
+checks) + `/rbmk register` in-game. Status per item: modelled / specified /
+named-only / unsourced. Today: **25 modelled, 78 named-only, 3 unsourced** (compressed
+air, generator hydrogen cooling, fire suppression — flagged, NOT guessed).
+
+**THE SPINE SOURCE: INSAG-7 Table II-II "Main equipment for an RBMK unit"** — a
+numbered component list WITH per-unit counts and masses (Fig. 11-2). It is where the
+easy-to-forget items come from: **ventilation fans** (VDN suction at level +43.0,
+exhaust at +35.0), **cranes** (central hall 50/10 tf, MCP room 50/10 tf, machine hall
+125 tf), refuelling machine (~350 t), controlled-leakage tanks. NUREG-1250 §2.1-2.6
+gives the systems (MFC, ECCS/САОР 12×25 m³ accumulators, accident localization,
+pressure-suppression pool 3200 m³, gas circuit 80% He/20% N₂, control-rod cooling).
+Fetch INSAG-7 with curl from `https://www-pub.iaea.org/MTCD/Publications/PDF/Pub913e_web.pdf`;
+NUREG-1250 is local at `/workspace/tools/nureg1250.pdf`. **Tavily is over quota** —
+use curl + pypdf, not the search tool. NEXT: the register is not yet exhaustive (needs
+the plant's техническое описание) and the gate is not yet wired to the SGB "done" rule.
+
+## TEST KIT — how to build & serve it (Ben cannot test a raw jar)
+
+No server lives in the repo; build one. Full recipe in `.openhands/memory/2026-11-12.md`.
+Short form: download Fabric server launcher + Fabric API 0.92.12+1.20.1 for MC 1.20.1,
+`eula=true`, flat world, run with a stdin FIFO, `/rbmk plant build demo` (the plain
+`build` REFUSES by the hard gate), `forceload add -64 -64 64 64`, `rbmk plant start`,
+`save-all flush`, `stop`; then `tools/make_energoblok_kit.py` and serve the zip on
+port 12000. **Gradle needs `JAVA_HOME` exported; `--offline` fails (foojay plugin).**
+
 ## ENGINE RESEARCH is already done (2026-11-12)
 `docs/RESEARCH-minecraft-custom-engines.md` (259 lines, sourced) + `ENGINE-DECISION.md`
 answer "can Minecraft run a custom engine alongside/under it?": yes — the mod already
