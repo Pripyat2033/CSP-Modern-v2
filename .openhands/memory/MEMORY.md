@@ -623,3 +623,19 @@ named-only list IS the to-do. Fetch INSAG-7: curl the IAEA Pub913e_web.pdf (work
 lie; what is deliverable is NO functional delineation (every phenomenon coupled+measured
 or listed, never silently absent) + no accident mode + every constant sourced/flagged.**
 Running the jar in Minecraft tests the MOD boot + experience, NOT the physics.
+
+## MACHINERY REGISTER — the third fidelity leg (commit 11f4227, 2026-11-15)
+The project now has THREE fidelity registers, each a gate:
+1. `equipment-register.json` (140) — does the machine EXIST? `/rbmk register`
+2. `MachineValidator` — is its SHELL the right shape? (geometry)
+3. **`machinery-register.json` (17) — does it BEHAVE as the real machine?** `/rbmk machinery`
+Leg 3 answers Ben's "what if the feedwater pump's flow rate is wrong?" Each performance
+quantity ties BY NAME to a `PlantPhysics` constant; `MachineryRegister.conformant()`
+reads it by reflection and fails if the code DRIFTED from the recorded value.
+`MachineryRegisterSelfTest` = 14 checks, PROVEN non-vacuous (a wrong value IS flagged;
+editing MCP_FLOW_RATED_M3S 8000→7000 failed the test for real). Counts: 4 verified,
+13 to_verify, 0 unsourced, 0 drifted. The 13 to_verify = the research to-do (they trace
+to WP-keyed figures not yet pinned to a primary doc). NOTE provenance.json is still
+CORE-PHYSICS only; machine perf lives in machinery-register.json.
+**The three registers are the answer to "how do we trust it?": exist + shape + behaviour,
+all sourced, all machine-checked, none silently absent.**
