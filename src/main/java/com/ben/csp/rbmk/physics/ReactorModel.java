@@ -2,21 +2,20 @@ package com.ben.csp.rbmk.physics;
 
 /**
  * The reactor core as the plant sees it: one object that evolves in time and
- * reports its state. Three implementations exist:
+ * reports its state.
  *
- * <ul>
- *   <li>{@link UnifiedReactorCore} — <b>the core.</b> The time-dependent spatial
- *       flux (the state itself) with the void / temperature / xenon feedback loop
- *       CLOSED. This is what {@code /rbmk plant start} runs;</li>
- *   <li>{@link ReactorCore} — the lumped point-kinetics core: fast, spatially
- *       averaged, still used by {@code /rbmk stress} and the accident-sequence
- *       tests;</li>
- *   <li>{@link SpatialReactorCore} — a 3D static eigenvalue feeding a lumped
- *       amplitude, kept for comparison ({@code /rbmk plant start 3d}).</li>
- * </ul>
+ * <p><b>There is one core: {@link UnifiedReactorCore}.</b> The time-dependent
+ * spatial flux is the state itself, with the void / temperature / xenon feedback
+ * loop CLOSED. This is what {@code /rbmk plant start} runs and what the plant,
+ * the commands and the status read all use.
  *
- * <p>All expose the same state, so the plant, the commands and the status read
- * are identical whichever core is running.
+ * <p>Two earlier implementations still exist but are retired and unreferenced:
+ * {@link ReactorCore} (lumped point kinetics) and {@link SpatialReactorCore}
+ * (a static eigenvalue feeding a lumped amplitude). They are kept only under the
+ * ZERO DELETION POLICY, for the user to remove. Nothing runs them.
+ *
+ * <p>All implementations expose the same state, so the plant, the commands and
+ * the status read are identical whichever core is running.
  */
 public interface ReactorModel {
 

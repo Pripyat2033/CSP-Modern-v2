@@ -18,10 +18,10 @@ import com.ben.csp.rbmk.plant.PlantTicker;
 import com.ben.csp.rbmk.plant.SteamSeparator;
 import com.ben.csp.rbmk.module.ModuleRegistry;
 import com.ben.csp.rbmk.module.PlantModule;
-import com.ben.csp.rbmk.physics.ReactorCore;
+import com.ben.csp.rbmk.physics.ReactorModel;
 import com.ben.csp.rbmk.physics.OpenMcResult;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
-import com.ben.csp.rbmk.physics.SpatialReactorCore;
+import com.ben.csp.rbmk.physics.UnifiedReactorCore;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -60,13 +60,13 @@ public final class RbmkTestCommand {
     private static final double OMEGA = RbmkSolver3D.SAFE_OMEGA;
 
     private static RbmkSolver3D solver;
-    private static ReactorCore core;
+    private static ReactorModel core;
     private static double lastMspt;
     private static int lastIters;
 
     // stress test state
     private static boolean stressListenerInstalled;
-    private static java.util.List<ReactorCore> stressCores;
+    private static java.util.List<ReactorModel> stressCores;
     private static java.util.List<PlantSystem> stressPlants;
     private static int stressTicksLeft;
     private static double stressCoreMs;
@@ -350,7 +350,7 @@ public final class RbmkTestCommand {
         if (solver == null) {
             solver = new RbmkSolver3D();
             solver.setOmega(OMEGA);
-            core = new ReactorCore();
+            core = new UnifiedReactorCore();
         }
 
         int nodes = solver.activeNodes();
@@ -436,14 +436,16 @@ public final class RbmkTestCommand {
 
         stressCores = new java.util.ArrayList<>();
         stressPlants = new java.util.ArrayList<>();
+        long c0 = System.nanoTime();
         for (int i = 0; i < count; i++) {
-            stressCores.add(new ReactorCore());
+            stressCores.add(new UnifiedReactorCore());
             if (withPlant) {
                 PlantSystem ps = new PlantSystem();
                 ps.startUp();
                 stressPlants.add(ps);
             }
         }
+        double coreBuildMs = (System.nanoTime() - c0) / 1e6;
         stressTicksLeft = 300;
         stressCoreMs = 0;
         stressServerMs = 0;
@@ -451,6 +453,11 @@ public final class RbmkTestCommand {
 
         feedback(s, String.format("stress: built %d %s (%d blocks) in %.0f ms",
             count, withPlant ? "complete plants" : "cores", placed, buildMs), Formatting.GOLD);
+        // The unified core solves its self-consistent nominal state at construction,
+        // so N cores cost N times that solve up front. Surface it: it is seconds each.
+        feedback(s, String.format("  core construction: %.0f ms total (%.0f ms each) "
+            + "— the unified core solves its nominal state at build time",
+            coreBuildMs, count > 0 ? coreBuildMs / count : 0), Formatting.WHITE);
         feedback(s, "  now running them live for 15 s — watch the tick cost...",
             Formatting.GRAY);
         LOGGER.info("RBMK stress start: {} {}{}, {} blocks, build {} ms",
@@ -464,7 +471,7 @@ public final class RbmkTestCommand {
             return;
         }
         long t0 = System.nanoTime();
-        for (ReactorCore c : stressCores) {
+        for (ReactorModel c : stressCores) {
             c.step(0.05);
         }
         for (PlantSystem p : stressPlants) {
@@ -748,12 +755,14 @@ public final class RbmkTestCommand {
         feedback(s, String.format("  core:      power %.3f  (%.0f MWt: %.1f fission + %.1f decay heat), rods %.2f",
             p.core().power(), thermalMw, fissionMw, thermalMw - fissionMw, p.core().insertion()),
             Formatting.WHITE);
-        if (p.core() instanceof SpatialReactorCore sp) {
-            feedback(s, String.format("  3D solver: k_eff %.5f, %.1f ms/tick "
-                + "(1 outer iteration over %d nodes)",
-                sp.keff(), sp.lastSolveMs(), sp.solver().activeNodes()), Formatting.WHITE);
-        }
-        if (p.core() instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore uc) {
+        // The static-eigenvalue SpatialReactorCore was retired (there is one core now),
+        // so this readout can no longer fire. Kept commented per the ZERO DELETION POLICY.
+        // if (p.core() instanceof SpatialReactorCore sp) {
+        //     feedback(s, String.format("  3D solver: k_eff %.5f, %.1f ms/tick "
+        //         + "(1 outer iteration over %d nodes)",
+        //         sp.keff(), sp.lastSolveMs(), sp.solver().activeNodes()), Formatting.WHITE);
+        // }
+        if (p.core() instanceof UnifiedReactorCore uc) {
             feedback(s, String.format("  THE core:  k_eff %.5f, void %.3f, fuel %.0f C, "
                 + "xenon %.2f, %.1f ms/step, %.2fx real time",
                 uc.keff(), uc.voidFraction(), uc.fuelTempC(), uc.xenonRatio(),

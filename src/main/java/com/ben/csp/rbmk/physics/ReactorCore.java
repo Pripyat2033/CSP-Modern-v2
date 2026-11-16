@@ -19,7 +19,14 @@ import com.ben.csp.rbmk.RbmkGeometry;
  * </pre>
  * This is the structure of an operator-training simulator: a reference critical
  * state plus the deltas that drive the power.
+ *
+ * @deprecated 2026-11-15: retired. The project has one core, {@link UnifiedReactorCore}
+ *     (the time-dependent spatial flux with the feedback loop closed). This lumped
+ *     point-kinetics core is kept only for historical reference; nothing references
+ *     it any more. It still compiles, but no production or test path uses it.
+ *     TODO: User to delete this file later (ZERO DELETION POLICY).
  */
+@Deprecated
 public final class ReactorCore implements ReactorModel {
 
     private final PointKinetics kinetics = new PointKinetics();

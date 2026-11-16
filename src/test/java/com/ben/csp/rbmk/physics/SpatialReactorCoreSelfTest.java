@@ -13,7 +13,13 @@ package com.ben.csp.rbmk.physics;
  *   <li>AZ-5 shuts the core down;</li>
  *   <li>one solver iteration per tick costs a small fraction of the tick budget.</li>
  * </ul>
+ *
+ * @deprecated 2026-11-15: the static-eigenvalue {@link SpatialReactorCore} is
+ *     retired — the project has one core, {@link UnifiedReactorCore}, whose
+ *     self-test supersedes this. Kept (not deleted) per the ZERO DELETION POLICY;
+ *     user to delete this file together with {@code SpatialReactorCore.java}.
  */
+@Deprecated
 public final class SpatialReactorCoreSelfTest {
 
     private static int checks = 0;

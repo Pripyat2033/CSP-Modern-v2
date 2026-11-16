@@ -1,8 +1,7 @@
 package com.ben.csp.rbmk.plant;
 
 import com.ben.csp.rbmk.physics.ReactorModel;
-import com.ben.csp.rbmk.physics.ReactorCore;
-import com.ben.csp.rbmk.physics.SpatialReactorCore;
+import com.ben.csp.rbmk.physics.UnifiedReactorCore;
 
 /**
  * The whole RBMK-1000 plant as a set of coupled, working systems — not one
@@ -52,18 +51,22 @@ public final class PlantSystem {
     private String tripReason = null;
     private double timeS = 0;
 
-    /** Build the plant with the lumped core (fast, spatially averaged). */
+    /** Build the plant on THE core (the unified spatial core). */
     public PlantSystem() {
-        this(false);
+        this(new UnifiedReactorCore());
     }
 
     /**
-     * Build the plant, choosing the core. With {@code spatial} true the reaction
-     * is driven by the full 3D two-group diffusion solver, ticked live; otherwise
-     * by the lumped point-kinetics core.
+     * Build the plant on THE core (the unified spatial core).
+     *
+     * @param spatial retained for source compatibility; ignored. There is only one
+     *     core now — the lumped and static-eigenvalue cores were retired — so this
+     *     always builds {@link UnifiedReactorCore}.
+     * @deprecated use {@link #PlantSystem()}.
      */
+    @Deprecated
     public PlantSystem(boolean spatial) {
-        this(spatial ? new SpatialReactorCore() : new ReactorCore());
+        this(new UnifiedReactorCore());
     }
 
     /**

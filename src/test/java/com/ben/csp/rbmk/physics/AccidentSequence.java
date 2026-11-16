@@ -20,7 +20,7 @@ public final class AccidentSequence {
         double dt = 0.05;
 
         // ---- 1. steady, critical core ----
-        ReactorCore core = new ReactorCore();
+        ReactorModel core = new UnifiedReactorCore();
         for (int k = 0; k < 5; k++) {
             System.out.printf("  t=%3.0fs  P=%.4f  rho=%+.6f  void=%.4f  Tf=%.1f  Xe=%.4f%n",
                 k * 24.0, core.power(), core.reactivity(), core.voidFraction(),
@@ -124,7 +124,7 @@ public final class AccidentSequence {
         System.out.println("AccidentSequence: " + checks + " checks passed.");
     }
 
-    private static void run(ReactorCore core, double dt, double seconds) {
+    private static void run(ReactorModel core, double dt, double seconds) {
         int n = (int) (seconds / dt);
         for (int k = 0; k < n; k++) {
             core.step(dt);
@@ -132,7 +132,7 @@ public final class AccidentSequence {
     }
 
     /** Approximate instantaneous period from two samples a second apart. */
-    private static double periodOf(ReactorCore core) {
+    private static double periodOf(ReactorModel core) {
         double p1 = core.power();
         run(core, 0.05, 1.0);
         double p2 = core.power();

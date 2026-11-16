@@ -2,7 +2,7 @@ package com.ben.csp.rbmk.plant;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
-import com.ben.csp.rbmk.physics.SpatialReactorCore;
+import com.ben.csp.rbmk.physics.UnifiedReactorCore;
 
 /**
  * Runs the whole plant on the server clock: one {@link PlantSystem} advanced
@@ -32,12 +32,15 @@ public final class PlantTicker {
         return startUnified();
     }
 
-    /** Start the plant, choosing the core: lumped (false) or full 3D (true). */
+    /**
+     * Start the plant on THE core (the unified spatial core). The {@code spatial}
+     * flag is retained for source compatibility and ignored: there is only one core.
+     *
+     * @deprecated use {@link #startPlant()}.
+     */
+    @Deprecated
     public static PlantSystem startPlant(boolean spatial) {
-        plant = new PlantSystem(spatial);
-        plant.startUp();
-        lastTickNs = 0;
-        return plant;
+        return startUnified();
     }
 
     /**
@@ -46,7 +49,7 @@ public final class PlantTicker {
      * cross sections). This is the default plant.
      */
     public static PlantSystem startUnified() {
-        plant = new PlantSystem(new com.ben.csp.rbmk.physics.UnifiedReactorCore());
+        plant = new PlantSystem(new UnifiedReactorCore());
         plant.startUp();
         lastTickNs = 0;
         return plant;
@@ -64,9 +67,9 @@ public final class PlantTicker {
         return plant;
     }
 
-    /** True when the running plant is driven by the full 3D spatial solver. */
+    /** True when the running plant is driven by the unified spatial core. */
     public static boolean isSpatial() {
-        return plant != null && plant.core() instanceof SpatialReactorCore;
+        return plant != null && plant.core() instanceof UnifiedReactorCore;
     }
 
     public static void stopPlant() {

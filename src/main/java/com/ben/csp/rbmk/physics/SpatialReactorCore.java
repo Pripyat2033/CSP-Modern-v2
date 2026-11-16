@@ -26,7 +26,14 @@ import com.ben.csp.rbmk.RbmkGeometry;
  *
  * <p>The per-tick cost is the cost of those solver iterations — the number the
  * whole 1:4 exercise exists to measure. {@link #lastSolveMs()} reports it.
+ *
+ * @deprecated 2026-11-15: retired. Its feedback loop is now part of
+ *     {@link UnifiedReactorCore}, which is the one core the project runs. This
+ *     static-eigenvalue hybrid is kept only for historical reference; nothing
+ *     references it any more.
+ *     TODO: User to delete this file later (ZERO DELETION POLICY).
  */
+@Deprecated
 public final class SpatialReactorCore implements ReactorModel {
 
     private final RbmkSolver3D solver = new RbmkSolver3D();
