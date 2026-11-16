@@ -15,6 +15,19 @@ by the label table below; a missing file is reported, not faked.
     python3 fetch_rosfond.py                 # convert everything present
     python3 fetch_rosfond.py --list          # show what it wants and what it has
 
+IMPORTANT — reconstruct first. ROSFOND neutron files are in the resonance
+representation (MF=2), and their MF=3 pointwise cross section is ZERO below the
+resonance range. Converting them straight gives a moderator-only cell
+(k_inf ~0.03). For those files run the NJOY reconstruction instead, which writes
+the same cache in one step:
+
+    python3 reconstruct_rosfond.py           # MF=2 -> pointwise, needs njoy
+
+Use THIS script only for files that are already pointwise (MF=3). As a guard, it
+refuses to write a fission/capture section that is exactly zero at thermal energy
+(the tell of an un-reconstructed file) and says so instead of caching a wrong
+number.
+
 This is deliberately NOT a downloader: it does not pretend to reach a portal it
 cannot reach. It converts, or it tells you what is missing.
 """
@@ -53,6 +66,30 @@ def raw_path(label: str, raw_dir: str = RAW) -> str | None:
     return None
 
 
+def _thermal_xs(energy, xs, ev: float = 0.0253) -> float:
+    """The cross section nearest a thermal energy, for the resonance-trap guard."""
+    if not energy:
+        return 0.0
+    i = min(range(len(energy)), key=lambda k: abs(energy[k] - ev))
+    return xs[i]
+
+
+def resonance_trap(energy, xs) -> bool:
+    """True if this looks like an un-reconstructed resonance-representation file.
+
+    ROSFOND neutron files carry their thermal/epithermal resonances in MF=2, and
+    their MF=3 pointwise cross section is ZERO below the resonance range. A file
+    read straight in therefore gives a moderator-only cell. The tell is a fission
+    (or capture) section whose value at thermal energy is exactly zero while the
+    section still spans the thermal range — the signature of unresolved MF=2, not
+    of a genuinely tiny cross section. Such a file must go through NJOY first
+    (see reconstruct_rosfond.py).
+    """
+    if not energy or energy[0] > 1.0:
+        return False  # does not reach thermal: nothing to be zero *at*
+    return _thermal_xs(energy, xs) == 0.0
+
+
 def convert(label: str, za: int, out_dir: str, raw_dir: str = RAW) -> list[int]:
     """Convert every needed reaction present in a label's ENDF-6 file."""
     path = raw_path(label, raw_dir)
@@ -66,6 +103,11 @@ def convert(label: str, za: int, out_dir: str, raw_dir: str = RAW) -> list[int]:
         if got is None:
             continue
         energy, xs = got
+        if mt in (18, 102) and resonance_trap(energy, xs):
+            print(f"  !! {label} MT={mt}: zero at thermal energy — this file is in "
+                  f"the resonance representation (MF=2); reconstruct it with "
+                  f"reconstruct_rosfond.py before converting. Skipping, not faking.")
+            continue
         doc = endf6.to_cache(energy, xs, library=sources.get("rosfond").library,
                              za=za, mt=mt)
         with open(os.path.join(out_dir, f"{label}_{mt}.json"), "w") as f:

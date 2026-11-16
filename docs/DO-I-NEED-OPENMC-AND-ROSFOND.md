@@ -91,18 +91,32 @@ order, so the shape is clear:
 ### 4b. Prepare ROSFOND (this is your zip in Downloads)
 Your `ROSFOND-2010` zip is the input. Two possible paths, pick by what you want:
 
-**Path A — the Java core's constants (pure Python, no OpenMC needed):**
+**Path A — the Java core's constants (pure Python + NJOY, no OpenMC needed):**
 ```bash
 cd ~/CSP-Modern-v2
 # 1. unpack your ROSFOND zip into the layout the converters expect
 python3 tools/lattice/import_rosfond.py --from /path/to/your/ROSFOND.zip
-# 2. convert the ENDF-6 files into the cache
-python3 tools/lattice/fetch_rosfond.py
+# 2. reconstruct the resonances (MF=2 -> pointwise). ROSFOND neutron files are
+#    in the resonance representation: their MF=3 cross section is ZERO below the
+#    resonance range, so reading them straight gives a moderator-only cell
+#    (k_inf ~0.03). NJOY RECONR/BROADR turns them into a real pointwise file.
+pip install njoy==2016.78          # ships the NJOY binary; no conda, no OpenMC
+python3 tools/lattice/reconstruct_rosfond.py
 # 3. emit the constants the Java core loads (writes src/main/resources/rbmk_lattice.json)
 python3 tools/lattice/emit_constants.py --source rosfond
 # 4. rebuild the mod so the new constants are baked in
 ./gradlew build
 ```
+
+> **Why step 2 is not optional.** This was the "ROSFOND doesn't work" bug
+> (found 2026-11-15). ROSFOND ships thermal/epithermal resonances as MF=2
+> *parameters*, not as MF=3 pointwise values, and its MF=3 sections are zero below
+> the resonance range. `fetch_rosfond.py` now refuses to cache a fission or capture
+> section that is exactly zero at thermal energy and tells you to reconstruct —
+> it will not silently write a wrong number. `reconstruct_rosfond.py` drives NJOY
+> directly (no OpenMC: OpenMC is not on PyPI and cannot be installed here) and
+> parses the PENDF with the lattice's own reader, so the whole path runs with
+> `pip install njoy` alone.
 
 **Path B — the full OpenMC Monte Carlo sweep:**
 ```bash

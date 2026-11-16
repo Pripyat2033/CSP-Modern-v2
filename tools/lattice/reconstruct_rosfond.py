@@ -11,20 +11,33 @@ the lattice gives a moderator-only cell — k_inf collapses to ~0.03 and the
 fission term is ~1e-4. That is not a code bug; it is what the file contains.
 
 The reconstruction is the standard one: run NJOY (RECONR -> BROADR) to turn the
-resonance parameters into a pointwise cross section across the full energy range.
-OpenMC ships the driver (``openmc.data.IncidentNeutron.from_njoy``), and NJOY
-2016.78 is present in the sandbox. After reconstruction the evaluated thermal
-values come out right (U-235 fission 584.9 b and capture 98.7 b at 0.0253 eV,
-against the ENDF/B-VIII.0 values 585 and 99 the verification suite checks).
+resonance parameters into a pointwise cross section across the full energy range,
+then read the resulting PENDF back with the lattice's own ENDF-6 reader
+(``endf6.py``). After reconstruction the evaluated thermal values come out right
+(U-235 fission ~585 b and capture ~99 b at 0.0253 eV, the values the verification
+suite checks).
+
+WHY NJOY DIRECTLY, NOT OPENMC:
+
+The first cut drove ``openmc.data.IncidentNeutron.from_njoy``. That works where
+OpenMC is installed, but OpenMC is not on PyPI and cannot be added to the sandbox,
+so the reconstruction could not actually be RUN here — only described. NJOY
+itself *is* installable (``pip install njoy==2016.78`` ships the real binary), and
+the lattice already owns a complete MF=3 reader, so this script drives NJOY with a
+hand-written RECONR/BROADR deck and parses the PENDF output with ``endf6.py``. No
+OpenMC, no extra data package — one less thing that can fail.
 
 This writes the SAME per-nuclide, per-reaction JSON cache shape that
 fetch_endf.py / fetch_rosfond.py produce, so the rest of the lattice pipeline
 (rbmk_cell.py, rbmk_spectrum.py, emit_constants.py) runs unchanged.
 
 Usage:
-    python3 reconstruct_rosfond.py                 # all 28, 4 workers
+    python3 reconstruct_rosfond.py                 # all raw files, 4 workers
     python3 reconstruct_rosfond.py --only U235     # one nuclide
     python3 reconstruct_rosfond.py --jobs 4
+
+Requires the ``njoy`` executable on PATH (``pip install njoy==2016.78``). The
+script says so plainly and stops if it is missing; it never invents data.
 """
 from __future__ import annotations
 
@@ -32,8 +45,13 @@ import argparse
 import json
 import os
 import shutil
+import subprocess
 import sys
+import tempfile
 from concurrent.futures import ProcessPoolExecutor, as_completed
+
+import endf6
+from fetch_rosfond import NUCLIDES as _NUCLIDES
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(HERE, "rosfond_raw")
@@ -42,26 +60,54 @@ OUT = os.path.join(HERE, "rosfond_cache")
 # The reactions the lattice consumes, in ENDF MT numbers.
 MTS = (1, 2, 4, 16, 18, 102)
 TEMP = 294.0
+ERR = 0.001
 
 
-def _need_njoy_on_path() -> None:
-    """from_njoy shells out to the ``njoy`` executable."""
-    omc_bin = "/workspace/tools/mamba/envs/omc/bin"
-    if os.path.isdir(omc_bin) and omc_bin not in os.environ.get("PATH", "").split(os.pathsep):
-        os.environ["PATH"] = omc_bin + os.pathsep + os.environ.get("PATH", "")
+def _have_njoy() -> str | None:
+    return shutil.which("njoy")
 
 
-def _unshadow_endf() -> None:
-    """Stop this directory's endf.py from shadowing the ``endf`` package.
+def _first_mat(text: str) -> int | None:
+    """The MAT number of the first real ENDF-6 section, or None.
 
-    This directory holds a module named ``endf.py`` (the lattice's own pointwise
-    reader). OpenMC depends on a third-party *package* also named ``endf``
-    (``from endf.data import ...``), and while this directory is on sys.path the
-    module wins and OpenMC fails to import. Drop the directory for this process
-    so OpenMC sees the real package.
+    A real record is 80 columns with MAT in 66-70, MF in 70-72, MT in 72-75.
+    ROSFOND files open with a ``$Rev:: ... $Date::`` comment line that is shorter
+    and would otherwise parse as a bogus MAT, so require the full control block
+    with a sane MF/MT. A wrong MAT makes NJOY wait forever on stdin.
     """
-    here = os.path.dirname(os.path.abspath(__file__))
-    sys.path[:] = [p for p in sys.path if os.path.abspath(p or os.getcwd()) != here]
+    for line in text.splitlines():
+        if len(line) < 75 or not line.strip():
+            continue
+        mat, mf, mt = line[66:70].strip(), line[70:72].strip(), line[72:75].strip()
+        if mat.isdigit() and mf.isdigit() and mt.isdigit():
+            if 1 <= int(mf) <= 99 and 1 <= int(mt) <= 999 and int(mat) >= 1:
+                return int(mat)
+    return None
+
+
+def _deck(mat: int, temp: float) -> str:
+    """The RECONR -> BROADR deck. Cards match what OpenMC's driver writes.
+
+    Card 2 of RECONR is ``mat ncards ngrid``; ncards=2 is the two descriptive
+    lines below. BROADR reads the PENDF on tape 21 and writes tape 22.
+    """
+    return (
+        "reconr\n"
+        "20 21\n"
+        "'ROSFOND PENDF'/\n"
+        f"{mat} 2/\n"
+        f"{ERR}/ err\n"
+        "'ROSFOND'/\n"
+        "'Processed by NJOY'/\n"
+        "0/\n"
+        "broadr\n"
+        "20 21 22\n"
+        f"{mat} 1 0 0 0. /\n"
+        f"{ERR}/ errthn\n"
+        f"{temp}\n"
+        "0/\n"
+        "stop\n"
+    )
 
 
 def reconstruct_one(label: str, raw: str, out: str) -> tuple[str, list[int], str | None]:
@@ -69,50 +115,64 @@ def reconstruct_one(label: str, raw: str, out: str) -> tuple[str, list[int], str
 
     Returns (label, MTs written, error). Runs in a worker process.
     """
-    _need_njoy_on_path()
-    _unshadow_endf()
-    import openmc.data as data  # imported here so the pool starts clean
+    if _have_njoy() is None:
+        return label, [], "njoy not on PATH (pip install njoy==2016.78)"
 
     path = os.path.join(raw, label + ".endf")
     if not os.path.exists(path):
         return label, [], "no raw file"
 
-    workdir = os.path.join(out, "_njoy", label)
-    os.makedirs(workdir, exist_ok=True)
-    cwd = os.getcwd()
-    try:
-        os.chdir(workdir)
-        nuc = data.IncidentNeutron.from_njoy(path, temperatures=[TEMP])
-    except Exception as exc:  # noqa: BLE001 - report, do not invent
-        return label, [], f"{type(exc).__name__}: {str(exc)[:200]}"
-    finally:
-        os.chdir(cwd)
+    with open(path, errors="replace") as f:
+        text = f.read()
+    mat = _first_mat(text)
+    if mat is None:
+        return label, [], "not an ENDF-6 file (no MAT field found)"
 
-    key = f"{TEMP:.0f}K"
+    workdir = tempfile.mkdtemp(prefix=f"njoy_{label}_", dir=out)
+    try:
+        # NJOY reads ENDF-6 on tape 20 and writes the broadened PENDF on tape 22.
+        shutil.copyfile(path, os.path.join(workdir, "tape20"))
+        open(os.path.join(workdir, "tape21"), "w").close()
+        open(os.path.join(workdir, "tape22"), "w").close()
+        deck = os.path.join(workdir, "input")
+        with open(deck, "w") as f:
+            f.write(_deck(mat, TEMP))
+        proc = subprocess.run(["njoy", "input"], cwd=workdir, capture_output=True,
+                              text=True, timeout=900)
+        pendf = os.path.join(workdir, "tape22")
+        if proc.returncode != 0 or not os.path.exists(pendf) or os.path.getsize(pendf) == 0:
+            tail = (proc.stderr or proc.stdout or "").strip().splitlines()[-1:] or [""]
+            return label, [], f"njoy failed: {tail[0][:160]}"
+        with open(pendf, errors="replace") as f:
+            broadened = f.read()
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
     written: list[int] = []
     for mt in MTS:
-        if mt not in nuc.reactions:
+        got = endf6.find_mf3(broadened, mt, mat=mat)
+        if got is None:
             continue
-        try:
-            xs = nuc[mt].xs[key]
-        except (KeyError, AttributeError):
-            continue
-        doc = {
-            "Proton number": nuc.atomic_number,
-            "Mass number": nuc.mass_number,
-            "Neutron number": nuc.mass_number - nuc.atomic_number,
-            "Temperature(K)": str(int(TEMP)),
-            "Incident particle": "neutron",
-            "MT reaction number": mt,
-            "Library": "ROSFOND-2010 (NJOY RECONR/BROADR)",
-            "energy": [float(v) for v in xs.x],
-            "cross section": [float(v) for v in xs.y],
-        }
+        energy, xs = got
+        doc = endf6.to_cache(energy, xs, library="ROSFOND-2010 (NJOY RECONR/BROADR)",
+                             za=_za(label), mt=mt, temperature=str(int(TEMP)))
         with open(os.path.join(out, f"{label}_{mt}.json"), "w") as f:
             json.dump(doc, f)
         written.append(mt)
-    shutil.rmtree(workdir, ignore_errors=True)
+    if not written:
+        return label, [], "reconstructed but no lattice reaction (MT 1/2/4/16/18/102) found"
     return label, written, None
+
+
+# ZA = Z*1000 + A, used only for the cache metadata. The isotope set is the same
+# one fetch_rosfond.py converts; C13 is added because ROSFOND ships it as its own
+# file even though the lattice does not consume it directly.
+_ZA = dict(_NUCLIDES, C13=6013)
+
+
+def _za(label: str) -> int:
+    """ZA for a label; fall back to 0 (unknown) rather than guess a nuclide."""
+    return _ZA.get(label, 0)
 
 
 def main() -> int:
@@ -126,9 +186,14 @@ def main() -> int:
     raw, out = args.raw, args.out
     os.makedirs(out, exist_ok=True)
 
+    if _have_njoy() is None:
+        sys.exit("njoy not found on PATH. Install it with:  pip install njoy==2016.78")
+
     if args.only:
         labels = args.only
     else:
+        if not os.path.isdir(raw):
+            sys.exit(f"raw dir {raw} does not exist")
         labels = sorted(f[:-5] for f in os.listdir(raw) if f.endswith(".endf"))
     if not labels:
         sys.exit(f"no .endf files in {raw}")
