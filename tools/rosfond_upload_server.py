@@ -21,6 +21,7 @@ import argparse
 import json
 import os
 import re
+import tempfile
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -128,6 +129,22 @@ def _safe(name: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]", "_", name)[:120] or "file"
 
 
+def _same_file(a: str, b: str) -> bool:
+    """True if two files have identical contents (size then streaming compare)."""
+    try:
+        if os.path.getsize(a) != os.path.getsize(b):
+            return False
+        with open(a, "rb") as fa, open(b, "rb") as fb:
+            while True:
+                ca, cb = fa.read(1 << 20), fb.read(1 << 20)
+                if ca != cb:
+                    return False
+                if not ca:
+                    return True
+    except OSError:
+        return False
+
+
 class Handler(BaseHTTPRequestHandler):
     out = "."
     _present_cache: set[str] = set()
@@ -147,7 +164,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/status":
             present = self._present()
             self._send(200, json.dumps({
-                "files": len(os.listdir(self.out)) if os.path.isdir(self.out) else 0,
+                "files": len(self._names()),
                 "needed": len(NEEDED), "present": sorted(present),
                 "missing": sorted(set(NEEDED) - set(present)),
             }), "application/json")
@@ -163,15 +180,50 @@ class Handler(BaseHTTPRequestHandler):
         name = _safe(self.path[len("/put/"):])
         n = int(self.headers.get("Content-Length", 0))
         os.makedirs(self.out, exist_ok=True)
-        with open(os.path.join(self.out, name), "wb") as fh:
-            left = n
-            while left > 0:
-                chunk = self.rfile.read(min(1 << 20, left))
-                if not chunk:
-                    break
-                fh.write(chunk)
-                left -= len(chunk)
-        self._send(200, f"stored {name} ({n} bytes)\n")
+        # Stream the body to a temp file (bodies can be tens of MB; four uploads
+        # run at once, so do not hold them all in memory).
+        fd, tmp = tempfile.mkstemp(dir=self.out, prefix=".incoming-")
+        written = 0
+        try:
+            with os.fdopen(fd, "wb") as fh:
+                left = n
+                while left > 0:
+                    chunk = self.rfile.read(min(1 << 20, left))
+                    if not chunk:
+                        break
+                    fh.write(chunk)
+                    left -= len(chunk)
+                    written += len(chunk)
+            # The page flattens dropped folders to base names. Two files from
+            # different subfolders can share a base name; do not let one silently
+            # overwrite the other (that could drop a needed nuclide). If the target
+            # exists with identical bytes it is an idempotent re-drop; otherwise
+            # store under name.1, name.2, ... so nothing is lost.
+            target = os.path.join(self.out, name)
+            if os.path.exists(target):
+                if _same_file(tmp, target):
+                    self._send(200, f"stored {name} ({written} bytes, duplicate)\n")
+                    return
+                stem, ext = os.path.splitext(name)
+                i = 1
+                while os.path.exists(os.path.join(self.out, f"{stem}.{i}{ext}")):
+                    i += 1
+                target = os.path.join(self.out, f"{stem}.{i}{ext}")
+            os.replace(tmp, target)
+            tmp = None
+            self._send(200, f"stored {os.path.basename(target)} ({written} bytes)\n")
+        finally:
+            if tmp is not None and os.path.exists(tmp):
+                os.remove(tmp)
+
+    def _names(self) -> list[str]:
+        """Stored files, ignoring hidden/temp files (.incoming-*, .DS_Store)."""
+        if not os.path.isdir(self.out):
+            return []
+        try:
+            return sorted(n for n in os.listdir(self.out) if not n.startswith("."))
+        except OSError:
+            return []
 
     def _present(self) -> set[str]:
         """Which needed nuclides are present, by reading the ENDF head record.
@@ -184,10 +236,7 @@ class Handler(BaseHTTPRequestHandler):
         found: set[str] = set()
         if not os.path.isdir(self.out):
             return found
-        try:
-            names = tuple(sorted(os.listdir(self.out)))
-        except OSError:
-            return found
+        names = tuple(self._names())
         if names == self._present_key:
             return self._present_cache
         za_to_label = {za: lab for lab, za in NEEDED.items()}
