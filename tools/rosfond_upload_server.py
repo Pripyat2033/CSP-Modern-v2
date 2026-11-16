@@ -80,21 +80,36 @@ f.addEventListener('change',()=>upload([...f.files]));
 d.addEventListener('change',()=>upload([...d.files]));
 async function walk(entry,out){if(entry.isFile){await new Promise(r=>entry.file(fl=>{out.push(fl);r();}));}
   else if(entry.isDirectory){const rd=entry.createReader();
-    const ents=await new Promise(r=>rd.readEntries(r));
-    for(const e of ents)await walk(e,out);}}
+    // readEntries() returns entries in BATCHES (typically ~100 per call); it must
+    // be called repeatedly until it yields an empty batch. A single call silently
+    // drops every file past the first batch — fatal for a 686-file folder.
+    while(true){
+      const ents=await new Promise(r=>rd.readEntries(r,()=>r([])));
+      if(!ents.length)break;
+      for(const e of ents)await walk(e,out);
+    }}}
 async function upload(files){
   if(!files.length){say('no files selected',"bad");return;}
   say('uploading '+files.length+' file(s)…');
-  let done=0;
-  for(const fl of files){
-    const name=fl.name;
-    try{
-      const r=await fetch('/put/'+encodeURIComponent(name),{method:'PUT',body:fl});
-      if(r.ok){done++;say('  ok  '+name,"ok");}else{say('  FAIL '+name+' ('+r.status+')',"bad");}
-    }catch(err){say('  ERR  '+name+' '+err,"bad");}
-    barfill.style.width=(100*done/files.length)+'%';
+  let done=0,failed=0,i=0;
+  const total=files.length;
+  // Upload a few at a time so 686 files do not crawl one-by-one, but not so many
+  // that a slow link stalls everything.
+  async function worker(){
+    while(i<total){
+      const fl=files[i++];
+      const name=fl.name;
+      try{
+        const r=await fetch('/put/'+encodeURIComponent(name),{method:'PUT',body:fl});
+        if(r.ok){done++;if(total<=40)say('  ok  '+name,"ok");}
+        else{failed++;say('  FAIL '+name+' ('+r.status+')',"bad");}
+      }catch(err){failed++;say('  ERR  '+name+' '+err,"bad");}
+      barfill.style.width=(100*(done+failed)/total)+'%';
+      if(total>40)count.textContent=(done+failed)+'/'+total+' sent ('+failed+' failed)…';
+    }
   }
-  say('done: '+done+'/'+files.length+' sent');
+  await Promise.all([0,1,2,3].map(worker));
+  say('done: '+done+'/'+total+' sent'+(failed?', '+failed+' failed':''),failed?"bad":"ok");
   refresh();
 }
 async function refresh(){
@@ -115,6 +130,8 @@ def _safe(name: str) -> str:
 
 class Handler(BaseHTTPRequestHandler):
     out = "."
+    _present_cache: set[str] = set()
+    _present_key = None
 
     def _send(self, code, body, ctype="text/plain"):
         b = body.encode() if isinstance(body, str) else body
@@ -157,18 +174,33 @@ class Handler(BaseHTTPRequestHandler):
         self._send(200, f"stored {name} ({n} bytes)\n")
 
     def _present(self) -> set[str]:
-        """Which needed nuclides are present, by reading the ENDF head record."""
+        """Which needed nuclides are present, by reading the ENDF head record.
+
+        Reading 686 files (some tens of MB) on every 3-second status poll would be
+        wasteful, so cache the result and only re-scan when the directory listing
+        changes. The head record is the first MF=1/MT=451 line, so only the start
+        of each file is read.
+        """
         found: set[str] = set()
         if not os.path.isdir(self.out):
             return found
+        try:
+            names = tuple(sorted(os.listdir(self.out)))
+        except OSError:
+            return found
+        if names == self._present_key:
+            return self._present_cache
         za_to_label = {za: lab for lab, za in NEEDED.items()}
-        for name in os.listdir(self.out):
+        for name in names:
             path = os.path.join(self.out, name)
             if not os.path.isfile(path):
                 continue
             try:
                 with open(path, errors="replace") as fh:
-                    for line in fh:
+                    for _ in range(2000):  # the head record is near the top
+                        line = fh.readline()
+                        if not line:
+                            break
                         if len(line) >= 75 and line[70:72].strip() == "1" and line[72:75].strip() == "451":
                             field = line[:11].strip()
                             s = field
@@ -186,6 +218,8 @@ class Handler(BaseHTTPRequestHandler):
                             break
             except Exception:
                 continue
+        self._present_cache = found
+        self._present_key = names
         return found
 
     def log_message(self, fmt, *args):
