@@ -147,9 +147,20 @@ requires your say-so to remove.
 
 `UnifiedReactorCore` (`physics/UnifiedReactorCore.java`) is the one core. It is
 the plan of §4, executed: the time-dependent flux is the state
-(`RbmkTransientSolver`), the void / fuel / graphite / xenon feedbacks are CLOSED
+(`RbmkTransientSolver`), the void / fuel-temperature / xenon feedbacks are CLOSED
 (each step computes them from the power and feeds them back through
 `RbmkXsec.fuelCell`), and `/rbmk plant start` now selects it.
+
+> **Correction (2026-11-15).** This section originally said "void / fuel / graphite /
+> xenon feedbacks are CLOSED". That was wrong for **xenon and graphite**: both were
+> computed and displayed every step but never handed to the solver, so neither could
+> change `k_eff`. Measured: forcing the xenon to 3× left `k_eff` bit-identical
+> (+0.00000000). Xenon is now genuinely coupled (added to the fuel cell's thermal
+> absorption, `σ_Xe·N_Xe_eq`; a 3× ratio moves `k_eff` by −0.0227) and the
+> readout-only `XENON_COEFF` term is gone. **Graphite temperature is still readout-only**
+> — no sign has been sourced for its coefficient, so coupling it would be a guess. It
+> stays a readout until it is sourced.
+
 
 Two real bugs were found and fixed on the way, both in `RbmkTransientSolver`:
 

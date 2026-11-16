@@ -4,9 +4,9 @@ import com.ben.csp.rbmk.RbmkCore;
 import com.ben.csp.rbmk.RbmkGeometry;
 
 /**
- * THE core: the RBMK-1000 driven by the time-dependent two-group spatial solver,
- * with the thermal-hydraulic and xenon feedbacks CLOSED — the flux is the state,
- * and the core feeds back on itself.
+ * THE core: the RBMK-1000 driven by the time-dependent two-group spatial solver.
+ * The flux is the state, and the core feeds back on itself through the cross
+ * sections — there is no fitted reactivity term and no accident mode.
  *
  * <p>This is the single reactor the project tests against. It supersedes the three
  * earlier cores (lumped {@link ReactorCore}, static-eigenvalue
@@ -15,10 +15,17 @@ import com.ben.csp.rbmk.RbmkGeometry;
  * <ul>
  *   <li>from {@link TransientReactorCore}: the time-dependent flux is the state
  *       ({@link RbmkTransientSolver}) — no lumped reactivity amplitude;</li>
- *   <li>from {@link SpatialReactorCore}: the closed feedback loop — void, fuel and
- *       graphite temperature and xenon are computed from the power every step and
- *       fed back into the cross sections through {@link RbmkXsec#fuelCell}.</li>
+ *   <li>from {@link SpatialReactorCore}: the closed feedback loop — void, fuel
+ *       temperature and xenon are computed from the power every step and fed back
+ *       into the cross sections through {@link RbmkXsec#fuelCell}.</li>
  * </ul>
+ *
+ * <p><b>What is closed and what is not.</b> The void (through
+ * {@link ChannelCooling}), the fuel temperature (Doppler) and the Xe-135 poison all
+ * act through the fuel cell's cross sections, so each one changes the neutron
+ * balance and the power — not merely a readout. The graphite temperature is computed
+ * each step but is NOT yet fed back: no sign has been sourced for its coefficient,
+ * so coupling it would be a guess. It is carried as a readout until it is sourced.
  *
  * <p><b>Why this matters for accuracy.</b> The accident is a spatial and feedback
  * phenomenon. The positive void coefficient and the positive scram are not put in
@@ -63,7 +70,14 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     public static final double DT = 0.005;
     /** Gauss-Seidel sweeps per physics step. */
     private static final int SWEEPS = 2;
-
+    /**
+     * Numerical step actually used by {@link #step}. Defaults to {@link #DT} and is
+     * changed only by a caller that needs to run a multi-hour phase in a test: the
+     * integration is backward-Euler on the stiff removal plus an exact exponential
+     * on the xenon chain, so it is stable and accurate far coarser than 5 ms
+     * (measured: 5 ms and 250 ms agree to ~0.1 % over 1 s of a nominal core).
+     */
+    private double physicsDt = DT;
     // --- operating point (the reference critical state; matches the old cores) ---
     public static final double NOMINAL_INSERTION = RbmkTransientSolver.NOMINAL_INSERTION;
     public static final double NOMINAL_VOID = RbmkTransientSolver.NOMINAL_VOID;
@@ -264,10 +278,18 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         if (dt <= 0) {
             return;
         }
-        int steps = (int) Math.max(1, Math.round(dt / DT));
+        int steps = (int) Math.max(1, Math.round(dt / physicsDt));
         for (int i = 0; i < steps; i++) {
-            physicsStep(DT);
+            physicsStep(physicsDt);
         }
+    }
+
+    /**
+     * Set the numerical step used by {@link #step}, seconds. For long test phases
+     * only; production runs at {@link #DT}. Values above ~0.25 s are not advised.
+     */
+    public void setPhysicsDt(double seconds) {
+        this.physicsDt = Math.max(1e-4, seconds);
     }
 
     /** One fixed physics step: feedbacks, rod drive, solve, update state. */

@@ -174,6 +174,13 @@
       "unit": "dk/k per unit void (whole core, full axial profile)",
       "status": "to_verify",
       "source": "Measured: the whole-core void worth with the void applied per axial node (+0.0248) vs as a core average (+0.0222) - only 12% higher, NOT the 'double' an earlier note claimed. Recorded to correct that note; the axial coupling is now the default."
+    },
+    "xenon.macro_abs": {
+      "value": 1.34e-4,
+      "unit": "cm^-1 (added to the fuel cell thermal absorption per unit xenon ratio)",
+      "status": "to_verify",
+      "source": "DERIVED, not fitted: sigma_Xe * N_Xe_eq. sigma_Xe = 2.65e-18 cm^2 (Xenon.SIGMA_XE); N_Xe_eq = (gamma_I + gamma_Xe) * Sigma_f * phi / (lambda_Xe + sigma_Xe * phi) with gamma_I=0.0639, gamma_Xe=0.00237, lambda_Xe=2.093e-5 /s, phi = Xenon.FLUX_FULL = 3e13 n/cm^2/s, Sigma_f ~ 2.56e-3 cm^-1. Gives N_Xe_eq ~ 5.07e13 cm^-3 and macro absorption ~1.34e-4 cm^-1. The one to-verify input is the reference flux (Xenon.FLUX_FULL). Replaces the fitted readout terms (0.024 in the lumped cores, -0.03 in Xenon.worth): xenon now acts through the neutron BALANCE. Measured worth: a 3x xenon ratio moves k_eff by -0.0227.",
+      "measured": "-0.0227 dk/k for a 3x xenon ratio (about -0.011 at 2x), consistent with the ~3% real RBMK xenon worth"
     }
   }
 }
