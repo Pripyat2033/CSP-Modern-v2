@@ -20,6 +20,7 @@ import com.ben.csp.rbmk.module.ModuleRegistry;
 import com.ben.csp.rbmk.module.PlantModule;
 import com.ben.csp.rbmk.physics.ReactorModel;
 import com.ben.csp.rbmk.physics.OpenMcResult;
+import com.ben.csp.rbmk.physics.PhenomenaRegister;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
 import com.ben.csp.rbmk.physics.UnifiedReactorCore;
 import com.mojang.brigadier.CommandDispatcher;
@@ -125,6 +126,7 @@ public final class RbmkTestCommand {
                         net.minecraft.command.argument.BlockPosArgumentType.getBlockPos(ctx, "pos")))))
             .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine))
             .then(CommandManager.literal("register").executes(RbmkTestCommand::register))
+            .then(CommandManager.literal("phenomena").executes(RbmkTestCommand::phenomena))
             .then(CommandManager.literal("openmc").executes(RbmkTestCommand::openmc)));
     }
 
@@ -161,6 +163,61 @@ public final class RbmkTestCommand {
             feedback(s, String.format("  UNSOURCED — must be resolved (%d):",
                 unsourced.size()), Formatting.RED);
             for (EquipmentRegister.Item it : unsourced) {
+                feedback(s, "    · " + it.nameEn(), Formatting.RED);
+            }
+        }
+        return 1;
+    }
+
+    /**
+     * {@code /rbmk phenomena} — the PHENOMENA register: the completeness gate for the
+     * reactor physics, the twin of {@code /rbmk register}. It prints which phenomena
+     * are coupled into the neutron balance (and measured), which are merely a readout,
+     * and which are named in a source but not yet built. This is the machine-checkable
+     * form of "a phenomenon the Director did not name must not silently vanish" — and
+     * in particular it surfaces every READOUT quantity, the exact failure mode the
+     * xenon bug demonstrated.
+     */
+    private static int phenomena(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        if (!PhenomenaRegister.available()) {
+            feedback(s, "no phenomena register resource found (phenomena-register.json)",
+                Formatting.RED);
+            return 0;
+        }
+        feedback(s, "Reactor phenomena register (physics completeness gate)", Formatting.GOLD);
+        feedback(s, "  " + PhenomenaRegister.summary(), Formatting.WHITE);
+        feedback(s, "  classes: " + String.join(", ", PhenomenaRegister.classes()),
+            Formatting.GRAY);
+
+        feedback(s, String.format("  modelled — coupled and measured (%d):",
+            PhenomenaRegister.modelled().size()), Formatting.GREEN);
+        for (PhenomenaRegister.Item it : PhenomenaRegister.modelled()) {
+            feedback(s, String.format("    · %s", it.nameEn()), Formatting.GRAY);
+        }
+
+        List<PhenomenaRegister.Item> readout = PhenomenaRegister.readout();
+        if (!readout.isEmpty()) {
+            feedback(s, String.format("  READOUT — computed but NOT coupled (%d):",
+                readout.size()), Formatting.GOLD);
+            for (PhenomenaRegister.Item it : readout) {
+                feedback(s, String.format("    · %s — %s", it.nameEn(), it.note()),
+                    Formatting.YELLOW);
+            }
+        }
+
+        feedback(s, String.format("  named-only, not yet built (%d):",
+            PhenomenaRegister.namedOnly().size()), Formatting.YELLOW);
+        for (PhenomenaRegister.Item it : PhenomenaRegister.namedOnly()) {
+            feedback(s, String.format("    · %s [%s]", it.nameEn(), it.source()),
+                Formatting.GRAY);
+        }
+
+        List<PhenomenaRegister.Item> unsourced = PhenomenaRegister.unsourced();
+        if (!unsourced.isEmpty()) {
+            feedback(s, String.format("  UNSOURCED — must be resolved (%d):",
+                unsourced.size()), Formatting.RED);
+            for (PhenomenaRegister.Item it : unsourced) {
                 feedback(s, "    · " + it.nameEn(), Formatting.RED);
             }
         }

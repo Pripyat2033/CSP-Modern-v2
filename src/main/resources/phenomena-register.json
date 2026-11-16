@@ -1,0 +1,281 @@
+{
+  "_comment": "The PHENOMENA register: the completeness authority for the reactor PHYSICS, the twin of equipment-register.json. Mission rule: nothing is guessed, and nothing is silently omitted. Every phenomenon a real RBMK-1000 exhibits must appear here, with a source and a status. The reason it exists: an item the Director did not name must not silently vanish. For equipment the risk was a missing machine; for physics the risk is a missing FEEDBACK or TRANSIENT - the reactor then LOOKS right and BEHAVES wrong, which is the failure the xenon-readout bug already demonstrated (xenon was displayed but never entered the neutron balance). Status is one of: modelled (coupled into the neutron/thermal balance, and a self-test measures it), readout (computed and displayed, but NOT coupled - it cannot change k_eff), named-only (described in a source, not yet built), unsourced (expected to exist but with no source found - MUST be resolved or explicitly justified as absent). The spine source is INSAG-7 section 2 (the design features that 'had a primary influence on the course of the accident'), plus the Soviet operating regulation (Reglament 1E-S-II, 1983) and NUREG-1250. The gate is PhenomenaRegister.summary(): it prints the counts so 'is anything missing?' cannot be quietly zero.",
+  "_statusLegend": {
+    "modelled": "coupled into the neutron/thermal balance; a self-test measures its effect",
+    "readout": "computed and displayed but NOT coupled; cannot change k_eff",
+    "named-only": "described in a source, not yet built",
+    "unsourced": "expected to exist, no source found yet - must be resolved or justified absent"
+  },
+  "items": [
+    {
+      "id": "neutron.chain",
+      "name_en": "Neutron chain reaction (time-dependent spatial flux)",
+      "name_ru": "Цепная реакция",
+      "class": "Neutronics",
+      "source": "INSAG-7 2; the whole model",
+      "status": "modelled",
+      "where": "RbmkTransientSolver + RbmkSolver3D",
+      "note": "Two-group diffusion on the 250 mm lattice; the flux is the state."
+    },
+    {
+      "id": "neutron.delayed",
+      "name_en": "Delayed neutrons (6 groups, beta_eff)",
+      "name_ru": "Запаздывающие нейтроны",
+      "class": "Neutronics",
+      "source": "provenance delayed.beta_eff / lambda_i / beta_fractions",
+      "status": "modelled",
+      "where": "DelayedNeutrons, RbmkTransientSolver",
+      "note": "Gives the reactor its controllable period."
+    },
+    {
+      "id": "feedback.void",
+      "name_en": "Void coefficient of reactivity (steam in the channel)",
+      "name_ru": "Паровой коэффициент реактивности",
+      "class": "Feedback",
+      "source": "INSAG-7 2.1; NUREG-1250 Table 2.4",
+      "status": "modelled",
+      "where": "ChannelCooling -> RbmkXsec.fuelCell(void,..)",
+      "note": "POSITIVE. The dominant feedback. Derived from the channel energy balance; magnitude anchored to INSAG-7 +0.020 via xsec.void_worth_scale."
+    },
+    {
+      "id": "feedback.doppler",
+      "name_en": "Doppler (fuel-temperature) coefficient",
+      "name_ru": "Температурный (доплеровский) коэффициент",
+      "class": "Feedback",
+      "source": "INSAG-7 2.1; NUREG-1250",
+      "status": "modelled",
+      "where": "fuelTempC -> RbmkXsec.fuelCell(.., fuelTempC, ..)",
+      "note": "NEGATIVE, prompt. The one feedback that opposes the void."
+    },
+    {
+      "id": "feedback.xenon",
+      "name_en": "Xenon-135 poisoning (and the iodine parent)",
+      "name_ru": "Ксеноновое отравление",
+      "class": "Feedback",
+      "source": "INSAG-7 2.4 (startup free of xenon); Xenon model",
+      "status": "modelled",
+      "where": "Xenon -> RbmkXsec.fuelCell(..,.., xenonRatio)",
+      "note": "NEGATIVE, slow. Was READOUT-ONLY until 2026-11-15 - it did not touch k_eff. Now enters the fuel cell thermal absorption (sigma_Xe*N_Xe_eq). Measured: 3x ratio moves keff by -0.0227."
+    },
+    {
+      "id": "feedback.graphite",
+      "name_en": "Graphite-temperature coefficient",
+      "name_ru": "Температурный коэффициент графита",
+      "class": "Feedback",
+      "source": "INSAG-7 2; NUREG-1250 (signs disagree between sources)",
+      "status": "readout",
+      "where": "UnifiedReactorCore.graphiteTempC (computed, not passed to xsec)",
+      "note": "POSITIVE and slow, but small. NOT COUPLED: the two primary sources disagree on the sign, so coupling it would be a guess. Carried as a readout until the sign is sourced. This is an honest gap, not an oversight."
+    },
+    {
+      "id": "feedback.power",
+      "name_en": "Power coefficient of reactivity (net)",
+      "name_ru": "Мощностной коэффициент реактивности",
+      "class": "Feedback",
+      "source": "INSAG-7 2.1",
+      "status": "modelled",
+      "where": "emerges from void + Doppler + xenon",
+      "note": "NOT a separate fitted term: it is the sum of the feedbacks above, as INSAG-7 defines it. A fitted POWER_COEFF term was removed from reactivity() so the readout is physical."
+    },
+    {
+      "id": "rod.positive_scram",
+      "name_en": "Positive scram (graphite displacer at the channel bottom)",
+      "name_ru": "Положительный эффект АЗ (вытеснитель)",
+      "class": "Control",
+      "source": "INSAG-7 2.2, Fig. 1",
+      "status": "modelled",
+      "where": "rod geometry in RbmkSolver3D (bottom-peaked axial shape)",
+      "note": "The 1.25 m water gap under the displacer. Inserting a fully withdrawn rod first ADDS reactivity low in the core. Measured in NoAccidentModeSelfTest: k rises 1.10255 -> 1.10793 over rod 0.00 -> 0.20. Derived from geometry, NOT the fitted RodWorth.bottomPeaked() curve."
+    },
+    {
+      "id": "rod.speed",
+      "name_en": "Emergency-rod insertion speed",
+      "name_ru": "Скорость ввода стержней АЗ",
+      "class": "Control",
+      "source": "INSAG-7 2.3; RbmkGeometry.ROD_SPEED_M_PER_S",
+      "status": "modelled",
+      "where": "UnifiedReactorCore.moveRod / ROD_RATE",
+      "note": "The ~18 s full insertion; fast enough that the displacer effect and the absorber fight."
+    },
+    {
+      "id": "rod.spatial",
+      "name_en": "Spatial power distribution and rod interference",
+      "name_ru": "Пространственное распределение и интерференция стержней",
+      "class": "Control",
+      "source": "INSAG-7 2.6 (loosely coupled core)",
+      "status": "modelled",
+      "where": "RbmkSolver3D (3-D, per-cell)",
+      "note": "The core is 11.8 m across and only loosely coupled; local perturbations stay local. Modelled by the 3-D solve, but the AR/rod-bank shadowing is NOT yet per-rod."
+    },
+    {
+      "id": "orm.margin",
+      "name_en": "Operating reactivity margin (ORM) and its limit",
+      "name_ru": "Оперативный запас реактивности (ОЗР)",
+      "class": "Operations",
+      "source": "INSAG-7 2.5, 4.2; Reglament 1E-S-II",
+      "status": "named-only",
+      "where": "-",
+      "note": "The extra reactivity if all rods were withdrawn, in 'equivalent rods' (the ORM >= 15 limit; ~8 at the accident). The core computes a reactivity, but there is no ORM readout or limit enforcement yet. A key operator-facing quantity."
+    },
+    {
+      "id": "control.az5",
+      "name_en": "AZ-5 emergency protection (the scram itself)",
+      "name_ru": "АЗ-5 (аварийная защита)",
+      "class": "Control",
+      "source": "INSAG-7 2.2, 2.3; Reglament 1E-S-II",
+      "status": "modelled",
+      "where": "PlantSystem.scram -> core rod target 1.0",
+      "note": "The scram drives the rods in; the accident then follows from physics. There is NO accident mode (NoAccidentModeSelfTest)."
+    },
+    {
+      "id": "control.autorod",
+      "name_en": "Automatic regulator (AR) and manual control",
+      "name_ru": "АР и ручное управление",
+      "class": "Control",
+      "source": "INSAG-7 2.4",
+      "status": "modelled",
+      "where": "UnifiedReactorCore autoRod (integral regulator)",
+      "note": "A plain integral regulator on the power error."
+    },
+    {
+      "id": "thermal.channel_flow",
+      "name_en": "Forced channel flow, subcooling and boiling onset",
+      "name_ru": "Расход, недогрев и начало кипения",
+      "class": "Thermal-hydraulics",
+      "source": "INSAG-7 2.8, 2.9",
+      "status": "modelled",
+      "where": "ChannelCooling (energy balance up the flux shape)",
+      "note": "The void is derived from this, not fitted. Subcooling matters for stability."
+    },
+    {
+      "id": "thermal.pump_cavitation",
+      "name_en": "Pump cavitation on loss of subcooling",
+      "name_ru": "Кавитация ГЦН",
+      "class": "Thermal-hydraulics",
+      "source": "INSAG-7 2.8, 2.9",
+      "status": "named-only",
+      "where": "-",
+      "note": "If subcooling falls to near zero, the pumps can cavitate and lose flow. Not modelled; the plant throttles pumps but there is no cavitation."
+    },
+    {
+      "id": "thermal.natural_circ",
+      "name_en": "Natural circulation (after pump trip)",
+      "name_ru": "Естественная циркуляция",
+      "class": "Thermal-hydraulics",
+      "source": "INSAG-7 2.9",
+      "status": "named-only",
+      "where": "-",
+      "note": "Flow driven by the density difference when the pumps stop. Not modelled; flow is a set value."
+    },
+    {
+      "id": "thermal.dryout",
+      "name_en": "Critical heat flux / dryout of a channel",
+      "name_ru": "Кризис теплообмена",
+      "class": "Thermal-hydraulics",
+      "source": "INSAG-7 2.9; NUREG-1250",
+      "status": "named-only",
+      "where": "-",
+      "note": "A channel that boils dry overheats and can rupture. Not modelled; there is no CHF limit on the channel."
+    },
+    {
+      "id": "thermal.decay_heat",
+      "name_en": "Decay heat (fission-product afterheat)",
+      "name_ru": "Остаточное тепловыделение",
+      "class": "Thermal-hydraulics",
+      "source": "provenance decayheat.equilibrium",
+      "status": "modelled",
+      "where": "DecayHeat",
+      "note": "The heat that cannot be switched off; drives the post-scram thermal state."
+    },
+    {
+      "id": "thermal.graphite_heat",
+      "name_en": "Graphite heating and its slow time constant",
+      "name_ru": "Разогрев графита",
+      "class": "Thermal-hydraulics",
+      "source": "INSAG-7 2; graphite time constant",
+      "status": "readout",
+      "where": "UnifiedReactorCore.graphiteTempC",
+      "note": "Computed with a slow time constant but not fed back (see feedback.graphite)."
+    },
+    {
+      "id": "kinetics.spatial_instability",
+      "name_en": "Spatial xenon oscillations / power-distribution instability",
+      "name_ru": "Ксеноновые колебания",
+      "class": "Kinetics",
+      "source": "INSAG-7 2.6",
+      "status": "named-only",
+      "where": "-",
+      "note": "The loosely coupled core can oscillate in power distribution. Xenon is coupled but uniform (one ratio), so axial/radial xenon oscillation is NOT modelled."
+    },
+    {
+      "id": "kinetics.burnup",
+      "name_en": "Fuel burnup / depletion of reactivity margin with time",
+      "name_ru": "Выгорание топлива",
+      "class": "Kinetics",
+      "source": "INSAG-7 2 (ORM); Reglament 1E-S-II",
+      "status": "named-only",
+      "where": "-",
+      "note": "A fresh core has a very different ORM from a burnt one. Not modelled; the lattice is fixed."
+    },
+    {
+      "id": "kinetics.samarium",
+      "name_en": "Samarium-149 poisoning",
+      "name_ru": "Самариевое отравление",
+      "class": "Kinetics",
+      "source": "standard reactor physics",
+      "status": "named-only",
+      "where": "-",
+      "note": "The other, slower poison. Not modelled; only xenon is."
+    },
+    {
+      "id": "plant.trip_matrix",
+      "name_en": "Protection trips (high power, low level, low flow, etc.)",
+      "name_ru": "Аварийные защиты",
+      "class": "Plant",
+      "source": "INSAG-7 2.7; Reglament 1E-S-II; RBMK-PLANT-SYSTEMS.md",
+      "status": "modelled",
+      "where": "PlantSystem.checkTrips",
+      "note": "The trip matrix that raises AZ-5 on abnormal conditions."
+    },
+    {
+      "id": "plant.eccl",
+      "name_en": "Emergency core cooling (ECCS / SAOR)",
+      "name_ru": "САОР",
+      "class": "Plant",
+      "source": "INSAG-7 2.7; NUREG-1250",
+      "status": "named-only",
+      "where": "-",
+      "note": "The 12 x 25 m3 accumulators. Not modelled as an active injection."
+    },
+    {
+      "id": "plant.pressure_suppression",
+      "name_en": "Accident localisation / pressure-suppression (bubbler) pools",
+      "name_ru": "Бассейн-барботер",
+      "class": "Plant",
+      "source": "INSAG-7 2.10; NUREG-1250",
+      "status": "named-only",
+      "where": "-",
+      "note": "The 3200 m3 bubbler pool that condenses a steam release. Named in the equipment register; no steam-release physics drives it."
+    },
+    {
+      "id": "release.fission_products",
+      "name_en": "Fission-product release (channel rupture, source term)",
+      "name_ru": "Выход продуктов деления",
+      "class": "Release",
+      "source": "INSAG-7 2.10, 5",
+      "status": "named-only",
+      "where": "-",
+      "note": "The consequence path. A radiology layer exists elsewhere, but it is not driven by a core-damage model."
+    },
+    {
+      "id": "release.graphite_fire",
+      "name_en": "Graphite fire and dispersal",
+      "name_ru": "Пожар графита",
+      "class": "Release",
+      "source": "INSAG-7 5",
+      "status": "named-only",
+      "where": "-",
+      "note": "The days-long graphite fire that dispersed the inventory. Not modelled."
+    }
+  ]
+}
