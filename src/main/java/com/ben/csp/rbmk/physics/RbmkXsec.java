@@ -80,6 +80,27 @@ public record RbmkXsec(
     private static final double VOID_WORTH_SCALE = 0.233;
 
     /**
+     * Xe-135 thermal absorption added to the fuel cell, cm^-1, per unit of xenon
+     * ratio ABOVE the reference (equilibrium) concentration.
+     *
+     * <p>DERIVED, not fitted: {@code sigma_Xe * N_Xe_eq}, with the equilibrium
+     * Xe-135 concentration from the iodine/xenon chain,
+     * <pre>
+     *   N_Xe_eq = (gamma_I + gamma_Xe) * Sigma_f * phi / (lambda_Xe + sigma_Xe * phi)
+     * </pre>
+     * at the full-power flux. With {@code sigma_Xe} = 2.65e-18 cm^2 ({@link Xenon#SIGMA_XE}),
+     * {@code Sigma_f} ~ 2.56e-3 cm^-1 (the cell's nsf2 / nu), and phi =
+     * {@link Xenon#FLUX_FULL} = 3e13: N_Xe_eq ~ 5.07e13 cm^-3, so the macro absorption
+     * is ~1.34e-4 cm^-1. The measured sensitivity is dk/dsa2 ~ -160, giving a worth of
+     * ~-0.021 dk/k for the full equilibrium concentration. This REPLACES the old fitted
+     * readout terms (-0.024 in the lumped cores, -0.03 in {@link Xenon#worth()}): xenon
+     * now acts through the neutron balance, not as a number nothing reads. The one
+     * to-verify input is the reference flux (already flagged); registered as
+     * {@code xenon.macro_abs} in PhysicsProvenance.
+     */
+    private static final double XENON_MACRO_ABS = 1.34e-4;
+
+    /**
      * Blend a cell toward a baseline by a factor f: {@code base + f*(cell-base)}.
      * Scaling the void DEPENDENCE while holding the zero-void state exact.
      */
@@ -106,6 +127,22 @@ public record RbmkXsec(
      * the case where the resource is missing.
      */
     public static RbmkXsec fuelCell(double voidFraction, double fuelTempC) {
+        return fuelCell(voidFraction, fuelTempC, 1.0);
+    }
+
+    /**
+     * Fuel cell with the Xe-135 poison included in the thermal absorption.
+     *
+     * <p>{@code xenonRatio} is the Xe-135 concentration relative to its full-power
+     * equilibrium (1.0 = equilibrium, as {@code /rbmk status} reports). The poison adds
+     * {@code XENON_MACRO_ABS * (xenonRatio - 1.0)} to {@code sa2}, so it enters the
+     * neutron BALANCE — it changes k_eff and the power, not merely a displayed number.
+     * At equilibrium (ratio 1.0) the term is zero, so the reference critical state is
+     * unchanged and {@code kRef} stays valid. A rising xenon ratio (the pit) removes
+     * thermal neutrons and drives the core sub-critical; the operator then withdraws
+     * rods to hold power, exactly as at Chernobyl.
+     */
+    public static RbmkXsec fuelCell(double voidFraction, double fuelTempC, double xenonRatio) {
         RbmkXsec derived = LatticeTable.cell(voidFraction);
         if (derived != null) {
             // Match the sourced whole-core void worth: blend the derived cell toward
@@ -120,8 +157,10 @@ public record RbmkXsec(
             // scale is the U-238 resonance width; the lattice self-shielding fixes
             // the rest.
             double doppler = DOPPLER_REMOVAL_PER_K * (fuelTempC - 300.0) * derived.sr1();
+            // Xenon: thermal absorption from the Xe-135 built up by the iodine chain.
+            double xenon = XENON_MACRO_ABS * (xenonRatio - 1.0);
             return new RbmkXsec(derived.d1(), derived.sr1() + doppler, derived.nsf1(),
-                derived.d2(), derived.sa2(), derived.nsf2(), derived.ss12(), derived.ss21());
+                derived.d2(), derived.sa2() + xenon, derived.nsf2(), derived.ss12(), derived.ss21());
         }
         return legacyFuelCell(voidFraction, fuelTempC);
     }

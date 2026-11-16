@@ -101,13 +101,17 @@ public final class UnifiedReactorCoreSelfTest {
      * 5. The scram is POSITIVE at low insertion: over the first part of the rod
      * travel, inserting the rods RAISES k_eff — the graphite-displacer effect that
      * made AZ-5 briefly raise the power. It must come from the rod geometry.
+     *
+     * <p>This VARIES THE ROD and holds the core state, which is what a scram is. An
+     * earlier version of this check varied the VOID with the rod pinned at 0.80, so
+     * it silently re-measured check 4 and passed for the wrong reason.
      */
     private static void testPositiveScram() {
-        RbmkSolver3D a = solved(0.00, 640.0);
-        RbmkSolver3D b = solved(0.20, 640.0);
+        RbmkSolver3D a = solvedRod(0.00, 0.64, 640.0);
+        RbmkSolver3D b = solvedRod(0.20, 0.64, 640.0);
         double dk = b.keff() - a.keff();
         check("scram is POSITIVE at low insertion (graphite displacer)",
-            dk > 0, String.format("k(ins 0.00)=%.5f, k(ins 0.20)=%.5f, dk=%+.5f",
+            dk > 0, String.format("k(rod 0.00)=%.5f, k(rod 0.20)=%.5f, dk=%+.5f",
                 a.keff(), b.keff(), dk));
     }
 
@@ -132,6 +136,17 @@ public final class UnifiedReactorCoreSelfTest {
         s.setOmega(RbmkSolver3D.SAFE_OMEGA);
         s.setCoreState(voidFraction, fuelTempC);
         s.setRodInsertion(RbmkTransientSolver.NOMINAL_INSERTION);
+        s.solve(3000, 1e-11);
+        return s;
+    }
+
+    /** Solve at a given ROD insertion with the core state held fixed. */
+    private static RbmkSolver3D solvedRod(double rodInsertion, double voidFraction,
+                                          double fuelTempC) {
+        RbmkSolver3D s = new RbmkSolver3D();
+        s.setOmega(RbmkSolver3D.SAFE_OMEGA);
+        s.setCoreState(voidFraction, fuelTempC);
+        s.setRodInsertion(rodInsertion);
         s.solve(3000, 1e-11);
         return s;
     }

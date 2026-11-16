@@ -49,6 +49,8 @@ public final class RbmkTransientSolver {
 
     private double nsfScale = 1.0;      // scaled so the initial state is critical
     private double lastStepMs;
+    /** Xe-135 concentration relative to its full-power equilibrium (1.0 = equilibrium). */
+    private double xenonRatio = 1.0;
 
     /** Rod insertion of the reference critical state (matches the other cores). */
     public static final double NOMINAL_INSERTION = 0.80;
@@ -86,12 +88,17 @@ public final class RbmkTransientSolver {
 
     /** Set every active fuel node to the given core state. */
     public void setCoreState(double voidFraction, double fuelTempC) {
-        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC);
+        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC, xenonRatio);
         for (int i = 0; i < cell.length; i++) {
             if (active[i] && !control[i]) {
                 cell[i] = fuel;
             }
         }
+    }
+
+    /** Set the Xe-135 ratio (1.0 = full-power equilibrium) used to build the fuel cell. */
+    public void setXenonRatio(double ratio) {
+        this.xenonRatio = ratio;
     }
 
     /** Apply a rod insertion; each axial node gets the rod material there. */
@@ -119,7 +126,7 @@ public final class RbmkTransientSolver {
         // is the same up every channel, so this is 28 lookups, not 28 x 1,872.
         RbmkXsec[] byNode = new RbmkXsec[na];
         for (int a = 0; a < na; a++) {
-            byNode[a] = RbmkXsec.fuelCell(voidByNode[a], fuelTempC);
+            byNode[a] = RbmkXsec.fuelCell(voidByNode[a], fuelTempC, xenonRatio);
         }
         for (int x = -ext; x <= ext; x++) {
             for (int z = -ext; z <= ext; z++) {

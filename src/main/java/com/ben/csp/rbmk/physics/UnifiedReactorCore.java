@@ -76,7 +76,20 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     private static final double TAU_FUEL = 10.0;
     private static final double TAU_GRAPHITE = 30.0;
     private static final double FUEL_PER_POWER = 600.0;
+    /**
+     * @deprecated 2026-11-15: no longer used. Xenon now enters the neutron balance
+     *     through the fuel cell's thermal absorption ({@link RbmkXsec#XENON_MACRO_ABS}),
+     *     so this readout-only coefficient is gone. Kept only to record the old form.
+     */
+    @Deprecated
     private static final double XENON_COEFF = 0.024;
+    /**
+     * @deprecated 2026-11-15: no longer used. This lumped point-kinetics power
+     *     coefficient double-counted the temperature feedback the spatial core
+     *     already carries in its cross sections, so {@link #reactivity()} dropped it.
+     *     Kept only to record where the old readout came from.
+     */
+    @Deprecated
     private static final double POWER_COEFF = ReactivityModel.POWER_COEFF;
     /** Xenon concentration at the full-power equilibrium (the worth normaliser). */
     private static final double XENON_EQUILIBRIUM = new Xenon(1.0).xenon();
@@ -272,7 +285,9 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
 
         // Feedbacks enter through the cross sections, not a fitted term. The void is
         // the derived axial profile from the previous step; per node when axial
-        // coupling is on, as a core average otherwise.
+        // coupling is on, as a core average otherwise. The xenon ratio is carried on
+        // the same path, so the poison acts through the neutron balance.
+        solver.setXenonRatio(xenonRatio());
         if (axialCoupling) {
             solver.setAxialState(cooling.voidFraction(), fuelTempC);
         } else {
@@ -324,11 +339,13 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
 
     @Override
     public double reactivity() {
-        // The spatial eigenvalue against the reference critical state, plus the
-        // power and xenon terms (same form as SpatialReactorCore).
-        double spatial = (keff - kRef) / kRef;
-        double powerTerm = POWER_COEFF * (fission - 1.0);
-        return spatial + powerTerm - XENON_COEFF * (xenonRatio() - 1.0);
+        // The spatial eigenvalue against the reference critical state. ALL the
+        // feedbacks are inside keff now — void and Doppler enter through the fuel
+        // cell, and xenon enters through the same cell's thermal absorption — so
+        // nothing is added here. Adding a term would double-count feedback the
+        // solver already carries (that is why the old POWER_COEFF and XENON_COEFF
+        // readout terms were removed). This is the true reactivity of the core.
+        return (keff - kRef) / kRef;
     }
 
     @Override
