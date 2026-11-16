@@ -590,3 +590,17 @@ RECONR->BROADR reconstruction into the pointwise JSON cache
 graphite as one ZA-6000 eval, so prefer `Cnat` where present, else the C-12+C-13
 split), metastable isomers (prefer ground state over the 'M' file), and ENDF-6
 floats with a space in the exponent.
+
+**SOLVED & RUN (commit daaed39, 2026-11-15).** `reconstruct_rosfond.py` now drives
+NJOY DIRECTLY (hand-written RECONR/BROADR deck, parse the PENDF with the lattice's
+own `endf6.py`) — NOT `openmc...from_njoy`, because **OpenMC is not on PyPI** and
+could never run in the sandbox. `pip install njoy==2016.78` ships a real binary, so
+the whole path needs only that. Proven on real ENDF/B-VIII.0 files: U-235 fission
+586.6 b / capture 99.4 b @0.0253 eV (repo `verify.py` targets 585±10, 99±4);
+Pu-241 1012 b / 363 b. `fetch_rosfond.py` now REFUSES to cache a fission/capture
+section that is zero at thermal energy (resonance-trap guard) instead of silently
+writing a wrong number. `test_reconstruct_rosfond.py` 7/7. NJOY deck gotchas: (1)
+read MAT from a real 80-col record, NOT the `$Rev::` header, or NJOY HANGS on
+stdin; (2) RECONR card2 `mat 2/` (ncards=2) — `mat/` and `mat 1/` fail; (3) BROADR
+reads tape 20+21, writes tape 22 — pre-create tape22. Drag-and-drop upload page
+`tools/rosfond_upload_server.py` runs on port 12000 for handing over the archive.
