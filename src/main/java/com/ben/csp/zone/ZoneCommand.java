@@ -81,6 +81,17 @@ public final class ZoneCommand {
             return 0;
         }
         state.markDirty();
+        // Put the prombaza's supply line in: its rail siding and its входной
+        // контроль desk. Every delivery now goes through the desk before it reaches
+        // a site, so the enterprises build with checked material — not perfect
+        // material, just checked material, at the suppliers' own quality.
+        {
+            var pbs = com.ben.csp.prombaza.PrombazaState.get(source.getServer());
+            String pbId = state.zone().prombazaId();
+            var supply = new MaterialSupply(pbs.yard(pbId), pbs.control(pbId));
+            state.zone().setSupply(supply);
+            pbs.markDirty();
+        }
         source.sendFeedback(() -> Text.literal(
             "Prombaza laid out: " + state.territory().boundary().width() + " x "
             + state.territory().boundary().height() + " m."), true);

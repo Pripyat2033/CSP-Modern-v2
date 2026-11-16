@@ -640,26 +640,44 @@ CORE-PHYSICS only; machine perf lives in machinery-register.json.
 **The three registers are the answer to "how do we trust it?": exist + shape + behaviour,
 all sourced, all machine-checked, none silently absent.**
 
-## PROMBAZA COMPLIANCE DESK (2026-11-15) — why the ACTOR checks, not the mod
+## PROMBAZA COMPLIANCE DESK + SUPPLY SEAM (2026-11-15, commits 15f5dcb + this one)
 
 Ben asked why the enterprise/prombaza shouldn't enforce compliance instead of the mod
-author making everything "accurate" up front. Answer + code: the site DID check its own
-deliveries. Deliveries were routinely defective, so each prombaza raised workshops and a
-receiving desk and stripped every item before installing it — **входной контроль**
-(incoming inspection) and **дефектовка** (defect-finding by disassembly). ~Half the
-workforce ended up on it; the project ran ~50% longer.
+author making everything "accurate" up front. The site DID check its own deliveries —
+**входной контроль** (incoming inspection), **дефектовка** (defect-finding by disassembly).
+~Half the workforce ended up on it; the project ran ~50% longer.
+
+**FRAMING CORRECTION (Ben, this session): the driver was NOT a decree from above.** No
+ministry said to check. It was LOCAL and selfish: defective material backed up the sidings
+(Yanov station) and a standing wagon was a per-wagon-per-day FINE (**простой вагонов**,
+demurrage); and the workforce was sick of stripping out junk already built in. The check was
+the compromise between "clear the yard" and "don't install junk". Do not let the compliance
+read as official. This is the whole point of the mod: the plant is NOT born perfect.
+
+**THE FIVE PIECES:**
 - `prombaza/IncomingControl.java` — the gate: detection × thoroughness (falls with load,
   floor 0.25) × cost (man-hours). Dispositions INSTALLED/REWORKED/RETURNED/QUARANTINED; a
-  defect that is NOT found installs anyway as a **latent** defect.
-- `prombaza/PrombazaControl.java` + `/prombaza control <id>` — the desk as state.
-- `IncomingControlSelfTest` 33 checks pass; jar 963,076 bytes; `docs/PROMBAZA-COMPLIANCE-DESK.md`.
-- THE FINDING: `MaterialBatch` (had QualityStatus + Defect.discoverability), `Naryad`, and
-  `Prorab.simulateInspection` all EXISTED but were ORPHANED. "Why isn't it checking?" = it
-  was built and unplugged. Lesson: a gate that is not wired to a command/delivery is not a gate.
-- 4 fidelity legs now: EquipmentRegister (exists?), MachineValidator (shell?), MachineryRegister
-  (behaves?), IncomingControl (was it checked, what got through?).
-- OPEN: no live delivery creates a MaterialBatch yet (LogisticsManager/ConstructionSite move a
-  bare double); desk is transient. Wire + persist next.
+  defect that is NOT found installs anyway as a **latent** defect. 33 checks.
+- `prombaza/GoodsYard.java` — the rail siding: wagons, free time, demurrage. `standingCount()`
+  IS the desk's load, so a backed-up yard rushes the check. 9 checks.
+- `prombaza/PrombazaControl.java` + `/prombaza control|yard|receive <id>` — desk as state.
+- `zone/MaterialSupply.java` — THE SEAM: train arrives (all wagons on the siding) → desk →
+  only INSTALLED/REWORKED reaches the site. Variable supplier quality, so the plan ≠ reality.
+  10 checks.
+- `rbmk/plant/Commissioning.java` — test-on-install by slide rule / mental / Skala; a GOOD
+  machine can FAIL a tight band; a latent defect can fail it. 11 checks.
+
+**WIRING (the previously-missing half):** `EnterpriseLifecycle.setSupply` +
+`advanceFacility(day)` routes deliveries through the desk; `ZoneEnterprises.setSupply`;
+`ZoneCommand.spawn` sets it; `ZoneTicker.ensureSupply` re-attaches EVERY tick so a
+save-reload self-heals; `PrombazaState` persists `yards`+`desks`.
+
+**LESSONS:** a gate not wired to a command/delivery is not a gate (`MaterialBatch`,
+`Naryad`, `Prorab.simulateInspection` all existed but were ORPHANED). Java `Random` with
+consecutive seeds gives near-identical first draws — use ONE Random drawn sequentially.
+The full 66-test suite does NOT finish in 400 s; run the affected packages.
+5 fidelity legs now: EquipmentRegister (exists?), MachineValidator (shell?), MachineryRegister
+(behaves?), IncomingControl (checked? what got through?), Commissioning (works on first start?).
 - SEARCH NOTE: archive.org book text is lending-gated (403); all web search engines
   CAPTCHA-walled; Tavily 432, Google Books 429. OpenLibrary search/inside.json works but
   needs ALL terms.

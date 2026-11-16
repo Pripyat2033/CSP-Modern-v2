@@ -9,16 +9,22 @@ import java.util.Random;
 
 /**
  * Входной контроль — incoming inspection at the prombaza. This is where the
- * enterprise, not a global check, enforces compliance.
+ * enterprise, not a ministry and not a global rule, enforces compliance.
  *
- * <p>The historical fact this models: much of what reached the site was
- * defective or off-spec, so the workforce did not install deliveries straight
- * from the truck. They raised workshops on site, stripped each item down,
- * checked it against the drawings and the regulation, and only then let it into
- * the building. The cost was enormous — roughly half the workforce ended up on
- * the receiving dock, disassembling and checking — and the project ran
- * correspondingly longer. That is the whole reason a compliance gate must live
- * with the ACTOR who receives the goods, not only with a central authority.
+ * <p>Be careful not to read this as an official procedure. No decree from above
+ * said incoming goods must be checked. What happened was local, selfish, and
+ * practical. Defective material backed up the sidings — at Chernobyl, the siding
+ * at Yanov station — and a wagon left standing past its norm was a fine the
+ * enterprise paid, per wagon, per day (простой вагонов). Meanwhile the workforce
+ * was sick of stripping out defective material that had already been built in.
+ * So the site was pulled both ways — clear the yard to stop the fines, but do not
+ * install junk — and the check was the compromise it settled on. See
+ * {@link GoodsYard} for the pressure that drives it.
+ *
+ * <p>The cost was enormous: roughly half the workforce ended up on the receiving
+ * dock, disassembling and checking, and the project ran correspondingly longer.
+ * That is the whole reason a compliance gate belongs with the ACTOR who receives
+ * the goods — it is their yard, their fine, and their rework.
  *
  * <p>This class is that gate, and it is deliberately NOT a pass/fail against a
  * perfect inspector. The point of the history is that the inspection was real but

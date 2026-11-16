@@ -22,6 +22,7 @@ public final class ZoneTicker {
         if (!state.isSpawned()) {
             return;
         }
+        ensureSupply(server, state);
         int acc = state.tickAccumulator() + 1;
         if (acc < TICKS_PER_DAY) {
             state.setTickAccumulator(acc);
@@ -34,6 +35,20 @@ public final class ZoneTicker {
         ServerWorld world = server.getOverworld();
         drawZone(world, state.zone());
         CrewMuster.spawnCrews(world, state.zone());
+    }
+
+    /**
+     * Make sure every enterprise is building through the prombaza's входной
+     * контроль desk. A zone restored from a save comes back without its supply
+     * line, so this re-attaches it — a reloaded world must not quietly go back to
+     * building with unchecked material.
+     */
+    private static void ensureSupply(MinecraftServer server, ZoneState state) {
+        String pbId = state.zone().prombazaId();
+        com.ben.csp.prombaza.PrombazaState pbs =
+            com.ben.csp.prombaza.PrombazaState.get(server);
+        MaterialSupply supply = new MaterialSupply(pbs.yard(pbId), pbs.control(pbId));
+        state.zone().setSupply(supply);
     }
 
     /** Draw the whole zone on the ground: every enterprise's office and its sites. */

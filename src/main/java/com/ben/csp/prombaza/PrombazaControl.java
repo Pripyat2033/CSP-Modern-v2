@@ -133,4 +133,45 @@ public final class PrombazaControl {
     private Random rng() {
         return new Random(rngSeed += 0x9E3779B97F4A7C15L);
     }
+
+    /** Save the desk: its receipts, the man-hours booked, and the rng position. */
+    public net.minecraft.nbt.NbtCompound toNbt() {
+        net.minecraft.nbt.NbtCompound nbt = new net.minecraft.nbt.NbtCompound();
+        nbt.putString("prombazaId", prombazaId);
+        nbt.putDouble("inspectionManHours", inspectionManHours);
+        nbt.putDouble("buildingManHours", buildingManHours);
+        nbt.putLong("rngSeed", rngSeed);
+        net.minecraft.nbt.NbtList list = new net.minecraft.nbt.NbtList();
+        for (Receipt r : receipts) {
+            net.minecraft.nbt.NbtCompound c = new net.minecraft.nbt.NbtCompound();
+            c.putString("disposition", r.verdict().disposition().name());
+            c.putInt("present", r.verdict().defectsPresent());
+            c.putInt("found", r.verdict().defectsFound());
+            c.putBoolean("latent", r.verdict().latentDefect());
+            c.putDouble("manHours", r.verdict().manHours());
+            c.put("batch", r.batch().toNbt());
+            list.add(c);
+        }
+        nbt.put("receipts", list);
+        return nbt;
+    }
+
+    /** Restore a desk from a save. */
+    public static PrombazaControl fromNbt(net.minecraft.nbt.NbtCompound nbt) {
+        PrombazaControl d = new PrombazaControl(nbt.getString("prombazaId"));
+        d.inspectionManHours = nbt.getDouble("inspectionManHours");
+        d.buildingManHours = nbt.getDouble("buildingManHours");
+        d.rngSeed = nbt.getLong("rngSeed");
+        net.minecraft.nbt.NbtList list = nbt.getList("receipts", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
+        for (int i = 0; i < list.size(); i++) {
+            net.minecraft.nbt.NbtCompound c = list.getCompound(i);
+            MaterialBatch batch = MaterialBatch.fromNbt(c.getCompound("batch"));
+            IncomingControl.Verdict v = new IncomingControl.Verdict(
+                IncomingControl.Disposition.valueOf(c.getString("disposition")),
+                c.getInt("present"), c.getInt("found"), c.getBoolean("latent"),
+                c.getDouble("manHours"));
+            d.receipts.add(new Receipt(d.prombazaId, batch, v));
+        }
+        return d;
+    }
 }

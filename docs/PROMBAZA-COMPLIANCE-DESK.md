@@ -1,85 +1,106 @@
-# Why the prombaza, not the mod, enforces compliance
+# The prombaza's входной контроль desk — the site checks its own deliveries
 
 Ben's question: *"Instead of trying to make everything accurate here, why isn't
 the enterprise and the prombaza itself ensuring the compliance checks?"*
 
-Short answer: it is now, and it should be. The history says so, and the code had
-the pieces but had left them unconnected.
+Short answer: it is now, and it should be. But the reason matters, and the first
+draft of this doc got it wrong. Read the next section before anything else.
 
-## The history
+## It was NOT a rule from above
 
-A great deal of what reached the Chernobyl site was defective, off-spec, or
-against regulation. The response was not to trust the delivery and not to rely
-on a distant ministry to catch it. The site raised its own workshops and checked
-each item itself: the workforce stripped an object down, inspected it, and only
-then let it into the building. The reported cost was that roughly half the
-workforce ended up on this receiving-and-checking work, and that the job took
-about **50% longer** as a result.
+Do not read this as an official procedure. No decree from a ministry said
+incoming goods must be inspected, and nobody at the Politburo wrote "thou shalt
+check". The driver was **local, selfish and practical**:
 
-Two Russian terms cover it:
+- Material piled up on the **rail sidings** — at Chernobyl, the siding at
+  **Yanov station**. A wagon left standing past its norm cost the enterprise
+  money, per wagon, per day (**простой вагонов**, demurrage). A backed-up yard
+  was a **fine**.
+- The workforce was **sick of stripping out defective material that had already
+  been built in** — re-doing work is expensive and demoralising.
 
-- **входной контроль** — incoming inspection: the check performed on goods as
-  they are received, before they are accepted.
-- **дефектовка** — defect-finding by disassembly: taking an item apart to find
-  and assess its defects. This is standard repair-shop practice, not a metaphor.
+So the site was pulled both ways at once: **clear the yard** (stop the fines) but
+**do not install junk** (stop the rework). The check was the **compromise** it
+settled on. It was not compliance for its own sake; it was a fight under a fine,
+and the desk is where that fight is fought.
 
-*Verification note:* the exact phrase used in Piers Paul Read's *Ablaze* or Adam
-Higginbotham's *Midnight in Chernobyl* could not be confirmed in this session —
-both books are lending-gated on the Internet Archive, and every web search
-endpoint (Google, Bing, DuckDuckGo, Ecosia, Brave) returned a CAPTCHA wall while
-Tavily and the Google Books API were over quota. The two terms above are the
-standard Soviet industrial terms for the process; the books' own wording is not
-quoted here because it could not be read.
+## Why the actor, not the author, enforces it
 
-## The point for the mod
+1. It is **their** yard, **their** fine, and **their** rework. A central check
+   has none of that pull, so it does not model the real behaviour.
+2. The check **costs**, and the cost is the interesting part. Roughly half the
+   workforce ended up on the receiving dock, and the project ran about **50%
+   longer**. A model where compliance is free is a lie.
+3. The check is **imperfect and load-dependent**. Busiest yard, most rushed
+   check, most defects through. This is the real failure mode, and it must be
+   modelled, not hidden behind a perfect pass/fail.
 
-This is why a compliance check belongs to the **actor that receives the goods**,
-not only to a central authority and not only to the mod author writing "accurate"
-values up front:
+## The deeper fear: a perfect reactor
 
-1. A central check is a single point of failure and a single point of trust.
-   The site did not have one; each industrial base had its own desk.
-2. The check has a **cost**, and the cost is the interesting part. Diverting the
-   workforce to inspection is why the project ran long. A model that makes
-   compliance free is not faithful.
-3. The check is **imperfect and load-dependent**. When the site is busiest, the
-   check is least thorough, and defects slip through. This is the historically
-   real failure mode, and it is exactly the one that must be modelled rather than
-   hidden behind a perfect pass/fail.
+The real risk this design is fighting is that an AI builds a **perfect plant** —
+everything works first time, the numbers come out clean, the reactor is born
+correct. It was not. On the RBMK units the equipment was **tested on
+installation**, by the plant's own engineers, with the plant's own arithmetic —
+a **slide rule, mental calculation, and Skala** where it helped. So:
+
+- the figure that came back was **not the figure on the drawing** — it was that
+  figure plus the error of whoever measured it and however they worked it out;
+- tests **failed**, and a machine went back;
+- and even a **good** machine could fail its first test, because crude arithmetic
+  can put a good reading outside a tight band.
+
+Nothing comes out of the vault perfect. Some things come out **wrong and have to
+be measured again**. That is what `plant/Commissioning` models.
+
+## The pieces that already existed — and were orphaned
+
+The mod had the machinery and had left it unplugged. `logistics.MaterialBatch`
+carried `QualityStatus { PENDING, PASSED, DEFECTIVE, QUARANTINED }`, an
+`inherentQuality`, and a list of `Defect`s the workforce had to *find*
+(`markDefectAsFound`, `Defect.discoverability`). `work.Naryad` had
+`REJECTED`/`PENDING_INSPECTION`. `agent.Prorab` had `simulateInspection`. **None
+were wired to anything.** So "why isn't it checking?" answered itself: it was
+built and unplugged. A gate that is not wired to a command or a delivery is not a
+gate.
 
 ## What was built
 
-The pieces existed but were unconnected. `logistics.MaterialBatch` already
-carried `QualityStatus { PENDING, PASSED, DEFECTIVE, QUARANTINED }`, an
-`inherentQuality`, and a list of `Defect`s that the workforce had to *find*
-(`markDefectAsFound`). Nothing drove it: `MaterialBatch` was referenced by
-nothing but itself.
+Five new pieces, each one a leg of the same idea.
 
-Three new pieces connect it:
+| Class | What it is | Self-test |
+| --- | --- | --- |
+| `prombaza/IncomingControl` | the gate: detection x thoroughness (falls with load, floor 0.25) x cost | 33 checks |
+| `prombaza/GoodsYard` | the siding: wagons, free time, **demurrage**; the backlog is the desk's load | 9 checks |
+| `prombaza/PrombazaControl` | the desk as state: receipts, cleared/held/latent, man-hours booked | (in the two above) |
+| `zone/MaterialSupply` | the seam: variable supplier quality -> the yard -> the desk -> the site | 10 checks |
+| `rbmk/plant/Commissioning` | test on install: slide rule / mental / Skala; a good machine can fail | 11 checks |
 
-- **`prombaza/IncomingControl`** — the gate itself. It models detection
-  (a defect is found with probability set by `Defect.discoverability()` and the
-  check's thoroughness), thoroughness (falls as the arrival load per inspector
-  rises, with a floor), and cost (inspection man-hours make the job take longer).
-  Its disposition is the workforce's own rule: a clean item is `INSTALLED`; a
-  found defect is `REWORKED` on site or `RETURNED` if too severe; a suspect item
-  with no proven defect is `QUARANTINED`. The dangerous case — a defect nobody
-  found — installs the item but flags it **latent**.
-- **`prombaza/PrombazaControl`** — the desk, as real state on a prombaza. It
-  receives batches, records each verdict, books the inspection man-hours, and can
-  report what was cleared, what was held, and how many installed items are still
-  carrying a latent defect.
-- **`/prombaza control <id>`** — the desk, reachable in world. No orphaned code:
-  the gate is wired to a command and to the persistent state.
+**The dispositions are the workforce's own**: a clean item is `INSTALLED`; a
+found defect goes to the on-site workshop (`REWORKED`) or back to the supplier if
+too severe (`RETURNED`); a suspect item with no proven defect is `QUARANTINED`.
+The dangerous case — a defect **nobody found** — is `INSTALLED` but flagged
+**latent**: it goes into the building, and only its behaviour betrays it later.
 
-Self-test: `prombaza/IncomingControlSelfTest` — **33 checks**, all passing,
-including the load case (a defect that is hard to see slips through when the desk
-is busy), the latent case (installed but not passed clean), and the cost case
-(inspection at half the building effort gives the "50% longer" multiplier).
+**The site does not get a clean number.** `MaterialSupply` asks the suppliers for
+a quantity and receives back only what the desk cleared, at the suppliers' own
+spread of quality. Reworked material still arrives (the workshop fixed it);
+returned and quarantined material does not, so the site is simply **short**. The
+plan and the reality are not the same thing.
+
+## Wiring (so it is not orphaned again)
+
+- `/prombaza control <id>` — the desk report: cleared / held / latent / man-hours.
+- `/prombaza yard <id>` — the siding: what is standing, how long, the fine.
+- `/prombaza receive <id> <n>` — work standing wagons through the desk. Clearing
+  a big queue in one go lets more through: the trade the demurrage creates.
+- `ZoneCommand.spawn` hands every enterprise the prombaza's supply line, so all
+  material goes through the desk before it reaches a site.
+- `ZoneTicker.ensureSupply` re-attaches the line every day, so a world restored
+  from a save does not quietly go back to building with unchecked material.
+- `PrombazaState` persists the yards and the desks, so the standing wagons and
+  the man-hours survive a restart.
 
 ## How this joins the other fidelity legs
-
-There are now four gates, and they answer different questions:
 
 | Gate | Question it answers |
 | --- | --- |
@@ -87,19 +108,34 @@ There are now four gates, and they answer different questions:
 | `plant/MachineValidator` | is the machine's **shell** the right shape and size? |
 | `plant/MachineryRegister` | does it **behave** to its real performance numbers? |
 | `prombaza/IncomingControl` | was what arrived **checked**, and what got through? |
+| `plant/Commissioning` | does it **work** when it is first started — or does it fail? |
 
-The first three are checks against the sources. The fourth is the check the
-*workforce* does, with the workforce's own fallibility and cost. A latent defect
-that входной контроль misses is precisely what the performance conformance gate
-(`MachineryRegister`) exists to catch later, by its effect on behaviour — so the
-two are designed to work together: the desk models what a busy site let through,
-and the conformance check catches what the desk missed.
+The first three are checks against the sources. The last two are the checks the
+*workforce* does, with the workforce's own fallibility, cost, and crude
+arithmetic. They interlock: a latent defect that входной контроль missed is
+precisely what commissioning (or, later, the conformance gate) catches by its
+effect on behaviour.
 
-## Next step
+## Honest provenance
 
-The desk is transient state today; the receipts are rebuilt from deliveries as
-they arrive. The next step is to persist the desk (receipts, man-hours booked)
-and to drive it from the real delivery path — `LogisticsManager` and
-`ConstructionSite.deliverMaterials` currently move a bare double of material
-without creating a `MaterialBatch`, so nothing yet reaches the desk in a live
-game. That wiring is the open work.
+The **mechanism** in every piece is real and documented: demurrage on standing
+wagons, incoming inspection that is load-dependent, commissioning tests worked
+out by hand. The **numbers** are not quoted from a source and are marked so:
+`GoodsYard.FREE_TIME_DAYS` and `FINE_PER_WAGON_DAY`, `Commissioning.Method` error
+bands and `DEFAULT_TOLERANCE`, `MaterialSupply.DEFAULT_SUPPLIERS` and
+`UNITS_PER_WAGON`. Each carries a `RECONSTRUCTION` note so it can be replaced
+with the real tariff, band, or norm.
+
+The exact wording in Piers Paul Read's *Ablaze* or Adam Higginbotham's *Midnight
+in Chernobyl* could not be confirmed this session — both are lending-gated on the
+Internet Archive, and every web search endpoint was CAPTCHA-walled or over quota.
+The process is therefore named by its standard Soviet terms (входной контроль,
+дефектовка, простой вагонов) rather than quoted from the books.
+
+## Still open
+
+The desk is fed by the enterprises' own deliveries and by `/prombaza receive`, but
+the two are not yet one stream: an enterprise's delivery goes through the desk
+inline, while `/prombaza receive` works a manually-stocked siding. The next step
+is to let the player stock a siding and let an enterprise draw from it, so the
+backlog the player sees is the backlog the enterprises are building against.

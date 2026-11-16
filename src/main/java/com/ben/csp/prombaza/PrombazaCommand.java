@@ -20,6 +20,8 @@ import com.ben.csp.zone.ground.GroundWorks;
  *   /prombaza list
  *   /prombaza undo <id>
  *   /prombaza control <id>     show the входной контроль desk for a prombaza
+ *   /prombaza yard <id>        show the rail siding (standing wagons and demurrage)
+ *   /prombaza receive <id> <n> clear up to n standing wagons through the desk
  */
 public final class PrombazaCommand {
 
@@ -63,6 +65,14 @@ public final class PrombazaCommand {
             .then(CommandManager.literal("control")
                 .then(CommandManager.argument("id", StringArgumentType.word())
                     .executes(PrombazaCommand::control)))
+            .then(CommandManager.literal("yard")
+                .then(CommandManager.argument("id", StringArgumentType.word())
+                    .executes(PrombazaCommand::yard)))
+            .then(CommandManager.literal("receive")
+                .then(CommandManager.argument("id", StringArgumentType.word())
+                    .then(CommandManager.argument("n", IntegerArgumentType.integer(1))
+                        .executes(ctx -> receive(ctx, StringArgumentType.getString(ctx, "id"),
+                            IntegerArgumentType.getInteger(ctx, "n"))))))
             .then(CommandManager.literal("undo")
                 .executes(ctx -> usage(ctx, "/prombaza undo <id>"))
                 .then(CommandManager.argument("id", StringArgumentType.word())
@@ -187,6 +197,74 @@ public final class PrombazaCommand {
             + " -> build takes x" + String.format("%.2f", desk.buildTimeMultiplier())
             + " as long"), false);
         return desk.receipts().size();
+    }
+
+    /**
+     * Show the rail siding: what is standing, how long, and the fine it is costing.
+     * This is the pressure the входной контроль exists to relieve — a backed-up
+     * yard is a fine, and a rushed desk.
+     */
+    private static int yard(CommandContext<ServerCommandSource> ctx) {
+        String id = StringArgumentType.getString(ctx, "id");
+        if (PrombazaState.get(ctx.getSource().getServer()).registry().byId(id).isEmpty()) {
+            ctx.getSource().sendError(Text.literal("No prombaza with id '" + id
+                + "'. Run /prombaza list to see the ids."));
+            return 0;
+        }
+        PrombazaState state = PrombazaState.get(ctx.getSource().getServer());
+        GoodsYard yard = state.yard(id);
+        long today = day(ctx.getSource());
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "Siding at prombaza '" + id + "': " + yard.standingCount() + " wagon(s) standing,"
+            + " free time " + (int) GoodsYard.FREE_TIME_DAYS + " days."), false);
+        if (yard.standingCount() == 0) {
+            ctx.getSource().sendFeedback(() -> Text.literal(
+                "  The yard is clear — no demurrage. Use /prombaza receive " + id
+                + " <n> to work the standing wagons through входной контроль."), false);
+            return 1;
+        }
+        for (String line : yard.standingReport(today)) {
+            ctx.getSource().sendFeedback(() -> Text.literal("  " + line), false);
+        }
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "  demurrage owed so far: " + Math.round(yard.demurrage(today))
+            + " — every day it stands, it grows."), false);
+        return yard.standingCount();
+    }
+
+    /**
+     * Work the standing wagons through входной контроль. The check is rushed by the
+     * backlog, so clearing a big queue in one go lets more defects through — the
+     * exact trade the yard's demurrage creates.
+     */
+    private static int receive(CommandContext<ServerCommandSource> ctx, String id, int n) {
+        PrombazaState state = PrombazaState.get(ctx.getSource().getServer());
+        if (state.registry().byId(id).isEmpty()) {
+            ctx.getSource().sendError(Text.literal("No prombaza with id '" + id
+                + "'. Run /prombaza list to see the ids."));
+            return 0;
+        }
+        GoodsYard yard = state.yard(id);
+        PrombazaControl desk = state.control(id);
+        long today = day(ctx.getSource());
+        int standingBefore = yard.standingCount();
+        int cleared = yard.clearUpTo(n, desk, today, 1.0);
+        state.markDirty();
+        if (cleared == 0) {
+            ctx.getSource().sendFeedback(() -> Text.literal(
+                "Nothing standing at prombaza '" + id + "'."), false);
+            return 0;
+        }
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "Worked " + cleared + " wagon(s) through входной контроль at '" + id
+            + "' (backlog was " + standingBefore + ")."), true);
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "  desk now: cleared " + desk.cleared() + " | held " + desk.held()
+            + " | latent " + desk.latent()
+            + " | inspection " + Math.round(desk.inspectionManHours()) + " man-hours"), false);
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "  /prombaza control " + id + " for the full desk report."), false);
+        return cleared;
     }
 
     private static int undo(CommandContext<ServerCommandSource> ctx) {

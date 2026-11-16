@@ -60,6 +60,18 @@ public final class ZoneEnterprises {
         return out;
     }
 
+    /**
+     * Hand every enterprise the prombaza's supply line, so all material goes
+     * through the входной контроль desk before it reaches a site. Without this the
+     * enterprises build with material delivered straight off the wagon — the
+     * un-plugged state.
+     */
+    public void setSupply(MaterialSupply supply) {
+        for (EnterpriseLifecycle l : lifecycles) {
+            l.setSupply(supply);
+        }
+    }
+
     /** Advance every enterprise one step. Returns how many just became operational. */
     public int tick(long day) {
         int newly = 0;

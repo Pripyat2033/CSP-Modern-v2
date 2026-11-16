@@ -35,6 +35,8 @@ public final class EnterpriseLifecycle {
     private Footprint hqPlot;
     private Facility hqFacility;
     private boolean awaitingGround;
+    /** The prombaza's supply line (yard + входной контроль desk), or null to deliver direct. */
+    private MaterialSupply supply;
 
     public EnterpriseLifecycle(Enterprise enterprise, SitePlan plan, int staffTarget) {
         this.enterprise = Objects.requireNonNull(enterprise, "enterprise");
@@ -46,6 +48,16 @@ public final class EnterpriseLifecycle {
         // the agreed layout, and the HQ phase builds it.
         this.hqFacility = findHeadquarters(enterprise);
         assignHq();
+    }
+
+    /**
+     * Put the prombaza's supply line in. When set, material only reaches a site
+     * after it has passed входной контроль, and it arrives at whatever quality the
+     * suppliers sent — so a site can simply be short. When null (a test, or a zone
+     * with no yard) material is delivered direct, as before.
+     */
+    public void setSupply(MaterialSupply supply) {
+        this.supply = supply;
     }
 
     public Enterprise enterprise() { return enterprise; }
@@ -101,7 +113,7 @@ public final class EnterpriseLifecycle {
         switch (phase) {
             case HQ -> advanceHq();
             case STAFF -> advanceStaff();
-            case FACILITIES -> advanceFacility();
+            case FACILITIES -> advanceFacility(day);
             case DONE -> { }
         }
         if (!wasOperational && enterprise.isOperational()) {
@@ -150,7 +162,7 @@ public final class EnterpriseLifecycle {
         }
     }
 
-    private void advanceFacility() {
+    private void advanceFacility(long day) {
         List<Facility> facilities = enterprise.facilities();
         // move past any facility that is already done, so a restored zone and a
         // live one step through the roster in exactly the same way
@@ -188,7 +200,18 @@ public final class EnterpriseLifecycle {
                 site.assignBrigade(brigades.get(facilityIndex % brigades.size()).id());
             }
             if (!site.hasMaterials()) {
-                site.deliverMaterials(site.materialsRequired() / 4.0);
+                double request = site.materialsRequired() / 4.0;
+                if (supply == null) {
+                    site.deliverMaterials(request);
+                } else {
+                    // The material goes through the prombaza's входной контроль first.
+                    // What arrives is what the desk cleared, at the suppliers' own
+                    // quality — so the site may get less than it asked for.
+                    MaterialSupply.Delivery d = supply.deliverTo(site, request, day, 1.0);
+                    if (d.delivered() > 0) {
+                        site.deliverMaterials(d.delivered());
+                    }
+                }
             }
             Brigade b = brigades.get(facilityIndex % brigades.size());
             site.work(b.dailyManHours());
