@@ -19,6 +19,7 @@ import com.ben.csp.zone.ground.GroundWorks;
  *   /prombaza designate <id> <name>
  *   /prombaza list
  *   /prombaza undo <id>
+ *   /prombaza control <id>     show the входной контроль desk for a prombaza
  */
 public final class PrombazaCommand {
 
@@ -59,6 +60,9 @@ public final class PrombazaCommand {
                     .then(CommandManager.argument("name", StringArgumentType.greedyString())
                         .executes(ctx -> designate(ctx, StringArgumentType.getString(ctx, "name"))))))
             .then(CommandManager.literal("list").executes(PrombazaCommand::list))
+            .then(CommandManager.literal("control")
+                .then(CommandManager.argument("id", StringArgumentType.word())
+                    .executes(PrombazaCommand::control)))
             .then(CommandManager.literal("undo")
                 .executes(ctx -> usage(ctx, "/prombaza undo <id>"))
                 .then(CommandManager.argument("id", StringArgumentType.word())
@@ -147,6 +151,42 @@ public final class PrombazaCommand {
             ctx.getSource().sendFeedback(() -> Text.literal(" - " + p), false);
         }
         return reg.size();
+    }
+
+    /**
+     * Show the входной контроль desk for a prombaza. The desk is the prombaza's
+     * own compliance gate: the deliveries it has received, what it did with each,
+     * what the checking has cost, and how many installed items are still carrying
+     * a defect nobody found.
+     */
+    private static int control(CommandContext<ServerCommandSource> ctx) {
+        String id = StringArgumentType.getString(ctx, "id");
+        var found = PrombazaState.get(ctx.getSource().getServer()).registry().byId(id);
+        if (found.isEmpty()) {
+            ctx.getSource().sendError(Text.literal("No prombaza with id '" + id
+                + "'. Run /prombaza list to see the ids."));
+            return 0;
+        }
+        PrombazaControl desk = PrombazaState.get(ctx.getSource().getServer()).control(id);
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "Входной контроль at prombaza '" + id + "':"), false);
+        if (desk.receipts().isEmpty()) {
+            ctx.getSource().sendFeedback(() -> Text.literal(
+                "  No deliveries received yet. The desk checks each batch as it arrives."), false);
+            return 1;
+        }
+        for (String line : desk.report()) {
+            ctx.getSource().sendFeedback(() -> Text.literal("  " + line), false);
+        }
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "  cleared for building: " + desk.cleared()
+            + " | held (rework/return/hold): " + desk.held()
+            + " | installed with a LATENT defect: " + desk.latent()), false);
+        ctx.getSource().sendFeedback(() -> Text.literal(
+            "  inspection cost: " + Math.round(desk.inspectionManHours()) + " man-hours"
+            + " -> build takes x" + String.format("%.2f", desk.buildTimeMultiplier())
+            + " as long"), false);
+        return desk.receipts().size();
     }
 
     private static int undo(CommandContext<ServerCommandSource> ctx) {

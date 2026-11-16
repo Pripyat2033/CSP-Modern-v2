@@ -639,3 +639,27 @@ to WP-keyed figures not yet pinned to a primary doc). NOTE provenance.json is st
 CORE-PHYSICS only; machine perf lives in machinery-register.json.
 **The three registers are the answer to "how do we trust it?": exist + shape + behaviour,
 all sourced, all machine-checked, none silently absent.**
+
+## PROMBAZA COMPLIANCE DESK (2026-11-15) — why the ACTOR checks, not the mod
+
+Ben asked why the enterprise/prombaza shouldn't enforce compliance instead of the mod
+author making everything "accurate" up front. Answer + code: the site DID check its own
+deliveries. Deliveries were routinely defective, so each prombaza raised workshops and a
+receiving desk and stripped every item before installing it — **входной контроль**
+(incoming inspection) and **дефектовка** (defect-finding by disassembly). ~Half the
+workforce ended up on it; the project ran ~50% longer.
+- `prombaza/IncomingControl.java` — the gate: detection × thoroughness (falls with load,
+  floor 0.25) × cost (man-hours). Dispositions INSTALLED/REWORKED/RETURNED/QUARANTINED; a
+  defect that is NOT found installs anyway as a **latent** defect.
+- `prombaza/PrombazaControl.java` + `/prombaza control <id>` — the desk as state.
+- `IncomingControlSelfTest` 33 checks pass; jar 963,076 bytes; `docs/PROMBAZA-COMPLIANCE-DESK.md`.
+- THE FINDING: `MaterialBatch` (had QualityStatus + Defect.discoverability), `Naryad`, and
+  `Prorab.simulateInspection` all EXISTED but were ORPHANED. "Why isn't it checking?" = it
+  was built and unplugged. Lesson: a gate that is not wired to a command/delivery is not a gate.
+- 4 fidelity legs now: EquipmentRegister (exists?), MachineValidator (shell?), MachineryRegister
+  (behaves?), IncomingControl (was it checked, what got through?).
+- OPEN: no live delivery creates a MaterialBatch yet (LogisticsManager/ConstructionSite move a
+  bare double); desk is transient. Wire + persist next.
+- SEARCH NOTE: archive.org book text is lending-gated (403); all web search engines
+  CAPTCHA-walled; Tavily 432, Google Books 429. OpenLibrary search/inside.json works but
+  needs ALL terms.

@@ -20,8 +20,20 @@ public final class PrombazaState extends PersistentState {
 
     private final PrombazaRegistry registry = new PrombazaRegistry();
 
+    /**
+     * One входной контроль desk per prombaza. Transient for now: the desk's
+     * receipts are rebuilt from deliveries as they arrive, and persisting the
+     * desk itself is the next step (see docs on the prombaza compliance desk).
+     */
+    private final java.util.Map<String, PrombazaControl> controlDesks = new java.util.HashMap<>();
+
     public PrombazaRegistry registry() {
         return registry;
+    }
+
+    /** The входной контроль desk for a prombaza, created on first use. */
+    public PrombazaControl control(String prombazaId) {
+        return controlDesks.computeIfAbsent(prombazaId, PrombazaControl::new);
     }
 
     public static PrombazaState get(MinecraftServer server) {
