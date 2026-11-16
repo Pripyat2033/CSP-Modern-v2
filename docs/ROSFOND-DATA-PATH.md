@@ -68,6 +68,17 @@ ROSFOND zip  ─► import_rosfond.py ─► fetch_rosfond.py ─► emit_consta
   alternative for a full Monte Carlo sweep. **NJOY 2016.78 and openmc 0.16.0 are
   installed and working in this sandbox.**
 
+## 4a. STATUS — the swap was measured, and it is not the fix (2026-11-15)
+
+The swap was carried out and measured; see **`docs/ROSFOND-SWAP-MEASURED.md`**.
+Summary: with the INSAG-7 anchor still in, ENDF and ROSFOND give the *identical*
+whole-core void worth (+0.0222) — the anchor absorbs the data change. With the
+anchor removed, ROSFOND gives +0.1215 (vs ENDF +0.0656) and the core runs away in
+30 s. The cause is the **one-node homogenised cell**, which overstates the void
+feedback in *both* libraries. So the real fix is the **cell model**, not the data
+swap; the anchor stays (0.233) until then, recorded as compensating for that
+defect. Nothing was shipped; the reactor is unchanged.
+
 ## 5. The blocker — where the data lives
 
 **This sandbox is a cloud machine, NOT Ben's PC.** Verified: no Windows/WSL
