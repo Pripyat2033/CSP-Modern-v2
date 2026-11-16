@@ -45,22 +45,37 @@ This is the historically-true opening, and it is *all dialogue*:
 
 ## Concrete plan (phased, each phase small)
 
-**Phase A — a secretary who takes instructions.**
-- Spawn a `SekretarEntity` in the prombaza office when the prombaza is founded.
-- Add zone intents to `DialogueIntent`: e.g. `FOUND_PROMBAZA`, `SPAWN_ZONE`,
-  `ZONE_STATUS`, `LIST_ENTERPRISES`.
-- In `WorkerSpeech`, when the worker is a secretary, these intents **call the same
-  code the slash commands call today** (`ZoneState.spawn`, etc.). The command
-  handlers stay as a fallback for the admin, but the **player path is speech**.
+**Phase A — the secretary who carries the zone. [DONE — 2026-11-15]**
+Built, and built so the two paths cannot drift:
+- `zone/ZoneOperations` — the zone's operations (found the site, the site report,
+  muster the workforce, the desk report, work the wagons) in **one place**. Both
+  the operator's commands and the spoken word call it. `ZoneCommand` and
+  `PrombazaCommand` were refactored to call it, so the command is no longer a
+  second implementation.
+- `DialogueIntent` gained the zone intents (`FOUND_SITE`, `SITE_REPORT`, `MUSTER`,
+  `PROMBAZA_REPORT`, `DELIVER`), checked **before** the personal intents so "how is
+  the site" is a site report and not a worker's status.
+- `entity/dialogue/SecretarySpeech` — the secretary's side. She answers the zone
+  intents by running the operations and reading back the world's own report.
+- `WorkerSpeech` routes zone intents to her; **any other worker says "that is for
+  the office, comrade — speak to the secretary."**
+- `Muster.placeSecretary` puts a secretary at the office when the site is founded,
+  so there is always someone to talk to.
 
-**Phase B — the site-choice conversation.**
+So the player founds and runs the zone **by walking up to the secretary and
+speaking** — "found the site", "how is the site", "muster the workforce", "the
+desk", "work the wagons". The slash commands still exist as an admin back door,
+but they are no longer the only way, and they no longer contain their own copy of
+the logic.
+
+**Phase B — the site-choice conversation. [TODO]**
 - A `SiteCandidates` model: the 16 surveyed points, 2 finalists, each with its
   sourced facts (distance to load, water, soil).
 - The Director picks one by speaking; the choice seeds the prombaza's location and
   name. The `ZoneState.spawn` hardcoded `"pb1"` is replaced by the chosen id —
   this also fixes the supply-line mismatch noted in the compliance-desk doc.
 
-**Phase C — the arrival scene.**
+**Phase C — the arrival scene. [TODO]**
 - A scripted "helicopter and toast" moment, clearly marked a **reconstruction**
   (the source is unverified — see HISTORY-SITE-SELECTION §7).
 

@@ -5,12 +5,14 @@ import com.ben.csp.enterprise.Facility;
 import com.ben.csp.enterprise.Footprint;
 import com.ben.csp.entity.CspPersonEntity;
 import com.ben.csp.entity.ModEntities;
+import com.ben.csp.entity.WorkerRole;
 import com.ben.csp.enterprise.Specialty;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 
 /**
  * Puts the whole workforce on the ground, so the Director can see and measure whether
@@ -58,6 +60,23 @@ public final class Muster {
             }
         }
         return placed;
+    }
+
+    /**
+     * Put a secretary at the office. She is the way into the zone: the Director
+     * speaks to her, not to a command. Returns false if a secretary is already
+     * within sight, so founding twice does not stack clerks.
+     */
+    public static boolean placeSecretary(ServerWorld world, BlockPos at) {
+        Box around = new Box(at.getX() - 24, world.getBottomY(), at.getZ() - 24,
+                             at.getX() + 24, world.getTopY(), at.getZ() + 24);
+        for (CspPersonEntity p : world.getEntitiesByClass(CspPersonEntity.class, around, e -> true)) {
+            if (p.getRole() == WorkerRole.SEKRETAR) {
+                return false;
+            }
+        }
+        spawnOne(world, ModEntities.SEKRETAR, at.getX(), at.getY(), at.getZ());
+        return true;
     }
 
     /** Remove every worker of ours from the world; returns how many were removed. */

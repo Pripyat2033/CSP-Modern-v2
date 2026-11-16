@@ -14,7 +14,15 @@ import java.util.Set;
  */
 public enum DialogueIntent {
 
-    GREET, COME, FOLLOW, STAND_DOWN, GO_POST, STATUS, WHO, PLACE, HELP, UNKNOWN;
+    GREET, COME, FOLLOW, STAND_DOWN, GO_POST, STATUS, WHO, PLACE, HELP, UNKNOWN,
+
+    // The zone and the enterprises. These are spoken to the staff — above all to
+    // the secretary — and they run the same operations the operator's commands do.
+    FOUND_SITE,       // "found the site" / "start the works" / "lay out the zone"
+    SITE_REPORT,      // "how is the site" / "how far have the enterprises come"
+    MUSTER,           // "muster the workforce" / "bring the men out"
+    PROMBAZA_REPORT,  // "the desk" / "incoming control" / "what has arrived"
+    DELIVER;          // "work the wagons" / "clear the siding"
 
     private static final Set<String> GREETINGS =
         new HashSet<>(Arrays.asList("hello", "hi", "hey", "greetings", "morning", "evening"));
@@ -28,6 +36,35 @@ public enum DialogueIntent {
             return UNKNOWN;
         }
         Set<String> words = new HashSet<>(Arrays.asList(text.split(" ")));
+
+        // The zone and the enterprises are checked FIRST, so "how is the site" is a
+        // site report and not a worker's status.
+        if (has(text, "found the site") || has(text, "found the works")
+            || has(text, "start the works") || has(text, "lay out the zone")
+            || has(text, "stand the enterprises") || has(text, "found the prombaza")
+            || has(text, "stand the zone") || has(text, "begin the works")) {
+            return FOUND_SITE;
+        }
+        if (has(text, "how is the site") || has(text, "how is the zone")
+            || has(text, "how far have") || has(text, "how is the build")
+            || has(text, "report on the zone") || has(text, "the site report")
+            || has(text, "how are the enterprises")) {
+            return SITE_REPORT;
+        }
+        if (has(text, "muster") || has(text, "bring the men")
+            || has(text, "bring the workforce") || has(text, "call the men out")
+            || has(text, "put the men out") || has(text, "everyone out")) {
+            return MUSTER;
+        }
+        if (has(text, "incoming control") || has(text, "the desk")
+            || has(text, "what has arrived") || has(text, "any deliveries")
+            || has(text, "the inspection")) {
+            return PROMBAZA_REPORT;
+        }
+        if (has(text, "work the wagons") || has(text, "clear the siding")
+            || has(text, "the wagons") || has(text, "unload")) {
+            return DELIVER;
+        }
 
         if (words.stream().anyMatch(GREETINGS::contains)) {
             return GREET;

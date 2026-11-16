@@ -1,6 +1,7 @@
 package com.ben.csp.entity.dialogue;
 
 import com.ben.csp.entity.CspPersonEntity;
+import com.ben.csp.entity.WorkerRole;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -15,6 +16,20 @@ public final class WorkerSpeech {
     private WorkerSpeech() {}
 
     public static void handle(CspPersonEntity worker, PlayerEntity player, DialogueIntent intent) {
+        // The secretary carries the zone. What she is asked about the site, the men
+        // and the deliveries, she answers from the world itself.
+        if (worker.getRole() == WorkerRole.SEKRETAR) {
+            if (SecretarySpeech.handle(worker, player, intent)) {
+                return;
+            }
+            switch (intent) {
+                case GREET, WHO, PLACE, HELP -> {
+                    SecretarySpeech.smallTalk(worker, player, intent);
+                    return;
+                }
+                default -> { }
+            }
+        }
         switch (intent) {
             case GREET -> say(worker, player, "Comrade Director.");
             case COME -> {
@@ -44,6 +59,8 @@ public final class WorkerSpeech {
             case HELP -> say(worker, player,
                 "You can speak to me plainly: \"come here\", \"follow me\", \"stand down\", "
                 + "\"to your post\", \"report\", \"who are you\".");
+            case FOUND_SITE, SITE_REPORT, MUSTER, PROMBAZA_REPORT, DELIVER -> say(worker, player,
+                "That is for the office, comrade — speak to the secretary.");
             case UNKNOWN -> say(worker, player,
                 "I don't follow, comrade. Try \"come here\", \"follow me\", \"stand down\", "
                 + "\"to your post\" or \"report\".");

@@ -171,32 +171,16 @@ public final class PrombazaCommand {
      */
     private static int control(CommandContext<ServerCommandSource> ctx) {
         String id = StringArgumentType.getString(ctx, "id");
-        var found = PrombazaState.get(ctx.getSource().getServer()).registry().byId(id);
-        if (found.isEmpty()) {
-            ctx.getSource().sendError(Text.literal("No prombaza with id '" + id
-                + "'. Run /prombaza list to see the ids."));
+        var r = com.ben.csp.zone.ZoneOperations.prombazaReport(ctx.getSource().getServer(), id);
+        if (!r.ok()) {
+            ctx.getSource().sendError(Text.literal(String.join(" ", r.lines())
+                + " Run /prombaza list to see the ids."));
             return 0;
         }
-        PrombazaControl desk = PrombazaState.get(ctx.getSource().getServer()).control(id);
-        ctx.getSource().sendFeedback(() -> Text.literal(
-            "Входной контроль at prombaza '" + id + "':"), false);
-        if (desk.receipts().isEmpty()) {
-            ctx.getSource().sendFeedback(() -> Text.literal(
-                "  No deliveries received yet. The desk checks each batch as it arrives."), false);
-            return 1;
+        for (String line : r.lines()) {
+            ctx.getSource().sendFeedback(() -> Text.literal(line), false);
         }
-        for (String line : desk.report()) {
-            ctx.getSource().sendFeedback(() -> Text.literal("  " + line), false);
-        }
-        ctx.getSource().sendFeedback(() -> Text.literal(
-            "  cleared for building: " + desk.cleared()
-            + " | held (rework/return/hold): " + desk.held()
-            + " | installed with a LATENT defect: " + desk.latent()), false);
-        ctx.getSource().sendFeedback(() -> Text.literal(
-            "  inspection cost: " + Math.round(desk.inspectionManHours()) + " man-hours"
-            + " -> build takes x" + String.format("%.2f", desk.buildTimeMultiplier())
-            + " as long"), false);
-        return desk.receipts().size();
+        return r.lines().size();
     }
 
     /**
@@ -238,33 +222,16 @@ public final class PrombazaCommand {
      * exact trade the yard's demurrage creates.
      */
     private static int receive(CommandContext<ServerCommandSource> ctx, String id, int n) {
-        PrombazaState state = PrombazaState.get(ctx.getSource().getServer());
-        if (state.registry().byId(id).isEmpty()) {
-            ctx.getSource().sendError(Text.literal("No prombaza with id '" + id
-                + "'. Run /prombaza list to see the ids."));
+        var r = com.ben.csp.zone.ZoneOperations.workWagons(
+            ctx.getSource().getServer(), id, n, day(ctx.getSource()));
+        if (!r.ok()) {
+            ctx.getSource().sendFeedback(() -> Text.literal(String.join(" ", r.lines())), false);
             return 0;
         }
-        GoodsYard yard = state.yard(id);
-        PrombazaControl desk = state.control(id);
-        long today = day(ctx.getSource());
-        int standingBefore = yard.standingCount();
-        int cleared = yard.clearUpTo(n, desk, today, 1.0);
-        state.markDirty();
-        if (cleared == 0) {
-            ctx.getSource().sendFeedback(() -> Text.literal(
-                "Nothing standing at prombaza '" + id + "'."), false);
-            return 0;
+        for (String line : r.lines()) {
+            ctx.getSource().sendFeedback(() -> Text.literal(line), true);
         }
-        ctx.getSource().sendFeedback(() -> Text.literal(
-            "Worked " + cleared + " wagon(s) through входной контроль at '" + id
-            + "' (backlog was " + standingBefore + ")."), true);
-        ctx.getSource().sendFeedback(() -> Text.literal(
-            "  desk now: cleared " + desk.cleared() + " | held " + desk.held()
-            + " | latent " + desk.latent()
-            + " | inspection " + Math.round(desk.inspectionManHours()) + " man-hours"), false);
-        ctx.getSource().sendFeedback(() -> Text.literal(
-            "  /prombaza control " + id + " for the full desk report."), false);
-        return cleared;
+        return 1;
     }
 
     private static int undo(CommandContext<ServerCommandSource> ctx) {

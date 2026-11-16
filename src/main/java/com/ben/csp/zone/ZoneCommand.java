@@ -45,85 +45,32 @@ public final class ZoneCommand {
 
     private static int spawn(CommandContext<ServerCommandSource> ctx, int radius) {
         ServerCommandSource source = ctx.getSource();
-        ServerWorld world = source.getWorld();
         BlockPos p = BlockPos.ofFloored(source.getPosition());
-        ZoneState state = ZoneState.get(source.getServer());
-        if (state.isSpawned()) {
-            source.sendError(Text.literal("The zone is already spawned. Use /zone draw or /zone status."));
+        ZoneOperations.Result r = ZoneOperations.foundSite(
+            source.getServer(), source.getWorld(), p, radius, source.getName());
+        if (!r.ok()) {
+            source.sendError(Text.literal(String.join(" ", r.lines())));
             return 0;
         }
-        // The territory is the Director's to lay out. If a prombaza has been
-        // designated, the enterprises come onto that ground; otherwise fall back
-        // to a radius around the caller, for a quick trial.
-        Area area;
-        var prombazas = com.ben.csp.prombaza.PrombazaState.get(source.getServer()).registry();
-        if (!prombazas.isEmpty()) {
-            var pb = prombazas.all().get(prombazas.all().size() - 1);
-            area = pb.area();
-            source.sendFeedback(() -> Text.literal(
-                "Building on the designated prombaza '" + pb.id() + "'."), false);
-        } else {
-            area = Area.of(p.getX() - radius, p.getY(), p.getZ() - radius,
-                           p.getX() + radius, p.getY() + 20, p.getZ() + radius);
-            source.sendFeedback(() -> Text.literal(
-                "No prombaza designated: laying out a " + (radius * 2)
-                + " m territory around you. Designate one with /directorate designate"
-                + " for the proper ground."), false);
+        for (String line : r.lines()) {
+            source.sendFeedback(() -> Text.literal(line), false);
         }
-        try {
-            state.spawn(area);
-        } catch (IllegalStateException e) {
-            source.sendError(Text.literal("Could not stand the enterprises up: "
-                + e.getMessage()
-                + ". The ten enterprises need room for ten offices and their facilities - "
-                + "designate a larger prombaza, or run /zone spawn 120 to lay out ground "
-                + "around you."));
-            return 0;
-        }
-        state.markDirty();
-        // Put the prombaza's supply line in: its rail siding and its входной
-        // контроль desk. Every delivery now goes through the desk before it reaches
-        // a site, so the enterprises build with checked material — not perfect
-        // material, just checked material, at the suppliers' own quality.
-        {
-            var pbs = com.ben.csp.prombaza.PrombazaState.get(source.getServer());
-            String pbId = state.zone().prombazaId();
-            var supply = new MaterialSupply(pbs.yard(pbId), pbs.control(pbId));
-            state.zone().setSupply(supply);
-            pbs.markDirty();
-        }
-        source.sendFeedback(() -> Text.literal(
-            "Prombaza laid out: " + state.territory().boundary().width() + " x "
-            + state.territory().boundary().height() + " m."), true);
-        source.sendFeedback(() -> Text.literal(
-            state.zone().count() + " construction enterprises have come onto the "
-            + "territory. Each will build its own office, hire staff, then set out "
-            + "and build its facilities — a marker first, then a building over time."), false);
-        source.sendFeedback(() -> Text.literal(
-            "Each enterprise first builds its office, then hires its staff, then "
-            + "builds its facilities — watch the offices and buildings go up on the "
-            + "ground. It runs on its own clock: one work-day every ten seconds, so "
-            + "the first buildings appear within about a minute. /zone status shows "
-            + "what each one is doing. To undo the ground marks: /zone clear."), false);
         return 1;
     }
 
     /** Put the whole workforce on the ground and report the count. */
     private static int muster(CommandContext<ServerCommandSource> ctx, int count) {
         ServerCommandSource source = ctx.getSource();
-        ServerWorld world = source.getWorld();
-        ZoneState state = ZoneState.get(source.getServer());
-        if (!state.isSpawned()) {
-            source.sendError(Text.literal("The zone has not been spawned. Use /zone spawn."));
+        BlockPos at = BlockPos.ofFloored(source.getPosition());
+        ZoneOperations.Result r = ZoneOperations.muster(
+            source.getServer(), source.getWorld(), at, count);
+        if (!r.ok()) {
+            source.sendError(Text.literal(String.join(" ", r.lines())));
             return 0;
         }
-        BlockPos at = BlockPos.ofFloored(source.getPosition());
-        PerformanceProbe.resetPeak();
-        long started = System.nanoTime();
-        int placed = Muster.everyone(world, state.zone(), at, count);
-        long ms = (System.nanoTime() - started) / 1_000_000L;
-        source.sendFeedback(() -> Text.literal("Muster: " + placed + " workers on the ground in "
-            + ms + " ms. " + Muster.count(world) + " now standing. Watch the tick with /zone perf."), false);
+        for (String line : r.lines()) {
+            source.sendFeedback(() -> Text.literal(line), false);
+        }
         return 1;
     }
 
@@ -149,33 +96,13 @@ public final class ZoneCommand {
 
     private static int status(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource source = ctx.getSource();
-        ZoneState state = ZoneState.get(source.getServer());
-        if (!state.isSpawned()) {
-            source.sendError(Text.literal("The zone has not been spawned. Use /zone spawn."));
+        ZoneOperations.Result r = ZoneOperations.siteReport(source.getServer());
+        if (!r.ok()) {
+            source.sendError(Text.literal(String.join(" ", r.lines())));
             return 0;
         }
-        ZoneEnterprises zone = state.zone();
-        source.sendFeedback(() -> Text.literal(
-            "Day " + state.day() + ": " + zone.operationalCount() + "/" + zone.count()
-            + " enterprises operational."), false);
-        SitePlan plan = zone.plan();
-        if (plan != null) {
-            int routes = plan.routes().size();
-            StringBuilder zones = new StringBuilder();
-            plan.zoneCounts().forEach((z, n) ->
-                zones.append(z.russian()).append(" ").append(n).append("; "));
-            source.sendFeedback(() -> Text.literal(
-                "The site is surveyed to СНиП II-89-80*: " + routes + " route(s) laid out "
-                + "(the rail spur and the roads). Zones — " + zones.toString().trim()), false);
-            source.sendFeedback(() -> Text.literal(
-                "Building density " + Math.round(plan.density() * 100) + "% "
-                + "(the norm requires at least " + Math.round(plan.densityRequired() * 100) + "%)."), false);
-        }
-        for (EnterpriseLifecycle l : zone.lifecycles()) {
-            var e = l.enterprise();
-            source.sendFeedback(() -> Text.literal(
-                "  " + e.name() + " [" + e.specialty().label() + "] — "
-                + l.progressLabel()), false);
+        for (String line : r.lines()) {
+            source.sendFeedback(() -> Text.literal(line), false);
         }
         return 1;
     }
