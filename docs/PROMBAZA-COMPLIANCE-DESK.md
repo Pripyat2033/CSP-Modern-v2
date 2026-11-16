@@ -39,18 +39,45 @@ and the desk is where that fight is fought.
 
 The real risk this design is fighting is that an AI builds a **perfect plant** —
 everything works first time, the numbers come out clean, the reactor is born
-correct. It was not. On the RBMK units the equipment was **tested on
-installation**, by the plant's own engineers, with the plant's own arithmetic —
-a **slide rule, mental calculation, and Skala** where it helped. So:
+correct. It was not.
 
-- the figure that came back was **not the figure on the drawing** — it was that
-  figure plus the error of whoever measured it and however they worked it out;
+> **PLACEHOLDER — WE DO NOT KNOW THE REAL PROCEDURE.** How a ChNPP unit was
+> actually commissioned in 1986 — what was tested, by whom, with what instrument,
+> worked out how, against what acceptance figure — is **not known to us**. Ben is
+> explicit that he has no information on this either. The "slide rule / mental /
+> Skala" method list in `plant/Commissioning` is an **invented illustration**, not
+> a sourced description, and must never be quoted as the real process. It is on
+> the research list (see below) and is replaced the moment the sources say.
+
+What is safe to assert, and all the placeholder actually encodes: a machine is
+**commissioned, not declared**. A measured figure is never exactly the drawing's
+figure, and a reading outside the acceptance band fails the test. So:
+
+- the figure that came back was **not the figure on the drawing** — it carried the
+  error of whoever measured it and however they worked it out;
 - tests **failed**, and a machine went back;
-- and even a **good** machine could fail its first test, because crude arithmetic
-  can put a good reading outside a tight band.
+- and a **good** machine can fail its first test if the measurement is cruder than
+  the band is tight.
 
 Nothing comes out of the vault perfect. Some things come out **wrong and have to
-be measured again**. That is what `plant/Commissioning` models.
+be measured again**. `plant/Commissioning` models that shape, with placeholder
+numbers; the real procedure is a research task, not a decision.
+
+## RESEARCH TODO — before commissioning drives anything real
+
+Do **not** treat the commissioning mechanics as sourced. To be researched against
+the primary sources we hold or can obtain:
+
+- the **1Э-С-II operating regulation** (`docs/primary-sources/`) — does it name
+  commissioning or acceptance tests, and to what figures?
+- the **Unit 4 test programme** and the 25/26 April 1986 test documents — how were
+  tests written up and accepted?
+- **Skala's real role** — was it used to *compute* acceptance figures, to *record*
+  measurements, or neither?
+- the standard **Soviet acceptance norms** for the equipment classes in
+  `equipment-register.json` (ГОСТ / ТУ / the works' own test certificates).
+
+Until then, `Commissioning` is a shape, not a fact.
 
 ## The pieces that already existed — and were orphaned
 
@@ -73,7 +100,7 @@ Five new pieces, each one a leg of the same idea.
 | `prombaza/GoodsYard` | the siding: wagons, free time, **demurrage**; the backlog is the desk's load | 9 checks |
 | `prombaza/PrombazaControl` | the desk as state: receipts, cleared/held/latent, man-hours booked | (in the two above) |
 | `zone/MaterialSupply` | the seam: variable supplier quality -> the yard -> the desk -> the site | 10 checks |
-| `rbmk/plant/Commissioning` | test on install: slide rule / mental / Skala; a good machine can fail | 11 checks |
+| `rbmk/plant/Commissioning` | test on install (procedure UNKNOWN — placeholder methods); a good machine can fail | 11 checks |
 
 **The dispositions are the workforce's own**: a clean item is `INSTALLED`; a
 found defect goes to the on-site workshop (`REWORKED`) or back to the supplier if
@@ -131,6 +158,15 @@ in Chernobyl* could not be confirmed this session — both are lending-gated on 
 Internet Archive, and every web search endpoint was CAPTCHA-walled or over quota.
 The process is therefore named by its standard Soviet terms (входной контроль,
 дефектовка, простой вагонов) rather than quoted from the books.
+
+## Still open (recovery session, 2026-11-15)
+
+- `plant/Commissioning` has **no in-game command yet** — it is library-only. It is
+  wired into nothing, so a built plant is not yet actually tested on installation.
+  That wiring is the next build step, and it must come *after* the procedure is
+  researched, or the placeholder gets frozen in.
+- The **zone hardcodes its prombaza id to `"pb1"`** (`ZoneState.spawn`), so the
+  supply line only lines up when the prombaza is literally named `pb1`.
 
 ## Still open
 

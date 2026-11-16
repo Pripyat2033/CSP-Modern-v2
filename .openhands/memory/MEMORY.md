@@ -664,8 +664,12 @@ read as official. This is the whole point of the mod: the plant is NOT born perf
 - `zone/MaterialSupply.java` — THE SEAM: train arrives (all wagons on the siding) → desk →
   only INSTALLED/REWORKED reaches the site. Variable supplier quality, so the plan ≠ reality.
   10 checks.
-- `rbmk/plant/Commissioning.java` — test-on-install by slide rule / mental / Skala; a GOOD
-  machine can FAIL a tight band; a latent defect can fail it. 11 checks.
+- `rbmk/plant/Commissioning.java` — test-on-install. **PLACEHOLDER**: the real ChNPP
+  commissioning procedure is UNKNOWN (Ben is explicit, 2026-11-15) — the slide-rule/mental/
+  Skala methods are an INVENTED illustration, never quote them as fact. Research before it
+  drives reactor behaviour (see docs/PROMBAZA-COMPLIANCE-DESK.md RESEARCH TODO). NO in-game
+  command yet — library only. Safe part: a machine is *commissioned, not declared*; a reading
+  outside the band fails; a GOOD machine can fail a tight band. 11 checks.
 
 **WIRING (the previously-missing half):** `EnterpriseLifecycle.setSupply` +
 `advanceFacility(day)` routes deliveries through the desk; `ZoneEnterprises.setSupply`;
