@@ -1,0 +1,205 @@
+{
+  "_comment": "The MACHINERY register: the completeness AND conformance authority for machine PERFORMANCE. The equipment register says a machine exists and MachineValidator says its shell is the right shape; NEITHER says it BEHAVES as the real machine did. This register closes that gap. Every machine that moves, heats, flows or spins carries its performance quantities here, each with a source and a status, and each tied to the exact constant in PlantPhysics.java that the code uses. The self-test (MachineryRegisterSelfTest) then asserts the code's value EQUALS the value recorded here, so a performance number cannot silently drift: if someone edits MCP_FLOW_RATED_M3S, the test fails until the register is updated to a new SOURCED value. That is the machine-checkable answer to 'what if the feedwater pump does not have the same flow rate as reality?'. Status is one of: verified (cites a primary source with url + quote), to_verify (a reference value not yet confirmed against a primary source), placeholder (no source; a fallback only). The spine sources are the operating regulation (Reglament 1E-S-II, 1983), NUREG-1250, INSAG-7, and the plant-systems reference docs/RBMK-PLANT-SYSTEMS.md (keyed WP).",
+  "_statusLegend": {
+    "verified": "cites a primary source, with sourceUrl + quote",
+    "to_verify": "a reference value not yet confirmed against a primary source",
+    "placeholder": "a value with no source at all; allowed only as a fallback"
+  },
+  "items": [
+    {
+      "id": "mcp.flow_rated",
+      "machine": "Main circulating pump (ГЦН, TsVN-8)",
+      "quantity": "Rated volumetric flow",
+      "constant": "PlantPhysics.MCP_FLOW_RATED_M3S",
+      "value": 2.2222222222222223,
+      "unit": "m3/s (= 8,000 m3/h)",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §2 (keyed WP §86): 'Pump capacity 5,500-12,000 m3/h; nominal 8,000 m3/h'. NUREG-1250 §2.2.2 corroborates the pump set.",
+      "note": "The single number that sets the whole coolant mass flow (6 running x 8,000 m3/h = 48,000 m3/h). If this is wrong, the void, the power and the accident are all wrong."
+    },
+    {
+      "id": "mcp.flow_throttled",
+      "machine": "Main circulating pump (ГЦН, TsVN-8)",
+      "quantity": "Throttled flow below 500 MWt",
+      "constant": "PlantPhysics.MCP_FLOW_THROTTLED_M3S",
+      "value": 1.8055555555555556,
+      "unit": "m3/s (= 6,500 m3/h)",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §2 (keyed WP §86): 'Throttled flow (<500 MWt) 6,000-7,000 m3/h per pump'; 6,500 is the midpoint of that sourced band.",
+      "note": "INSAG-7 §2.9 describes the throttling during low-power phases of startup/shutdown. The band is sourced; the midpoint is chosen."
+    },
+    {
+      "id": "mcp.motor",
+      "machine": "MCP drive motor",
+      "quantity": "Motor electrical power",
+      "constant": "PlantPhysics.MCP_MOTOR_W",
+      "value": 6000000.0,
+      "unit": "W (6 MW, 6 kV)",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §2 (keyed WP §86): 'Pump motor 6 kV electric'. The 6 MW figure is a reference; the voltage is sourced.",
+      "note": "Sets the pump coast-down energy budget after a trip."
+    },
+    {
+      "id": "mcp.coast_tau",
+      "machine": "MCP flywheel",
+      "quantity": "Coast-down time constant",
+      "constant": "PlantPhysics.MCP_COAST_TAU_S",
+      "value": 8.0,
+      "unit": "s",
+      "status": "to_verify",
+      "source": "INSAG-7 §2.9 (the rundown that, after Chernobyl, was arranged to drive the ECCS pumps). The 8 s constant is a reference, not a cited measurement.",
+      "note": "The flywheel rundown. After Chernobyl the rundown energy was specifically arranged to run the ECCS; the exact tau is not pinned to a primary source."
+    },
+    {
+      "id": "plant.thermal_power",
+      "machine": "Reactor",
+      "quantity": "Rated thermal power",
+      "constant": "PlantPhysics.P_THERMAL_W",
+      "value": 3200000000.0,
+      "unit": "W (3,200 MWt)",
+      "status": "verified",
+      "source": "INSAG-7 §2.6 and NUREG-1250: the RBMK-1000 is 3,200 MWt / 1,000 MWe. The plant-systems reference carries it as the rated power.",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "the reactor ... 3,200 MW(th)",
+      "note": "The denominator of every power fraction."
+    },
+    {
+      "id": "turbine.rated_power",
+      "machine": "Turbogenerator, type K-500-65/3000",
+      "quantity": "Rated electrical output",
+      "constant": "PlantPhysics.TURBINE_RATED_W",
+      "value": 500000000.0,
+      "unit": "W (500 MWe)",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §4 (keyed WP §136): 'Turbogenerators per unit: 2, each 500 MWe; turbine model K-500-65/3000'.",
+      "note": "Two per unit give the 1,000 MWe net."
+    },
+    {
+      "id": "turbine.rpm",
+      "machine": "Turbogenerator, type K-500-65/3000",
+      "quantity": "Synchronous speed",
+      "constant": "PlantPhysics.TURBINE_RPM",
+      "value": 3000.0,
+      "unit": "rpm",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §4 (keyed WP §136): 'Speed 3,000 rpm'. Standard 50 Hz synchronous speed.",
+      "note": "The name K-500-65/3000 encodes the 3,000 rpm."
+    },
+    {
+      "id": "turbine.efficiency",
+      "machine": "Turbogenerator, type K-500-65/3000",
+      "quantity": "Cycle thermal efficiency",
+      "constant": "PlantPhysics.TURBINE_EFFICIENCY",
+      "value": 0.33,
+      "unit": "dimensionless",
+      "status": "to_verify",
+      "source": "Derived from the plant figures: 1,000 MWe / 3,200 MWt = 0.3125; 0.33 is the rounded reference value.",
+      "note": "Consistency check: 2 x 500 MWe / 3,200 MWt = 0.3125, so 0.33 is slightly optimistic. Flagged."
+    },
+    {
+      "id": "separator.mass",
+      "machine": "Steam separator drum (барабан-сепаратор)",
+      "quantity": "Mass each",
+      "constant": "PlantPhysics.SEPARATOR_MASS_T",
+      "value": 240.0,
+      "unit": "tonnes",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §3 (keyed WP §83): 'Weight each 240 t'.",
+      "note": "4 drums per unit."
+    },
+    {
+      "id": "separator.diameter",
+      "machine": "Steam separator drum (барабан-сепаратор)",
+      "quantity": "Diameter",
+      "constant": "PlantPhysics.SEPARATOR_DIAMETER_M",
+      "value": 2.8,
+      "unit": "m",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §3 (keyed WP §83): 'Diameter 2.8 m; Length 31 m; Wall 100 mm'.",
+      "note": "Sets the drum volume, hence the level dynamics and the level trips."
+    },
+    {
+      "id": "separator.length",
+      "machine": "Steam separator drum (барабан-сепаратор)",
+      "quantity": "Length",
+      "constant": "PlantPhysics.SEPARATOR_LENGTH_M",
+      "value": 31.0,
+      "unit": "m",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §3 (keyed WP §83): 'Length 31 m'.",
+      "note": "With the diameter, sets the drum mass and the level response."
+    },
+    {
+      "id": "separator.steam_quality",
+      "machine": "Steam separator drum (барабан-сепаратор)",
+      "quantity": "Steam quality at outlet",
+      "constant": "PlantPhysics.STEAM_QUALITY",
+      "value": 0.15,
+      "unit": "dimensionless (mass fraction steam)",
+      "status": "verified",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §3 (keyed WP §84): 'Steam quality at outlet ~15%'. Corroborated by the channel energy balance in ChannelCooling (10,000 kg/s, 320 kJ/kg -> ~15.6% outlet quality).",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "The mass steam content at the exit from the ... separators ... 14-15%",
+      "note": "The same figure drives the derived void in the core; a single source feeds both."
+    },
+    {
+      "id": "feedwater.flow",
+      "machine": "Feedwater system (deaerators + ПЭН)",
+      "quantity": "Nominal feedwater mass flow",
+      "constant": "PlantPhysics.MFLOW_FEEDWATER_KGS",
+      "value": 1500.0,
+      "unit": "kg/s",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §5 (deaerators as reservoir, WP §91). The 1,500 kg/s figure is a reference; it must match the steam production at full power.",
+      "note": "Consistency check: steam flow per turbine 82,880 t/h / 2 = ~11,511 kg/s per... (needs checking against the separator balance). Flagged to_verify."
+    },
+    {
+      "id": "condenser.cooling_flow",
+      "machine": "Main condenser",
+      "quantity": "Circulating cooling-water flow",
+      "constant": "PlantPhysics.COND_COOLING_KGS",
+      "value": 23022.222222222223,
+      "unit": "kg/s (= 82,880 t/h)",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §4 (keyed WP §136): 'Steam flow per turbine 82,880 t/h'. Reused here as the cooling-water flow order.",
+      "note": "The 82,880 t/h is the TURBINE STEAM flow; using it as the condenser cooling-water flow is a reference assumption. Flagged."
+    },
+    {
+      "id": "condenser.dt",
+      "machine": "Main condenser",
+      "quantity": "Cooling-water temperature rise",
+      "constant": "PlantPhysics.COND_DT_K",
+      "value": 12.0,
+      "unit": "K",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §5. A reference figure for the condenser terminal difference.",
+      "note": "Sets the heat rejection temperature."
+    },
+    {
+      "id": "circuits.count",
+      "machine": "Multiple forced circulation circuit (МЦК)",
+      "quantity": "Number of independent cooling circuits",
+      "constant": "PlantPhysics.CIRCUITS",
+      "value": 2.0,
+      "unit": "count",
+      "status": "verified",
+      "source": "INSAG-7 §2.9 and docs/RBMK-PLANT-SYSTEMS.md §2 (keyed WP §83): 'Two independent cooling circuits, each serving one half of the reactor'.",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "two independent ... circulation circuits",
+      "note": "Two halves; each with its own pumps, headers and separators."
+    },
+    {
+      "id": "pumps.per_circuit",
+      "machine": "Main circulating pumps",
+      "quantity": "Pumps per circuit (3 running, 1 standby)",
+      "constant": "PlantPhysics.MCP_PER_CIRCUIT",
+      "value": 4.0,
+      "unit": "count",
+      "status": "verified",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md §2 (keyed WP §83): 'Pumps per circuit 4 (3 running, 1 standby); total 8 (6 running)'.",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "eight main circulating pumps ... six of which were operating",
+      "note": "The loss of two MCPs on one side was a reactor trip (INSAG-7 §2.9)."
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import com.ben.csp.prombaza.PrombazaState;
 import com.ben.csp.zone.ZoneState;
 import com.ben.csp.rbmk.plant.Condenser;
 import com.ben.csp.rbmk.plant.EquipmentRegister;
+import com.ben.csp.rbmk.plant.MachineryRegister;
 import com.ben.csp.rbmk.plant.PlantPhysics;
 import com.ben.csp.rbmk.plant.PlantSystem;
 import com.ben.csp.rbmk.plant.MachineSpec;
@@ -127,6 +128,7 @@ public final class RbmkTestCommand {
             .then(CommandManager.literal("machine").executes(RbmkTestCommand::machine))
             .then(CommandManager.literal("register").executes(RbmkTestCommand::register))
             .then(CommandManager.literal("phenomena").executes(RbmkTestCommand::phenomena))
+            .then(CommandManager.literal("machinery").executes(RbmkTestCommand::machinery))
             .then(CommandManager.literal("openmc").executes(RbmkTestCommand::openmc)));
     }
 
@@ -220,6 +222,47 @@ public final class RbmkTestCommand {
             for (PhenomenaRegister.Item it : unsourced) {
                 feedback(s, "    · " + it.nameEn(), Formatting.RED);
             }
+        }
+        return 1;
+    }
+
+    /**
+     * {@code /rbmk machinery} — the machinery register: the PERFORMANCE conformance
+     * gate, the third leg beside {@code /rbmk register} (does the machine exist) and
+     * the machine validator (is its shell the right shape). It prints each machine's
+     * performance quantity with its source, and — the point — whether the code's
+     * constant still EQUALS the sourced value. A drifted line is a machine whose
+     * behaviour has quietly stopped matching reality.
+     */
+    private static int machinery(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        if (!MachineryRegister.available()) {
+            feedback(s, "no machinery register resource found (machinery-register.json)",
+                Formatting.RED);
+            return 0;
+        }
+        feedback(s, "Machinery performance register (conformance gate)", Formatting.GOLD);
+        feedback(s, "  " + MachineryRegister.summary(), Formatting.WHITE);
+        feedback(s, "  machines: " + String.join(", ", MachineryRegister.machines()),
+            Formatting.GRAY);
+
+        for (MachineryRegister.Item it : MachineryRegister.items()) {
+            boolean ok = MachineryRegister.conformant(it);
+            Formatting colour = ok ? Formatting.GRAY : Formatting.RED;
+            feedback(s, String.format("    %s %s = %.6g %s [%s]",
+                ok ? "·" : "!", it.quantity(), it.value(), it.unit(), it.status()), colour);
+        }
+
+        List<MachineryRegister.Item> drifted = MachineryRegister.drifted();
+        if (!drifted.isEmpty()) {
+            feedback(s, String.format("  DRIFTED from the recorded value (%d):",
+                drifted.size()), Formatting.RED);
+            for (MachineryRegister.Item it : drifted) {
+                feedback(s, String.format("    ! %s: recorded %.6g, code %.6g",
+                    it.id(), it.value(), MachineryRegister.codeValue(it)), Formatting.RED);
+            }
+        } else {
+            feedback(s, "  all quantities match the code — no drift", Formatting.GREEN);
         }
         return 1;
     }
