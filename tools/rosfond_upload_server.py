@@ -9,7 +9,7 @@ Nothing to install, no account, no zip, no release asset.
 Endpoints:
     GET  /            the upload page
     PUT  /put/<name>  store one file (raw request body) -- used by the page
-    GET  /status      JSON: how many files arrived and which of the 28 needed are present
+    GET  /status      JSON: how many files arrived and which of the needed nuclides are present
     GET  /done        plain confirmation
 
 It is upload-only: it never serves the stored files back out. Filenames are
@@ -18,16 +18,21 @@ reduced to their base name, so a dropped folder is flattened safely.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import os
 import re
 import tempfile
 import time
+import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-# The 28 nuclides the lattice cell needs today (label -> the ZA the ENDF head carries).
+# The 27 nuclides the lattice cell needs today (label -> the ZA the ENDF head
+# carries). Matches tools/lattice/import_rosfond.py. The moderator is NATURAL
+# carbon (ROSFOND ships ZA 6000 as one evaluation), so it is "Cnat", not a
+# C-12 + C-13 split.
 NEEDED = {
-    "H1": 1001, "He4": 2004, "B10": 5010, "B11": 5011, "C12": 6000, "C13": 6013,
+    "H1": 1001, "He4": 2004, "B10": 5010, "B11": 5011, "Cnat": 6000,
     "N14": 7014, "O16": 8016, "Cr52": 24052, "Fe56": 26056, "Ni58": 28058,
     "Zr90": 40090, "Zr91": 40091, "Zr92": 40092, "Zr94": 40094, "Zr96": 40096,
     "Nb93": 41093, "Gd155": 64155, "Gd157": 64157, "Er166": 68166, "Er167": 68167,
@@ -52,7 +57,7 @@ PAGE = """<!doctype html><html><head><meta charset="utf-8">
  #count{font-size:15px;margin-top:10px}
 </style></head><body>
 <h1>Drop your ROSFOND files here</h1>
-<p>Select the whole folder (or the 28 files). No zip needed. Nothing leaves this page except into the agent's workspace.</p>
+<p>Select the whole folder (or the ROSFOND .zip files / ENDF-6 files). Nothing leaves this page except into the agent's workspace.</p>
 <div id="drop">Drag files or the folder here<br><br>
   <button onclick="f.click()">Choose files</button>
   <button class="alt" onclick="d.click()">Choose folder</button>
@@ -115,8 +120,8 @@ async function upload(files){
 }
 async function refresh(){
   try{const s=await (await fetch('/status')).json();
-    count.innerHTML='<b>'+s.files+'</b> files received &middot; <b>'+s.present.length+'/'+s.needed+'</b> of the 28 needed present';
-    if(s.present.length===s.needed)count.innerHTML+=' <span class="ok">&nbsp;ALL 28 HERE</span>';
+    count.innerHTML='<b>'+s.files+'</b> files received &middot; <b>'+s.present.length+'/'+s.needed+'</b> needed nuclides present';
+    if(s.present.length===s.needed)count.innerHTML+=' <span class="ok">&nbsp;ALL '+s.needed+' HERE</span>';
   }catch(e){}
 }
 refresh();setInterval(refresh,3000);
@@ -143,6 +148,48 @@ def _same_file(a: str, b: str) -> bool:
                     return True
     except OSError:
         return False
+
+
+def _head_za(lines) -> int | None:
+    """ZA from the first ENDF head record (MF=1, MT=451) in an iterable of lines.
+
+    The head record's first line carries ZA in columns 1-11 and the '1 451'
+    control in columns 70-75. The exponent is written without an 'e' (and ROSFOND
+    sometimes puts a space in it), so normalise before parsing.
+    """
+    for line in lines:
+        if len(line) < 75:
+            continue
+        if line[70:72].strip() == "1" and line[72:75].strip() == "451":
+            s = line[:11].strip().replace(" ", "")
+            for i in range(len(s) - 1, 0, -1):
+                if s[i] in "+-":
+                    s = s[:i] + "e" + s[i:]
+                    break
+            try:
+                return int(round(float(s)))
+            except ValueError:
+                return None
+    return None
+
+
+def _head_za_in_file(path: str) -> int | None:
+    """ZA of the ENDF head record in a loose ENDF file or a ROSFOND .zip."""
+    try:
+        if path.lower().endswith(".zip"):
+            with zipfile.ZipFile(path) as z:
+                for info in z.infolist():
+                    if info.is_dir():
+                        continue
+                    with z.open(info) as fh:
+                        za = _head_za(io.TextIOWrapper(fh, errors="replace"))
+                    if za is not None:
+                        return za
+            return None
+        with open(path, errors="replace") as fh:
+            return _head_za(fh)
+    except Exception:
+        return None
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -228,10 +275,10 @@ class Handler(BaseHTTPRequestHandler):
     def _present(self) -> set[str]:
         """Which needed nuclides are present, by reading the ENDF head record.
 
-        Reading 686 files (some tens of MB) on every 3-second status poll would be
-        wasteful, so cache the result and only re-scan when the directory listing
-        changes. The head record is the first MF=1/MT=451 line, so only the start
-        of each file is read.
+        ROSFOND is distributed as one .zip per isotope (each holding a .dat), so
+        both loose ENDF files and zips must be inspected. Reading 686 files (some
+        tens of MB) on every 3-second status poll would be wasteful, so cache the
+        result and only re-scan when the directory listing changes.
         """
         found: set[str] = set()
         if not os.path.isdir(self.out):
@@ -244,29 +291,10 @@ class Handler(BaseHTTPRequestHandler):
             path = os.path.join(self.out, name)
             if not os.path.isfile(path):
                 continue
-            try:
-                with open(path, errors="replace") as fh:
-                    for _ in range(2000):  # the head record is near the top
-                        line = fh.readline()
-                        if not line:
-                            break
-                        if len(line) >= 75 and line[70:72].strip() == "1" and line[72:75].strip() == "451":
-                            field = line[:11].strip()
-                            s = field
-                            for i in range(len(s) - 1, 0, -1):
-                                if s[i] in "+-":
-                                    s = s[:i] + "e" + s[i:]
-                                    break
-                            try:
-                                za = int(round(float(s)))
-                            except ValueError:
-                                break
-                            lab = za_to_label.get(za)
-                            if lab:
-                                found.add(lab)
-                            break
-            except Exception:
-                continue
+            za = _head_za_in_file(path)
+            lab = za_to_label.get(za) if za is not None else None
+            if lab:
+                found.add(lab)
         self._present_cache = found
         self._present_key = names
         return found
