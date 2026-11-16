@@ -685,3 +685,30 @@ The full 66-test suite does NOT finish in 400 s; run the affected packages.
 - SEARCH NOTE: archive.org book text is lending-gated (403); all web search engines
   CAPTCHA-walled; Tavily 432, Google Books 429. OpenLibrary search/inside.json works but
   needs ALL terms.
+
+## SITE SELECTION + "TALK TO PEOPLE, NOT TERMINALS" (2026-11-15, Session 4)
+
+Ben's correction: 11 slash commands to found a zone is too many AND historically
+impossible — in 1970 nobody typed into a terminal; it was people talking. **Slash
+commands must not be the player's interface; the secretary/dialogue is.** His real
+focus is the enterprises/prombaza (the reactor detour was only to be sure it works).
+
+**THE TALKING MACHINERY ALREADY EXISTS, UNUSED for the zone:** `DialogueListener`
+(chat->speech), `DialogueEngine` (SHRDLU), `DialogueIntent`, `SekretarEntity` (the
+secretary — NEVER SPAWNED), `planning/Planerka` (full планёрка, wired to nothing),
+telephony speech. Command the zone = extend those + spawn the secretary. No new system.
+
+**SITE-SELECTION RESEARCH** (`docs/HISTORY-SITE-SELECTION.md`, sourced): CM decree
+29 Sep 1966 (11.9 GW, 8 nuclear, Central region); 1965-66 Теплоэлектропроект surveyed
+**16 points** in Kyiv/Vinnytsia/Zhytomyr, **2 finalists Ladyzhyn & Kopachi**, Kopachi
+chosen; Order No.297 11 Dec 1969 formed the Directorate at Kopachi; site 4 km from
+Kopachi by **Yanov station**; Bryukhanov director 1970-86 (wanted VVER, overruled to
+RBMK); first concrete 15 Aug 1972; Unit 1 on 26 Sep 1977; Pripyat founded 4 Feb 1970.
+**UNVERIFIED: the snowy-field/helicopter/toast story** — stage as reconstruction only.
+
+**DESIGN:** `docs/SITE-SELECTION-DESIGN.md` — founder the zone by SPEECH (secretary
+takes orders; Director picks the site from the surveyed candidates); commands stay as
+an admin back door. Fixes the hardcoded "pb1" in `ZoneState.spawn`.
+**RESEARCH METHOD THAT WORKS when Tavily is 432:** curl + Wikipedia REST API
+(`/api/rest_v1/page/html/<title>`) + the institution's own site (chnpp.gov.ua). The
+`web-researcher` subagent can hit 500 iterations and die — prefer targeted curl.
