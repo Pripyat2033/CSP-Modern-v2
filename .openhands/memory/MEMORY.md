@@ -604,3 +604,22 @@ read MAT from a real 80-col record, NOT the `$Rev::` header, or NJOY HANGS on
 stdin; (2) RECONR card2 `mat 2/` (ncards=2) — `mat/` and `mat 1/` fail; (3) BROADR
 reads tape 20+21, writes tape 22 — pre-create tape22. Drag-and-drop upload page
 `tools/rosfond_upload_server.py` runs on port 12000 for handing over the archive.
+
+## PHENOMENA REGISTER — the physics twin of the equipment register (commit 5869560, 2026-11-15)
+
+Ben's deepest fear: "if I don't name every mechanic you won't code it, and I can't
+list them all." Solved for HARDWARE already (`equipment-register.json`); there was NO
+twin for PHYSICS, so an unnamed phenomenon could vanish silently (what xenon did).
+`src/main/resources/phenomena-register.json` (27 phenomena) + `physics/PhenomenaRegister.java`
+(gate) + `/rbmk phenomena` + `PhenomenaRegisterSelfTest` (19 checks; cross-checks the
+register against the code). **Spine source = INSAG-7 §2 "Features of the reactor"** (the
+numbered list of features that had a primary influence on the accident). New status
+`readout` = computed+displayed but NOT coupled (the xenon failure mode, surfaced).
+Today: 14 modelled, 2 readout (graphite temp, power-coeff readout), 11 named-only
+(ORM limit, pump cavitation, natural circulation, dryout/CHF, spatial xenon oscillation,
+burnup, samarium, ECCS, bubbler pools, FP release, graphite fire), 0 unsourced. The
+named-only list IS the to-do. Fetch INSAG-7: curl the IAEA Pub913e_web.pdf (works).
+**Fidelity answer to Ben: "identical" is impossible and claiming it would be the xenon
+lie; what is deliverable is NO functional delineation (every phenomenon coupled+measured
+or listed, never silently absent) + no accident mode + every constant sourced/flagged.**
+Running the jar in Minecraft tests the MOD boot + experience, NOT the physics.
