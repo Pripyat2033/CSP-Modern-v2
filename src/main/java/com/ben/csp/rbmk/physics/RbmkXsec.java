@@ -139,6 +139,9 @@ public record RbmkXsec(
         return fuelCell(voidFraction, fuelTempC, 1.0);
     }
 
+    /** Graphite temperature of the reference critical state, degrees C. */
+    public static final double NOMINAL_GRAPHITE_C = 600.0;
+
     /**
      * Fuel cell with the Xe-135 poison included in the thermal absorption.
      *
@@ -162,6 +165,19 @@ public record RbmkXsec(
      */
     public static RbmkXsec fuelCell(double voidFraction, double fuelTempC, double xenonRatio,
                                     double voidWorthScale) {
+        return fuelCell(voidFraction, fuelTempC, xenonRatio, voidWorthScale, NOMINAL_GRAPHITE_C);
+    }
+
+    /**
+     * The full cell: void, fuel temperature (Doppler), xenon, the void-worth dial,
+     * and the GRAPHITE temperature. The graphite term is the RBMK's POSITIVE
+     * temperature coefficient — a documented destabilising property that enters the
+     * neutron balance through the thermal-scattering constants, derived from the
+     * OpenMC cell ({@link RbmkGraphiteTemp}). At the nominal graphite temperature it
+     * is a no-op, so the reference critical state is unchanged.
+     */
+    public static RbmkXsec fuelCell(double voidFraction, double fuelTempC, double xenonRatio,
+                                    double voidWorthScale, double graphiteTempC) {
         RbmkXsec derived = LatticeTable.cell(voidFraction);
         if (derived != null) {
             // Match the sourced whole-core void worth: blend the derived cell toward
@@ -178,8 +194,9 @@ public record RbmkXsec(
             double doppler = DOPPLER_REMOVAL_PER_K * (fuelTempC - 300.0) * derived.sr1();
             // Xenon: thermal absorption from the Xe-135 built up by the iodine chain.
             double xenon = XENON_MACRO_ABS * (xenonRatio - 1.0);
-            return new RbmkXsec(derived.d1(), derived.sr1() + doppler, derived.nsf1(),
+            RbmkXsec cell = new RbmkXsec(derived.d1(), derived.sr1() + doppler, derived.nsf1(),
                 derived.d2(), derived.sa2() + xenon, derived.nsf2(), derived.ss12(), derived.ss21());
+            return RbmkGraphiteTemp.apply(cell, graphiteTempC);
         }
         return legacyFuelCell(voidFraction, fuelTempC);
     }

@@ -36,6 +36,7 @@ public final class LatticeTable {
     private static final double BETA_EFF;
     private static String LIBRARY = "unknown";
     private static String LIBRARY_STATUS = "unknown";
+    private static String SOURCE = "unknown";
 
     static {
         double cut = 0.625, beta = 0.0065;
@@ -48,6 +49,7 @@ public final class LatticeTable {
                 LIBRARY = root.has("library") ? root.get("library").getAsString() : "unknown";
                 LIBRARY_STATUS = root.has("libraryStatus")
                     ? root.get("libraryStatus").getAsString() : "unknown";
+                SOURCE = root.has("source") ? root.get("source").getAsString() : "unknown";
                 JsonArray table = root.getAsJsonArray("table");
                 for (var el : table) {
                     JsonObject o = el.getAsJsonObject();
@@ -107,6 +109,11 @@ public final class LatticeTable {
     /** "verified" if the library is the agreed NIKIET-lineage source, else "to_verify". */
     public static String libraryStatus() {
         return LIBRARY_STATUS;
+    }
+
+    /** The producer of the table ("tools/lattice ..." or "openmc ..."). */
+    public static String source() {
+        return SOURCE;
     }
 
     /** The derived cell constants at a void fraction (0 = water, 1 = steam). */

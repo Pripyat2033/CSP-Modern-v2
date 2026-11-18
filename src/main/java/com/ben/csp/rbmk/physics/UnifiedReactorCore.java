@@ -311,9 +311,9 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         // the same path, so the poison acts through the neutron balance.
         solver.setXenonRatio(xenonRatio());
         if (axialCoupling) {
-            solver.setAxialState(cooling.voidFraction(), fuelTempC);
+            solver.setAxialState(cooling.voidFraction(), fuelTempC, graphiteTempC);
         } else {
-            solver.setCoreState(voidFraction, fuelTempC);
+            solver.setCoreState(voidFraction, fuelTempC, graphiteTempC);
         }
         solver.setRodInsertion(insertion);
         solver.step(dt, SWEEPS);

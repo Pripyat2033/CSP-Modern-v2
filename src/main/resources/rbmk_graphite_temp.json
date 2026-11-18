@@ -1,0 +1,34 @@
+{
+  "source": "openmc (corrected RBMK channel cell, MGXS; openmc/rbmk_graphite_mgxs.py)",
+  "library": "ENDF/B-VIII.0",
+  "status": "to_verify",
+  "note": "Fractional change of each homogenised 2-group constant per KELVIN of graphite temperature. Measured as the chord slope over 600-800 K (the range the S(alpha,beta) tables cover); the Java scaling factor is anchored at the core's nominal graphite temperature (600 degC = 873.15 K) so the correction is a perturbation about the nominal state. The effect is thermal scattering: up-scatter ss21 and fast removal sr1 grow as the graphite heats, so k_inf RISES -- the RBMK's POSITIVE graphite coefficient. SIGN is sourced (INSAG-7 Table II-I, NUREG-1250). MAGNITUDE is to_verify: it is a chord slope extrapolated ~73 K to the operating point, and the ss21/ss12 slopes are nonlinear (they weaken at higher T), so this overestimates the effect at 873 K.",
+  "nominalGraphiteK": 873.15,
+  "measuredLowK": 600.0,
+  "measuredHighK": 800.0,
+  "fracPerK": {
+    "d1": 8.964098340022792e-06,
+    "sr1": 0.0002925600385138746,
+    "nsf1": 3.953049613130468e-06,
+    "d2": 3.8352959391743676e-05,
+    "sa2": 1.5538694174151645e-06,
+    "nsf2": 1.8454001540012763e-05,
+    "ss12": 0.00035220107044502667,
+    "ss21": 0.004936957650227426
+  },
+  "slopeCoeffPerC": 1.1658657281448414e-05,
+  "insag7PerC": [
+    3.2e-05,
+    6e-05
+  ],
+  "keys": [
+    "d1",
+    "sr1",
+    "nsf1",
+    "d2",
+    "sa2",
+    "nsf2",
+    "ss12",
+    "ss21"
+  ]
+}

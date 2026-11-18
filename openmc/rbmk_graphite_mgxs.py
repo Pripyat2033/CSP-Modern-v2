@@ -24,9 +24,15 @@ import openmc
 import rbmk_cell
 import rbmk_mgxs
 
+# The S(alpha,beta) tables top out at 800 K (water) and 800 K (graphite), so the
+# operating graphite temperature (~873 K) cannot be measured directly. Measure the
+# SLOPE over 600->800 K (both on the grids), and anchor the Java scaling factor at
+# the core's nominal graphite temperature (600 degC = 873.15 K), so the correction
+# is a perturbation about the nominal state (factor = 1 there).
 T_LOW_K = 600.0
-T_HIGH_K = 1200.0
+T_HIGH_K = 800.0
 NON_GRAPHITE_K = 600.0
+NOMINAL_GRAPHITE_K = 873.15   # 600 degC, the core's reference graphite temperature
 OUT = pathlib.Path("openmc_graphite_mgxs.json")
 
 # The constants the Java reader consumes, in table order.
@@ -35,6 +41,9 @@ KEYS = ("d1", "sr1", "nsf1", "d2", "sa2", "nsf2", "ss12", "ss21")
 
 def constants_at(t_graphite: float, particles: int, batches: int, inactive: int) -> dict:
     model = rbmk_cell.build_model(rbmk_cell.COOLANT_DENSITY_FULL)
+    # The operating temperatures (600 degC graphite) are not on the library grid,
+    # so let OpenMC interpolate between the tabulated temperatures.
+    model.settings.temperature = {"default": NON_GRAPHITE_K, "method": "interpolation"}
     for mat in model.materials:
         mat.temperature = t_graphite if "graphite" in mat.name else NON_GRAPHITE_K
     mesh = rbmk_mgxs._cell_mesh()
@@ -61,7 +70,7 @@ def main() -> None:
     dT = T_HIGH_K - T_LOW_K
 
     print(f"\nhomogenised constants, graphite {T_LOW_K:.0f} K -> {T_HIGH_K:.0f} K")
-    print(f"{'const':>6} {'600 K':>12} {'1200 K':>12} {'frac/k':>12}")
+    print(f"{'const':>6} {T_LOW_K:>12.0f} {T_HIGH_K:>12.0f} {'frac/k':>12}")
     frac = {}
     for k in KEYS:
         f = (hi[k] - lo[k]) / lo[k] / dT if lo[k] != 0 else 0.0
@@ -77,12 +86,16 @@ def main() -> None:
     OUT.write_text(json.dumps({
         "source": "openmc (corrected RBMK channel cell, MGXS)",
         "library": "ENDF/B-VIII.0",
-        "tLowK": T_LOW_K, "tHighK": T_HIGH_K,
+        "measuredLowK": T_LOW_K, "measuredHighK": T_HIGH_K,
+        "nominalGraphiteK": NOMINAL_GRAPHITE_K,
         "kLow": k_lo, "kHigh": k_hi,
-        "coeffPerC": coeff,
+        "slopeCoeffPerC": coeff,
         "fracPerK": frac,
     }, indent=2))
-    print(f"\nwrote {OUT}")
+    print(f"\nslope measured over {T_LOW_K:.0f}-{T_HIGH_K:.0f} K; "
+          f"scaling factor anchored at {NOMINAL_GRAPHITE_K:.2f} K "
+          f"({NOMINAL_GRAPHITE_K - 273.15:.1f} degC)")
+    print(f"wrote {OUT}")
 
 
 if __name__ == "__main__":

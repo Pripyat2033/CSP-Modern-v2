@@ -29,12 +29,15 @@ public final class ReactivityModel {
      *  INSAG-7 Table II-I: -1.2e-5 per degC. */
     public static final double DOPPLER_COEFF = -1.2e-5;
     /**
-     * Graphite temperature coefficient, dk/k per °C.
-     * CONFLICT: INSAG-7 Table II-I gives +6e-5 (positive); this model still uses
-     * a negative value. See PhysicsProvenance {@code feedback.graphite_coeff}.
-     * TO VERIFY.
+     * Graphite temperature coefficient, dk/k per °C. POSITIVE.
+     * INSAG-7 Table II-I gives +6e-5 (positive), and INSAG-7 sec. 4.7.3 twice
+     * calls it "the positive graphite temperature coefficient"; NUREG-1250
+     * corroborates. The live core ({@link UnifiedReactorCore}) carries this
+     * through the cross sections ({@link RbmkGraphiteTemp}, derived from the OpenMC
+     * cell); this constant is the sourced whole-core value used by the retired
+     * point-kinetics model.
      */
-    public static final double GRAPHITE_COEFF = -2.0e-5;
+    public static final double GRAPHITE_COEFF = 6.0e-5;
     /** Power coefficient, dk/k per unit power. Small and negative. TO VERIFY. */
     public static final double POWER_COEFF = -0.005;
 

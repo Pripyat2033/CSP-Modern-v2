@@ -123,7 +123,17 @@ public final class RbmkSolver3D {
      * runs) and off ({@code 1.0} = the raw derived cell).
      */
     public void setCoreState(double voidFraction, double fuelTempC, double voidWorthScale) {
-        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC, 1.0, voidWorthScale);
+        setCoreState(voidFraction, fuelTempC, voidWorthScale, RbmkXsec.NOMINAL_GRAPHITE_C);
+    }
+
+    /**
+     * As {@link #setCoreState(double, double, double)} but with the graphite
+     * temperature — the RBMK's positive temperature coefficient ({@link RbmkGraphiteTemp}).
+     */
+    public void setCoreState(double voidFraction, double fuelTempC, double voidWorthScale,
+                             double graphiteTempC) {
+        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC, 1.0, voidWorthScale,
+            graphiteTempC);
         for (int x = -ext; x <= ext; x++) {
             for (int z = -ext; z <= ext; z++) {
                 for (int a = 0; a < na; a++) {

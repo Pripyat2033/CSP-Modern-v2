@@ -49,8 +49,16 @@ public final class RbmkSpatialSelfTest {
         double rVoid = ReactivityModel.reactivity(0.3, 300.0, 300.0, 1.0)
             - ReactivityModel.reactivity(0.0, 300.0, 300.0, 1.0);
         check(rVoid > 0, "adding void adds reactivity in the model (" + round(rVoid) + ")");
-        double rTemp = ReactivityModel.reactivity(0.0, 1000.0, 700.0, 1.0);
-        check(rTemp < 0, "hot fuel and graphite give negative reactivity (" + round(rTemp) + ")");
+        // Fuel (Doppler) and graphite temperature have OPPOSITE signs. Doppler is
+        // negative; the graphite coefficient is POSITIVE — the RBMK's documented
+        // destabilising property (INSAG-7 Table II-I, NUREG-1250). Test them apart,
+        // since a combined figure would just reflect whichever term dominates.
+        double rFuel = ReactivityModel.reactivity(0.0, 1000.0, ReactivityModel.T_REF, 0.0);
+        check(rFuel < 0, "hot fuel (Doppler) gives negative reactivity (" + round(rFuel) + ")");
+        check(ReactivityModel.GRAPHITE_COEFF > 0,
+            "the graphite coefficient is positive (the RBMK trait)");
+        double rGraphite = ReactivityModel.reactivity(0.0, ReactivityModel.T_REF, 700.0, 0.0);
+        check(rGraphite > 0, "hot graphite adds reactivity (" + round(rGraphite) + ")");
 
         // --- rod worth: overall negative, but differential worth goes positive ---
         RodWorth rw = new RodWorth();

@@ -88,7 +88,13 @@ public final class RbmkTransientSolver {
 
     /** Set every active fuel node to the given core state. */
     public void setCoreState(double voidFraction, double fuelTempC) {
-        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC, xenonRatio);
+        setCoreState(voidFraction, fuelTempC, RbmkXsec.NOMINAL_GRAPHITE_C);
+    }
+
+    /** As {@link #setCoreState(double, double)} but with the graphite temperature. */
+    public void setCoreState(double voidFraction, double fuelTempC, double graphiteTempC) {
+        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC, xenonRatio,
+            RbmkXsec.voidWorthScale(), graphiteTempC);
         for (int i = 0; i < cell.length; i++) {
             if (active[i] && !control[i]) {
                 cell[i] = fuel;
@@ -122,11 +128,17 @@ public final class RbmkTransientSolver {
 
     /** Set the fuel nodes to a per-axial-node void profile (bottom to top). */
     public void setAxialState(double[] voidByNode, double fuelTempC) {
+        setAxialState(voidByNode, fuelTempC, RbmkXsec.NOMINAL_GRAPHITE_C);
+    }
+
+    /** As {@link #setAxialState(double[], double)} but with the graphite temperature. */
+    public void setAxialState(double[] voidByNode, double fuelTempC, double graphiteTempC) {
         // One cross section per axial node, reused across every channel — the profile
         // is the same up every channel, so this is 28 lookups, not 28 x 1,872.
         RbmkXsec[] byNode = new RbmkXsec[na];
         for (int a = 0; a < na; a++) {
-            byNode[a] = RbmkXsec.fuelCell(voidByNode[a], fuelTempC, xenonRatio);
+            byNode[a] = RbmkXsec.fuelCell(voidByNode[a], fuelTempC, xenonRatio,
+                RbmkXsec.voidWorthScale(), graphiteTempC);
         }
         for (int x = -ext; x <= ext; x++) {
             for (int z = -ext; z <= ext; z++) {

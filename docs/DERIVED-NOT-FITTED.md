@@ -177,6 +177,42 @@ Two supporting observations from the diagnosis:
   produces, so the flux → heat → void → cross-section loop is closed with no fitted
   map anywhere in it.
 
+## 5c. The graphite temperature now enters the neutron balance (2026-11-18)
+
+The RBMK's **positive graphite temperature coefficient** is one of its documented
+destabilising properties (INSAG-7 Table II-I, +6e-5 per degC; NUREG-1250 sec. 2.3.2.2
+corroborates). It was *absent from the live core*: `UnifiedReactorCore` computed a
+graphite temperature on every step but never passed it to the neutronics, and the
+retired point-kinetics model carried the wrong (negative) sign — a conflict the
+provenance registry had recorded but not resolved.
+
+The link is now closed, and it is **derived**, not fitted. `openmc/rbmk_graphite_mgxs.py`
+sweeps the graphite temperature in the OpenMC channel cell over 600–800 K — the range
+the S(alpha,beta) tables cover — and reports the fractional change of each homogenised
+2-group constant per kelvin. The effect lives in the thermal scattering: up-scatter
+(ss21) and fast removal (sr1) grow as the graphite heats, so k_inf **rises**. The net
+cell coefficient is **+1.17e-5 /degC, POSITIVE**, confirming the sourced sign.
+
+`RbmkGraphiteTemp` reads those slopes from `rbmk_graphite_temp.json` and scales the
+homogenised cell constants by `1 + fracPerK·(T_K − T_nominal)`; `RbmkXsec.fuelCell`
+applies it; the solver setters (`setCoreState`, `setAxialState`) carry it; and
+`UnifiedReactorCore` passes its live `graphiteTempC` through. At the nominal graphite
+temperature (600 degC) the factor is 1, so the reference critical state is unchanged.
+
+**A matched pair, and a gate.** The slopes are *fractional* changes of the OpenMC
+cell's constants, so they are only valid with the OpenMC-derived lattice table.
+Applied to the shipped 1-D table — whose fast-removal and up-scatter constants differ
+by an order of magnitude — the effect flips sign. `RbmkGraphiteTemp.matchesLattice()`
+therefore gates the link: it is active only when `rbmk_lattice.json` is the OpenMC
+table, and a no-op otherwise. `GraphiteTempSelfTest` validates both states. This is the
+reason the graphite link and the OpenMC-table shipment (the pending Step 1b) belong
+together: shipping one without the other is inert.
+
+The magnitude remains `to_verify`: it is a chord slope extrapolated ~73 K to the 873 K
+operating point, and the ss21/ss12 slopes are nonlinear, so it overestimates the
+effect at operating temperature. The whole-core value of record stays the sourced
++6e-5 (`feedback.graphite_coeff`).
+
 ## 6. What this does and does not prove
 
 **Proves:** the model discriminates the variants from the same code, by the

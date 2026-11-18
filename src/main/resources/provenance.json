@@ -80,11 +80,11 @@
       "quote": "Fuel temperature coefficient of reactivity aT (\"C\"1) -1.2 x 10'5"
     },
     "feedback.graphite_coeff": {
-      "value": -2e-05,
+      "value": 6e-05,
       "unit": "dk/k per degC",
       "status": "to_verify",
-      "source": "CONFLICT WITH PRIMARY SOURCE. The code carries -2.0e-5 (negative). INSAG-7 Table II-I (p. 105) states the graphite temperature coefficient as +6e-5 (POSITIVE), and INSAG-7 sec. 4.7.3 twice calls it 'the positive graphite temperature coefficient of reactivity'. INDEPENDENTLY CORROBORATED: NUREG-1250 (US NRC, Jan 1987) sec. 2.3.2.2 states 'The graphite temperature coefficient is positive', and its Table 2.4 gives +3.2e-5 (fresh) to +6e-5 (steady-state) per degC, compiled from Soviet primary sources (Dollezhal, Romanenko, Virgil'ev). Two independent agencies agree the sign is positive; the code's negative value has no support.",
-      "note": "A POSITIVE graphite coefficient is a genuine, documented RBMK destabilising property; a negative value is not. Both INSAG-7 and NUREG-1250 agree the sign is positive. The sign is left as-is here (changing it alters the accident model and the RbmkSpatialSelfTest temperature assertion) pending the Director's decision. RESOLVE by flipping the sign; the only open question is magnitude (3.2e-5 fresh vs 6e-5 equilibrium).",
+      "source": "INSAG-7 Table II-I (p. 105) states the graphite temperature coefficient as +6e-5 (POSITIVE), and INSAG-7 sec. 4.7.3 twice calls it 'the positive graphite temperature coefficient of reactivity'. INDEPENDENTLY CORROBORATED: NUREG-1250 (US NRC, Jan 1987) sec. 2.3.2.2 states 'The graphite temperature coefficient is positive', and its Table 2.4 gives +3.2e-5 (fresh) to +6e-5 (steady-state) per degC.",
+      "note": "RESOLVED (2026-11-18): the sign conflict is closed -- the code now carries the POSITIVE value, as both sources require. The live core applies it through the cross sections: RbmkGraphiteTemp scales the homogenised cell constants by the thermal-scattering temperature dependence derived from the OpenMC cell (openmc/rbmk_graphite_mgxs.py), so the effect enters the neutron balance. Magnitude of the derived per-constant slopes is to_verify (chord slope 600-800 K extrapolated to the 873 K operating point); the whole-core value here is the sourced +6e-5.",
       "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
       "quote": "Graphite temperature coefficient of reactivity ac (CC~') 6 x 10~5"
     },
@@ -176,11 +176,20 @@
       "source": "Measured: the whole-core void worth with the void applied per axial node (+0.0248) vs as a core average (+0.0222) - only 12% higher, NOT the 'double' an earlier note claimed. Recorded to correct that note; the axial coupling is now the default."
     },
     "xenon.macro_abs": {
-      "value": 1.34e-4,
+      "value": 0.000134,
       "unit": "cm^-1 (added to the fuel cell thermal absorption per unit xenon ratio)",
       "status": "to_verify",
       "source": "DERIVED, not fitted: sigma_Xe * N_Xe_eq. sigma_Xe = 2.65e-18 cm^2 (Xenon.SIGMA_XE); N_Xe_eq = (gamma_I + gamma_Xe) * Sigma_f * phi / (lambda_Xe + sigma_Xe * phi) with gamma_I=0.0639, gamma_Xe=0.00237, lambda_Xe=2.093e-5 /s, phi = Xenon.FLUX_FULL = 3e13 n/cm^2/s, Sigma_f ~ 2.56e-3 cm^-1. Gives N_Xe_eq ~ 5.07e13 cm^-3 and macro absorption ~1.34e-4 cm^-1. The one to-verify input is the reference flux (Xenon.FLUX_FULL). Replaces the fitted readout terms (0.024 in the lumped cores, -0.03 in Xenon.worth): xenon now acts through the neutron BALANCE. Measured worth: a 3x xenon ratio moves k_eff by -0.0227.",
       "measured": "-0.0227 dk/k for a 3x xenon ratio (about -0.011 at 2x), consistent with the ~3% real RBMK xenon worth"
+    },
+    "xsec.graphite_temp_derived": {
+      "value": 1.166e-05,
+      "unit": "dk/k per degC (single cell, net)",
+      "status": "to_verify",
+      "source": "Derived from the OpenMC lattice cell: openmc/rbmk_graphite_mgxs.py sweeps the graphite temperature over 600-800 K (the range the S(alpha,beta) tables cover) and reports the fractional change of each homogenised 2-group constant per kelvin. Net cell coefficient +1.17e-5 /degC, POSITIVE. Consumed by RbmkGraphiteTemp, which scales the homogenised cell constants. Gated to the matching lattice table: it applies only when rbmk_lattice.json is the OpenMC table, because the slopes are fractional changes of THAT table's constants and flip sign against the 1-D table (whose fast-removal/up-scatter constants differ by an order of magnitude).",
+      "note": "SIGN is sourced (INSAG-7 Table II-I, NUREG-1250: the RBMK's graphite coefficient is positive). MAGNITUDE is to_verify: a chord slope over 600-800 K extrapolated ~73 K to the 873 K operating point, and the ss21/ss12 slopes are nonlinear, so it overestimates the effect at operating temperature. Whole-core value of record is feedback.graphite_coeff (+6e-5, INSAG-7).",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
+      "quote": "Graphite temperature coefficient of reactivity ac (CC~') 6 x 10~5"
     }
   }
 }
