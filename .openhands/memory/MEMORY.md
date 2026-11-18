@@ -1,5 +1,21 @@
 # CSP-Modern-v2 — project memory
 
+## STEP 2 DONE: the void-worth dial is now VISIBLE (commit ca9f5ac, 2026-11-17)
+- `RbmkXsec.voidWorthScale()` exposes the dial (0.233). New overloads
+  `RbmkXsec.fuelCell(...,voidWorthScale)` and `RbmkSolver3D.setCoreState(...,dial)`
+  let a caller solve with the dial ON (shipped) vs OFF (raw cell).
+- In-game `/rbmk dial` prints the dial and measures the SAME 3D core both ways.
+- `VoidDialSelfTest` (4 checks) proves the dial is LOAD-BEARING and is written to
+  tell us when it becomes unnecessary. MEASURED: dial ON = +0.0216 (ships);
+  dial OFF (raw cell) = +0.0770; raw/shipped = 3.56x = the physical error cancelled.
+- provenance `xsec.void_worth_scale` now carries a `visible` note. Physics UNCHANGED
+  (default path still uses the dial). checkProvenance green; UnifiedReactorCore 6/0,
+  PhysicsProvenance 31, LatticeTable 14.
+- NEXT = STEP 1 of the plan (the real fix): regenerate rbmk_lattice.json from the
+  CORRECTED OpenMC cell (openmc/rbmk_cell.py) so the raw number approaches +0.020
+  and the dial can be deleted. Needs an OpenMC -> 2-group-constants emitter (none
+  exists; openmc/rbmk_cell.py builds the model but does not emit the table).
+- PUSH still blocked: OpenHands secrets endpoint returns HTTP 500; 10 commits local.
 ## "IS IT JUST A TABLE?" -- Ben's challenge, answered 2026-11-17
 Ben (not a programmer) asked whether a reactor that runs on "a table" is a real
 dynamic sim or just a scripted model. Honest answer, both halves:
