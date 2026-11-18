@@ -1,5 +1,35 @@
 # CSP-Modern-v2 — project memory
 
+## VOID-COEFF "5-7x" SOLVED: both tools were wrong (2026-11-17, commit 456cc18)
+The 5-7x was a ratio between two of our OWN tools; BOTH were wrong, opposite ways.
+Gold standard = explicit 18-rod cluster Monte Carlo (openmc/decompose_test.py, He gap,
+600K, ENDF/B-VIII.0), dk/dvoid 0->0.3:
+  A repo OpenMC cell as written  +0.017   <- buggy baseline
+  D real geom + correct VF       +0.038   } agree to 19%
+  E explicit 18-rod cluster      +0.032   }
+  deterministic 1-D cell         +0.115   <- ~3.3x too HIGH (ring+diffusion method)
+Repo cell was ~2x too LOW: fuel/water VF 0.62/0.26 (true 0.324/0.570) AND 80 mm bore
+(true 88 mm; 80 mm is the ASSEMBLY width). 5-7x = 0.115/0.017 = 6.8x. Both fixed in
+openmc/rbmk_cell.py. The "OpenMC corroborates INSAG-7 +0.02" claim was CIRCULAR (the
+bug pulled OpenMC onto the lit number) -> WITHDRAWN in provenance.json + OpenMcResult.
+CLEARED: S(a,b), temperature, density, and the gap medium (gap is HELIUM, not water -
+water-filled gap probes gave inflated +0.13/+0.16; with He it falls to +0.03/+0.04).
+CONVENTION: rbmk_void_coeff.py reports REACTIVITY dk/(k1k2): shipped +0.021 = +0.035
+simple dk/k slope. Bridge test band widened 0.015-0.06 (old band fit the buggy model).
+PLANT UNCHANGED: void worth still anchored to INSAG-7 +0.020; core cannot run away.
+Details: docs/VOID-COEFF-ROOT-CAUSE.md, .openhands/memory/2026-11-15.md.
+
+## SANDBOX WIPE = rebuild JDK+Gradle (2026-11-17)
+A reset wiped the toolchain (JDK, Gradle) along with ephemeral ~. Persist under
+/workspace/tools: JDK17 -> /workspace/tools/jdk (adoptium temurin tarball), Gradle 8.6
+-> /workspace/tools/gradle-8.6 (services.gradle.org zip; chmod +x bin/gradle).
+env: export JAVA_HOME=/workspace/tools/jdk; PATH=$JAVA_HOME/bin:/workspace/tools/gradle-8.6/bin:$PATH
+`unzip` is NOT installed -> use python zipfile. `--offline` FAILS (foojay plugin).
+javac-only self-tests: gson at /workspace/mcserver/libraries/.../gson-2.10.jar.
+OpenMC: source /workspace/tools/omc/env.sh (rebuild: tools/openmc/setup_openmc.sh).
+LESSON: cleanup globs `rm -rf cluster_*`/`matched_*` also delete `cluster_test.py`
+etc. -- scope rm globs to output dirs only (this bit me three times).
+
 ## KEYSTONE SOURCE IN HAND: the 1983 regulation (2026-11-15, commit 60bf8dd)
 `docs/primary-sources/Reglament-1E-S-II-1983-ChAES-RBMK-1000.pdf` — the actual
 «Технологический регламент по эксплуатации 3 и 4 энергоблоков ЧАЭС с реакторами
