@@ -1,5 +1,15 @@
 # The "5–7× discrepancy" is not yet proven — the two models are not comparable
 
+> **SUPERSEDED (2026-11-17).** The gap was resolved in
+> `VOID-COEFF-ROOT-CAUSE.md`: the OpenMC cell had two geometry errors (an 80 mm bore
+> that should be 88 mm, and fuel/water fractions 0.62/0.26 that should be
+> 0.324/0.570), and the deterministic 1-D cell overstates by ~3.3×. The table below
+> still carries the old OpenMC number (+0.015, since regenerated to +0.021) and the
+> claim that both curves "turn over near full void" — that turnover was an artefact
+> of the same wrong geometry (fuel and clad renormalised to fill the freed bore
+> volume at full void). Corrected, the curve rises monotonically. Kept for the
+> record of how the comparison was first framed.
+
 Investigation, 2026-11-15. Read the plain version first.
 
 ## Plain version

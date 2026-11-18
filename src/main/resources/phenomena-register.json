@@ -64,8 +64,8 @@
       "class": "Feedback",
       "source": "INSAG-7 2; NUREG-1250 (signs disagree between sources)",
       "status": "readout",
-      "where": "UnifiedReactorCore.graphiteTempC (computed, not passed to xsec)",
-      "note": "POSITIVE and slow, but small. NOT COUPLED: the two primary sources disagree on the sign, so coupling it would be a guess. Carried as a readout until the sign is sourced. This is an honest gap, not an oversight."
+      "where": "UnifiedReactorCore.graphiteTempC -> RbmkXsec.fuelCell(.., graphiteTempC) -> RbmkGraphiteTemp.apply (GATED)",
+      "note": "POSITIVE and slow, but small. The SIGN is now resolved by derivation (openmc/rbmk_graphite_mgxs.py: +1.17e-5 /degC, positive), and the coupling is BUILT (RbmkGraphiteTemp -> RbmkXsec.fuelCell). But it is GATED: matchesLattice() activates it only when rbmk_lattice.json is the OpenMC table, and the shipped table is the 1-D tools/lattice one (the pending Step 1b). So in the shipped configuration graphite cannot change k_eff = READOUT. Ship the OpenMC table and this becomes modelled."
     },
     {
       "id": "feedback.power",
@@ -194,8 +194,8 @@
       "class": "Thermal-hydraulics",
       "source": "INSAG-7 2; graphite time constant",
       "status": "readout",
-      "where": "UnifiedReactorCore.graphiteTempC",
-      "note": "Computed with a slow time constant but not fed back (see feedback.graphite)."
+      "where": "UnifiedReactorCore.graphiteTempC (computed; feedback gated, see feedback.graphite)",
+      "note": "Computed with a slow time constant. The feedback link is built but gated off by the shipped lattice table (see feedback.graphite)."
     },
     {
       "id": "kinetics.spatial_instability",

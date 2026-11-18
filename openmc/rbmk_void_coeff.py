@@ -67,12 +67,16 @@ def main() -> None:
     k_void = results[-1]["k"]
 
     # The void coefficient is a DERIVATIVE, so it must be measured at a point,
-    # not across the whole sweep. The lattice's k rises as the channel voids
-    # (the RBMK's positive void coefficient) until the water -- which is also a
-    # moderator -- is almost entirely gone, after which k falls. Reporting a
-    # single full-range secant would average the two and hide the physics.
-    # So: report the operating-point coefficient (initial slope, near full water)
-    # AND the turnover, separately.
+    # not across the whole sweep. The lattice's k rises as the channel voids --
+    # the RBMK's positive void coefficient -- and does so MONOTONICALLY across
+    # the full range. There is no turnover: graphite, not water, is the moderator
+    # here, so removing the water mostly removes an absorber. (An earlier curve
+    # appeared to turn over at full void; that was an artefact of renormalising
+    # the fuel and clad to fill the freed bore volume -- see commit 9e7bd02 and
+    # docs/VOID-COEFF-ROOT-CAUSE.md. Fixed, the curve is monotonic.) Reporting a
+    # single full-range secant would understate the operating-point slope, so the
+    # operating-point coefficient (initial slope, near full water) is reported
+    # separately.
     def seg(a: int, b: int) -> float:
         dk = _reactivity(results[a]["k"], results[b]["k"])
         dv = results[b]["void_fraction"] - results[a]["void_fraction"]
@@ -81,7 +85,7 @@ def main() -> None:
     coeff_operating = seg(0, 1)          # slope at the operating point
     coeff_mid = seg(3, 5)                # slope over the mid operating range
     coeff_peak = max(seg(i, i + 1) for i in range(len(results) - 2))
-    coeff_turnover = seg(len(results) - 2, len(results) - 1)
+    coeff_top = seg(len(results) - 2, len(results) - 1)
 
     summary = {
         "k_full_water": k_full,
@@ -89,19 +93,20 @@ def main() -> None:
         "void_coeff_operating": coeff_operating,
         "void_coeff_mid_range": coeff_mid,
         "void_coeff_peak": coeff_peak,
-        "void_coeff_at_full_void": coeff_turnover,
+        "void_coeff_at_full_void": coeff_top,
         "sign": "positive" if coeff_operating > 0 else "negative",
         "sweep": results,
         "note": "Homogenised 18-rod assembly in a 250 mm graphite cell; ENDF/B-VIII.0; "
-                "cold (293.6 K). The void coefficient is positive through the operating "
-                "range and turns negative only at full void. Compare against the "
+                "cold (293.6 K). The void coefficient is positive and k rises "
+                "monotonically with void across the whole range (graphite, not water, "
+                "is the moderator; no turnover). Compare against the "
                 "documented INSAG-7 / NUREG-1250 value (+0.02 dk/k per unit void).",
     }
     pathlib.Path("openmc_void_coeff.json").write_text(json.dumps(summary, indent=2))
     print(f"\nvoid coefficient at operating point = {coeff_operating:+.5f} dk/k per unit void")
     print(f"  mid-range  = {coeff_mid:+.5f}")
     print(f"  peak       = {coeff_peak:+.5f}")
-    print(f"  full void  = {coeff_turnover:+.5f}  (moderator removed -> turnover)")
+    print(f"  near full void = {coeff_top:+.5f}  (still positive: no turnover)")
     print(f"  SIGN: {'POSITIVE' if coeff_operating > 0 else 'NEGATIVE'}")
     print("wrote openmc_void_coeff.json")
 

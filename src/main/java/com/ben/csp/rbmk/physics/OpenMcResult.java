@@ -23,8 +23,9 @@ import java.util.List;
  * <p>The quantity that matters is the coolant-void reactivity coefficient: the
  * RBMK's defining positive feedback. The coefficient is a derivative, so the
  * sweep is kept and read at the operating point rather than collapsed to a
- * single misleading secant (the lattice's k rises as the channel voids, then
- * falls once the water — itself a moderator — is gone).
+ * single misleading secant (the lattice's k rises monotonically as the channel
+ * voids — graphite, not water, is the moderator, so removing the water mostly
+ * removes an absorber; there is no turnover).
  *
  * <p>Independent result, no tabulated value fed in: with the channel geometry
  * corrected (88 mm bore, true fuel/water volume fractions), the operating-point

@@ -9,8 +9,16 @@ import java.util.List;
  * <p>This test does not re-run OpenMC (that is the Python side). It checks that
  * the result resource is present, parses, and carries the physics we expect: a
  * positive operating-point void coefficient close to the documented
- * INSAG-7 / NUREG-1250 value of +0.02 dk/k per unit void, with the sweep rising
- * as the channel voids and turning over only at full void.
+ * INSAG-7 / NUREG-1250 value of +0.02 dk/k per unit void, with k rising
+ * monotonically as the channel voids.
+ *
+ * <p>An earlier version of this test asserted that k turned over at full void and
+ * that k(full water) &gt; k(full void). Both were artefacts of the withdrawn
+ * channel geometry: the voided branch renormalised fuel and clad to fill the freed
+ * bore volume, raising their density 2.33x at void 1.0 and pulling k down. With
+ * that fixed (commit 9e7bd02) the curve is monotonic — graphite, not water, is the
+ * moderator, so removing the water mostly removes an absorber. The assertions were
+ * regenerated to match the corrected physics. See docs/VOID-COEFF-ROOT-CAUSE.md.
  */
 public final class OpenMcBridgeSelfTest {
 
@@ -39,27 +47,30 @@ public final class OpenMcBridgeSelfTest {
         check(coeff > 0.015 && coeff < 0.06,
             "void coefficient is a plausible lattice value (~+0.035): " + round(coeff));
 
-        check(OpenMcResult.kFullWater() > OpenMcResult.kFullVoid(),
-            "k(full water) " + round(OpenMcResult.kFullWater())
-                + " > k(full void) " + round(OpenMcResult.kFullVoid())
-                + " — a fresh cold lattice is supercritical at both ends");
+        check(OpenMcResult.kFullVoid() > OpenMcResult.kFullWater(),
+            "k(full void) " + round(OpenMcResult.kFullVoid())
+                + " > k(full water) " + round(OpenMcResult.kFullWater())
+                + " — removing the water (an absorber here, the graphite is the moderator)"
+                + " raises k");
 
         // The sweep must rise as the channel voids through the operating range.
         List<OpenMcResult.Point> sweep = OpenMcResult.sweep();
         check(sweep.size() >= 5, "the sweep has " + sweep.size() + " points");
         boolean rising = true;
-        for (int i = 1; i < sweep.size() - 1; i++) {
+        for (int i = 1; i < sweep.size(); i++) {
             if (sweep.get(i).k() < sweep.get(i - 1).k()) {
                 rising = false;
             }
         }
         check(rising, "k rises monotonically as the channel voids (the positive void coefficient)");
 
-        // Turnover only at full void: the last point is lower than the one before.
+        // No turnover: k keeps rising to full void. Graphite is the moderator, so
+        // removing the water removes an absorber, not the moderator. (The old
+        // "turnover" was a density-renormalisation artefact — see the class note.)
         double last = sweep.get(sweep.size() - 1).k();
         double prev = sweep.get(sweep.size() - 2).k();
-        check(last < prev, "k turns over at full void (" + round(prev) + " -> " + round(last)
-            + ") because the water is also a moderator");
+        check(last >= prev, "k does NOT turn over at full void (" + round(prev) + " -> "
+            + round(last) + "): graphite is the moderator, the water an absorber");
 
         // Interpolation used by the visualisation is sane and clamps at the ends.
         check(Math.abs(OpenMcResult.kAtVoid(0.0) - sweep.get(0).k()) < 1e-9,
