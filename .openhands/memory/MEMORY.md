@@ -1,5 +1,31 @@
 # CSP-Modern-v2 — project memory
 
+## BEN'S "SEPARATE SOLVERS" QUESTION (Gemini advice), answered 2026-11-17
+Ben (via Gemini) proposed: don't use Monte Carlo live; use deterministic solvers;
+split into modular interacting solvers (neutronics / thermal-hydraulics /
+structural). Checked against the repo -- THE PROJECT ALREADY DOES ALL OF THIS:
+- Neutronics live = RbmkSolver3D (deterministic 3D 2-group diffusion), NOT Monte
+  Carlo. OpenMC is NOT in the live path (grep confirms: zero refs in the core).
+- Multi-physics coupling = PlantSystem.step(): an 8-step loop (core -> pumps ->
+  separators -> turbines -> condensers -> feedwater -> ECCS -> trip matrix). This is
+  the MOOSE-style "separate solvers talking in a loop" Gemini describes.
+- Energy groups are a DATA property, not hard-coded: RbmkSolverMG runs N groups
+  (G=2 reproduces RbmkSolver3D exactly). So "nodal/multi-group" is already possible.
+- Thermal-hydraulics = ChannelCooling (channel energy balance, quality, slip), not
+  DNS. DNS is a research tool for single subchannels; real plant codes use subchannel
+  methods -- so Gemini overstates DNS as "the cutting edge" for whole-core T-H.
+- WHERE GEMINI IS RIGHT AND IT MATTERS: "use OpenMC once OFFLINE to generate the
+  baseline data matrices, then let the modular solvers interpolate them in real time"
+  -- THAT IS EXACTLY OUR STEP-1 PLAN. It independently validates it.
+- THE SUBTLE WRONGNESS: Gemini frames it as "stop using Monte Carlo for real-time".
+  We never did. Our open bug is the OFFLINE data SOURCE: the live table is built
+  from the 1-D cell, not the validated OpenMC cell. So the fix is not "remove Monte
+  Carlo" -- it is "use the RIGHT offline source to build the table".
+- GENUINE GAP FOUND: no structural/materials solver (thermal expansion, graphite
+  swelling). Gemini names it; we don't have it. Worth noting, not urgent.
+- EXTERNAL BACKEND vs in-process: already researched (docs/ENGINE-DECISION.md +
+  docs/RESEARCH-minecraft-custom-engines.md). Decision: in-process is right (the
+  mod IS the alongside case, ~10x headroom). Do not re-litigate.
 ## STEP 2 DONE: the void-worth dial is now VISIBLE (commit ca9f5ac, 2026-11-17)
 - `RbmkXsec.voidWorthScale()` exposes the dial (0.233). New overloads
   `RbmkXsec.fuelCell(...,voidWorthScale)` and `RbmkSolver3D.setCoreState(...,dial)`
