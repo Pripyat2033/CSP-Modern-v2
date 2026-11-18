@@ -95,3 +95,39 @@ plausible but **not proven here** — it is the natural next question.
     cd openmc && python decompose_test.py       # the 2x2 + explicit cluster
     python rbmk_void_coeff.py --force           # regenerate the shipped result
     cd ../tools/lattice && python compare_curves.py
+
+## The Director's hypothesis, tested: control rods (2026-11-17)
+
+Ben's point: the real core is about **1661 fuel channels to 211 control rods** —
+roughly **one rod per eight fuel channels** (`docs/RBMK-CORE-GEOMETRY.md` §3). Our
+lattice cell is a single fuel channel with **no rods at all**. Does that omission
+explain why our number reads high?
+
+Tested in `openmc/control_rod_test.py`. A 3x3 supercell (wrapped, so it stands for
+an endless tiling); the centre channel is a control rod, the other eight are fuel.
+Void worth measured in the **reactivity convention** (dk/(k1*k2), the one INSAG-7
+and `rbmk_void_coeff.py` use), void 0 -> 0.5:
+
+| Lattice | void worth (dk/k) |
+|---|---|
+| no control rod (a bare fuel channel) | **+0.031** |
+| + one THIN realistic rod per 8 fuel | **-0.001** |
+| + one FAT rod (whole bore absorber) | **-0.015** |
+
+**The control rods flatten the void response almost completely.** A bare channel
+gives +0.031; put one realistic rod in eight and it goes to ~0; make the rod fat
+and it goes *negative*. This is the Director's hypothesis, confirmed in direction:
+**the bare-channel model overstates the void coefficient because it leaves the
+control rods out.** The rods are net neutron absorbers, so when the fuel channels
+void, the extra neutrons the voids produce are largely eaten by the rods instead of
+multiplying — the response is muted.
+
+Honest limits: a single rod in a tiny 3x3 patch is not the whole core. The real
+core has 211 rods (some withdrawn), plus ~240 burnable absorbers, plus leakage. So
+this shows the *direction and rough size* of the effect, not the core's exact
++0.02. But it closes the gap in the right way: bare channel +0.031, real rods pull
+it down, literature whole-core +0.020 — consistent.
+
+This is a strong argument for the spatial core we are already building: the
+whole-core void coefficient is set by the fuel-and-rod arrangement, not by a single
+channel in isolation.
