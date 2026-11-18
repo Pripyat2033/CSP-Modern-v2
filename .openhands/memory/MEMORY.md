@@ -1,5 +1,32 @@
 # CSP-Modern-v2 — project memory
 
+## "WILL WE EVER NEED THE OLD CORES BACK?" — investigated 2026-11-17
+Ben asked before deleting anything. Findings (all verified by grep/run today):
+- THE PHYSICS ENGINES ARE SHARED, NOT AT RISK. Deleting the 3 core *wrappers*
+  (ReactorCore / SpatialReactorCore / TransientReactorCore) does NOT delete
+  `RbmkTransientSolver` or `RbmkSolver3D` -- the unified core uses both. So the
+  reusable heavy asset survives any wrapper deletion.
+- ReactorCore (lumped): ZERO instantiations in src/main = truly dead. Only unique
+  holders: it is the sole user of `RodWorth` (bottom-peaked fitted curve). Its
+  real value = SPEED: 0.187 ms/tick vs the spatial core's ~26 ms unthreaded. But
+  the unified core runs THREADED and measured ~1.5x REAL TIME on this machine
+  (3.2 ms per 5 ms step; construct+start ~12 s), so speed is not currently binding.
+- SpatialReactorCore: only used by SpatialReactorCoreSelfTest. Static-eigenvalue
+  hybrid; superseded.
+- TransientReactorCore: NOT deprecated and STILL LIVE-REACHABLE via
+  `/rbmk plant start spatial` (PlantTicker.startPlantTransient). Its one unique
+  feature (own thread, open loop) is now subsumed -- UnifiedReactorCore has
+  `startThreaded()` AND the closed loop. So it is genuinely redundant.
+- ReactivityModel.POWER_COEFF is doc/legacy only; `ReactivityModel.reactivity()`
+  is NEVER called. UnifiedReactorCore still DECLARES a `@Deprecated POWER_COEFF`
+  field (line 107) that is unused = remnant of standing goal 3 (drop the term).
+- RECOVERY IS FREE: all three files are in git HEAD/history; `git show
+  HEAD:src/.../ReactorCore.java` restores any of them. Nothing is truly lost.
+REAL (narrow) reasons one might want them: (a) a slow machine where threaded
+real-time factor drops below 1.0 -> a cheap fallback core; (b) an operator-
+TRAINING use where the lumped "training-simulator" structure is wanted; (c)
+headless/CI reference; (d) an A/B known-good comparison if the spatial core is
+ever suspected of a bug. NONE of these is a current requirement.
 ## THE UNIFIED CORE — status check (2026-11-17, asked by Ben)
 Ben's Q: "we unified the cores and ditched the others, right?" ANSWER: ~90% yes.
 - `UnifiedReactorCore` (physics/) IS built and IS the one core. Commit af5456a
