@@ -16,7 +16,7 @@
       "title": "OpenMC 0.16.0 Monte Carlo neutron transport (computed in this repo), ENDF/B-VIII.0 cross-sections",
       "publisher": "MIT / Argonne National Laboratory \u2014 openmc.org",
       "url": "https://docs.openmc.org",
-      "note": "Not a document but an independent COMPUTATION: a first-principles lattice-cell model of an RBMK fuel channel (openmc/rbmk_cell.py, openmc/rbmk_void_coeff.py). No tabulated coefficient is fed in \u2014 the void coefficient is derived from cross-section data plus graphite S(a,b). It yields +0.015 dk/k per unit void at the operating point, corroborating the INSAG-7 value of +0.02."
+      "note": "Not a document but an independent COMPUTATION: a first-principles lattice-cell model of an RBMK fuel channel (openmc/rbmk_cell.py, openmc/rbmk_void_coeff.py). No tabulated coefficient is fed in \u2014 the void coefficient is derived from cross-section data plus graphite S(a,b). It yields +0.035 dk/k per unit void at the operating point (simple dk/k). An earlier version gave +0.015 and appeared to corroborate INSAG-7 (+0.02); that agreement was an artefact of two channel-geometry errors (an 80 mm bore instead of 88 mm, and fuel/water volume fractions of 0.62/0.26 instead of the true 0.324/0.570) and is WITHDRAWN. See docs/VOID-COEFF-ROOT-CAUSE.md."
     }
   },
   "entries": {
@@ -69,7 +69,7 @@
       "source": "INSAG-7 Table II-I (p. 105), 'Void coefficient of reactivity at the working point' = +2.0e-4 per % void; +2.0e-4 per 1% = 0.020 per unit void fraction. INSAG-7 sec. 2.1 gives the full range: -1.3e-4 (fresh fuel) to +(2.0-2.5)e-4 per % void (steady-state refuelling).",
       "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
       "quote": "Void coefficient of reactivity af at the working point (%-' (5k/k) void) +2.0 x 10\"4",
-      "corroboration": "OpenMC lattice-cell Monte Carlo (openmc/, ENDF/B-VIII.0) gives +0.015 dk/k per unit void at the operating point, independently \u2014 same sign and order as the +0.02 above. Minecraft displays this result via /rbmk openmc (OpenMcResult.java)."
+      "corroboration": "OpenMC lattice-cell Monte Carlo (openmc/, ENDF/B-VIII.0) gives +0.035 dk/k per unit void at the operating point (simple dk/k), with the channel geometry corrected, independently \u2014 same sign as the +0.02 above but ~1.75x larger (a single-channel infinite lattice overstates the whole-core operating coefficient). The earlier +0.015 'agreement' is WITHDRAWN: it came from a channel-geometry error. Minecraft displays this result via /rbmk openmc (OpenMcResult.java)."
     },
     "feedback.doppler_coeff": {
       "value": -1.2e-05,

@@ -8,20 +8,25 @@ infinite lattice of identical cells with reflective boundaries -- a standard
 lattice-cell k-infinity calculation.
 
 An RBMK channel does not hold a single rod. It holds an 18-rod fuel assembly
-(two rings of 6 and 12 rods around a central carrier rod) inside an 80 mm
-pressure tube, in a 250 mm pitch square graphite column. The rods are only
-13.6 mm across, so resolving each one inside a 250 mm cell would need a very
-fine mesh for no benefit at the cell level; the assembly is therefore
-homogenised inside the pressure-tube bore, which is standard lattice-cell
-practice. The coolant-void coefficient -- the point of this model -- depends on
-the water/graphite/fuel volume fractions, which the homogenisation preserves.
+(two rings of 6 and 12 rods around a central carrier rod) inside an 88 mm
+pressure tube, in a 250 mm pitch square graphite column. The pressure tube sits
+in a 114 mm hole through the graphite with a helium-filled gap -- the graphite
+is in a helium-nitrogen atmosphere, kept separate from the boiling water. The
+rods are only 13.6 mm across, so resolving each one inside a 250 mm cell would
+need a very fine mesh for no benefit at the cell level; the assembly is
+therefore homogenised inside the pressure-tube bore, which is standard
+lattice-cell practice. The coolant-void coefficient -- the point of this model --
+depends on the water/graphite/fuel volume fractions, which the homogenisation
+preserves.
 
 Design values and where they come from:
   - lattice pitch 250 mm             : RBMK design (Dollezhal; widely documented)
   - fuel: 2.0% enriched UO2          : ChNPP Unit 4 fresh load (INSAG-7 / NUREG-1250)
   - 18 fuel rods per channel         : RBMK-1000 fuel assembly
   - fuel rod diameter 13.6 mm        : RBMK fuel element
-  - pressure-tube bore 80 mm         : RBMK channel
+  - pressure-tube bore 88 mm         : RBMK channel (docs/RBMK-CORE-GEOMETRY.md)
+  - graphite hole 114 mm             : graphite block bore
+  - tube-to-graphite gap: helium     : docs/RBMK-CORE-GEOMETRY.md (0.5 MPa)
   - graphite density 1.65 g/cm3      : reactor-grade graphite
   - coolant: light water             : RBMK coolant
 """
@@ -32,15 +37,26 @@ import openmc
 # Design values, in cm.
 PITCH = 25.0        # lattice pitch, cm (250 mm)
 CELL_HALF = PITCH / 2.0
-CHANNEL_R = 4.0     # pressure-tube inner radius, cm (80 mm bore)
+CHANNEL_R = 4.4     # pressure-tube inner radius, cm (88 mm bore)
+TUBE_R = 4.8        # pressure-tube outer radius, cm (96 mm OD, 4 mm wall)
+HOLE_R = 5.7        # graphite block hole radius, cm (114 mm hole)
 
 # Assembly homogenised inside the bore. The 18 rods of 13.6 mm dia do not fill
-# the 80 mm tube; the balance is coolant water. These volume fractions set the
-# void worth and are an approximation of the real assembly geometry.
-FUEL_VF = 0.62      # fuel volume fraction inside the pressure-tube bore
-CLAD_VF = 0.12      # cladding volume fraction inside the bore
+# the 88 mm tube; the balance is coolant water. These volume fractions come
+# straight from the areas:
+#   tube interior  pi*4.4^2               = 60.8 cm2
+#   fuel (18 x 11.8 mm pellets)           = 19.7 cm2  -> 0.324
+#   clad (18 x 0.9 mm wall)               =  6.5 cm2  -> 0.106
+#   water (the rest)                      = 34.7 cm2  -> 0.570
+# (An earlier version used 0.62/0.12/0.26 -- ~2x too much fuel and half the
+# water -- which suppressed the void worth to a spurious +0.02. See
+# docs/VOID-COEFF-ROOT-CAUSE.md.)
+FUEL_VF = 0.324     # fuel volume fraction inside the pressure-tube bore
+CLAD_VF = 0.106     # cladding volume fraction inside the bore
+WATER_VF = 0.570    # coolant volume fraction inside the bore
 
-COOLANT_DENSITY_FULL = 0.65  # g/cm3 at RBMK operating conditions
+COOLANT_DENSITY_FULL = 0.65   # g/cm3 at RBMK operating conditions
+HELIUM_DENSITY = 0.0004       # g/cm3, helium in the tube-to-graphite gap
 
 
 def materials(coolant_density: float = COOLANT_DENSITY_FULL) -> dict[str, openmc.Material]:
@@ -64,7 +80,12 @@ def materials(coolant_density: float = COOLANT_DENSITY_FULL) -> dict[str, openmc
     water.add_element("O", 1.0, "ao")
     water.set_density("g/cm3", coolant_density)
 
-    return {"fuel": fuel, "clad": clad, "graphite": graphite, "water": water}
+    helium = openmc.Material(name="helium gap")
+    helium.add_element("He", 1.0, "ao")
+    helium.set_density("g/cm3", HELIUM_DENSITY)
+
+    return {"fuel": fuel, "clad": clad, "graphite": graphite,
+            "water": water, "helium": helium}
 
 
 def channel_material(mats: dict[str, openmc.Material], voided: bool) -> openmc.Material:
@@ -80,7 +101,7 @@ def channel_material(mats: dict[str, openmc.Material], voided: bool) -> openmc.M
         )
     mix = openmc.Material.mix_materials(
         [mats["fuel"], mats["clad"], mats["water"]],
-        [FUEL_VF, CLAD_VF, 1.0 - FUEL_VF - CLAD_VF], "vo",
+        [FUEL_VF, CLAD_VF, WATER_VF], "vo",
         name="channel contents (homogenised)",
     )
     mix.add_s_alpha_beta("c_H_in_H2O")
@@ -94,6 +115,8 @@ def build_model(coolant_density: float = COOLANT_DENSITY_FULL) -> openmc.Model:
     channel = channel_material(mats, voided)
 
     chan_or = openmc.ZCylinder(r=CHANNEL_R)
+    tube_or = openmc.ZCylinder(r=TUBE_R)
+    hole = openmc.ZCylinder(r=HOLE_R)
     x_lo = openmc.XPlane(-CELL_HALF, boundary_type="reflective")
     x_hi = openmc.XPlane(CELL_HALF, boundary_type="reflective")
     y_lo = openmc.YPlane(-CELL_HALF, boundary_type="reflective")
@@ -102,7 +125,9 @@ def build_model(coolant_density: float = COOLANT_DENSITY_FULL) -> openmc.Model:
 
     universe = openmc.Universe(cells=[
         openmc.Cell(name="channel", fill=channel, region=-chan_or),
-        openmc.Cell(name="graphite", fill=mats["graphite"], region=+chan_or & square),
+        openmc.Cell(name="pressure tube", fill=mats["clad"], region=+chan_or & -tube_or),
+        openmc.Cell(name="gap (helium)", fill=mats["helium"], region=+tube_or & -hole),
+        openmc.Cell(name="graphite", fill=mats["graphite"], region=+hole & square),
     ])
     geometry = openmc.Geometry(universe)
 
@@ -114,7 +139,9 @@ def build_model(coolant_density: float = COOLANT_DENSITY_FULL) -> openmc.Model:
     settings.source = openmc.IndependentSource(space=openmc.stats.Point((0, 0, 0)))
     settings.temperature = {"default": 293.6}
 
-    return openmc.Model(geometry, openmc.Materials([mats["graphite"], channel]), settings)
+    return openmc.Model(geometry,
+                        openmc.Materials([mats["graphite"], mats["helium"],
+                                          mats["clad"], channel]), settings)
 
 
 def main() -> None:

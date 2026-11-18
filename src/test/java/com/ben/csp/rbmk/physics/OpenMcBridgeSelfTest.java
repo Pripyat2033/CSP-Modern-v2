@@ -30,10 +30,14 @@ public final class OpenMcBridgeSelfTest {
 
         double coeff = OpenMcResult.voidCoeffOperating();
         check(coeff > 0.0, "operating-point void coefficient is positive: " + round(coeff));
-        // Same order as the documented +0.02/unit; the homogenised cell is a
-        // coarse approximation, so a factor-of-two band is the honest check.
-        check(coeff > 0.008 && coeff < 0.03,
-            "void coefficient is the right order (documented ~+0.02): " + round(coeff));
+        // A single-channel infinite lattice overstates the whole-core operating
+        // coefficient (no control rods, one channel voided), so the expected value
+        // sits somewhat ABOVE the documented whole-core +0.02 — about +0.035. The
+        // band below admits the lattice value while rejecting a wrong sign, a zero,
+        // or a runaway; it is NOT a check that the value equals INSAG-7 (that
+        // apparent agreement was a geometry artefact — see VOID-COEFF-ROOT-CAUSE.md).
+        check(coeff > 0.015 && coeff < 0.06,
+            "void coefficient is a plausible lattice value (~+0.035): " + round(coeff));
 
         check(OpenMcResult.kFullWater() > OpenMcResult.kFullVoid(),
             "k(full water) " + round(OpenMcResult.kFullWater())

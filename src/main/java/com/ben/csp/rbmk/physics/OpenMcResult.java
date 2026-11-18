@@ -26,8 +26,15 @@ import java.util.List;
  * single misleading secant (the lattice's k rises as the channel voids, then
  * falls once the water — itself a moderator — is gone).
  *
- * <p>Independent result, no tabulated value fed in: +0.015 to +0.019 dk/k per
- * unit void, against the documented INSAG-7 / NUREG-1250 value of +0.02.
+ * <p>Independent result, no tabulated value fed in: with the channel geometry
+ * corrected (88 mm bore, true fuel/water volume fractions), the operating-point
+ * coefficient is +0.021 dk/k per unit void in the reactivity convention this field
+ * uses (dk/(k1*k2)); the same data as a simple dk/k slope is +0.035. That is above
+ * the documented INSAG-7 / NUREG-1250 whole-core value of +0.02 — the expected
+ * direction, since a single-channel infinite lattice has no control rods and voids
+ * only one channel. An earlier +0.015 result, which appeared to match INSAG-7, is
+ * WITHDRAWN: it came from two channel-geometry errors. See
+ * docs/VOID-COEFF-ROOT-CAUSE.md.
  */
 public final class OpenMcResult {
 
