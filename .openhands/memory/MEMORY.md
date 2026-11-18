@@ -1,5 +1,28 @@
 # CSP-Modern-v2 — project memory
 
+## RBMK RADIAL-FLUX TILT BUG — FOUND & FIXED (commit 59bc0e7, 2026-11-18)
+Ben's gut ("the RBMK is simulated wrong") yielded ONE concrete, reproducible bug.
+The LIVE 3D fast flux was tilted ~12x to one side in a SYMMETRIC core (L/R=12.75,
+mirror error 1.20). Cause: `RbmkLattice.channels()` fit the control count to 211 by
+dropping pitch-3 cells ONE AT A TIME by radius; the r=24.19 tie removed BOTH x=-24
+rods and left x=+24 unmatched. A one-sided absorber pattern against the reflective
+radial BC excites a near-degenerate tilt mode. FIX: drop whole symmetry ORBITS. Now
+control is 211/211 mirror-symmetric; tilt L/R=1.24, mirror error 0.148 (8x better).
+`RbmkGeometrySelfTest` now FAILS on any unpaired rod. A slow residual tilt (1.24->
+1.79/60k steps) is genuine physics (weak radial coupling, reflective BC), not a bug
+— it is why `SpatialReactorCoreSelfTest` keeps its KNOWN PRE-EXISTING FAILURE.
+**OPEN audit items (report, don't guess):** fuel temp is a power-only scalar (no flow,
+no per-node) + unregistered TAU_FUEL/TAU_GRAPHITE/FUEL_PER_POWER; feedback radially
+uniform; coolant temp not fed to neutronics; graphite-temp link GATED OFF until the
+OpenMC table ships; solver `diverged` flag misses huge finite keff. Full detail in
+`.openhands/memory/2026-11-18.md`.
+
+## FABRIC VERSIONS — there is NO "Fabric 1.16" (2026-11-18)
+The mod is MC **1.20.1**: gradle.properties pins loader 0.15.11, yarn 1.20.1+build.10,
+Fabric API 0.91.0+1.20.1. Live Fabric meta: loader latest 0.20.1; API for 1.20.1 up to
+0.92.9+1.20.1. Test server uses loader 0.16.10 + API 0.92.12. Pinned values are valid,
+just conservative.
+
 ## THE MATERIALS GAP -- Ben's THIRD gut-catch, PROVEN (2026-11-17)
 Ben said (no jargon): "I have a gut feeling we're subtly making a huge mistake
 and it'll affect the reactor... I see OpenMC as suspicious... shouldn't this be a
