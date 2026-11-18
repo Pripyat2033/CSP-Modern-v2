@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model>
+  <materials>
+    <material id="38" name="Zr-1%Nb cladding">
+      <density value="6.55" units="g/cm3"/>
+      <nuclide name="Zr90" wo="0.5019905633414083"/>
+      <nuclide name="Zr91" wo="0.11069078578569776"/>
+      <nuclide name="Zr92" wo="0.1710532044899188"/>
+      <nuclide name="Zr94" wo="0.1771219329891998"/>
+      <nuclide name="Zr96" wo="0.029143513393775446"/>
+      <nuclide name="Nb93" wo="0.01"/>
+    </material>
+    <material id="39" name="graphite moderator">
+      <density value="1.65" units="g/cm3"/>
+      <nuclide name="C12" ao="0.988922"/>
+      <nuclide name="C13" ao="0.011078"/>
+      <sab name="c_Graphite"/>
+    </material>
+    <material id="41" name="helium gap">
+      <density value="0.0004" units="g/cm3"/>
+      <nuclide name="He3" ao="2e-06"/>
+      <nuclide name="He4" ao="0.999998"/>
+    </material>
+    <material id="42" name="channel contents (homogenised)" depletable="true">
+      <density value="4.2120999999999995" units="g/cm3"/>
+      <nuclide name="U234" ao="3.23964596051289e-05"/>
+      <nuclide name="U235" ao="0.0036245188378918876"/>
+      <nuclide name="U238" ao="0.17530979719120282"/>
+      <nuclide name="U236" ao="1.6602037191945102e-05"/>
+      <nuclide name="O16" ao="0.47480795266827297"/>
+      <nuclide name="O17" ao="0.00018038141359678764"/>
+      <nuclide name="O18" ao="0.0009520711866992452"/>
+      <nuclide name="Zr90" ao="0.055595332621666334"/>
+      <nuclide name="Zr91" ao="0.012123996734987293"/>
+      <nuclide name="Zr92" ao="0.018531777540555447"/>
+      <nuclide name="Zr94" ao="0.018780308667921488"/>
+      <nuclide name="Zr96" ao="0.003025596333151909"/>
+      <nuclide name="Nb93" ao="0.0010717158736859456"/>
+      <nuclide name="H1" ao="0.23591080596175484"/>
+      <nuclide name="H2" ao="3.6746471816004327e-05"/>
+      <sab name="c_H_in_H2O"/>
+    </material>
+  </materials>
+  <geometry>
+    <cell id="25" name="channel" material="42" region="-43" universe="7"/>
+    <cell id="26" name="pressure tube" material="38" region="43 -44" universe="7"/>
+    <cell id="27" name="gap (helium)" material="41" region="44 -45" universe="7"/>
+    <cell id="28" name="graphite" material="39" region="45 46 -47 48 -49" universe="7"/>
+    <surface id="43" type="z-cylinder" coeffs="0.0 0.0 4.4"/>
+    <surface id="44" type="z-cylinder" coeffs="0.0 0.0 4.8"/>
+    <surface id="45" type="z-cylinder" coeffs="0.0 0.0 5.7"/>
+    <surface id="46" type="x-plane" boundary="reflective" coeffs="-12.5"/>
+    <surface id="47" type="x-plane" boundary="reflective" coeffs="12.5"/>
+    <surface id="48" type="y-plane" boundary="reflective" coeffs="-12.5"/>
+    <surface id="49" type="y-plane" boundary="reflective" coeffs="12.5"/>
+  </geometry>
+  <settings>
+    <run_mode>eigenvalue</run_mode>
+    <particles>10000</particles>
+    <batches>120</batches>
+    <inactive>40</inactive>
+    <source type="independent" strength="1.0" particle="neutron">
+      <space type="point">
+        <parameters>0 0 0</parameters>
+      </space>
+    </source>
+    <temperature_default>293.6</temperature_default>
+  </settings>
+  <tallies>
+    <mesh id="7">
+      <dimension>1 1 1</dimension>
+      <lower_left>-12.5 -12.5 -1.0</lower_left>
+      <upper_right>12.5 12.5 1.0</upper_right>
+    </mesh>
+    <filter id="181" type="mesh">
+      <bins>7</bins>
+    </filter>
+    <filter id="182" type="energy">
+      <bins>1e-05 0.625 20000000.0</bins>
+    </filter>
+    <filter id="189" type="energyout">
+      <bins>1e-05 0.625 20000000.0</bins>
+    </filter>
+    <filter id="190" type="legendre">
+      <order>1</order>
+    </filter>
+    <tally id="365">
+      <filters>181 182</filters>
+      <nuclides>total</nuclides>
+      <scores>flux total absorption nu-fission</scores>
+      <estimator>tracklength</estimator>
+    </tally>
+    <tally id="368">
+      <filters>181 182</filters>
+      <nuclides>total</nuclides>
+      <scores>flux</scores>
+      <estimator>analog</estimator>
+    </tally>
+    <tally id="363">
+      <filters>181 189 190</filters>
+      <nuclides>total</nuclides>
+      <scores>scatter</scores>
+      <estimator>analog</estimator>
+    </tally>
+    <tally id="367">
+      <filters>181 182 189 190</filters>
+      <nuclides>total</nuclides>
+      <scores>scatter</scores>
+      <estimator>analog</estimator>
+    </tally>
+  </tallies>
+</model>

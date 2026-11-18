@@ -1,0 +1,74 @@
+ ===========================>     TALLY 307     <===========================
+
+ Mesh Index (1, 1, 1)
+   Incoming Energy [1e-05, 0.625)
+     Total Material
+       Flux                                 0.422768 +/- 0.0102174
+       Total Reaction Rate                  0.170022 +/- 0.00408428
+       Absorption Rate                      0.0023046 +/- 6.20165e-05
+       Nu-Fission Rate                      0.00360924 +/- 9.8687e-05
+   Incoming Energy [0.625, 20000000)
+     Total Material
+       Flux                                 0.641692 +/- 0.0162457
+       Total Reaction Rate                  0.215861 +/- 0.00551182
+       Absorption Rate                      0.000774596 +/- 2.70504e-05
+       Nu-Fission Rate                      0.000403316 +/- 1.12934e-05
+ ===========================>     TALLY 310     <===========================
+
+ Mesh Index (1, 1, 1)
+   Incoming Energy [1e-05, 0.625)
+     Total Material
+       Flux                                 0.430507 +/- 0.0267536
+   Incoming Energy [0.625, 20000000)
+     Total Material
+       Flux                                 0.622351 +/- 0.0170757
+ ===========================>     TALLY 305     <===========================
+
+ Mesh Index (1, 1, 1)
+   Outgoing Energy [1e-05, 0.625)
+     Legendre expansion, P0
+       Total Material
+         Scattering Rate                      0.170365 +/- 0.00412189
+     Legendre expansion, P1
+       Total Material
+         Scattering Rate                      0.00231958 +/- 0.000247798
+   Outgoing Energy [0.625, 20000000)
+     Legendre expansion, P0
+       Total Material
+         Scattering Rate                      0.213793 +/- 0.00536315
+     Legendre expansion, P1
+       Total Material
+         Scattering Rate                      0.0224404 +/- 0.000637395
+ ===========================>     TALLY 309     <===========================
+
+ Mesh Index (1, 1, 1)
+   Incoming Energy [1e-05, 0.625)
+     Outgoing Energy [1e-05, 0.625)
+       Legendre expansion, P0
+         Total Material
+           Scattering Rate                      0.167973 +/- 0.00405859
+       Legendre expansion, P1
+         Total Material
+           Scattering Rate                      0.0025526 +/- 0.000253971
+     Outgoing Energy [0.625, 20000000)
+       Legendre expansion, P0
+         Total Material
+           Scattering Rate                      5.625e-05 +/- 8.50237e-06
+       Legendre expansion, P1
+         Total Material
+           Scattering Rate                      5.1442e-06 +/- 4.71058e-06
+   Incoming Energy [0.625, 20000000)
+     Outgoing Energy [1e-05, 0.625)
+       Legendre expansion, P0
+         Total Material
+           Scattering Rate                      0.0023925 +/- 8.2615e-05
+       Legendre expansion, P1
+         Total Material
+           Scattering Rate                      -0.000233029 +/- 3.10669e-05
+     Outgoing Energy [0.625, 20000000)
+       Legendre expansion, P0
+         Total Material
+           Scattering Rate                      0.213736 +/- 0.00536151
+       Legendre expansion, P1
+         Total Material
+           Scattering Rate                      0.0224353 +/- 0.000637787
