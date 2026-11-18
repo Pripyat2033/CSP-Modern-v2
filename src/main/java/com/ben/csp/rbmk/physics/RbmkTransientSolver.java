@@ -110,9 +110,14 @@ public final class RbmkTransientSolver {
     /** Apply a rod insertion; each axial node gets the rod material there. */
     public void setRodInsertion(double insertion) {
         RbmkGeometry.NodeMaterial[] mats = RbmkGeometry.rodMaterials(insertion);
-        RbmkXsec graphite = RbmkXsec.controlCell(RbmkXsec.GRAPHITE);
+        // Same derived control materials the static seeder uses (RbmkSolver3D).
+        // Building these from the hand-set RbmkXsec.GRAPHITE/B4C left the live rods
+        // ~80x weaker than the ones the reference state was seeded with (derived B4C
+        // sa2 36.3 vs hand-set 0.45), so rod worth, the positive scram and AZ-5 in the
+        // live core were driven by hand-set numbers while derived data was shipped.
+        RbmkXsec graphite = RbmkXsec.controlCell(RbmkXsec.controlGraphite());
         RbmkXsec water = RbmkXsec.controlCell(RbmkXsec.WATER);
-        RbmkXsec b4c = RbmkXsec.controlCell(RbmkXsec.B4C);
+        RbmkXsec b4c = RbmkXsec.controlCell(RbmkXsec.controlB4C());
         for (int i = 0; i < cell.length; i++) {
             if (!control[i]) {
                 continue;
@@ -160,6 +165,12 @@ public final class RbmkTransientSolver {
     public boolean isControl(int x, int z, int a) {
         return x >= -ext && x <= ext && z >= -ext && z <= ext && a >= 0 && a < na
             && control[idx(x, z, a)];
+    }
+
+    /** The cross section at a node — lets a test prove the live and static
+     *  solvers build identical rod materials (same derived control cells). */
+    public RbmkXsec cellAt(int x, int z, int a) {
+        return cell[idx(x, z, a)];
     }
 
     public int extent() {

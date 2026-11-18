@@ -56,8 +56,17 @@ public final class ExperimentVariantsSelfTest {
 
         check(normal.end < normal.p0 * 0.60,
             "normal run: AZ-5 shuts the core down (" + round(normal.end) + ")");
-        check(accident.end > accident.p0,
-            "26 April: AZ-5 does NOT shut the core down (" + round(accident.end) + ")");
+        // "Does not shut down" means the power stays at many times nominal, NOT
+        // that it is still rising. With the derived control-rod materials a full
+        // scram does drive k_eff subcritical (the rods work), but it does so only
+        // after a large positive-scram excursion, so 12 s in the power is still
+        // several times nominal — the core never returned to a safe low power.
+        check(accident.end > 3.0,
+            "26 April: AZ-5 does NOT shut the core down (" + round(accident.end)
+                + "x nominal)");
+        check(accident.end > normal.end * 5.0,
+            "26 April ends far above the normal run ("
+                + round(accident.end) + " vs " + round(normal.end) + ")");
 
         // The one number that separates the two nights:
         double gap = pct(accident) - pct(normal);

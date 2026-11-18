@@ -53,6 +53,14 @@ public final class RbmkSolver3D {
      */
     public static final double SAFE_OMEGA = 1.5;
 
+    /**
+     * A k_eff beyond this magnitude is not a reactor state — it is a blown-up
+     * iteration. Used by {@link #stepOnce()} to flag divergence that the
+     * non-finite guard misses (an over-relaxed sweep can produce a huge but
+     * still finite k_eff). Far above any physical transient (k ~ 1).
+     */
+    public static final double KEFF_CEILING = 10.0;
+
     /** 1/h^2 for the mesh pitch (one lattice cell), cm^-2. */
     private static final double INV_H2 =
         1.0 / Math.pow(RbmkGeometry.LATTICE_PITCH_M * 100.0, 2.0);
@@ -233,11 +241,16 @@ public final class RbmkSolver3D {
         // physical domain (over-relaxation past the divergence threshold, or a
         // bad cross section). Flag it rather than returning a meaningless k_eff
         // that a caller might scale a fission source by.
-        if (!(srcSum > 0) || !(newSum > 0)) {
+        if (!(srcSum > 0) || !(newSum > 0)
+            || !Double.isFinite(srcSum) || !Double.isFinite(newSum)) {
             diverged = true;
         }
         double newK = keff * newSum / srcSum;
-        if (!Double.isFinite(newK)) {
+        // A huge FINITE k_eff (e.g. 1e138 from an over-relaxed sweep) is also a
+        // divergence: the previous guard only caught non-finite values, so a
+        // blown-up-but-finite eigenvalue slipped through as "not diverged". A
+        // physical k_eff is O(1); KEFF_CEILING is far above any real transient.
+        if (!Double.isFinite(newK) || Math.abs(newK) > KEFF_CEILING) {
             diverged = true;
         }
         double delta = Math.abs(newK - keff);

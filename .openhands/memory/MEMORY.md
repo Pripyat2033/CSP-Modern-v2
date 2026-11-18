@@ -9,13 +9,37 @@ rods and left x=+24 unmatched. A one-sided absorber pattern against the reflecti
 radial BC excites a near-degenerate tilt mode. FIX: drop whole symmetry ORBITS. Now
 control is 211/211 mirror-symmetric; tilt L/R=1.24, mirror error 0.148 (8x better).
 `RbmkGeometrySelfTest` now FAILS on any unpaired rod. A slow residual tilt (1.24->
-1.79/60k steps) is genuine physics (weak radial coupling, reflective BC), not a bug
-— it is why `SpatialReactorCoreSelfTest` keeps its KNOWN PRE-EXISTING FAILURE.
-**OPEN audit items (report, don't guess):** fuel temp is a power-only scalar (no flow,
-no per-node) + unregistered TAU_FUEL/TAU_GRAPHITE/FUEL_PER_POWER; feedback radially
+1.79/60k steps) is genuine physics (weak radial coupling, reflective BC), not a bug.
+
+## TWO RULE-2 FIXES LANDED (2026-11-18, later) — all live-path self-tests pass
+1. **Control-material consistency (HIGH).** `RbmkTransientSolver.setRodInsertion` built
+   rods from HAND-SET `RbmkXsec.GRAPHITE/B4C` while `RbmkSolver3D` used the DERIVED
+   table. B4C sa2 was 0.45 vs derived 36.31 — **81x too small** (hand-checked: inf-
+   dilute Σa(B-10)=84 cm^-1; derived 36.3 is self-shielded, ratio 2.3). Live rods were
+   ~80x weak. FIX: both solvers now use `controlCell(controlGraphite()/WATER/controlB4C())`.
+2. **Divergence ceiling (SMALL).** `RbmkSolver3D.KEFF_CEILING=10.0`; `stepOnce` flags a
+   huge FINITE k_eff (old guard caught only non-finite).
+New `RodMaterialConsistencySelfTest` (6 checks) locks both in.
+**Consequence (real, correct):** the live core now CAN shut down. 26-April end power
+10.861->8.549 (peak +48.3% survives); k_bal now reaches 0.97 on full scram. Recalibrated
+`ExperimentVariantsSelfTest` ("not shut down" = >3x nominal AND >5x normal run, not
+"still rising"). **Two old known-failures are now FIXED: `SpatialReactorCoreSelfTest`
+12/12 and `OpenMcBridgeSelfTest` 11/11.** Only remaining failure: `RbmkSpatialSelfTest`
+"flux peaks at centre" — PRE-EXISTING, in the RETIRED `DiffusionSolver`.
+
+**STILL OPEN audit items (report, don't guess):** fuel temp is a power-only scalar (no
+flow, no per-node) + unregistered TAU_FUEL/TAU_GRAPHITE/FUEL_PER_POWER; feedback radially
 uniform; coolant temp not fed to neutronics; graphite-temp link GATED OFF until the
-OpenMC table ships; solver `diverged` flag misses huge finite keff. Full detail in
-`.openhands/memory/2026-11-18.md`.
+OpenMC table ships. Full detail in `.openhands/memory/2026-11-18.md`.
+
+**TOOLCHAIN trap (3rd restart):** the sandbox loses JDK + GRADLE_USER_HOME + gradle
+distro on restart; only `build/classes/**` survives. Re-install: `sudo apt-get update &&
+sudo apt-get install -y openjdk-21-jdk-headless`. To compile/test WITHOUT gradle (avoids
+the loom lock entirely): gson is at
+`/workspace/mcserver/libraries/com/google/code/gson/gson/2.10/gson-2.10.jar`; compile the
+Minecraft-free set = `rbmk/{RbmkCore,RbmkGeometry,RbmkLattice,RodType}.java` +
+`rbmk/physics/*.java`; run with `-cp /tmp/out:src/main/resources:<gson>` (resources MUST
+be on the classpath or the lattice loads as "unknown").
 
 ## FABRIC VERSIONS — there is NO "Fabric 1.16" (2026-11-18)
 The mod is MC **1.20.1**: gradle.properties pins loader 0.15.11, yarn 1.20.1+build.10,
