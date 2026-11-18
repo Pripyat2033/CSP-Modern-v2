@@ -17,6 +17,7 @@ water-filled gap probes gave inflated +0.13/+0.16; with He it falls to +0.03/+0.
 CONVENTION: rbmk_void_coeff.py reports REACTIVITY dk/(k1k2): shipped +0.021 = +0.035
 simple dk/k slope. Bridge test band widened 0.015-0.06 (old band fit the buggy model).
 PLANT UNCHANGED: void worth still anchored to INSAG-7 +0.020; core cannot run away.
+CONTROL RODS (Director's hypothesis, 2026-11-17, commit 9a94f84): the real core is 1661 fuel : 211 rods (~1 rod/8 fuel); our cell has NONE. openmc/control_rod_test.py (3x3 wrapped supercell, centre = rod) in the reactivity convention dk/(k1k2), void 0->0.5: bare fuel channel +0.031; +1 THIN rod/8 fuel -0.001; +1 FAT rod -0.015. The rods FLATTEN the void response -> the bare-channel model overstates it. Bare +0.031, rods pull down, whole-core lit +0.020: consistent. NOT the whole core (211 rods, ~240 burnable absorbers, leakage) so direction+size only. Argues for the spatial core.
 Details: docs/VOID-COEFF-ROOT-CAUSE.md, .openhands/memory/2026-11-15.md.
 
 ## SANDBOX WIPE = rebuild JDK+Gradle (2026-11-17)
