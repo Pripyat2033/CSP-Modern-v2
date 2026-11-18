@@ -17,10 +17,21 @@ chain of systems?" He was RIGHT AGAIN. Two findings:
    600->1200 K at fixed fuel/coolant 600 K -> DERIVED coeff = +1.3e-5, POSITIVE.
    Independent Monte Carlo agrees with the two agencies. The code's sign is wrong.
    (Data limit: graphite natural-carbon HDF5 ships at 600/900/1200 K; use those.)
-- FIX DESIGN (not yet built): make graphiteTempC feed the neutronics as a real
-  material feedback (graphite -> cross sections -> k), same pattern as void, and
-  flip the coefficient sign to the sourced positive value. Needs Ben's go-ahead
-  (changes accident model + RbmkSpatialSelfTest temperature assertion).
+- FIX BUILT (commit e097ad0, 2026-11-18). graphiteTempC now feeds the neutronics:
+  RbmkGraphiteTemp scales the homogenised cell constants by measured slopes, gated
+  to the MATCHING lattice table (see below); ReactivityModel.GRAPHITE_COEFF flipped
+  to +6e-5. Details in 2026-11-18.md + docs/DERIVED-NOT-FITTED.md 5c.
+- **THE MATCHED-PAIR RULE (the durable lesson).** A derived per-constant slope is a
+  FRACTIONAL change of the table it was measured from, so it is only valid against
+  THAT table. The graphite slopes (from the OpenMC cell) flip the whole-core effect
+  NEGATIVE against the shipped 1-D table. Hence `RbmkGraphiteTemp.matchesLattice()`
+  gates the link on `LatticeTable.source().startsWith("openmc")`. **The graphite link
+  and the pending OpenMC-table shipment (Step 1b) are a matched pair — ship together
+  or the link is inert.** Generalise: any derived scaling must name its source table.
+- **S(alpha,beta) tables top out at 800 K** (c_H_in_H2O and c_Graphite both). OpenMC
+  temperature interpolation covers the free-gas XS but NOT the thermal law, so the
+  graphite slope is a 600-800 K chord, anchored at the nominal 600 degC operating
+  point in Java (factor = 1 there). Magnitude is to_verify (nonlinear ss21/ss12).
 - GEMINI "chain of solvers" question: the project ALREADY is that chain
   (PlantSystem 8-stage loop; RbmkSolver3D deterministic live; OpenMC offline only).
   See the "SEPARATE SOLVERS" entry. The real gap is the graphite link above, NOT
