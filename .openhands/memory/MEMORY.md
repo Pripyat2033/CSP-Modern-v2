@@ -1,5 +1,30 @@
 # CSP-Modern-v2 — project memory
 
+## THE MATERIALS GAP -- Ben's THIRD gut-catch, PROVEN (2026-11-17)
+Ben said (no jargon): "I have a gut feeling we're subtly making a huge mistake
+and it'll affect the reactor... I see OpenMC as suspicious... shouldn't this be a
+chain of systems?" He was RIGHT AGAIN. Two findings:
+1. THE GRAPHITE TEMPERATURE LINK IS DEAD IN THE UNIFIED CORE. `graphiteTempC` is
+   computed (UnifiedReactorCore L127, L345) but NEVER READ -- not passed to the
+   solver, no getter. So graphite heating has ZERO effect on reactivity in the
+   live core. The positive graphite coefficient (a real RBMK destabilising
+   property, part of the accident) is INERT. `ReactivityModel.GRAPHITE_COEFF` is
+   only used by the RETIRED ReactorCore.
+2. THE GRAPHITE COEFFICIENT HAS THE WRONG SIGN IN CODE: -2.0e-5 vs INSAG-7
+   Table II-I +6e-5 and NUREG-1250 sec 2.3.2.2 +3.2e-5..+6e-5, both POSITIVE.
+   provenance `feedback.graphite_coeff` status=to_verify, documents the conflict.
+   PROVEN BY OPENMC (new script openmc/rbmk_graphite_coeff.py): sweep graphite
+   600->1200 K at fixed fuel/coolant 600 K -> DERIVED coeff = +1.3e-5, POSITIVE.
+   Independent Monte Carlo agrees with the two agencies. The code's sign is wrong.
+   (Data limit: graphite natural-carbon HDF5 ships at 600/900/1200 K; use those.)
+- FIX DESIGN (not yet built): make graphiteTempC feed the neutronics as a real
+  material feedback (graphite -> cross sections -> k), same pattern as void, and
+  flip the coefficient sign to the sourced positive value. Needs Ben's go-ahead
+  (changes accident model + RbmkSpatialSelfTest temperature assertion).
+- GEMINI "chain of solvers" question: the project ALREADY is that chain
+  (PlantSystem 8-stage loop; RbmkSolver3D deterministic live; OpenMC offline only).
+  See the "SEPARATE SOLVERS" entry. The real gap is the graphite link above, NOT
+  an architecture change. Do not add an external backend (already decided).
 ## BEN'S "SEPARATE SOLVERS" QUESTION (Gemini advice), answered 2026-11-17
 Ben (via Gemini) proposed: don't use Monte Carlo live; use deterministic solvers;
 split into modular interacting solvers (neutronics / thermal-hydraulics /
