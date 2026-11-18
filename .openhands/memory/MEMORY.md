@@ -1,5 +1,24 @@
 # CSP-Modern-v2 — project memory
 
+## THE UNIFIED CORE — status check (2026-11-17, asked by Ben)
+Ben's Q: "we unified the cores and ditched the others, right?" ANSWER: ~90% yes.
+- `UnifiedReactorCore` (physics/) IS built and IS the one core. Commit af5456a
+  "Build the unified core..." 2026-11-15; retired the others in 9fbb281 2026-11-16.
+  It takes: flux-is-state from TransientReactorCore (RbmkTransientSolver) + closed
+  void/temp/xenon feedback (setCoreState) from SpatialReactorCore. VERIFIED: its
+  self-test 6/6 passes today; /rbmk plant start runs it.
+- BUT the old cores are NOT deleted -- repo AGENTS.md has a "ZERO DELETION POLICY":
+  agents may NOT rm/del; a class is parked with @Deprecated + "TODO: User to delete
+  this file later". So they linger. Only BEN can delete them.
+- LOOSE ENDS (real, still-reachable): (1) `/rbmk plant start spatial` STILL runs the
+  old TransientReactorCore (PlantTicker.startPlantTransient), and that class is NOT
+  even @Deprecated. (2) `SpatialReactorCoreSelfTest` still exercises the old
+  SpatialReactorCore. (3) ReactorCore (lumped) is truly dead -- zero instantiations.
+  `/rbmk plant start 3d` is already harmless (startPlant(boolean) ignores the flag
+  and runs unified). `/rbmk stress` already uses unified.
+- So: production path = unified only. Two vestigial hooks remain for comparison.
+Details: docs/ONE-CORE-DECISION.md §6 (DONE + its 2026-11-15 correction: xenon now
+genuinely coupled, graphite temp STILL readout-only -- no sourced coefficient).
 ## VOID-COEFF "5-7x" SOLVED: both tools were wrong (2026-11-17, commit 456cc18)
 The 5-7x was a ratio between two of our OWN tools; BOTH were wrong, opposite ways.
 Gold standard = explicit 18-rod cluster Monte Carlo (openmc/decompose_test.py, He gap,
