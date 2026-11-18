@@ -88,17 +88,14 @@ def materials(coolant_density: float = COOLANT_DENSITY_FULL) -> dict[str, openmc
             "water": water, "helium": helium}
 
 
-def channel_material(mats: dict[str, openmc.Material], voided: bool) -> openmc.Material:
-    """Homogenise fuel + cladding (+ coolant) into the material filling the bore.
+def channel_material(mats: dict[str, openmc.Material]) -> openmc.Material:
+    """Homogenise fuel + cladding + coolant into the material filling the bore.
 
-    voided=True removes the coolant water -- a full steam void, the condition the
-    void coefficient is defined against."""
-    if voided:
-        w = FUEL_VF + CLAD_VF
-        return openmc.Material.mix_materials(
-            [mats["fuel"], mats["clad"]], [FUEL_VF / w, CLAD_VF / w], "vo",
-            name="channel contents (voided)",
-        )
+    The three volume fractions are fixed (the bore always holds the same rods);
+    a void is modelled by driving the WATER DENSITY to ~0, never by renormalising
+    the fuel and clad to fill the freed volume. Renormalising raised the fuel and
+    clad density by ~1/(1-WATER_VF) at the void end, which put a spurious step in
+    the k(void) curve (k dropped from 1.32 at void 0.9 to 1.21 at void 1.0)."""
     mix = openmc.Material.mix_materials(
         [mats["fuel"], mats["clad"], mats["water"]],
         [FUEL_VF, CLAD_VF, WATER_VF], "vo",
@@ -110,9 +107,10 @@ def channel_material(mats: dict[str, openmc.Material], voided: bool) -> openmc.M
 
 def build_model(coolant_density: float = COOLANT_DENSITY_FULL) -> openmc.Model:
     """Build the RBMK lattice cell at the given coolant density (0 = void)."""
-    voided = coolant_density <= 0.0
-    mats = materials(coolant_density if not voided else COOLANT_DENSITY_FULL)
-    channel = channel_material(mats, voided)
+    # A full void still needs a non-zero density for OpenMC; 1e-6 g/cm3 is a
+    # physically empty channel to well below the Monte Carlo uncertainty.
+    mats = materials(max(coolant_density, 1e-6))
+    channel = channel_material(mats)
 
     chan_or = openmc.ZCylinder(r=CHANNEL_R)
     tube_or = openmc.ZCylinder(r=TUBE_R)

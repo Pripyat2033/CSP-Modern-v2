@@ -21,21 +21,24 @@
       <nuclide name="He3" ao="2e-06"/>
       <nuclide name="He4" ao="0.999998"/>
     </material>
-    <material id="66" name="channel contents (voided)" depletable="true">
-      <density value="9.450930232558143" units="g/cm3"/>
-      <nuclide name="U234" ao="5.014321171979477e-05"/>
-      <nuclide name="U235" ao="0.005610027073514668"/>
-      <nuclide name="U238" ao="0.2713443501005607"/>
-      <nuclide name="U236" ao="2.569661858247668e-05"/>
-      <nuclide name="O16" ao="0.5527421026120749"/>
-      <nuclide name="O17" ao="0.00020998890448931822"/>
-      <nuclide name="O18" ao="0.0011083424921911138"/>
-      <nuclide name="Zr90" ao="0.08605040699692026"/>
-      <nuclide name="Zr91" ao="0.018765511496704475"/>
-      <nuclide name="Zr92" ao="0.02868346899897343"/>
-      <nuclide name="Zr94" ao="0.02906814525960105"/>
-      <nuclide name="Zr96" ao="0.004683015346771171"/>
-      <nuclide name="Nb93" ao="0.0016588008878967565"/>
+    <material id="66" name="channel contents (homogenised)" depletable="true">
+      <density value="4.0639005699999995" units="g/cm3"/>
+      <nuclide name="U234" ao="5.0143106072296845e-05"/>
+      <nuclide name="U235" ao="0.0056100152536630215"/>
+      <nuclide name="U238" ao="0.2713437784010089"/>
+      <nuclide name="U236" ao="2.5696564441878873e-05"/>
+      <nuclide name="O16" ao="0.552741638665326"/>
+      <nuclide name="O17" ao="0.0002099887282341188"/>
+      <nuclide name="O18" ao="0.0011083415618984992"/>
+      <nuclide name="Zr90" ao="0.08605022569600468"/>
+      <nuclide name="Zr91" ao="0.01876547195936195"/>
+      <nuclide name="Zr92" ao="0.028683408565334894"/>
+      <nuclide name="Zr94" ao="0.02906808401548223"/>
+      <nuclide name="Zr96" ao="0.004683005480054676"/>
+      <nuclide name="Nb93" ao="0.001658797392943853"/>
+      <nuclide name="H1" ao="1.4043914189206103e-06"/>
+      <nuclide name="H2" ao="2.1875398832883818e-10"/>
+      <sab name="c_H_in_H2O"/>
     </material>
   </materials>
   <geometry>

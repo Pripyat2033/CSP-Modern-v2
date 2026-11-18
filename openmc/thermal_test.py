@@ -27,29 +27,13 @@ DENSITIES = [0.65, 0.45, 0.25, 0.0]   # full water -> void
 
 def build(use_thermal: bool, coolant_density: float) -> openmc.Model:
     """As rbmk_cell.build_model, but optionally WITHOUT the thermal law."""
-    voided = coolant_density <= 0.0
-    mats = rbmk_cell.materials(coolant_density if not voided else rbmk_cell.COOLANT_DENSITY_FULL)
+    mats = rbmk_cell.materials(max(coolant_density, 1e-6))
+    channel = rbmk_cell.channel_material(mats)
 
     if not use_thermal:
         # strip the S(alpha,beta) tables -> free-gas (no thermal scattering law)
         mats["graphite"].thermal_scattering = []
-        # rebuild the channel mix without the water thermal law
-        if voided:
-            w = rbmk_cell.FUEL_VF + rbmk_cell.CLAD_VF
-            channel = openmc.Material.mix_materials(
-                [mats["fuel"], mats["clad"]],
-                [rbmk_cell.FUEL_VF / w, rbmk_cell.CLAD_VF / w], "vo",
-                name="channel (voided)",
-            )
-        else:
-            channel = openmc.Material.mix_materials(
-                [mats["fuel"], mats["clad"], mats["water"]],
-                [rbmk_cell.FUEL_VF, rbmk_cell.CLAD_VF,
-                 1.0 - rbmk_cell.FUEL_VF - rbmk_cell.CLAD_VF], "vo",
-                name="channel (homogenised)",
-            )
-    else:
-        channel = rbmk_cell.channel_material(mats, voided)
+        channel.remove_s_alpha_beta()
 
     chan_or = openmc.ZCylinder(r=rbmk_cell.CHANNEL_R)
     h = rbmk_cell.CELL_HALF

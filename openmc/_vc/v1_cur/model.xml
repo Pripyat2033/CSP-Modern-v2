@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model>
+  <materials>
+    <material id="8" name="Zr-1%Nb cladding">
+      <density value="6.55" units="g/cm3"/>
+      <nuclide name="Zr90" wo="0.5019905633414083"/>
+      <nuclide name="Zr91" wo="0.11069078578569776"/>
+      <nuclide name="Zr92" wo="0.1710532044899188"/>
+      <nuclide name="Zr94" wo="0.1771219329891998"/>
+      <nuclide name="Zr96" wo="0.029143513393775446"/>
+      <nuclide name="Nb93" wo="0.01"/>
+    </material>
+    <material id="9" name="graphite moderator">
+      <density value="1.65" units="g/cm3"/>
+      <nuclide name="C12" ao="0.988922"/>
+      <nuclide name="C13" ao="0.011078"/>
+      <sab name="c_Graphite"/>
+    </material>
+    <material id="11" name="helium gap">
+      <density value="0.0004" units="g/cm3"/>
+      <nuclide name="He3" ao="2e-06"/>
+      <nuclide name="He4" ao="0.999998"/>
+    </material>
+    <material id="12" name="channel contents (voided)" depletable="true">
+      <density value="9.450930232558143" units="g/cm3"/>
+      <nuclide name="U234" ao="5.014321171979477e-05"/>
+      <nuclide name="U235" ao="0.005610027073514668"/>
+      <nuclide name="U238" ao="0.2713443501005607"/>
+      <nuclide name="U236" ao="2.569661858247668e-05"/>
+      <nuclide name="O16" ao="0.5527421026120749"/>
+      <nuclide name="O17" ao="0.00020998890448931822"/>
+      <nuclide name="O18" ao="0.0011083424921911138"/>
+      <nuclide name="Zr90" ao="0.08605040699692026"/>
+      <nuclide name="Zr91" ao="0.018765511496704475"/>
+      <nuclide name="Zr92" ao="0.02868346899897343"/>
+      <nuclide name="Zr94" ao="0.02906814525960105"/>
+      <nuclide name="Zr96" ao="0.004683015346771171"/>
+      <nuclide name="Nb93" ao="0.0016588008878967565"/>
+    </material>
+  </materials>
+  <geometry>
+    <cell id="5" name="channel" material="12" region="-8" universe="2"/>
+    <cell id="6" name="pressure tube" material="8" region="8 -9" universe="2"/>
+    <cell id="7" name="gap (helium)" material="11" region="9 -10" universe="2"/>
+    <cell id="8" name="graphite" material="9" region="10 11 -12 13 -14" universe="2"/>
+    <surface id="8" type="z-cylinder" coeffs="0.0 0.0 4.4"/>
+    <surface id="9" type="z-cylinder" coeffs="0.0 0.0 4.8"/>
+    <surface id="10" type="z-cylinder" coeffs="0.0 0.0 5.7"/>
+    <surface id="11" type="x-plane" boundary="reflective" coeffs="-12.5"/>
+    <surface id="12" type="x-plane" boundary="reflective" coeffs="12.5"/>
+    <surface id="13" type="y-plane" boundary="reflective" coeffs="-12.5"/>
+    <surface id="14" type="y-plane" boundary="reflective" coeffs="12.5"/>
+  </geometry>
+  <settings>
+    <run_mode>eigenvalue</run_mode>
+    <particles>4000</particles>
+    <batches>70</batches>
+    <inactive>25</inactive>
+    <source type="independent" strength="1.0" particle="neutron">
+      <space type="point">
+        <parameters>0 0 0</parameters>
+      </space>
+    </source>
+    <temperature_default>293.6</temperature_default>
+  </settings>
+  </model>
