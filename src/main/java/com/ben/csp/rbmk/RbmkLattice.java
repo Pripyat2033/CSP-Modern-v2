@@ -120,8 +120,50 @@ public final class RbmkLattice {
                 }
             }
             drop.sort((a, b) -> Double.compare(radius(b), radius(a))); // outermost first
-            for (int i = 0; i < drop.size() && control.size() > want; i++) {
-                control.remove(key(drop.get(i)));
+
+            // Drop whole SYMMETRY ORBITS, never a single cell. The pitch-3 base set
+            // is symmetric under x->-x and z->-z, but the count is 213, two over
+            // 211. Removing cells one at a time by radius breaks that symmetry: the
+            // tie at r=24.19 drops both x=-24 rods and leaves x=+24 unmatched. A
+            // one-sided absorber pattern is not the RBMK, and against the reflective
+            // radial boundary it excites a near-degenerate tilt mode, so the 3D
+            // solver settles on a flux tilted ~12x to one side. Dropping an orbit at
+            // a time (a cell together with its mirrors) keeps the pattern symmetric;
+            // the only orbit that fits 213->211 is a 2-cell on-axis pair such as
+            // {(-24,0),(24,0)} — the 4-cell corner orbits would overshoot.
+            Set<Long> dropped = new HashSet<>();
+            for (Cell c : drop) {
+                if (control.size() <= want) {
+                    break;
+                }
+                if (dropped.contains(key(c))) {
+                    continue;
+                }
+                List<Cell> orbit = new ArrayList<>();
+                for (Cell o : new Cell[]{c, new Cell(-c.x(), c.z()),
+                        new Cell(c.x(), -c.z()), new Cell(-c.x(), -c.z())}) {
+                    if (control.contains(key(o)) && !dropped.contains(key(o))
+                        && !orbit.contains(o)) {
+                        orbit.add(o);
+                    }
+                }
+                if (control.size() - orbit.size() < want) {
+                    continue; // this orbit would overshoot; try a smaller one
+                }
+                for (Cell o : orbit) {
+                    control.remove(key(o));
+                    dropped.add(key(o));
+                }
+            }
+            // Fallback: if no orbit fit exactly, finish one cell at a time so the
+            // count is always right (the symmetry is best-effort beyond this point).
+            for (Cell c : drop) {
+                if (control.size() <= want) {
+                    break;
+                }
+                if (control.remove(key(c))) {
+                    dropped.add(key(c));
+                }
             }
         }
 

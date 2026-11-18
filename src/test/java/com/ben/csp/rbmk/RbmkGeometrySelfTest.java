@@ -64,6 +64,26 @@ public final class RbmkGeometrySelfTest {
         check(inner >= 40, "a substantial share of control rods sit in the inner half ("
             + inner + " inner, " + outer + " outer)");
 
+        // ---- the pattern must be mirror-symmetric about the core axis ----
+        // The pitch-3 base set is symmetric, but the count-fit step (213 -> 211)
+        // must drop a whole symmetry orbit, not a single cell. A one-sided drop
+        // once left the x=+24 rods unmatched and tilted the whole-core flux ~12x
+        // against the reflective radial boundary.
+        int unpairedControl = 0;
+        java.util.Set<Long> ctlKeys = new java.util.HashSet<>();
+        for (RbmkLattice.Channel c : channels) {
+            if (c.control()) {
+                ctlKeys.add((((long) c.x()) << 32) ^ (c.z() & 0xffffffffL));
+            }
+        }
+        for (RbmkLattice.Channel c : channels) {
+            if (c.control()
+                && !ctlKeys.contains((((long) -c.x()) << 32) ^ (c.z() & 0xffffffffL))) {
+                unpairedControl++;
+            }
+        }
+        eq(0, unpairedControl, "the control pattern is mirror-symmetric (no unpaired rod)");
+
         // ---- control rod: withdrawn ----
         RbmkGeometry.NodeMaterial[] withdrawn = RbmkGeometry.rodMaterials(0.0);
         eqNode(RbmkGeometry.NodeMaterial.WATER, withdrawn[0], "withdrawn: water at the core bottom");
