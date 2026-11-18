@@ -85,12 +85,12 @@ def _extract(sp: openmc.StatePoint, mesh: openmc.RegularMesh) -> dict:
     for x in (total, absorb, nufis, diff, smat):
         x.load_from_statepoint(sp)
 
-    tr = total.get_xs(xs_type="transport").mean.ravel()
-    sa = absorb.get_xs().mean.ravel()
-    nsf = nufis.get_xs().mean.ravel()
-    d = diff.get_xs().mean.ravel()
+    tr = total.get_xs()
+    sa = absorb.get_xs()
+    nsf = nufis.get_xs()
+    d = diff.get_xs()
     # ScatterMatrixXS: [g_in][g_out]; index 0 = fast, 1 = thermal.
-    m = smat.get_xs().mean[:, :]
+    m = smat.get_xs()
     ss12 = float(m[0, 1])   # down-scatter fast -> thermal
     ss21 = float(m[1, 0])   # up-scatter thermal -> fast
     sr1 = float(sa[0] + ss12)   # fast removal = fast absorption + down-scatter out
@@ -116,7 +116,8 @@ def build_table(particles: int, batches: int, inactive: int) -> list[dict]:
         model = rbmk_cell.build_model(density)
         mesh = _cell_mesh()
         for x in _mgxs_set(mesh):
-            x.add_to_tallies(model.tallies)
+            for tally in x.tallies.values():
+                model.tallies.append(tally, merge=True)
         sp = _run(model, particles, batches, inactive, cwd=f"_mgxs/void_{int(void*100):03d}")
         row = _extract(sp, mesh)
         row["void"] = void
