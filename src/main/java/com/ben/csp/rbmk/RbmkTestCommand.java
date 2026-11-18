@@ -796,23 +796,18 @@ public final class RbmkTestCommand {
     }
 
     /**
-     * {@code /rbmk plant start spatial} — run the plant on the TIME-DEPENDENT
-     * spatial core: the flux over the real lattice is the state, stepped at 1 ms
-     * on its own thread. The live proof that a fully spatial RBMK core runs in
-     * Minecraft without owning the tick.
+     * {@code /rbmk plant start spatial} — retained for muscle memory, but the
+     * old open-loop {@code TransientReactorCore} it used to launch is retired:
+     * it could not feed back on itself (frozen void/temperature, no xenon), so it
+     * could not reproduce the accident. This now starts THE core (the unified
+     * time-dependent spatial core with the feedback loop closed), so the command
+     * can no longer put the wrong reactor in front of the operator.
      */
     private static int plantStartSpatial(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource s = ctx.getSource();
-        long t0 = System.nanoTime();
-        PlantTicker.startPlantTransient();
-        double bootMs = (System.nanoTime() - t0) / 1e6;
-        feedback(s, "RBMK-1000 plant started on the TIME-DEPENDENT SPATIAL core",
+        feedback(s, "RBMK-1000: the open-loop spatial core is retired — starting THE core",
             Formatting.GOLD);
-        feedback(s, String.format("  flux is the state: 1872 channels x 28 nodes, "
-            + "1 ms step on its own thread (boot %.0f ms)", bootMs), Formatting.WHITE);
-        feedback(s, "  /rbmk plant status shows the sim-rate and the physics step cost",
-            Formatting.GRAY);
-        return 1;
+        return plantStart(ctx);
     }
 
     private static int plantScram(CommandContext<ServerCommandSource> ctx) {
