@@ -23,6 +23,7 @@ import com.ben.csp.rbmk.physics.ReactorModel;
 import com.ben.csp.rbmk.physics.OpenMcResult;
 import com.ben.csp.rbmk.physics.PhenomenaRegister;
 import com.ben.csp.rbmk.physics.RbmkSolver3D;
+import com.ben.csp.rbmk.physics.RbmkXsec;
 import com.ben.csp.rbmk.physics.UnifiedReactorCore;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -129,7 +130,8 @@ public final class RbmkTestCommand {
             .then(CommandManager.literal("register").executes(RbmkTestCommand::register))
             .then(CommandManager.literal("phenomena").executes(RbmkTestCommand::phenomena))
             .then(CommandManager.literal("machinery").executes(RbmkTestCommand::machinery))
-            .then(CommandManager.literal("openmc").executes(RbmkTestCommand::openmc)));
+            .then(CommandManager.literal("openmc").executes(RbmkTestCommand::openmc))
+            .then(CommandManager.literal("dial").executes(RbmkTestCommand::dial)));
     }
 
     /**
@@ -296,6 +298,58 @@ public final class RbmkTestCommand {
         feedback(s, "  cross-check: INSAG-7 / NUREG-1250 give +0.02 dk/k per unit void",
             Formatting.DARK_GRAY);
         return 1;
+    }
+
+    /**
+     * {@code /rbmk dial} — make the void-worth DIAL visible. The reactor does not
+     * derive its whole-core void coefficient; it derives the SHAPE from the lattice
+     * table and sets the MAGNITUDE with a hand-set factor. This prints that factor,
+     * then measures the SAME 3D core twice — with the dial on (what ships) and off
+     * (the raw derived cell) — so the size of the error being cancelled is on screen,
+     * not buried in code.
+     */
+    private static int dial(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource s = ctx.getSource();
+        double d = RbmkXsec.voidWorthScale();
+        feedback(s, "VOID-WORTH DIAL — the magnitude is set by hand, not derived",
+            Formatting.GOLD);
+        feedback(s, String.format("  dial (VOID_WORTH_SCALE) = %.3f", d), Formatting.WHITE);
+
+        double shipped = voidWorthAtDial(d);
+        double raw = voidWorthAtDial(1.0);
+        double ratio = shipped != 0 ? raw / shipped : Double.NaN;
+
+        feedback(s, "  whole-core dk/dvoid, reactivity convention (dk/(k1*k2) per unit void):",
+            Formatting.YELLOW);
+        feedback(s, String.format("    dial ON  (what ships)  = %+.4f", shipped),
+            Formatting.WHITE);
+        feedback(s, String.format("    dial OFF (raw derived) = %+.4f", raw), Formatting.WHITE);
+        feedback(s, String.format("    raw / shipped = %.2fx  <- the error the dial cancels",
+            ratio), ratio > 2 ? Formatting.RED : Formatting.YELLOW);
+        feedback(s, "  INSAG-7 / NUREG-1250 whole-core operating value = +0.0200",
+            Formatting.DARK_GRAY);
+        feedback(s, "  the SHAPE is derived physics; the MAGNITUDE is this hand factor.",
+            Formatting.GRAY);
+        feedback(s, "  when the lattice table is regenerated from the corrected cell, "
+            + "the raw number should approach +0.020 and this dial should go.",
+            Formatting.GRAY);
+        return 1;
+    }
+
+    /** Whole-core void worth at an explicit dial setting, measured on the 3D solver. */
+    private static double voidWorthAtDial(double dial) {
+        double k0 = solveVoid(dial, 0.0);
+        double k4 = solveVoid(dial, 0.4);
+        return (k4 - k0) / (k0 * k4) / 0.4;
+    }
+
+    private static double solveVoid(double dial, double voidFraction) {
+        RbmkSolver3D solver = new RbmkSolver3D();
+        solver.setOmega(RbmkSolver3D.SAFE_OMEGA);
+        solver.setCoreState(voidFraction, 640.0, dial);
+        solver.setRodInsertion(com.ben.csp.rbmk.physics.RbmkTransientSolver.NOMINAL_INSERTION);
+        solver.solve(3000, 1e-11);
+        return solver.keff();
     }
 
     /**

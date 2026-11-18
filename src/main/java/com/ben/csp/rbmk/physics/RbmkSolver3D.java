@@ -114,7 +114,16 @@ public final class RbmkSolver3D {
 
     /** Set every active node to the given core state (void fraction, fuel temp). */
     public void setCoreState(double voidFraction, double fuelTempC) {
-        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC);
+        setCoreState(voidFraction, fuelTempC, RbmkXsec.voidWorthScale());
+    }
+
+    /**
+     * As {@link #setCoreState(double, double)} but with an explicit void-worth dial,
+     * so the diagnostic can solve the SAME core with the dial on (what the reactor
+     * runs) and off ({@code 1.0} = the raw derived cell).
+     */
+    public void setCoreState(double voidFraction, double fuelTempC, double voidWorthScale) {
+        RbmkXsec fuel = RbmkXsec.fuelCell(voidFraction, fuelTempC, 1.0, voidWorthScale);
         for (int x = -ext; x <= ext; x++) {
             for (int z = -ext; z <= ext; z++) {
                 for (int a = 0; a < na; a++) {

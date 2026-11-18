@@ -80,6 +80,15 @@ public record RbmkXsec(
     private static final double VOID_WORTH_SCALE = 0.233;
 
     /**
+     * The value of the hand-set void-worth dial the reactor is running. Exposed so
+     * the diagnostic ({@code /rbmk dial}) can show it, and so a self-test can assert
+     * that turning it to 1.0 changes the void worth — i.e. the dial is load-bearing.
+     */
+    public static double voidWorthScale() {
+        return VOID_WORTH_SCALE;
+    }
+
+    /**
      * Xe-135 thermal absorption added to the fuel cell, cm^-1, per unit of xenon
      * ratio ABOVE the reference (equilibrium) concentration.
      *
@@ -143,6 +152,16 @@ public record RbmkXsec(
      * rods to hold power, exactly as at Chernobyl.
      */
     public static RbmkXsec fuelCell(double voidFraction, double fuelTempC, double xenonRatio) {
+        return fuelCell(voidFraction, fuelTempC, xenonRatio, VOID_WORTH_SCALE);
+    }
+
+    /**
+     * The void-worth dial, made a parameter so the diagnostic can measure the cell
+     * with the dial ON (what the reactor runs) and OFF (the raw derived physics).
+     * {@code voidWorthScale == 1.0} is the undialed cell.
+     */
+    public static RbmkXsec fuelCell(double voidFraction, double fuelTempC, double xenonRatio,
+                                    double voidWorthScale) {
         RbmkXsec derived = LatticeTable.cell(voidFraction);
         if (derived != null) {
             // Match the sourced whole-core void worth: blend the derived cell toward
@@ -150,7 +169,7 @@ public record RbmkXsec(
             // physics; its magnitude is set to INSAG-7 (see VOID_WORTH_SCALE).
             RbmkXsec baseline = LatticeTable.cell(0.0);
             if (baseline != null) {
-                derived = blend(baseline, derived, VOID_WORTH_SCALE);
+                derived = blend(baseline, derived, voidWorthScale);
             }
             // Doppler: resonance absorption in U-238 grows with fuel temperature,
             // which ADDS to the fast removal (a NEGATIVE reactivity feedback). The
