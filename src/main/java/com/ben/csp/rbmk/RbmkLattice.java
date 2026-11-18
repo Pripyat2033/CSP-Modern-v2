@@ -167,16 +167,49 @@ public final class RbmkLattice {
             }
         }
 
-        // 3. fuel: the inner cells that are not control, up to the fuel count
+        // 3. fuel: the inner non-control cells, up to the fuel count. The region
+        //    is a disc of 1885 cells and the core has 1872 channels, so 13 of the
+        //    non-control cells are spare. Drop them from the outside in, but in
+        //    whole x-mirror ORBITS, not one at a time: dropping by radius alone
+        //    broke the symmetry (it left (-23,-8) and (-8,-23) with no mirror —
+        //    the same failure mode as the control count-fit, and the cause of the
+        //    ~4% residual tilt in DiscriminationSelfTest). 13 is ODD and no rim
+        //    cell lies on the x=0 axis, so a fully symmetric drop (always an even
+        //    number of cells) is impossible — exactly ONE cell must stay unpaired.
+        //    This keeps the pattern symmetric down to that last unavoidable cell.
+        Set<Long> spareKeys = new HashSet<>();
+        List<Cell> spare = new ArrayList<>();
+        for (Cell c : region) {
+            if (!control.contains(key(c))) {
+                spare.add(c);
+                spareKeys.add(key(c));
+            }
+        }
+        spare.sort((a, b) -> Double.compare(radius(b), radius(a))); // outermost first
+        int need = spare.size() - RbmkGeometry.FUEL_CHANNELS;
+        Set<Long> noChannel = new HashSet<>();
+        for (Cell c : spare) {
+            if (noChannel.size() >= need) {
+                break;
+            }
+            if (noChannel.contains(key(c))) {
+                continue;
+            }
+            Cell mirror = new Cell(-c.x(), c.z());
+            if (!mirror.equals(c) && spareKeys.contains(key(mirror))
+                && noChannel.size() + 2 <= need) {
+                noChannel.add(key(c));
+                noChannel.add(key(mirror));
+            } else {
+                noChannel.add(key(c));
+            }
+        }
+
         List<Channel> out = new ArrayList<>(RbmkGeometry.TOTAL_CHANNELS);
-        int fuel = 0;
         for (Cell c : region) {
             boolean isControl = control.contains(key(c));
-            if (!isControl) {
-                if (fuel >= RbmkGeometry.FUEL_CHANNELS) {
-                    continue; // the outermost spare cells carry no channel
-                }
-                fuel++;
+            if (!isControl && noChannel.contains(key(c))) {
+                continue; // the outermost spare cells carry no channel
             }
             out.add(new Channel(c.x(), c.z(), isControl));
         }

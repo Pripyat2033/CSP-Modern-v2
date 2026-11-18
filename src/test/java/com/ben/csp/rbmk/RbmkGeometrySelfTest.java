@@ -84,6 +84,27 @@ public final class RbmkGeometrySelfTest {
         }
         eq(0, unpairedControl, "the control pattern is mirror-symmetric (no unpaired rod)");
 
+        // ---- the fuel pattern must be symmetric too, down to the one cell the
+        //      arithmetic forbids pairing ----
+        // The region is a disc of 1885 cells and the core has 1872 channels, so 13
+        // spare cells are dropped. 13 is ODD and no rim cell lies on the x=0 axis,
+        // so a fully symmetric drop (always an even count) is impossible: exactly
+        // ONE channel must stay unpaired. Dropping by radius one at a time instead
+        // left THREE unpaired (the ~4% tilt residual in DiscriminationSelfTest).
+        java.util.Set<Long> allKeys = new java.util.HashSet<>();
+        for (RbmkLattice.Channel c : channels) {
+            allKeys.add((((long) c.x()) << 32) ^ (c.z() & 0xffffffffL));
+        }
+        int unpairedFuel = 0;
+        for (RbmkLattice.Channel c : channels) {
+            if (!c.control()
+                && !allKeys.contains((((long) -c.x()) << 32) ^ (c.z() & 0xffffffffL))) {
+                unpairedFuel++;
+            }
+        }
+        eq(1, unpairedFuel, "the fuel pattern is symmetric to the arithmetic minimum "
+            + "(exactly one unpaired channel: 1885 - 1872 = 13 is odd)");
+
         // ---- control rod: withdrawn ----
         RbmkGeometry.NodeMaterial[] withdrawn = RbmkGeometry.rodMaterials(0.0);
         eqNode(RbmkGeometry.NodeMaterial.WATER, withdrawn[0], "withdrawn: water at the core bottom");
