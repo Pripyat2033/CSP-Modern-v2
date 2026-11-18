@@ -11,6 +11,23 @@ control is 211/211 mirror-symmetric; tilt L/R=1.24, mirror error 0.148 (8x bette
 `RbmkGeometrySelfTest` now FAILS on any unpaired rod. A slow residual tilt (1.24->
 1.79/60k steps) is genuine physics (weak radial coupling, reflective BC), not a bug.
 
+## "IS IT A TABLE / MOVIE SET?" — ANSWERED EMPIRICALLY (2026-11-18)
+Ben's recurring fear: a lookup table = finite rows/cols = lossy/scripted. The answer,
+now locked by `DiscriminationSelfTest` (12 checks): the table holds **110 numbers on the
+VOID AXIS ONLY** (11 void states x 10 group constants). Temperature (fuel+graphite),
+xenon, and the 3D flux SHAPE are NOT tabulated — they are computed LIVE each tick. The
+test drives the live solver with a spatially NON-UNIFORM core it was never built around:
+voiding the right half raises k and moves the flux centroid +11.0; the left half gives
+the mirror image; asymmetric rods tilt the flux to the withdrawn side; the tilt is
+GRADED (0.2->+7.78, 0.8->+10.99). None of that is scripted — it EMERGES from diffusion.
+
+**BONUS BUG (same family as 59bc0e7): fuel channels were not mirror-symmetric.** Disc =
+1885 cells, core = 1872 channels, 13 spare dropped ONE AT A TIME by radius -> 3 unpaired
+(-23,-8),(-8,-23),(-23,8). 13 is ODD and no rim cell is on x=0, so a fully symmetric drop
+is IMPOSSIBLE — exactly ONE channel must stay unpaired. FIX: drop in whole x-mirror
+orbits in `RbmkLattice.channels()` step 3. Unpaired 3->1; uniform centroid -0.029->+0.004.
+`RbmkGeometrySelfTest` now 33 checks (asserts unpairedFuel==1). Commits: d06234a, a46a9b4.
+
 ## TWO RULE-2 FIXES LANDED (2026-11-18, later) — all live-path self-tests pass
 1. **Control-material consistency (HIGH).** `RbmkTransientSolver.setRodInsertion` built
    rods from HAND-SET `RbmkXsec.GRAPHITE/B4C` while `RbmkSolver3D` used the DERIVED
