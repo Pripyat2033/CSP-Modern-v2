@@ -1,5 +1,29 @@
 # CSP-Modern-v2 — project memory
 
+## "IS IT JUST A TABLE?" -- Ben's challenge, answered 2026-11-17
+Ben (not a programmer) asked whether a reactor that runs on "a table" is a real
+dynamic sim or just a scripted model. Honest answer, both halves:
+- IT IS NOT A TABLE OF OUTCOMES. There is no "if power=X set reactivity=Y" anywhere.
+  `LatticeTable` is a table of MATERIAL PROPERTIES (two-group cross sections at 11
+  void fractions, linearly interpolated) -- the same kind of data every real reactor
+  code reads from a nuclear-data library. The lookup is of *material*, not of *answer*.
+- WHAT ACTUALLY RUNS: `RbmkSolver3D` is a real 3D two-group neutron-DIFFUSION solver.
+  Mesh ~1793 channel cells x 28 axial = ~50,204 nodes, red-black Gauss-Seidel with
+  over-relaxation (omega=1.5 safe, 1.85 diverges), the FLUX is the state, converged
+  every step. `balanceKeff()` gives production/loss. This is a genuine solver, not a
+  curve.
+- FEEDBACK IS CLOSED AND EMERGENT: physicsStep -> void+fuelTemp into xsec -> flux ->
+  power -> heat -> ChannelCooling (energy balance, quality, slip) -> void -> back.
+  Xenon iodine pit included. The accident is NOT scripted: `NoAccidentModeSelfTest`
+  reflection-scans for any field named accident/mode/experiment and drives the SAME
+  object from nominal to runaway by ordinary rod moves only. Real self-test, passes.
+- WHERE BEN IS RIGHT: the core is a real solver but its MATERIAL DATA comes from the
+  wrong (1-D) cell AND its feedback MAGNITUDE is DIALED by hand. Live hand-set dials:
+  VOID_WORTH_SCALE=0.233, DOPPLER_REMOVAL_PER_K=1e-5, XENON_MACRO_ABS=1.34e-4, rod
+  mix 0.75 graphite/0.25 absorber. (VOID_FEEDBACK_SCALE=0.41, DOPPLER_FEEDBACK_SCALE
+  =0.020 are FALLBACK-only.) So: real equations, tuned coefficients -- a flight sim
+  with real aero equations but hand-tuned stability derivatives. The ENGINE is honest;
+  some DIALS are not yet sourced. That is precisely the gap the plan closes.
 ## THE REAL OPEN THREAD: the reactor DIALS the void number, it does not DERIVE it
 Found 2026-11-17 by tracing where the shipped core's neutron data comes from. This
 is what Ben was sensing -- "we shouldn't HAVE an issue".
