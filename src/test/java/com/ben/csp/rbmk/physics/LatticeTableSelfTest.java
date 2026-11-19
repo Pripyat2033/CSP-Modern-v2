@@ -59,8 +59,17 @@ public final class LatticeTableSelfTest {
         check(LatticeTable.libraryStatus().equals("to_verify")
                 || LatticeTable.libraryStatus().equals("verified"),
             "the library carries a provenance status (" + LatticeTable.libraryStatus() + ")");
-        check(LatticeTable.libraryStatus().equals("to_verify"),
-            "the current library is flagged to_verify until the NIKIET-lineage source is used");
+        // The gate this replaces read "flagged to_verify UNTIL the NIKIET-lineage
+        // source is used". ROSFOND-2010 is that source: evaluated by IPPE
+        // (Nikolaev et al.), the same Russian lineage. So the assertion inverts -
+        // it now fails if we ever fall back to a Western library, or if a Russian
+        // one ships without having been promoted out of to_verify.
+        check(LatticeTable.library().startsWith("ROSFOND"),
+            "the shipped library is Russian-evaluated, not a Western fallback ("
+                + LatticeTable.library() + ")");
+        check(LatticeTable.libraryStatus().equals("verified"),
+            "a Russian-lineage library is promoted past to_verify ("
+                + LatticeTable.libraryStatus() + ")");
 
         System.out.println("LatticeTableSelfTest: " + checks + " checks passed.");
     }

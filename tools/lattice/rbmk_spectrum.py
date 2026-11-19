@@ -143,6 +143,19 @@ def mixture_macros(spec, flux_weight, sigma0=None):
         ine = endf.load(label, 4)
         if ine:
             se = se + endf.group_average(ine, BOUNDS, flux_weight)
+        else:
+            # The openmc ENDF/B-VIII.0 mirror has no MT=4 file for U-238 (404),
+            # and a heavy actinide's inelastic channel is far too large to drop:
+            # St - Se then counts inelastic scattering as ABSORPTION, inflating
+            # fast absorption ~6x and moving k_inf by ~14000 pcm. Recover it from
+            # the total instead: inelastic = St - Se - Sf - Scapture.
+            sf_x = endf.load(label, 18)
+            sf_g = (endf.group_average(sf_x, BOUNDS, flux_weight)
+                    if sf_x else np.zeros(G))
+            sc_x = endf.load(label, 102)
+            sc_g = (endf.group_average(sc_x, BOUNDS, flux_weight)
+                    if sc_x else np.zeros(G))
+            se = se + np.maximum(st - se - sf_g - sc_g, 0.0)
         # Absorption is everything that is not elastic/inelastic scattering. Taking
         # it as total-minus-scattering catches channels a capture-only (MT=102)
         # lookup misses -- e.g. B-10's dominant (n,alpha), without which a control
@@ -157,6 +170,10 @@ def mixture_macros(spec, flux_weight, sigma0=None):
                                          endf.weight_1_over_e, sigma0)
             sa[res_groups] += eff[res_groups] - cap[res_groups]
         sa = np.maximum(sa, 0.0)
+        # Self-shielding can add capture worth that exceeds the unshielded total
+        # in a group. Clamping Sa to St keeps St = Sa + Ss exact: the solver treats
+        # St as Ss + Sa, so an Sa above St would silently create neutrons.
+        sa = np.minimum(sa, st)
         xs_f = endf.load(label, 18)
         sf = endf.group_average(xs_f, BOUNDS, flux_weight) if xs_f else np.zeros(G)
         # scattering = total - absorption, so the solver's St = Ss + Sa holds and

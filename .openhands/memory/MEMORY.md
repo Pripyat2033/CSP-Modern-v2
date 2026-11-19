@@ -720,11 +720,27 @@ numpy-free MF=3 parser that refuses LR!=0 rather than mis-read. emit_constants.p
 stamps `library`/`libraryStatus` into rbmk_lattice.json; `LatticeTable.library()`
 carries it into the game.
 
-BIG SANDBOX GOTCHA: **there is NO numpy/scipy in the sandbox Python.** So the
-lattice pipeline (emit_constants, rbmk_spectrum, verify.py) CANNOT run here — it
-is a BEN-SIDE step. Write any new lattice tooling numpy-free so it is testable
-here. Consequence: the committed rbmk_lattice.json is hand-maintained until Ben
-re-runs the generator.
+**SHIPPED LIBRARY IS NOW ROSFOND-2010 (2026-11-18).** `rbmk_lattice.json` says
+`library=ROSFOND-2010`, `libraryStatus=verified`, k_water 1.28932 / k_void 1.40010
+/ rho +0.06137 (+9.44 beta). numpy 2.5.5 + scipy 1.18.1 + njoy ARE installed in
+this sandbox, so the pipeline RUNS here (the old "no numpy, Ben-side only" note is
+dead). Regenerate with `python3 emit_constants.py --source rosfond`.
+
+**THE ENDF↔ROSFOND "2.66x VOID COEFFICIENT" CLAIM WAS AN ARTIFACT.** `mixture_macros`
+takes `Sa = St - Se`, so inelastic (MT=4) MUST be in `Se` first. The openmc ENDF
+mirror 404s for U-238 MT=4, so inelastic was counted as ABSORPTION (~6x too much
+fast absorption). Fixed by reconstructing `St - Se - Sf - Scap` when MT=4 is
+absent. Post-fix the libraries agree to 1.4% (+9.31 vs +9.44 beta): the library
+choice does NOT move the void coefficient, a missing reaction channel did. Guarded
+by `test_neutron_conservation.py` (9 checks, asserts St == Sa + Ss and that the
+buggy form really does inflate absorption 20x in the worst group). See
+`docs/ROSFOND-SWAP-MEASURED.md`.
+
+**`xsec.void_worth_scale` = 0.233 IS STILL AN INSAG-7 ANCHOR — Ben's decision.**
+Measured whole-core: dial 0.233 -> +0.0227 drho/dvoid at the working point;
+dial 1.0 (raw derived cell) -> +0.0810, i.e. 4x INSAG-7. Removing the dial is the
+"second change" in `docs/ROSFOND-DATA-PATH.md` §3. NOT done: it would make the
+model contradict the only published whole-core number we have. Ask Ben.
 
 ROSFOND (Ben's question): we do NOT strictly need it; it is a PROVENANCE win, not
 an accuracy one. The NIKIET-specific values (beta_eff, rod worth, ORM depth, void

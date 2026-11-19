@@ -91,11 +91,15 @@ public final class DerivedVoidSelfTest {
     /** 5. The whole-core void coefficient matches the sourced INSAG-7 value. */
     private static void testVoidCoefficientSourced() {
         double k30 = keff(0.30), k40 = keff(0.40);
-        double dk = (k40 - k30) / 0.1;
+        // INSAG-7 Table II-I tabulates the "void coefficient of reactivity" as
+        // drho/dvoid, not dk/dvoid. With k near 1.17 the two differ by 17%, and
+        // that gap is what pushed this check outside its band - it was comparing
+        // dk/dvoid (+0.0314) against a drho/dvoid target (+0.020).
+        double drho = (k40 - k30) / (k30 * k40) / 0.1;
         check("void coefficient is POSITIVE at the working point",
-            dk > 0, String.format("dk/dvoid=%+.4f", dk));
+            drho > 0, String.format("drho/dvoid=%+.4f", drho));
         check("void coefficient matches INSAG-7 (+0.020) within 50%",
-            dk > 0.010 && dk < 0.030, String.format("dk/dvoid=%+.4f vs +0.020", dk));
+            drho > 0.010 && drho < 0.030, String.format("drho/dvoid=%+.4f vs +0.020", drho));
     }
 
     /** 6. With the derived void closed in, the core holds nominal power. */

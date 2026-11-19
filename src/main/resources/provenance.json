@@ -148,10 +148,13 @@
       "source": "Hand-set scale used only by the legacy fallback cell. Not used when the derived lattice table is present."
     },
     "lattice.library": {
-      "value": "ENDF/B-VIII.0",
+      "value": "ROSFOND-2010",
       "unit": "library name",
-      "status": "to_verify",
-      "source": "Currently ENDF/B-VIII.0 via the openmc-data-storage JSON mirror. AGREED TARGET: ROSFOND / ABBN-RF (NIKIET lineage). Swap via tools/lattice --source rosfond."
+      "status": "verified",
+      "source": "Russian national evaluated nuclear data library, evaluated at IPPE (Nikolaev et al.) - the NIKIET/Russian lineage the design was computed with. Imported as ENDF-6, resonances reconstructed with NJOY RECONR/BROADR, reduced to the 2-group cell by tools/lattice/emit_constants.py --source rosfond.",
+      "note": "Replaces ENDF/B-VIII.0 (openmc mirror), which was the to_verify placeholder. k_water 1.28932, k_void 1.40010, rho +0.06137 dk/k = +9.44 beta. The shipped rbmk_lattice.json carries library=ROSFOND-2010 and libraryStatus=verified; LatticeTableSelfTest now FAILS if the library is not ROSFOND, so a fallback to a Western library cannot pass silently. The citation is the ENDF-6 head record of the data files themselves (MF=1/MT=451), which names the evaluation: '92-U -235  IPPE  EVAL-OCT05 NIKOLAEV M.N.' and '----RUSFOND  MATERIAL 9235'. The IAEA portal that distributes ROSFOND returns HTTP 403 to this sandbox, so the archive was supplied locally and imported from tools/lattice/rosfond_raw; the URL is the distribution point, the quote is the provenance.",
+      "sourceUrl": "https://www-nds.iaea.org/rosfond/",
+      "quote": "92-U -235  IPPE      EVAL-OCT05 NIKOLAEV M.N. ... ----RUSFOND           MATERIAL 9235"
     },
     "decayheat.equilibrium": {
       "value": 0.065,
@@ -164,8 +167,9 @@
       "value": 0.233,
       "unit": "dimensionless",
       "status": "to_verify",
-      "source": "Calibration: the derived lattice cell's whole-core void worth (dk_eff/dvoid = +0.086 per unit void) is 4.3x the sourced INSAG-7 working-point value (+0.020). The derived cell is blended toward its zero-void state by this factor so the whole-core void coefficient matches INSAG-7 (+0.022 measured, within 10%). The SHAPE of the void dependence stays the derived physics; only its magnitude is set to the source. To be reconciled when the lattice void worth is explained.",
-      "measured": "+0.0222 dk/dvoid at the working point, vs INSAG-7 +0.0200"
+      "source": "Calibration: the derived lattice cell's whole-core void worth (drho/dvoid = +0.0810 at the working point, dial 1.0) is 4x the sourced INSAG-7 working-point value (+0.020). The derived cell is blended toward its zero-void state by this factor so the whole-core void coefficient matches INSAG-7. The SHAPE of the void dependence stays the derived physics; only its magnitude is set to the source.",
+      "measured": "+0.0227 drho/dvoid at the working point with the dial at 0.233 (dial 1.0 gives +0.0810). Re-measured 2026-11-18 on the ROSFOND lattice with RbmkSolver3D at nominal rod insertion.",
+      "note": "THIS IS AN INSAG-7 ANCHOR, and INSAG-7 is rank 4 in Ben's trust hierarchy. Removing it is the 'method change' half of docs/ROSFOND-DATA-PATH.md section 3 and is Ben's decision, not a defect to fix unilaterally: with the dial off the model would report +0.081 drho/dvoid, 4x the only published whole-core measurement. Kept ON so the shipped physics stays inside a sourced envelope; flagged to_verify so it cannot be mistaken for derived."
     },
     "coolant.derived_void": {
       "value": 0.355,

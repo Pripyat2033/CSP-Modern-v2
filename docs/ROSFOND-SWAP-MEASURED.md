@@ -45,25 +45,51 @@ Reactivity `rho = (k_void - k_water) / (k_water * k_void)`.
 
 | library | k (water) | k (void) | rho (dk/k) | in beta_eff |
 |---|---|---|---|---|
-| ENDF/B-VIII.0 | 1.1329 | 1.1633 | +0.02307 | +3.55 |
-| ROSFOND-2010 | 1.2893 | 1.4001 | +0.06138 | **+9.44** |
+| ENDF/B-VIII.0 | 1.2960 | 1.4064 | +0.06053 | +9.31 |
+| ROSFOND-2010 | 1.2893 | 1.4001 | +0.06137 | **+9.44** |
 
-**ROSFOND's void coefficient is 2.66x the ENDF value.** The RBMK's defining trait
-— positive void reactivity — is materially stronger on the Russian library. This
-is the strongest argument for the swap: the accident's central physical mechanism
-was being understated by a factor of 2.7 by using a Western library.
+**The two libraries agree on the void coefficient: +9.44 beta vs +9.31 beta, a
+1.4% difference.**
+
+### Correction to an earlier reading of these numbers
+
+An earlier version of this note reported ENDF at +3.55 beta and claimed ROSFOND
+was **2.66x** the ENDF value. That was wrong, and the cause was a defect in the
+ENDF path, not a property of the libraries.
+
+`mixture_macros` builds absorption as `Sa = St - Se`, i.e. everything that is not
+elastic scattering. Inelastic scattering (MT=4) must therefore be added into
+`Se` before the subtraction. The openmc ENDF/B-VIII.0 mirror returns **404 for
+U-238 MT=4**, so U-238's inelastic channel — several barns across the MeV range —
+was silently counted as *absorption*. Fast-group absorption for U-238 came out
+~6x too high, which suppressed k and flattened the water-to-void rise.
+
+The fix (`rbmk_spectrum.py`) reconstructs the missing channel from the total:
+`inelastic = St - Se - Sf - Scapture`. On the ENDF cache this recovers 26.6 b of
+fast inelastic against ROSFOND's explicit 23.2 b — consistent to 14%, which
+confirms the reconstruction rather than inventing a number. 22 of 28 ENDF nuclides
+lack MT=4 in that mirror; ROSFOND carries it for 25 of 27.
+
+With the defect fixed the two libraries land within 1.4% of each other, which is
+what agreement between two good evaluations of the same measured cross sections
+should look like. **The lesson is the reverse of the earlier claim: the library
+choice is not what moves the void coefficient. A missing reaction channel is.**
+That is precisely why the fix went into the code rather than into a tolerance.
 
 Both are positive, so the qualitative conclusion (the RBMK voids positively) never
-depended on the library choice. The *magnitude* did.
+depended on the library choice, and still does not.
 
 ## Caveats
 
 - `verify.py` previously ignored `--source` entirely and always read the default
   cache. Fixed: it now selects the library and prints which one it used. The
   header used to say "ENDF/B-VIII.0" even when running on ROSFOND.
+- The U-238 MT=4 defect described above affected every ENDF run made before it was
+  found, including the "+3.55 beta" figure. Any ENDF-derived number from that
+  period should be re-measured, not reused.
 - He-4 has no MT=102 in the ENDF mirror (404), so the ENDF run lacks a helium
   capture section. ROSFOND has it. This does not affect the void result, which
   is a water/steam comparison.
-- Absolute k values differ a lot (1.13 vs 1.29) because the two libraries do not
-  share a normalisation for the same cell model; the reactivity *difference*
-  between water and void states is the comparable quantity, not absolute k.
+- Absolute k values differ (1.29 vs 1.30) because the two libraries do not share a
+  normalisation for the same cell model; the reactivity *difference* between water
+  and void states is the comparable quantity.
