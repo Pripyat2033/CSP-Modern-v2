@@ -23,9 +23,21 @@ public final class RbmkSpatialSelfTest {
         check(s.keff() > 0.5 && s.keff() < 2.0, "k_eff is physically sensible: " + round(s.keff()));
 
         // --- the flux is peaked at the centre (fundamental mode) ---
-        double centre = s.phi1[idx(s, 0, 0)];
-        double rim = s.phi1[idx(s, s.extent() - 1, 0)];
-        check(centre > rim, "the flux peaks at the core centre, not the rim");
+        // Compare region averages, NOT the (0,0) cell: the central channel is a
+        // CONTROL channel, so the rod depresses its own cell below the fuel around
+        // it. A single control cell cannot represent the mode; the radial average
+        // is the property that must be centre-peaked.
+        //
+        // The margin is small (~0.1%) and that is correct, not flaky: with the
+        // reflective boundary the core has no leakage, so a homogeneous core has an
+        // exactly flat fundamental mode. What is left is the peaking the absorber
+        // distribution and the finite lattice impose. A large peaking here would
+        // mean a leakage BC had crept back in.
+        double inner = meanPhi(s, 0, s.extent() / 2.0);
+        double outer = meanPhi(s, s.extent() * 0.9, s.extent());
+        check(inner > outer, "the flux peaks at the core centre, not the rim (inner r<="
+            + (s.extent() / 2) + ": " + round(inner) + " > outer r>="
+            + Math.round(s.extent() * 0.9) + ": " + round(outer) + ")");
 
         // --- positive void coefficient: void raises k ---
         DiffusionSolver dry = new DiffusionSolver();
@@ -105,10 +117,25 @@ public final class RbmkSpatialSelfTest {
         System.out.println("RbmkSpatialSelfTest: " + checks + " checks passed.");
     }
 
-    private static int idx(DiffusionSolver s, int x, int z) {
+    /** Mean thermal flux over active cells with {@code rMin <= |r| <= rMax}. */
+    private static double meanPhi(DiffusionSolver s, double rMin, double rMax) {
         int ext = s.extent();
         int nz = 2 * ext + 1;
-        return (x + ext) * nz + (z + ext);
+        double sum = 0;
+        int n = 0;
+        for (int x = -ext; x <= ext; x++) {
+            for (int z = -ext; z <= ext; z++) {
+                if (!s.isActive(x, z)) {
+                    continue;
+                }
+                double r = Math.hypot(x, z);
+                if (r >= rMin && r <= rMax) {
+                    sum += s.phi1[(x + ext) * nz + (z + ext)];
+                    n++;
+                }
+            }
+        }
+        return n == 0 ? Double.NaN : sum / n;
     }
 
     private static String round(double v) {

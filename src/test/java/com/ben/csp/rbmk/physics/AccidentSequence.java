@@ -72,14 +72,27 @@ public final class AccidentSequence {
         core.setRodTarget(0.82);
         run(core, DT, 1800);                    // settle to the pre-pit power (~30 min)
         double prePitPower = core.power();
-        run(core, DT, 6 * 3600 - 1800);         // let the pit develop
+        run(core, DT, 1800);                    // the pit sags the power at fixed rods
+        double pitPower = core.power();
         System.out.printf("  4 xenon pit : Xe=%.3fx  P=%.4f (was %.4f pre-pit)  rho=%+.6f%n",
-            core.xenonRatio(), core.power(), prePitPower, core.reactivity());
+            core.xenonRatio(), pitPower, prePitPower, core.reactivity());
         check(core.xenonRatio() > 1.05,
             "xenon builds into a pit after the power cut (Xe " + round(core.xenonRatio()) + "x)");
-        check(core.power() < prePitPower,
+        check(pitPower < prePitPower,
             "the xenon poison sags the power at a fixed rod position ("
-                + round(prePitPower) + " -> " + round(core.power()) + ")");
+                + round(prePitPower) + " -> " + round(pitPower) + ")");
+
+        // ---- 4a. the operator fights the xenon by withdrawing rods ----
+        // The poison would keep sagging the power; the operator's response is to
+        // withdraw rods to hold it. This is the real operating decision (Chernobyl's
+        // operators spent the evening doing exactly this), and it is what keeps the
+        // neutron flux alive: a core left at fixed rods through the pit is simply
+        // shutting down, its fission power sinking far below the decay heat, where no
+        // scram can be seen. The regulator (АР) holds the power from here.
+        core.setAutoRegulator(true);
+        run(core, DT, 6 * 3600 - 3600);         // hold power as the pit deepens
+        System.out.printf("  4 hold      : Xe=%.3fx  P=%.4f ins=%.3f%n",
+            core.xenonRatio(), core.power(), core.insertion());
 
         // ---- 4b. the operator withdraws the rods to the ORM limit to fight the
         // xenon. This is the fatal state: almost all rods out, so the whole core

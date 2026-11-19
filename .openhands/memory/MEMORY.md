@@ -40,9 +40,17 @@ New `RodMaterialConsistencySelfTest` (6 checks) locks both in.
 **Consequence (real, correct):** the live core now CAN shut down. 26-April end power
 10.861->8.549 (peak +48.3% survives); k_bal now reaches 0.97 on full scram. Recalibrated
 `ExperimentVariantsSelfTest` ("not shut down" = >3x nominal AND >5x normal run, not
-"still rising"). **Two old known-failures are now FIXED: `SpatialReactorCoreSelfTest`
-12/12 and `OpenMcBridgeSelfTest` 11/11.** Only remaining failure: `RbmkSpatialSelfTest`
-"flux peaks at centre" — PRE-EXISTING, in the RETIRED `DiffusionSolver`.
+"still rising"). **ALL THREE old known-failures are now FIXED: `SpatialReactorCoreSelfTest`
+12/12, `OpenMcBridgeSelfTest` 11/11, `RbmkSpatialSelfTest` 18/18.** The last one
+failed because it compared the (0,0) cell — a CONTROL channel — against a FUEL cell
+at the rim; replaced with radial region means. The ~0.1% margin is CORRECT: with the
+reflective BC a homogeneous core is EXACTLY flat, so do not "fix" a small margin by
+adding leakage.
+
+**FULL MC-FREE SUITE IS GREEN: 20 tests, 218 checks, 0 failures** (2026-11-18). The
+last two fixes (AZ-5 `AccidentSequence`, `RbmkSpatialSelfTest`) were both BAD
+ASSERTIONS, not bad physics — check WHAT a failing assertion measures before
+touching the model.
 
 **STILL OPEN audit items (report, don't guess):** fuel temp is a power-only scalar (no
 flow, no per-node) + unregistered TAU_FUEL/TAU_GRAPHITE/FUEL_PER_POWER; feedback radially
