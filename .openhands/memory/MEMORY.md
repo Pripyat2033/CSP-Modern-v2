@@ -9,9 +9,21 @@ group reproduces -2.00 beta exactly. `CORE_ORM`, `CORE_PERIOD` (a log-rate
 MEASUREMENT, not `l/rho`), the per-rod limit switches and selsyn lamps all read the
 core now; SKALA `K0S0000` answers ORM with the 43/30-rod set points.
 
-**Do NOT "fix" the rod overmode.** A manual rod's differential worth turns slightly
-POSITIVE at the end of travel (6.772 m absorber < 7.0 m core, top unabsorbed); АЗ
-(7.247 m) stays negative. Same family as the positive scram — sourced geometry.
+**"Rod overmode" — measured, and much smaller than I first wrote.** Driving a manual
+rod fully home leaves the top 0.228 m of the core unabsorbed (6.772 m absorber vs
+7.0 m core), so its worth gives back a little. MEASURED: the total effect is
+**4.17 rods, 2.0% of the margin**, ORM peaking at insertion 0.911 (209.4 rods) and
+falling to 205.3 at full home. My earlier "~2.9-rod dip" was wrong; the right number
+is 4.17 rods and it is an ORM peak, not a dip. Mesh-refined 28->560 nodes: effect
+SURVIVES (-5.2e-6 dk/k at every resolution), so it is real geometry, NOT a
+discretisation artefact. Note the peak exists partly because ORM divides by
+`unitWorth = worth(RR, x=1.0)`, i.e. the LEAST negative point of the curve.
+
+**ORM IS A 28-STEP STAIRCASE (known limitation).** Worth is integrated on 28 axial
+nodes (250 mm each), so 87% of sampled insertion positions produce NO change in ORM
+and one node step jumps it by up to 13.7 rods. The margin is therefore quantised at
+~7 rods, far coarser than the 43/30-rod trip set points it is compared against.
+Needs sub-node (analytic or 10x-refined) integration before ORM trips are trusted.
 
 **The 12 ПК-РР rods have no known positions** (`rod.pk_rr_positions`): the panel draws
 all 127 manual rods in one colour. Count + geometry carried, positions NOT guessed.
