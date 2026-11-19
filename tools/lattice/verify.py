@@ -9,6 +9,7 @@ from __future__ import annotations
 import numpy as np
 
 import endf
+import sources
 import rbmk_cell as cell
 import rbmk_spectrum as spec
 import rbmk_cell1d as c1d
@@ -29,10 +30,18 @@ def check_true(name, cond, detail=""):
     print(f"  [{PASS if cond else FAIL}] {name} {detail}")
 
 
-def main():
+def main(argv=None):
+    import argparse
+    ap = argparse.ArgumentParser(description="Verify the RBMK lattice cell.")
+    ap.add_argument("--source", default=None,
+                    help="evaluated library: endf (default) or rosfond")
+    args = ap.parse_args(argv)
+    if args.source:
+        sources.get(args.source)
     print("RBMK lattice verification\n")
 
-    print("1. Evaluated nuclear data (ENDF/B-VIII.0) sanity")
+    lib = sources.current().library
+    print(f"1. Evaluated nuclear data ({lib}) sanity")
     f235 = float(endf.load("U235", 18).at(0.0253))
     check("U-235 fission @ 0.0253 eV", f235, 585.0, 10.0, " b")
     c235 = float(endf.load("U235", 102).at(0.0253))
