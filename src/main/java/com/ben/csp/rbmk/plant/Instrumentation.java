@@ -189,8 +189,12 @@ public final class Instrumentation {
         switch (s.kind()) {
             case CORE_POWER -> { return p.core().power(); }
             case CORE_REACTIVITY -> { return p.core().reactivity(); }
-            case CORE_PERIOD -> { return Double.NaN; } // computed by the ORM/period program
-            case CORE_ORM -> { return p.core().insertion(); }
+            case CORE_PERIOD -> { return period(p); }
+            case CORE_ORM -> {
+                // ORM is a rod count from the individual rods, not the insertion scalar.
+                return p.core() instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u
+                    ? u.orm() : Double.NaN;
+            }
             case CHANNEL_FLOW -> {
                 Rotameter[] r = p.rotameters();
                 return s.index() < r.length ? r[s.index()].flowKgS() : Double.NaN;
@@ -229,15 +233,43 @@ public final class Instrumentation {
                 return s.index() < c.length ? c[s.index()].coolingWaterOutC() : Double.NaN;
             }
             case ROD_POSITION -> { return p.core().insertion() * 100.0; }
-            // The core model currently carries ONE lumped rod insertion, so the
-            // per-rod limit switches and selsyn lamps are derived from it. When
-            // per-rod insertion lands, these read the individual rod.
-            case ROD_LIMIT_LOWER -> { return p.core().insertion() >= 0.99 ? 1.0 : 0.0; }
-            case ROD_LIMIT_UPPER -> { return p.core().insertion() <= 0.01 ? 1.0 : 0.0; }
+            // Per-rod limit switches read the individual rod, not the scalar mean.
+            case ROD_LIMIT_LOWER -> { return rodFraction(p, 0.99, true); }
+            case ROD_LIMIT_UPPER -> { return rodFraction(p, 0.01, false); }
             case ROD_OVERCOMP -> { return Double.NaN; } // ПК drive not yet modelled
-            case ROD_LAMP_DEPTH -> { return p.core().insertion() >= 0.99 ? 1.0 : 0.0; }
-            case ROD_LAMP_TOP -> { return p.core().insertion() <= 0.01 ? 1.0 : 0.0; }
+            case ROD_LAMP_DEPTH -> { return rodFraction(p, 0.99, true); }
+            case ROD_LAMP_TOP -> { return rodFraction(p, 0.01, false); }
             default -> { return Double.NaN; }
         }
+    }
+
+    /** Fraction of rods past a limit, or 1/0 from the scalar if the bank is absent. */
+    private static double rodFraction(PlantSystem p, double limit, boolean above) {
+        if (p.core() instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u
+            && u.rodBank() != null && u.rodBank().size() > 0) {
+            var b = u.rodBank();
+            int n = 0;
+            for (int i = 0; i < b.size(); i++) {
+                double v = b.insertion(i);
+                if (above ? v >= limit : v <= limit) {
+                    n++;
+                }
+            }
+            return n > 0 ? 1.0 : 0.0;
+        }
+        double v = p.core().insertion();
+        return above ? (v >= limit ? 1.0 : 0.0) : (v <= limit ? 1.0 : 0.0);
+    }
+
+    /**
+     * The reactor period, s: the time for the power to change by a factor of e,
+     * measured from the core's own power history rather than from a formula. A
+     * negative period is a decaying core, an infinite one a steady one.
+     */
+    private static double period(PlantSystem p) {
+        if (!(p.core() instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u)) {
+            return Double.NaN;
+        }
+        return u.reactorPeriod();
     }
 }

@@ -68,7 +68,7 @@ public final class RequestCode {
     public enum Param {
         X('X', "?", "unknown parameter", false),
         N('N', "мощность", "power", true),
-        S('S', "?", "unknown parameter", false),
+        S('S', "запас", "reserve (reactivity margin)", true),
         H('H', "уровень", "level", true),
         P('P', "давление", "pressure", true),
         G('G', "расход", "flow (consumption)", true),
@@ -160,6 +160,9 @@ public final class RequestCode {
             return switch (param) {
                 case N -> new Answer(true, echo, plant.core().power() * 100.0, "% Nnom",
                     "Reactor thermal power", false, "");
+                // К0S0000 is the ORM code the operators used, and SKALA grouped it
+                // under К, but it is a reactor-wide margin, so accept it on А too.
+                case S -> ormAnswer(plant, echo);
                 case P -> {
                     double bar = plant.separators().length > 0
                         ? plant.separators()[0].pressurePa() / 1e5 : Double.NaN;
@@ -174,6 +177,13 @@ public final class RequestCode {
                 }
                 default -> Answer.notFound(echo, "unsupported reactor parameter " + param.letter);
             };
+        }
+
+        // The operating reactivity margin. Its SKALA code is К0S0000 — group К,
+        // section 0, parameter S, instance 0000 — because the margin is a property
+        // of the reactor as a whole rather than of any one channel.
+        if (param == Param.S && section == 0 && digits == 0) {
+            return ormAnswer(plant, echo);
         }
 
         // Per-channel parameters (group К). The four digits are the channel's
@@ -235,6 +245,22 @@ public final class RequestCode {
 
         return Answer.notFound(echo,
             "group " + group.letter + " (" + group.en + ") has no live source yet");
+    }
+
+    /**
+     * The operating reactivity margin as SKALA answers it: a count of equivalent
+     * fully inserted manual rods, flagged against the plant's set points.
+     */
+    private static Answer ormAnswer(PlantSystem plant, String echo) {
+        if (!(plant.core() instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u)) {
+            return Answer.notFound(echo, "ORM needs the unified core");
+        }
+        double orm = u.orm();
+        boolean deviates = orm < 43.0;
+        String note = orm < 30.0 ? "BELOW 30 rods: operation not permitted"
+            : orm < 43.0 ? "below the 43-rod warning set point" : "";
+        return new Answer(true, echo, orm, "rods",
+            "Operating reactivity margin", deviates, note);
     }
 
     /**

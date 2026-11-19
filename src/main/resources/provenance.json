@@ -14,9 +14,21 @@
     },
     "OpenMC": {
       "title": "OpenMC 0.16.0 Monte Carlo neutron transport (computed in this repo), ENDF/B-VIII.0 cross-sections",
-      "publisher": "MIT / Argonne National Laboratory \u2014 openmc.org",
+      "publisher": "MIT / Argonne National Laboratory — openmc.org",
       "url": "https://docs.openmc.org",
-      "note": "Not a document but an independent COMPUTATION: a first-principles lattice-cell model of an RBMK fuel channel (openmc/rbmk_cell.py, openmc/rbmk_void_coeff.py). No tabulated coefficient is fed in \u2014 the void coefficient is derived from cross-section data plus graphite S(a,b). It yields +0.035 dk/k per unit void at the operating point (simple dk/k). An earlier version gave +0.015 and appeared to corroborate INSAG-7 (+0.02); that agreement was an artefact of two channel-geometry errors (an 80 mm bore instead of 88 mm, and fuel/water volume fractions of 0.62/0.26 instead of the true 0.324/0.570) and is WITHDRAWN. See docs/VOID-COEFF-ROOT-CAUSE.md."
+      "note": "Not a document but an independent COMPUTATION: a first-principles lattice-cell model of an RBMK fuel channel (openmc/rbmk_cell.py, openmc/rbmk_void_coeff.py). No tabulated coefficient is fed in — the void coefficient is derived from cross-section data plus graphite S(a,b). It yields +0.035 dk/k per unit void at the operating point (simple dk/k). An earlier version gave +0.015 and appeared to corroborate INSAG-7 (+0.02); that agreement was an artefact of two channel-geometry errors (an 80 mm bore instead of 88 mm, and fuel/water volume fractions of 0.62/0.26 instead of the true 0.324/0.570) and is WITHDRAWN. See docs/VOID-COEFF-ROOT-CAUSE.md."
+    },
+    "SUZ-CARTOGRAM": {
+      "title": "SUZ control-panel cartogram of ChNPP Unit 4 (RBMK_Reactor_ChNPP-4.svg)",
+      "publisher": "Wikimedia Commons (drawn from the unit's SUZ panel); legend confirmed against the Nucleopedia SUZ panel table and the units 3/4 operating regulation §2.11.6",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/59/RBMK_Reactor_ChNPP-4.svg",
+      "note": "The SVG carries 1,884 rect elements, one per channel, with an explicit fill per rod type. Decoded geometry is committed as rbmk_cartogram_ch4.json. Counts reproduce exactly: AZ 24, PK-AZ 24, AR 12, USP 24, RR 127, DKE 12, TK 1,661 = 1,872 channels."
+    },
+    "SUZ-PANEL-TABLE": {
+      "title": "Nucleopedia: Benutzer:TZV/Reaktorunfall — Steuer- und Kontrollsystem table",
+      "publisher": "Nucleopedia (de), accessed via the Wayback Machine snapshot of 2022-11-01",
+      "url": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
+      "note": "Per-type absorber length, displacer length, insertion time, scram time and reactivity worth for units 3 and 4. The live site is Cloudflare-protected; the archived copy is readable."
     }
   },
   "entries": {
@@ -46,7 +58,7 @@
       "unit": "1/s",
       "status": "to_verify",
       "source": "Keepin six-group set (Western evaluation).",
-      "note": "The RBMK used its own six-group set \u2014 replace from a NIKIET/ABBN source. INSAG-7 Annex II notes the accident analyses used 18 delayed-neutron groups, so a higher-group RBMK set exists."
+      "note": "The RBMK used its own six-group set — replace from a NIKIET/ABBN source. INSAG-7 Annex II notes the accident analyses used 18 delayed-neutron groups, so a higher-group RBMK set exists."
     },
     "delayed.beta_fractions": {
       "value": [
@@ -69,7 +81,7 @@
       "source": "INSAG-7 Table II-I (p. 105), 'Void coefficient of reactivity at the working point' = +2.0e-4 per % void; +2.0e-4 per 1% = 0.020 per unit void fraction. INSAG-7 sec. 2.1 gives the full range: -1.3e-4 (fresh fuel) to +(2.0-2.5)e-4 per % void (steady-state refuelling).",
       "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
       "quote": "Void coefficient of reactivity af at the working point (%-' (5k/k) void) +2.0 x 10\"4",
-      "corroboration": "OpenMC lattice-cell Monte Carlo (openmc/, ENDF/B-VIII.0) gives +0.035 dk/k per unit void at the operating point (simple dk/k), with the channel geometry corrected, independently \u2014 same sign as the +0.02 above but ~1.75x larger (a single-channel infinite lattice overstates the whole-core operating coefficient). The earlier +0.015 'agreement' is WITHDRAWN: it came from a channel-geometry error. Minecraft displays this result via /rbmk openmc (OpenMcResult.java)."
+      "corroboration": "OpenMC lattice-cell Monte Carlo (openmc/, ENDF/B-VIII.0) gives +0.035 dk/k per unit void at the operating point (simple dk/k), with the channel geometry corrected, independently — same sign as the +0.02 above but ~1.75x larger (a single-channel infinite lattice overstates the whole-core operating coefficient). The earlier +0.015 'agreement' is WITHDRAWN: it came from a channel-geometry error. Minecraft displays this result via /rbmk openmc (OpenMcResult.java)."
     },
     "feedback.doppler_coeff": {
       "value": -1.2e-05,
@@ -100,7 +112,7 @@
       "unit": "dk/k per unit xenon ratio",
       "status": "to_verify",
       "source": "Reference value; INSAG-7 does not tabulate a xenon worth.",
-      "note": "To confirm against a NIKIET/design source. (Note: Xenon.java uses a -0.03 equilibrium scale, and ReactorCore/SpatialReactorCore hard-code 0.024 separately \u2014 these should be reconciled to one sourced value.)"
+      "note": "To confirm against a NIKIET/design source. (Note: Xenon.java uses a -0.03 equilibrium scale, and ReactorCore/SpatialReactorCore hard-code 0.024 separately — these should be reconciled to one sourced value.)"
     },
     "rodworth.scale": {
       "value": 0.08,
@@ -211,6 +223,100 @@
       "status": "to_verify",
       "source": "The fuel time constant that was implicit in the old scalar model (UnifiedReactorCore.TAU_FUEL). Now registered so it is no longer an unregistered number.",
       "note": "Source the fuel heat capacity (UO2 cp x fuel mass 192 t, docs/RBMK-PLANT-SYSTEMS.md WP 62) and the fuel-to-coolant conductance to derive this rather than carry a reference value. The DOF are the fuel mass and cp; both are sourced or sourceable."
+    },
+    "rod.cartogram": {
+      "value": "rbmk_cartogram_ch4.json",
+      "unit": "48x48 channel map",
+      "status": "verified",
+      "source": "SUZ-CARTOGRAM",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/RBMK_Reactor_ChNPP-4.svg",
+      "quote": "The SVG contains exactly 1,884 <rect> elements with fills #a5b5a4 x1661, #0067ce x127, #fed801 x24, #de1a03 x24, #555555 x24, #01b151 x12, #5f695f x12.",
+      "note": "Replaces the previous placeholder radial-band cartogram in RodType.cartogram()."
+    },
+    "rod.lengths": {
+      "value": {
+        "AZ": 7.247,
+        "PK_AZ": 6.772,
+        "AR": 7.035,
+        "USP": 4.088,
+        "RR": 6.772
+      },
+      "unit": "m (absorber length)",
+      "status": "verified",
+      "source": "SUZ-PANEL-TABLE",
+      "sourceUrl": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
+      "quote": "AZ 7,247 m; PK-AZ 6,772 m; AR 7,035 m; USP 4,088 m; RR 6,772 m (Tschernobyl 4 column).",
+      "note": "Replaces the single uniform ROD_ABSORBER_M = CORE_HEIGHT_M."
+    },
+    "rod.displacer_lengths": {
+      "value": {
+        "AZ": 0.0,
+        "PK_AZ": 4.56,
+        "AR": 4.51,
+        "USP": 6.7,
+        "RR": 4.56
+      },
+      "unit": "m (graphite displacer length)",
+      "status": "verified",
+      "source": "SUZ-PANEL-TABLE",
+      "sourceUrl": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
+      "quote": "PK-AZ 4,560 m; AR 4,510 m; USP 6,700 m; RR 4,560 m; AZ N/A (no displacer).",
+      "note": "Replaces the single uniform ROD_DISPLACER_M = 4.5."
+    },
+    "rod.travel": {
+      "value": {
+        "insert_s": [
+          17,
+          18
+        ],
+        "scram_s_az": 2.5,
+        "scram_s_other": 12
+      },
+      "unit": "s",
+      "status": "verified",
+      "source": "SUZ-PANEL-TABLE",
+      "sourceUrl": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
+      "quote": "AZ Einfahrzeit 6 bis 7 s, Einfallzeit 2,5 s; PK-AZ/AR/RR Einfahrzeit 17 bis 18 s, Einfallzeit 12 s.",
+      "note": "AZ rods are both shorter in travel and far faster in a scram than the rest — the staggering matters for AZ-5."
+    },
+    "rod.worth_group": {
+      "value": {
+        "AZ": -2.0,
+        "PK_AZ": 0.5,
+        "AR": 0.5,
+        "RR": 0.5
+      },
+      "unit": "beta_eff (per group)",
+      "status": "to_verify",
+      "source": "SUZ-PANEL-TABLE",
+      "sourceUrl": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
+      "quote": "AZ: -2 beta / N/A. PK-AZ: ? beta / +0,5 beta. AR: ? beta / +0,5 beta. RR: ? beta / +0,5 beta.",
+      "note": "The table gives the ABSORBER worth as '?' for four of five types and only the DISPLACER worth (+0.5 beta) explicitly. The AZ group total of -2 beta is the one absorber figure given, and is used here to calibrate the rod-worth scale. The '?' values are NOT filled in by guesswork."
+    },
+    "orm.reference": {
+      "value": {
+        "nominal": [
+          45,
+          48
+        ],
+        "warning": 43,
+        "limit": 30
+      },
+      "unit": "equivalent fully-inserted manual rods",
+      "status": "verified",
+      "source": "SKALA simulator walkthrough (Chornobyl Family, video 1JSP_gVXZTs)",
+      "sourceUrl": "https://www.youtube.com/watch?v=1JSP_gVXZTs",
+      "quote": "A normal value is approximately 45 to 48 rods. ... the warning set point is 43 rods. And if the margin falls to 30 rods, continued operation is no longer permitted.",
+      "note": "ORM is a rod count, not a percentage and not dk/k. Corroborated by the units 3/4 regulation §9, which states the margin in rods: not less than 26-30 rods normally, may fall to 15 during a power raise."
+    },
+    "rod.pk_rr_positions": {
+      "value": "unresolved (12 rods inside the panel's 127-rod blue category)",
+      "unit": "channel positions",
+      "status": "to_verify",
+      "source": "SUZ-CARTOGRAM",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/RBMK_Reactor_ChNPP-4.svg",
+      "quote": "The panel draws 127 manual rods in one fill (#0067ce); the regulation splits them into РР 103 + ПК-РР 12 + ЛАР 12.",
+      "note": "The cartogram can place 24 ПК-АЗ (they have their own fill) but not the 12 ПК-РР, and not the 12 ЛАР. Both are carried in the model as sub-populations with the correct counts and the correct per-type geometry, but their individual channel positions are NOT guessed. Resolving this needs the plant's техническое описание or a SUZ panel photo with the sub-types distinguishable."
     }
   }
 }

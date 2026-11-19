@@ -50,8 +50,14 @@ public final class RodSignalsSelfTest {
             nk == 211, "НК=" + nk);
         check("every rod has an upper limit switch ВК (211)",
             vk == 211, "ВК=" + vk);
-        check("overcompensation ПК signal present on exactly the ПК-АЗ + ПК-РР rods (36)",
-            pk == 24 + 12, "ПК=" + pk);
+        // Overcompensation (ПК) exists on 24 ПК-АЗ + 12 ПК-РР rods. The panel drawing
+        // localises the ПК-АЗ (its own grey colour) but draws all 127 manual rods in
+        // ONE blue category, so it cannot say WHICH 12 of them are ПК-РР. Rather than
+        // guess a subset, the cartogram reports the 24 it can place and the model
+        // carries the 12 ПК-РР as a known sub-population with an unresolved position.
+        check("overcompensation ПК signal on the 24 placeable ПК-АЗ rods "
+                + "(the 12 ПК-РР are inside the panel's single blue category)",
+            pk == 24, "ПК=" + pk + " (ПК-АЗ 24 localised; ПК-РР 12 not resolvable)");
         check("every rod has the green 'full depth' selsyn lamp (211)",
             lampDepth == 211, "lamp_depth=" + lampDepth);
         check("every rod has the orange 'top of stops' selsyn lamp (211)",
@@ -60,7 +66,7 @@ public final class RodSignalsSelfTest {
         // 5. The rod family is now many signals per rod, not one.
         long rodTotal = pos + nk + vk + pk + lampDepth + lampTop;
         check("the control-rod family is far more than 211 signals (was 211 × 1)",
-            rodTotal == 211 * 5 + 36, "rod family total=" + rodTotal);
+            rodTotal == 211 * 5 + 24, "rod family total=" + rodTotal);
 
         // 6. The whole register grew by the rod family over the old count.
         check("total register grew beyond the old 7,013 by the new rod signals",

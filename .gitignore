@@ -36,3 +36,7 @@ Thumbs.db
 
 # Local properties
 local.properties
+# javac argfiles (compiler artifacts, not sources)
+javac.*.args
+javac_check.txt
+javac_full.txt

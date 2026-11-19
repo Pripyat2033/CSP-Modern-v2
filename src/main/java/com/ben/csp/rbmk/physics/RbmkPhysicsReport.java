@@ -1,5 +1,7 @@
 package com.ben.csp.rbmk.physics;
 
+import com.ben.csp.rbmk.RodType;
+
 /**
  * Prints the classic reactor calculations the way a station would — the sort of
  * printout an operator or the SKALA computer produced. Run it to see the same
@@ -91,10 +93,10 @@ public final class RbmkPhysicsReport {
         System.out.println("Rod worth curve (axial flux shape, integral and differential):");
         RodWorth centre = new RodWorth();
         RodWorth bottom = RodWorth.bottomPeaked();
-        double[] ic = centre.integralCurve(10);
-        double[] id = bottom.integralCurve(10);
-        double[] dc = centre.differentialCurve(10);
-        double[] dd = bottom.differentialCurve(10);
+        double[] ic = centre.integralCurve(RodType.RR, 10);
+        double[] id = bottom.integralCurve(RodType.RR, 10);
+        double[] dc = centre.differentialCurve(RodType.RR, 10);
+        double[] dd = bottom.differentialCurve(RodType.RR, 10);
         System.out.println("  ins   W_centre   dW_centre    W_bottom   dW_bottom");
         for (int i = 0; i <= 10; i++) {
             double dC = i < 10 ? dc[i] : 0;

@@ -79,7 +79,7 @@ public final class PlantSelfTest {
     private static void heatBalance() {
         // electrical out + heat rejected should account for the thermal input
         PlantSystem p = new PlantSystem();
-        p.startUp();
+        p.startUp(false);
         for (int i = 0; i < 600; i++) {
             p.step(0.1);
         }
@@ -100,7 +100,7 @@ public final class PlantSelfTest {
 
     private static void steadyState() {
         PlantSystem p = new PlantSystem();
-        p.startUp();
+        p.startUp(false);
         for (int i = 0; i < 600; i++) {
             p.step(0.1);
         }
@@ -135,7 +135,7 @@ public final class PlantSelfTest {
         // --- plant level trips ---
         // loss of two pumps on one side
         PlantSystem q = new PlantSystem();
-        q.startUp();
+        q.startUp(false);
         for (int i = 0; i < 200; i++) {
             q.step(0.1);
         }
@@ -146,7 +146,7 @@ public final class PlantSelfTest {
 
         // scram drops the rods and fires the ECCS
         PlantSystem r = new PlantSystem();
-        r.startUp();
+        r.startUp(false);
         for (int i = 0; i < 100; i++) {
             r.step(0.1);
         }

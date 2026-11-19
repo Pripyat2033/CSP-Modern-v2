@@ -126,6 +126,18 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     // --- reactor state ---
     private double insertion = NOMINAL_INSERTION;
     private double insertionTarget = NOMINAL_INSERTION;
+    /**
+     * The 211 individual rods. The single {@code insertion} scalar above is retained
+     * as the mean position the solvers drive from, but the margin needs the
+     * per-rod state, so the bank is stepped alongside it.
+     */
+    private final RodBank rods = new RodBank();
+
+    /** Period measurement: the window and its anchor point. */
+    private static final double PERIOD_WINDOW_S = 5.0;
+    private static final double PERIOD_MIN_SPAN_S = 1.0;
+    private double periodRefPower;
+    private double periodRefSeconds;
     private double voidFraction = NOMINAL_VOID;
     private double fuelTempC = NOMINAL_FUEL_C;
     /** Per-axial-node fuel temperature, degC, bottom to top (the field Doppler sees). */
@@ -229,7 +241,20 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
             prof = next;
         }
         fuelTempByNode = fuel.clone();
+        seedRodBank();
         return prof;
+    }
+
+    /**
+     * Put the per-rod bank where the plant actually sits at power: all rods driven to
+     * the nominal insertion, so the margin starts at the state the scalar
+     * {@code insertion} describes rather than at zero.
+     */
+    private void seedRodBank() {
+        for (int i = 0; i < rods.size(); i++) {
+            rods.setTarget(i, NOMINAL_INSERTION);
+        }
+        rods.step(1000.0, false);
     }
 
     /**
@@ -396,6 +421,7 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         fission = solver.power();
         keff = solver.balanceKeff();
         simSeconds += dt;
+        anchorPeriod();
 
         // Heat: fission plus the fission-product decay that cannot be switched off.
         decayHeat.step(dt, fission);
@@ -460,6 +486,54 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     @Override
     public double insertion() {
         return insertion;
+    }
+
+    /**
+     * The operating reactivity margin, in equivalent fully inserted manual rods —
+     * the quantity SKALA reports for request code {@code K0S0000}.
+     *
+     * <p>Computed from the individual rod positions in {@link RodBank}, not from the
+     * single insertion scalar, because ORM is by definition the sum of the
+     * individual rods' worths. Zero if the cartogram failed to load, so a broken
+     * resource reads as "no margin" rather than as a plausible number.
+     */
+    public double orm() {
+        return rods == null ? 0.0 : rods.orm();
+    }
+
+    /** The per-rod state behind {@link #orm()}. */
+    public RodBank rodBank() {
+        return rods;
+    }
+
+    /**
+     * The reactor period, s — the time for the power to change by a factor of e,
+     * measured from the core's own power history. Positive while rising, negative
+     * while falling, {@link Double#POSITIVE_INFINITY} when the power is steady.
+     *
+     * <p>This is a <em>measurement</em>, not the prompt-period formula
+     * {@code T = l/rho}: the operator's period gauge reads the log-rate of the power
+     * it can see, delayed neutrons included. The window is a few seconds so the
+     * reading is not dominated by a single step.
+     */
+    public double reactorPeriod() {
+        double span = simSeconds - periodRefSeconds;
+        if (span < PERIOD_MIN_SPAN_S || !(fission > 0) || !(periodRefPower > 0)) {
+            return Double.NaN;
+        }
+        double logRatio = Math.log(fission / periodRefPower);
+        if (Math.abs(logRatio) < 1e-9) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return span / logRatio;
+    }
+
+    /** Re-anchor the period measurement window; called on each physics step. */
+    private void anchorPeriod() {
+        if (simSeconds - periodRefSeconds >= PERIOD_WINDOW_S) {
+            periodRefPower = fission;
+            periodRefSeconds = simSeconds;
+        }
     }
 
     @Override
@@ -555,6 +629,13 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         } else if (insertion > insertionTarget) {
             insertion = Math.max(insertionTarget, insertion - step);
         }
+        // Drive the per-rod bank toward the same target. It carries its own per-type
+        // travel times (АЗ 2.5 s on a scram, the rest 12 s), so a scram staggers.
+        boolean scram = insertionTarget > insertion + 1e-9 || insertionTarget >= 1.0;
+        for (int i = 0; i < rods.size(); i++) {
+            rods.setTarget(i, insertionTarget);
+        }
+        rods.step(dt, scram);
     }
 
     private static double clamp01(double v) {

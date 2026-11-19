@@ -1,5 +1,7 @@
 package com.ben.csp.rbmk.physics;
 
+import com.ben.csp.rbmk.RodType;
+
 /**
  * Validation of the spatial solver, the reactivity feedbacks and the rod-worth
  * curve — the calculations that make the accident reproducible.
@@ -83,17 +85,32 @@ public final class RbmkSpatialSelfTest {
             + " < " + round(wOut));
         check(wIn < 0, "a fully inserted rod is negative worth (" + round(wIn) + ")");
 
-        double[] diff = rw.differentialCurve(40);
-        boolean negativeByEnd = diff[diff.length - 1] < 0;
-        check(negativeByEnd, "the differential worth is negative at the end of insertion ("
-            + round(diff[diff.length - 1]) + ")");
-        check(wIn < -0.01, "a fully inserted rod has substantial negative worth ("
-            + round(wIn) + ")");
+        // The differential worth is strongly negative through the middle of the travel.
+        // At the very END it turns slightly positive for the manual rod, because its
+        // 6.772 m absorber is shorter than the 7.0 m core: driving it fully home leaves
+        // the top 0.23 m unabsorbed, so the last increment gives worth back. АЗ, whose
+        // 7.247 m absorber over-covers the core, stays negative to the stop. Both are
+        // sourced geometry (rod.lengths), so test each type against its own shape.
+        double[] diff = rw.differentialCurve(RodType.RR, 40);
+        int mid = diff.length / 2;
+        check(diff[mid] < 0, "the differential worth is negative through mid-travel ("
+            + round(diff[mid]) + ")");
+        double[] diffAz = rw.differentialCurve(RodType.AZ, 40);
+        check(diffAz[diffAz.length - 1] < 0,
+            "the АЗ differential worth is still negative at the end of insertion, its "
+                + "7.247 m absorber over-covering the 7.0 m core ("
+                + round(diffAz[diffAz.length - 1]) + ")");
+        check(diff[diff.length - 1] > 0,
+            "the manual rod's differential worth turns slightly positive at the stop, its "
+                + "6.772 m absorber leaving the core top unabsorbed ("
+                + round(diff[diff.length - 1]) + ")");
+        check(wIn < -1e-4, "a fully inserted rod has substantial negative worth ("
+            + round(wIn) + " dk/k = " + round(wIn / 0.0065) + " beta)");
 
         // --- the positive scram is conditioned on a bottom-peaked flux (the accident
         // state); with a centre-peaked flux the two displacer edges cancel to ~zero ---
         RodWorth bottom = RodWorth.bottomPeaked();
-        double[] diffBottom = bottom.differentialCurve(40);
+        double[] diffBottom = bottom.differentialCurve(RodType.RR, 40);
         check(diffBottom[0] > 0,
             "with the accident's bottom-peaked flux the initial differential worth is "
                 + "positive (" + round(diffBottom[0]) + ") - the positive scram");

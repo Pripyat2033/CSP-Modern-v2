@@ -193,9 +193,19 @@ public final class PlantSystem {
 
     /** The manual "start the unit" control: hand the rods to the auto-regulator. */
     public void startUp() {
+        startUp(true);
+    }
+
+    /**
+     * Start the unit, choosing whether the core drives itself on a wall-clock thread.
+     *
+     * <p>The live game wants the thread. A test must not: the thread advances the core
+     * in real time, which makes {@link #step} a no-op and the result depend on how
+     * fast the machine happens to be. Pass {@code false} for a deterministic run.
+     */
+    public void startUp(boolean threaded) {
         core.setAutoRegulator(true);
-        // The unified core owns its own physics thread when running live.
-        if (core instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u) {
+        if (threaded && core instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u) {
             u.startThreaded();
         }
     }
