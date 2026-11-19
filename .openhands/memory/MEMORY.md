@@ -1,5 +1,29 @@
 # CSP-Modern-v2 — project memory
 
+## ORM IS PER-ROD NOW; ROD WORTH IS CALIBRATED (commit 0bf2a54, 2026-11-18)
+T3 done. ORM comes from the 211 rods in `Cartogram` (1,884 channels transcribed from
+the unit 4 SUZ panel SVG: fuel 1,661 + control 211 + detector 12; АЗ 24, ПК-АЗ 24,
+АР 12, УСП 24, manual 127). `RodWorth` calibrates on the ONE panel figure — 24 АЗ =
+-2 beta ⇒ one АЗ rod = 5.354e-4 dk/k — replacing the hand-set `SCALE = 0.08`; the
+group reproduces -2.00 beta exactly. `CORE_ORM`, `CORE_PERIOD` (a log-rate
+MEASUREMENT, not `l/rho`), the per-rod limit switches and selsyn lamps all read the
+core now; SKALA `K0S0000` answers ORM with the 43/30-rod set points.
+
+**Do NOT "fix" the rod overmode.** A manual rod's differential worth turns slightly
+POSITIVE at the end of travel (6.772 m absorber < 7.0 m core, top unabsorbed); АЗ
+(7.247 m) stays negative. Same family as the positive scram — sourced geometry.
+
+**The 12 ПК-РР rods have no known positions** (`rod.pk_rr_positions`): the panel draws
+all 127 manual rods in one colour. Count + geometry carried, positions NOT guessed.
+
+**Test-harness trap:** `PlantSystem.startUp()` used to spawn a wall-clock physics
+thread, making `step()` a no-op — PlantSelfTest was timing-dependent and passed 4/5.
+Now `startUp(boolean threaded)`; tests pass `false`. Real physics costs ~3.2 ms per
+5 ms step ⇒ a full suite run is ~25 min; use ≥500 s timeouts.
+
+**Open gap:** the three solvers still call the UNIFORM `RbmkGeometry.rodMaterials(double)`
+while `RodWorth` uses per-type. Worth is per-type, live flux response is not.
+
 ## RBMK RADIAL-FLUX TILT BUG — FOUND & FIXED (commit 59bc0e7, 2026-11-18)
 Ben's gut ("the RBMK is simulated wrong") yielded ONE concrete, reproducible bug.
 The LIVE 3D fast flux was tilted ~12x to one side in a SYMMETRIC core (L/R=12.75,
@@ -734,6 +758,12 @@ conda-forge. Cross-section DATA is separate: `openmc.org/data/` and
 `github.com/openmc-dev/data` (200 OK). NNDC ENDF/B-VIII.0 dir is 404 from here.
 So the earlier "lattice pipeline is Ben-side only" note is now FALSE for OpenMC
 proper; the numpy/scipy gap is also closed by conda (conda-forge has numpy).
+
+**STATUS 2026-11-18: NOT installed, and NOT needed to build or test.** The mod's
+bridge reads a precomputed `openmc_void_coeff.json` (`OpenMcBridgeSelfTest`, 11/11),
+so no OpenMC at test time. The NJOY path (see ROSFOND below) replaced it for cross
+sections. Only reach for the micromamba recipe if you actually need to re-run a
+transport calculation.
 
 ## OpenMC = the MECHANICS engine; Minecraft = VISUALISATION only - PROVEN (2026-11-13)
 
