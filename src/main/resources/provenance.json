@@ -190,6 +190,27 @@
       "note": "SIGN is sourced (INSAG-7 Table II-I, NUREG-1250: the RBMK's graphite coefficient is positive). MAGNITUDE is to_verify: a chord slope over 600-800 K extrapolated ~73 K to the 873 K operating point, and the ss21/ss12 slopes are nonlinear, so it overestimates the effect at operating temperature. Whole-core value of record is feedback.graphite_coeff (+6e-5, INSAG-7).",
       "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
       "quote": "Graphite temperature coefficient of reactivity ac (CC~') 6 x 10~5"
+    },
+    "fuel.max_temp": {
+      "value": 600.0,
+      "unit": "degC (maximum fuel temperature at nominal power)",
+      "status": "to_verify",
+      "source": "docs/RBMK-PLANT-SYSTEMS.md, 'Maximum fuel temp | 600 C | WP 57' (WP = the plant technical description, cited per row). To confirm against a fetchable primary document (the WP itself, or an INSAG-7/NUREG figure) before promoting to verified. This is the value the fuel-temperature model is anchored to: FuelTemperature.anchoredToPeak fixes the effective fuel-to-coolant conduction rise so the model's hottest node reaches this documented maximum at nominal power.",
+      "note": "Replaces the fitted scalar NOMINAL_FUEL_C=640 and its FUEL_PER_POWER=600 line T=640+600*(P-1), neither registered. The old 640 was ~7% above the documented maximum; the anchor now IS the documented maximum, applied at the peak node, so the mean is lower (the fuel is hot only where the flux is)."
+    },
+    "fuel.rise_anchored": {
+      "value": 0.00732,
+      "unit": "K per (W/m) of per-rod linear power",
+      "status": "to_verify",
+      "source": "COMPUTED, not guessed: FuelTemperature.anchoredToPeak = (fuel.max_temp - peak coolant C) / peak per-rod linear power, evaluated at the self-consistent nominal state (UnifiedReactorCore.selfConsistentSeed). At nominal the hot node carries ~45.5 kW/m per rod and its coolant is ~267 C, giving R = (600-267)/45.5e3 ~= 7.3e-3 K/(W/m).",
+      "note": "This is an EFFECTIVE resistance, smaller than the physical UO2+gap+clad+film chain (~0.022 K/(W/m) volume-average), because the model's axial peaking factor is far higher than a real core's (see spatial.axial_peaking). It is anchored to the one sourced temperature so the peak is right; it must be re-derived from the physical chain once the axial shape is corrected. Consumed by UnifiedReactorCore.fuelConduction."
+    },
+    "feedback.fuel_heat_capacity": {
+      "value": 10.0,
+      "unit": "s (fuel thermal time constant)",
+      "status": "to_verify",
+      "source": "The fuel time constant that was implicit in the old scalar model (UnifiedReactorCore.TAU_FUEL). Now registered so it is no longer an unregistered number.",
+      "note": "Source the fuel heat capacity (UO2 cp x fuel mass 192 t, docs/RBMK-PLANT-SYSTEMS.md WP 62) and the fuel-to-coolant conductance to derive this rather than carry a reference value. The DOF are the fuel mass and cp; both are sourced or sourceable."
     }
   }
 }

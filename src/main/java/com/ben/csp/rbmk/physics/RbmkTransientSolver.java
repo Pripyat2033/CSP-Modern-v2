@@ -138,11 +138,22 @@ public final class RbmkTransientSolver {
 
     /** As {@link #setAxialState(double[], double)} but with the graphite temperature. */
     public void setAxialState(double[] voidByNode, double fuelTempC, double graphiteTempC) {
+        double[] fuel = new double[na];
+        java.util.Arrays.fill(fuel, fuelTempC);
+        setAxialState(voidByNode, fuel, graphiteTempC);
+    }
+
+    /**
+     * Set the fuel nodes to a per-axial-node void AND fuel-temperature profile (both
+     * bottom to top). The fuel temperature is per node because the fuel is hottest
+     * where the power is; a single scalar smears the Doppler feedback over the core.
+     */
+    public void setAxialState(double[] voidByNode, double[] fuelByNode, double graphiteTempC) {
         // One cross section per axial node, reused across every channel — the profile
         // is the same up every channel, so this is 28 lookups, not 28 x 1,872.
         RbmkXsec[] byNode = new RbmkXsec[na];
         for (int a = 0; a < na; a++) {
-            byNode[a] = RbmkXsec.fuelCell(voidByNode[a], fuelTempC, xenonRatio,
+            byNode[a] = RbmkXsec.fuelCell(voidByNode[a], fuelByNode[a], xenonRatio,
                 RbmkXsec.voidWorthScale(), graphiteTempC);
         }
         for (int x = -ext; x <= ext; x++) {
@@ -223,7 +234,14 @@ public final class RbmkTransientSolver {
      * be seeded there too — a uniform seed would start the core off-critical.
      */
     public void seedCriticalAxial(double[] voidByNode, double fuelTempC) {
-        setAxialState(voidByNode, fuelTempC);
+        double[] fuel = new double[na];
+        java.util.Arrays.fill(fuel, fuelTempC);
+        seedCriticalAxial(voidByNode, fuel);
+    }
+
+    /** As {@link #seedCriticalAxial(double[], double)} but with a per-node fuel profile. */
+    public void seedCriticalAxial(double[] voidByNode, double[] fuelByNode) {
+        setAxialState(voidByNode, fuelByNode, RbmkXsec.NOMINAL_GRAPHITE_C);
         setRodInsertion(NOMINAL_INSERTION);
 
         RbmkSolver3D stat = new RbmkSolver3D();
@@ -233,7 +251,7 @@ public final class RbmkTransientSolver {
             for (int z = -stat.extent(); z <= stat.extent(); z++) {
                 for (int a = 0; a < na; a++) {
                     if (stat.isActive(x, z, a) && !stat.isControl(x, z, a)) {
-                        stat.setCell(x, z, a, RbmkXsec.fuelCell(voidByNode[a], fuelTempC));
+                        stat.setCell(x, z, a, RbmkXsec.fuelCell(voidByNode[a], fuelByNode[a]));
                     }
                 }
             }

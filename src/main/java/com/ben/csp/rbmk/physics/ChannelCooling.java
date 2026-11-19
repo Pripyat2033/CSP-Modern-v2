@@ -68,6 +68,7 @@ public final class ChannelCooling {
     private final double[] quality;    // steam quality x
     private final double[] voidFrac;   // volume void fraction alpha
     private final double[] coolantC;   // coolant temperature, deg C
+    private final double[] nodePowerW; // core power deposited in each node, W
 
     /**
      * @param axialNodes number of axial nodes (the core's 28)
@@ -79,6 +80,7 @@ public final class ChannelCooling {
         this.quality = new double[axialNodes];
         this.voidFrac = new double[axialNodes];
         this.coolantC = new double[axialNodes];
+        this.nodePowerW = new double[axialNodes];
         // Start from a cosine, the shape of a bare reactor; the caller replaces it
         // with the live flux shape every step.
         setCosineShape();
@@ -131,6 +133,7 @@ public final class ChannelCooling {
         double cumulative = 0;
         for (int a = 0; a < na; a++) {
             double qNode = shape[a] * powerW;             // W deposited in this node
+            nodePowerW[a] = qNode;
             double hMean = H_IN + (cumulative + 0.5 * qNode) / mdot;
             cumulative += qNode;
             enthalpy[a] = hMean;
@@ -165,6 +168,11 @@ public final class ChannelCooling {
     /** Coolant temperature per axial node, degrees C. */
     public double[] coolantTempC() {
         return coolantC;
+    }
+
+    /** Core power deposited in each axial node, W (whole core, all channels). */
+    public double[] nodePowerW() {
+        return nodePowerW;
     }
 
     /** Core-average void fraction (the number the neutronics feels). */

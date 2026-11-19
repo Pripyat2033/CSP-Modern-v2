@@ -44,8 +44,8 @@
       "class": "Feedback",
       "source": "INSAG-7 2.1; NUREG-1250",
       "status": "modelled",
-      "where": "fuelTempC -> RbmkXsec.fuelCell(.., fuelTempC, ..)",
-      "note": "NEGATIVE, prompt. The one feedback that opposes the void."
+      "where": "ChannelCooling.coolantTempC (per node) + FuelTemperature.anchoredToPeak -> fuelTempByNode -> RbmkXsec.fuelCell(.., fuelTemp, ..)",
+      "note": "NEGATIVE, prompt. The one feedback that opposes the void. The fuel temperature is now DERIVED per axial node (coolant temp + anchored conduction rise), not a fitted scalar: the fuel is hot where the flux is, and it tracks coolant flow and inlet temperature, so a pump trip cools it. Was T=640+600*(P-1) with both constants unregistered."
     },
     {
       "id": "feedback.xenon",

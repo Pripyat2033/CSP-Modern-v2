@@ -23,9 +23,12 @@ import com.ben.csp.rbmk.RbmkGeometry;
  * <p><b>What is closed and what is not.</b> The void (through
  * {@link ChannelCooling}), the fuel temperature (Doppler) and the Xe-135 poison all
  * act through the fuel cell's cross sections, so each one changes the neutron
- * balance and the power — not merely a readout. The graphite temperature is computed
- * each step but is NOT yet fed back: no sign has been sourced for its coefficient,
- * so coupling it would be a guess. It is carried as a readout until it is sourced.
+ * balance and the power — not merely a readout. The fuel temperature is a PER-NODE
+ * field, derived from the coolant each node sits above ({@link FuelTemperature}):
+ * the fuel is hot where the power is, and it tracks the coolant flow and inlet
+ * temperature, so a pump trip cools the fuel with the water. The graphite
+ * temperature is computed each step and fed back through {@link RbmkGraphiteTemp}
+ * when the derived lattice table is present (see its gate).
  *
  * <p><b>Why this matters for accuracy.</b> The accident is a spatial and feedback
  * phenomenon. The positive void coefficient and the positive scram are not put in
@@ -89,7 +92,8 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     // --- feedback time constants and gains ---
     private static final double TAU_FUEL = 10.0;
     private static final double TAU_GRAPHITE = 30.0;
-    private static final double FUEL_PER_POWER = 600.0;
+    /** Axial node height for the fuel linear power (core height / axial nodes). */
+    private static final double NODE_LENGTH_M = RbmkGeometry.CORE_HEIGHT_M / RbmkCore.AXIAL_NODES;
     /**
      * @deprecated 2026-11-15: no longer used. Xenon now enters the neutron balance
      *     through the fuel cell's thermal absorption ({@link RbmkXsec#XENON_MACRO_ABS}),
@@ -124,6 +128,10 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     private double insertionTarget = NOMINAL_INSERTION;
     private double voidFraction = NOMINAL_VOID;
     private double fuelTempC = NOMINAL_FUEL_C;
+    /** Per-axial-node fuel temperature, degC, bottom to top (the field Doppler sees). */
+    private double[] fuelTempByNode = new double[RbmkCore.AXIAL_NODES];
+    /** The fuel-to-coolant conduction model, anchored to the sourced peak temperature. */
+    private FuelTemperature fuelConduction;
     private double graphiteTempC = NOMINAL_GRAPHITE_C;
     private double coolantFlowKgS = NOMINAL_FLOW_KGS;
     private double fission = 1.0;
@@ -157,14 +165,22 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         // agree, or the core starts off-critical and drifts. A single cosine-void seed
         // (mean 0.355) does not match the shape-void it actually runs at (~0.64), so
         // the two are iterated to a fixed point before the reactivity zero is taken.
+        // The fuel temperature is part of the same fixed point: it is now a per-node
+        // field (hot where the power is), and it feeds Doppler back into the shape.
         cooling.solve(1.0, NOMINAL_FLOW_KGS);
         if (axialCoupling) {
-            double[] prof = selfConsistentVoid();
+            double[] prof = selfConsistentSeed();
             voidFraction = mean(prof);
-            solver.seedCriticalAxial(prof, NOMINAL_FUEL_C);
+            solver.seedCriticalAxial(prof, fuelTempByNode);
+            fuelTempC = mean(fuelTempByNode);
         } else {
             voidFraction = cooling.meanVoid();
-            solver.seedCritical(voidFraction, NOMINAL_FUEL_C);
+            fuelConduction = anchorFuelModel();
+            fuelTempC = fuelConduction.equilibrium(cooling.coolantTempC(),
+                FuelTemperature.linearPowerPerRod(cooling.nodePowerW(),
+                    NODE_LENGTH_M, RbmkGeometry.FUEL_CHANNELS))[0];
+            java.util.Arrays.fill(fuelTempByNode, fuelTempC);
+            solver.seedCritical(voidFraction, fuelTempC);
         }
         kRef = solver.balanceKeff();
         keff = kRef;
@@ -173,34 +189,93 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
 
     /**
      * Iterate (void profile from the channel energy balance) against (flux shape that
-     * void produces) to the fixed point at nominal power and full flow. Converges in
-     * a handful of passes; each pass is one static solve. Returns the converged
-     * per-node void profile.
+     * void produces) to the fixed point at nominal power and full flow, and along the
+     * way fix the fuel-temperature field and its conduction anchor.
+     *
+     * <p>Two phases: first the void is converged with a uniform fuel temperature (the
+     * shape has to settle before the peak power is known); then the fuel model is
+     * anchored to the sourced maximum fuel temperature at that peak, and void and fuel
+     * are iterated together to the joint fixed point. Converges in a handful of passes;
+     * each pass is one static solve. Returns the converged per-node void profile and
+     * leaves {@link #fuelTempByNode} and {@link #fuelConduction} set.
      */
-    private double[] selfConsistentVoid() {
+    private double[] selfConsistentSeed() {
         RbmkSolver3D stat = new RbmkSolver3D();
         stat.setOmega(RbmkSolver3D.SAFE_OMEGA);
         stat.setInnerSweeps(3);
+        double[] prof = cooling.voidFraction().clone();
+        double[] fuel = new double[RbmkCore.AXIAL_NODES];
+        java.util.Arrays.fill(fuel, NOMINAL_FUEL_C);
+
+        // Phase 1: void fixed point with uniform fuel.
         for (int pass = 0; pass < 3; pass++) {
-            double[] prof = cooling.voidFraction().clone();
-            for (int x = -stat.extent(); x <= stat.extent(); x++) {
-                for (int z = -stat.extent(); z <= stat.extent(); z++) {
-                    for (int a = 0; a < RbmkCore.AXIAL_NODES; a++) {
-                        if (stat.isActive(x, z, a) && !stat.isControl(x, z, a)) {
-                            stat.setCell(x, z, a, RbmkXsec.fuelCell(prof[a], NOMINAL_FUEL_C));
-                        }
+            prof = staticPass(stat, prof, fuel);
+            if (prof == null) {
+                break;   // diverged; keep the last good profile
+            }
+        }
+        // Anchor the conduction rise to the sourced peak fuel temperature.
+        fuelConduction = anchorFuelModel();
+
+        // Phase 2: void and per-node fuel together to the joint fixed point.
+        for (int pass = 0; pass < 4; pass++) {
+            fuel = fuelConduction.equilibrium(cooling.coolantTempC(),
+                FuelTemperature.linearPowerPerRod(cooling.nodePowerW(),
+                    NODE_LENGTH_M, RbmkGeometry.FUEL_CHANNELS));
+            double[] next = staticPass(stat, prof, fuel);
+            if (next == null) {
+                break;
+            }
+            prof = next;
+        }
+        fuelTempByNode = fuel.clone();
+        return prof;
+    }
+
+    /**
+     * One static pass: build the cells from the given profiles, solve, and march the
+     * channel energy balance up the resulting flux shape. Returns the new per-node
+     * void profile, or null if the solve diverged (the caller keeps the last good).
+     */
+    private double[] staticPass(RbmkSolver3D stat, double[] voidByNode, double[] fuelByNode) {
+        for (int x = -stat.extent(); x <= stat.extent(); x++) {
+            for (int z = -stat.extent(); z <= stat.extent(); z++) {
+                for (int a = 0; a < RbmkCore.AXIAL_NODES; a++) {
+                    if (stat.isActive(x, z, a) && !stat.isControl(x, z, a)) {
+                        stat.setCell(x, z, a, RbmkXsec.fuelCell(voidByNode[a], fuelByNode[a]));
                     }
                 }
             }
-            stat.setRodInsertion(NOMINAL_INSERTION);
-            stat.solve(400, 1e-9);
-            if (stat.diverged()) {
-                break;   // keep the last good profile
-            }
-            cooling.setShape(stat.axialShape());
-            cooling.solve(1.0, NOMINAL_FLOW_KGS);
         }
+        stat.setRodInsertion(NOMINAL_INSERTION);
+        stat.solve(400, 1e-9);
+        if (stat.diverged()) {
+            return null;
+        }
+        cooling.setShape(stat.axialShape());
+        cooling.solve(1.0, NOMINAL_FLOW_KGS);
         return cooling.voidFraction().clone();
+    }
+
+    /**
+     * The fuel-to-coolant conduction rise, fixed so the HOTTEST node reaches the
+     * documented maximum fuel temperature at the current shape. R_eff is smaller than
+     * the physical UO2+gap+clad+film chain because the model's axial peaking factor is
+     * higher than a real core's; anchoring to the sourced temperature keeps the peak
+     * right and is revisited when the axial shape is corrected. See
+     * {@link FuelTemperature}.
+     */
+    private FuelTemperature anchorFuelModel() {
+        double[] tc = cooling.coolantTempC();
+        double[] q = FuelTemperature.linearPowerPerRod(cooling.nodePowerW(),
+            NODE_LENGTH_M, RbmkGeometry.FUEL_CHANNELS);
+        int hot = 0;
+        for (int a = 1; a < q.length; a++) {
+            if (q[a] > q[hot]) {
+                hot = a;
+            }
+        }
+        return FuelTemperature.anchoredToPeak(q[hot], tc[hot]);
     }
 
     private static double mean(double[] v) {
@@ -311,7 +386,7 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         // the same path, so the poison acts through the neutron balance.
         solver.setXenonRatio(xenonRatio());
         if (axialCoupling) {
-            solver.setAxialState(cooling.voidFraction(), fuelTempC, graphiteTempC);
+            solver.setAxialState(cooling.voidFraction(), fuelTempByNode, graphiteTempC);
         } else {
             solver.setCoreState(voidFraction, fuelTempC, graphiteTempC);
         }
@@ -340,9 +415,21 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         voidFraction += (cooling.meanVoid() - voidFraction) * alpha;
         voidFraction = clamp01(voidFraction);
 
-        double fuelEq = tempFromPower(total);
-        fuelTempC += (fuelEq - fuelTempC) * (dt / TAU_FUEL);
-        graphiteTempC += (fuelEq * 0.95 - graphiteTempC) * (dt / TAU_GRAPHITE);
+        // Fuel: each node sits a conduction rise above ITS OWN coolant, which carries
+        // the real flow and inlet temperature. The rise is the anchored fuel model, so
+        // a pump trip cools the fuel with the water and a power tilt heats it where the
+        // flux is. Each node relaxes toward equilibrium on the fuel time constant.
+        double[] fuelEq = fuelConduction.equilibrium(cooling.coolantTempC(),
+            FuelTemperature.linearPowerPerRod(cooling.nodePowerW(),
+                NODE_LENGTH_M, RbmkGeometry.FUEL_CHANNELS));
+        double relax = Math.min(1.0, dt / TAU_FUEL);
+        double sum = 0;
+        for (int a = 0; a < fuelTempByNode.length; a++) {
+            fuelTempByNode[a] += (fuelEq[a] - fuelTempByNode[a]) * relax;
+            sum += fuelTempByNode[a];
+        }
+        fuelTempC = sum / fuelTempByNode.length;
+        graphiteTempC += (fuelTempC * 0.95 - graphiteTempC) * (dt / TAU_GRAPHITE);
 
         xenon.setFlux(Math.max(fission, 0));
         xenon.step(dt);
@@ -383,6 +470,16 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     @Override
     public double fuelTempC() {
         return fuelTempC;
+    }
+
+    /** Per-axial-node fuel temperature, degC, bottom to top (hot where the flux is). */
+    public double[] fuelTempByNodeC() {
+        return fuelTempByNode.clone();
+    }
+
+    /** The anchored fuel-to-coolant conduction rise, K per (W/m). */
+    public double fuelRisePerWPerM() {
+        return fuelConduction.risePerWPerM();
     }
 
     @Override
@@ -458,10 +555,6 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         } else if (insertion > insertionTarget) {
             insertion = Math.max(insertionTarget, insertion - step);
         }
-    }
-
-    private double tempFromPower(double p) {
-        return NOMINAL_FUEL_C + FUEL_PER_POWER * (p - 1.0);
     }
 
     private static double clamp01(double v) {
