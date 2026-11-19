@@ -1,4 +1,9 @@
 {
+  "_sourcePolicy": {
+    "preference": "Russian / Soviet primary sources first (ROSFOND-2010 evaluated nuclear data, NIKIET and RRC-Kurchatov design documentation, the plant technical description). Western and IAEA documents are used only where no Russian primary source covers the quantity, and are labelled as such.",
+    "why": "Ben's standing instruction: the designers of the RBMK are the best-placed source for its data. A quantity sourced from INSAG-7 or NUREG-1250 is a second-best fallback, not a first choice, and must be marked so that it can be replaced when a Russian source is found.",
+    "applies_to": "Every entry in this register. A nuclear-data quantity should ultimately come from ROSFOND-2010, not ENDF/B-VIII.0."
+  },
   "_comment": "Registry of the numeric constants the RBMK model rests on, with their source. Mission rule 2: nothing is guessed. status is one of: verified (cites a primary source, with sourceUrl + quote), to_verify (a reference value not yet confirmed against a primary source), placeholder (a value with no source at all, allowed only as a FALLBACK that is unused while real data is present). The build gate warns on to_verify and FAILS on any non-fallback placeholder; the self-test additionally requires every verified entry to carry a sourceUrl and a quote.",
   "_primarySources": {
     "INSAG-7": {

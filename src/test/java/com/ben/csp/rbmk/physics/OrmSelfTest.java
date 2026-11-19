@@ -82,21 +82,44 @@ public final class OrmSelfTest {
             Math.abs(w.worth(RodType.RR, 0.0)) < 0.1 * Math.abs(w.worth(RodType.RR, 1.0)),
             "worth(0)=" + w.worth(RodType.RR, 0.0));
 
-        // ---- 5. the positive scram: inserting a manual rod first RAISES reactivity ----
+        // ---- 5. the positive scram, and WHEN it happens ----
+        // Inserting a manual rod sweeps its graphite displacer down through the core
+        // before the B4C arrives. Whether that RAISES reactivity depends on where the
+        // flux is: the displacer is worth most where the flux is. Against a
+        // bottom-peaked (accident) flux the withdrawn rod's displacer sits in the weak
+        // upper flux, so moving it down into the strong lower flux gains reactivity —
+        // the positive scram. Against a centre-peaked (nominal) flux the displacer is
+        // already at the peak, so there is nothing to gain and the curve only falls.
+        // Asserting the rise unconditionally would be asserting the wrong physics.
         double w0 = w.worth(RodType.RR, 0.0);
         double peak = Double.NEGATIVE_INFINITY;
         double peakAt = 0;
-        for (int i = 0; i <= 100; i++) {
-            double x = i / 100.0;
+        for (int i = 0; i <= 1000; i++) {
+            double x = i / 1000.0;
             double v = w.worth(RodType.RR, x);
             if (v > peak) {
                 peak = v;
                 peakAt = x;
             }
         }
-        check("manual rod worth RISES before it falls (the displacer, not the absorber)",
-            peak > w0 && peakAt > 0.0 && peakAt < 0.5,
-            String.format("peak %+.5f at insertion %.2f, withdrawn %+.5f", peak, peakAt, w0));
+        check("at NOMINAL (centre-peaked) flux, manual rod worth only falls with insertion",
+            !(peak > w0 + 1e-12),
+            String.format("peak %+.7f at %.3f vs withdrawn %+.7f", peak, peakAt, w0));
+
+        RodWorth accident = RodWorth.bottomPeaked();
+        double a0 = accident.worth(RodType.RR, 0.0);
+        double aPeak = Double.NEGATIVE_INFINITY;
+        double aPeakAt = 0;
+        for (int i = 0; i <= 1000; i++) {
+            double v = accident.worth(RodType.RR, i / 1000.0);
+            if (v > aPeak) {
+                aPeak = v;
+                aPeakAt = i / 1000.0;
+            }
+        }
+        check("at ACCIDENT (bottom-peaked) flux, manual rod worth RISES first - the positive scram",
+            aPeak > a0 && aPeakAt > 0.0 && aPeakAt < 0.5,
+            String.format("peak %+.7f at %.3f, withdrawn %+.7f", aPeak, aPeakAt, a0));
 
         // ---- 6. the bank is the cartogram's rods ----
         RodBank bank = new RodBank();
@@ -117,11 +140,11 @@ public final class OrmSelfTest {
         check("all rods inserted gives a margin of about 211 rods",
             Math.abs(ormIn - 211.0) < 12.0, String.format("ORM=%.1f rods", ormIn));
 
-        // ORM rises with insertion. It is not strictly monotonic at the very end: a
-        // manual rod's 6.772 m absorber is SHORTER than the 7.0 m core, so driving it
-        // fully home leaves the top 0.23 m of the core unabsorbed and gives back a
-        // little worth. That overshoot is real, so allow it and check it explicitly.
-        boolean monotonic = true;
+        // ORM rises with insertion and is NOT monotonic at the very end: a manual
+        // rod's 6.772 m absorber is SHORTER than the 7.0 m core, so driving it fully
+        // home leaves the top 0.228 m unabsorbed and gives a little worth back. The
+        // effect is small (1.4% of the margin) but real, so pin its size rather than
+        // accept anything under a loose bound.
         double prev = Double.NEGATIVE_INFINITY;
         double worstDrop = 0;
         double[] at = new double[11];
@@ -129,20 +152,63 @@ public final class OrmSelfTest {
             setAll(bank, i / 10.0);
             double o = bank.orm();
             at[i] = o;
-            if (o < prev - 1e-9) {
-                monotonic = false;
-                worstDrop = Math.max(worstDrop, prev - o);
-            }
+            worstDrop = Math.max(worstDrop, prev - o);
             prev = o;
         }
-        check("ORM rises with insertion except a small overshoot at full travel",
-            at[10] > at[0] && worstDrop < 0.05 * at[10],
-            String.format("%.1f -> %.1f, worst step drop %.1f rods", at[0], at[10], worstDrop));
-        check("the overshoot is the absorber being shorter than the core (6.772 < 7.0 m)",
+        check("ORM rises with insertion overall", at[10] > at[0],
+            String.format("%.1f -> %.1f", at[0], at[10]));
+
+        // Measure the peak and the give-back at full travel, rather than sampling
+        // coarsely and hoping: 2.9 rods at insertion 0.929 with the sub-node integral.
+        double ormPeak = Double.NEGATIVE_INFINITY;
+        double ormPeakAt = 0;
+        for (int i = 0; i <= 1000; i++) {
+            setAll(bank, i / 1000.0);
+            double o = bank.orm();
+            if (o > ormPeak) {
+                ormPeak = o;
+                ormPeakAt = i / 1000.0;
+            }
+        }
+        setAll(bank, 1.0);
+        double atHome = bank.orm();
+        double giveBack = ormPeak - atHome;
+        check("ORM peaks just short of full travel, not at home",
+            ormPeakAt > 0.85 && ormPeakAt < 1.0, String.format("peak at %.3f", ormPeakAt));
+        check("the give-back at full travel is ~2.9 rods (1.4% of the margin)",
+            giveBack > 2.0 && giveBack < 4.0,
+            String.format("peak %.2f at %.3f, home %.2f, give-back %.2f rods (%.1f%%)",
+                ormPeak, ormPeakAt, atHome, giveBack, 100 * giveBack / ormPeak));
+        check("the give-back is the absorber being shorter than the core (6.772 < 7.0 m)",
             RodType.RR.absorberM < RbmkGeometry.CORE_HEIGHT_M
                 && w.worth(RodType.RR, 1.0) > w.worth(RodType.RR, 0.95),
             String.format("worth(0.95)=%+.6f worth(1.0)=%+.6f",
                 w.worth(RodType.RR, 0.95), w.worth(RodType.RR, 1.0)));
+
+        // ---- 7b. the margin must not be quantised on the axial mesh ----
+        // Worth was snapped to the 28 node centres, so 87% of insertion positions
+        // produced no change at all and one node step could shift ORM by 13.7 rods.
+        // The sub-node integral must make it continuous and resolve well under 1 rod.
+        double prevOrm = Double.NaN;
+        int flat = 0;
+        double maxJump = 0;
+        int n = 400;
+        for (int i = 0; i <= n; i++) {
+            setAll(bank, i / (double) n);
+            double o = bank.orm();
+            if (!Double.isNaN(prevOrm)) {
+                double dlt = Math.abs(o - prevOrm);
+                if (dlt < 1e-9) {
+                    flat++;
+                }
+                maxJump = Math.max(maxJump, dlt);
+            }
+            prevOrm = o;
+        }
+        check("ORM is continuous in insertion (no 28-node staircase)",
+            flat == 0, flat + " of " + n + " steps did not move the margin");
+        check("no single 0.25% insertion step moves ORM by more than 2 rods",
+            maxJump < 2.0, String.format("max jump %.2f rods", maxJump));
 
         // the operating point: margin must be able to reach the plant's nominal band
         setAll(bank, 0.0);

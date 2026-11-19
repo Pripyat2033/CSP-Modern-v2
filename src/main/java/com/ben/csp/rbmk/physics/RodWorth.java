@@ -38,8 +38,16 @@ public final class RodWorth {
     private static final double SA_GRAPHITE = 0.0005;
     private static final double SA_B4C = 0.450;
 
-    /** beta_eff, the unit the panel's rod-worth figures are quoted in. */
-    private static final double BETA_EFF = 0.0065;
+    /**
+     * beta_eff, the unit the panel's rod-worth figures are quoted in. Read from the
+     * provenance registry rather than duplicated here: the whole absolute rod-worth
+     * scale is calibrated from "24 АЗ rods = -2 beta_eff", so this constant is
+     * load-bearing and must have exactly one home.
+     */
+    private static double betaEff() {
+        PhysicsProvenance.Entry e = PhysicsProvenance.get("delayed.beta_eff");
+        return e == null ? 0.0065 : e.value();
+    }
 
     private final double[] flux2;
 
@@ -59,7 +67,7 @@ public final class RodWorth {
             throw new IllegalArgumentException("flux must have " + NODES + " nodes");
         }
         this.flux2 = axialFlux2.clone();
-        this.azRodWorth = RodType.AZ.groupWorthBeta * BETA_EFF / RodType.AZ.count;
+        this.azRodWorth = RodType.AZ.groupWorthBeta * betaEff() / RodType.AZ.count;
         this.fullColumn = fullColumnIntegral();
     }
 
@@ -160,6 +168,57 @@ public final class RodWorth {
         return num / den;
     }
 
+    /** Length of the overlap of [a0,a1] with [b0,b1], m; zero if disjoint. */
+    private static double overlap(double a0, double a1, double b0, double b1) {
+        return Math.max(0.0, Math.min(a1, b1) - Math.max(a0, b0));
+    }
+
+    /**
+     * The nodal integral with the rod's material boundaries placed exactly inside
+     * each node, rather than snapped to the node that contains the node centre.
+     *
+     * <p>The flux is still piecewise constant per node, but a node is now weighted by
+     * how much of it each material actually covers. That makes the worth a continuous,
+     * piecewise-linear function of insertion instead of a 28-step staircase: snapping
+     * to node centres moved the whole 250 mm node's worth at once, so 87% of insertion
+     * positions produced no change at all and a single node step could shift the margin
+     * by 13.7 rods — far coarser than the 43/30-rod trip set points.
+     */
+    private double integralContinuous(RodType t, double insertion) {
+        double d = clamp01(insertion) * CORE_H;
+        double gap = t.displacerM > 0 ? TELESCOPE_M : 0.0;
+        double absBottom;
+        double absTop;
+        double dispBottom;
+        double dispTop;
+        if (t.fromBelow) {
+            absBottom = d - t.absorberM;
+            absTop = d;
+            dispBottom = d + gap;
+            dispTop = dispBottom + t.displacerM;
+        } else {
+            double stackBottom = CORE_H - d - t.displacerM - gap;
+            dispBottom = stackBottom;
+            dispTop = stackBottom + t.displacerM;
+            absBottom = dispTop + gap;
+            absTop = absBottom + t.absorberM;
+        }
+        double nodeH = CORE_H / NODES;
+        double num = 0;
+        double den = 0;
+        for (int z = 0; z < NODES; z++) {
+            double h0 = z * nodeH;
+            double h1 = h0 + nodeH;
+            double fAbs = overlap(absBottom, absTop, h0, h1) / nodeH;
+            double fDisp = overlap(dispBottom, dispTop, h0, h1) / nodeH;
+            double fWater = Math.max(0.0, 1.0 - fAbs - fDisp);
+            double saEff = fAbs * SA_B4C + fDisp * SA_GRAPHITE + fWater * SA_WATER;
+            num += -(saEff - SA_WATER) * flux2[z];
+            den += flux2[z];
+        }
+        return num / den;
+    }
+
     /** Nodal integral of a full-core B4C column — the normalising denominator. */
     private double fullColumnIntegral() {
         RbmkGeometry.NodeMaterial[] full = new RbmkGeometry.NodeMaterial[NODES];
@@ -167,9 +226,15 @@ public final class RodWorth {
         return integral(full);
     }
 
-    /** Reactivity (dk/k) contributed by a rod of this type at this insertion, 0..1. */
+    /**
+     * Reactivity (dk/k) contributed by a rod of this type at this insertion, 0..1.
+     *
+     * <p>Uses the sub-node integral, so the result is continuous in insertion. The
+     * normaliser is a solid B4C column, which the continuous form gives as exactly
+     * {@code -(SA_B4C - SA_WATER)} because the flux weighting cancels.
+     */
     public double worth(RodType t, double insertion) {
-        return azRodWorth * integral(rodMaterials(t, insertion)) / fullColumn;
+        return azRodWorth * integralContinuous(t, insertion) / fullColumn;
     }
 
     /**
