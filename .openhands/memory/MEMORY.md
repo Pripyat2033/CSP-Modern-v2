@@ -1084,3 +1084,17 @@ diff src vs build resources BEFORE believing it is a code defect.
 authority — NOT the round 0.4 m/s (that gives 16.4 s, outside the source). Use
 `ROD_FULL_TRAVEL_S = 17.5`, `ROD_INSERTION_PER_S = 1/17.5`; never speed/CORE_HEIGHT
 (mixes the 6.55 m travel with the 7 m core). `RbmkXsec` is a record: `sa2()`, not `.sa2`.
+
+## DEPENDENCIES — settled 2026-11-18 (stop re-checking)
+**"Fabric 1.16" does not exist** — 1.16 is a *Minecraft* version. Mod pins MC 1.20.1,
+Fabric Loader 0.15.11, Fabric API 0.91.0+1.20.1, Java 17+.
+**OpenMC is NOT on PyPI** ("No matching distribution found") and is NOT needed: no
+shipped code imports it; `tools/lattice` only mentions the `openmc-data-storage`
+GitHub JSON mirror. Trap: `import openmc` inside the repo silently resolves to the
+repo's own `openmc/` directory — test imports from `/tmp`.
+**ROSFOND path deps = numpy, scipy, njoy, pypdf** (all installed & proven):
+`pip install njoy` ships a REAL 4.9 MB ELF binary + a wrapper at `~/.local/bin/njoy`
+(wrapper needs the binary; pass a DECK FILE, put `~/.local/bin` on PATH).
+`reconstruct_rosfond.py --only U235` works; U-235 @0.0253 eV = **fission 584.90 b,
+capture 98.66 b** (targets 585+-10, 99+-4). Lattice self-tests are STANDALONE
+scripts (`python3 test_endf6.py`), NOT pytest. **Java 31/31 suites green.**
