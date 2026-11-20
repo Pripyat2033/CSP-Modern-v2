@@ -1062,3 +1062,25 @@ mute the 3-D core's void worth only 4% (+0.0515 -> +0.0493 at dial 1.0). The 75/
 homogenisation is NOT the cause (pure B4C still 84%). The 1-D cell has no rod zone,
 so no lattice table can carry rod feedback. OpenMC's rod test is itself confounded
 (inserting a rod deletes 1/9 of the fuel; a no-absorber water channel gives +0.064).
+
+## CONTROL ROD: an impossible rod, and the stale-build trap (2026-11-18)
+`RbmkXsec.controlCell()` had a hand-set 0.75/0.25 graphite/rod split. That 0.25
+implies a **Ø141 mm rod in a Ø114 mm bore** (1.24x, impossible) and overstated rod
+absorption by **53%**. Now DERIVED: `CONTROL_HOLE_FRACTION = (pi/4)*114²/250² =
+0.16327` (provenance `xsec.control_hole_fraction`, to_verify — 16.33% is a hard
+UPPER BOUND). Physics preserved: positive scram +0.00494, 26 April still raises
+power 38.6% and still fails to shut down. **The rod OD is genuinely unpublished**
+(Reglament, INSAG-7 EN+RU, NIKIET book, RU Wikipedia all checked) — stop hunting
+it; `docs/RBMK-CORE-GEOMETRY.md` §3b documents the bound.
+
+**THE STALE-BUILD TRAP (cost a whole session):** `LatticeTableSelfTest` "failed"
+as a "pre-existing" ENDF/B-VIII.0 failure. It was a **stale
+`build/resources/main/rbmk_lattice.json`** (ENDF) while `src/main/resources` said
+ROSFOND-2010/verified. `./gradlew processResources` fixed it — suite then went
+**31/31 green, the first fully green run**. If a resource-reading test fails,
+diff src vs build resources BEFORE believing it is a code defect.
+
+**Rod travel:** the panel's `rod.travel` 17-18 s is status *verified* and is the
+authority — NOT the round 0.4 m/s (that gives 16.4 s, outside the source). Use
+`ROD_FULL_TRAVEL_S = 17.5`, `ROD_INSERTION_PER_S = 1/17.5`; never speed/CORE_HEIGHT
+(mixes the 6.55 m travel with the 7 m core). `RbmkXsec` is a record: `sa2()`, not `.sa2`.
