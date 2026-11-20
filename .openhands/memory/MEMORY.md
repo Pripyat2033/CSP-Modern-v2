@@ -1127,3 +1127,45 @@ quoted dense vs fabricated, and "typo for 2.65" is impossible (>100 %). Density 
 the excursion only 0.9 points; **fuel temperature is FROZEN in the accident test**, which
 is the biggest remaining fidelity gap. Trap: patching `src/main/resources/*.json` does
 NOT affect tests — the classpath reads `build/resources/main/`.
+
+## ACCIDENT-SEQUENCE TESTS: the trap that hid a 5x error (2026-11-18)
+
+`gradlew check` runs ONLY `checkProvenance`. Every physics test is a `main()`
+class run by hand. **"72/72 passed" never included `AccidentSequence`** — which
+was failing 2/12 on clean HEAD. Always run the `main()` classes explicitly; the
+classpath comes from the `printTestCp` task now in `build.gradle`.
+
+Three ways an RBMK test can pass while measuring nothing (all three were live):
+1. **Measuring at the wrong operating point.** The xenon pit was checked after
+   withdrawing rods back to 0.82 — power ~0.98, where flux burns Xe faster than
+   I-135 makes it. The pit is LOW-flux and HOURS long (I-135 T1/2 6.57 h); the
+   old wait was 30 min. Correct model: hold 200 MWt (what the operators held
+   00:28-01:23) and let АР withdraw rods to hold it — insertion 0.900->0.782.
+2. **A regulator with no setpoint.** `setAutoRegulator(true)` latches the setpoint
+   to CURRENT power. Called when power is ~0 it "holds" zero, the core dies, and
+   every later check passes vacuously (P_fis 0.0000 -> 0.0000). Use
+   `setPowerSetpoint()` and call it AFTER engaging. АР must also be OFF for manual
+   rod moves and for the scram, or it fights them.
+3. **Measuring the wrong power.** `power()` = fission + decay heat; decay
+   (EQUILIBRIUM 6.5 % of nominal) is flux-independent, so at low power a real
+   neutron excursion vanishes into rounding. Use `fissionPower()`.
+
+## THE BARE SOLVER HAS NO THERMAL FEEDBACK — and this invalidates old peak figures
+
+`RbmkTransientSolver` takes fuel temperature as an INPUT. Only
+`UnifiedReactorCore` relaxes it (TAU_FUEL 10 s, anchored to
+`FuelTemperature.MAX_FUEL_C` 600 °C). `ExperimentVariantsSelfTest` bypassed that
+and passed a frozen `640 + 600*(p-1)` — the very formula `FuelTemperature.java`
+exists to replace. Consequence: **starting power was just how long the settle
+loop ran** (26 April P0 = 1.53 / 2.36 / 5.63 / 32.8 at 10/20/40/80 s), so every
+"peak %" from that path was arbitrary. With fuel temperature allowed to move the
+26 April peak drops from +188 % to about +89-140 % depending on the thermal model.
+
+**Worse: state B is not a critical core at all.** Seeded at xenon 1.0 (unpoisoned)
+with rods at 0.08 it is simply supercritical, so it can never settle. Bisection on
+`solver.balanceKeff()` gives **Xe ~ 3.12** as the ratio that makes it critical.
+The real 26 April state was critical BECAUSE of xenon poisoning — that is what
+the ORM violation means. Open question for Ben: define the two start states by
+(a) solving their critical xenon, (b) driving them there with АР from
+`selfConsistentSeed()`, or (c) running the variants on `UnifiedReactorCore` like
+`AccidentSequence` does. I lean (c).
