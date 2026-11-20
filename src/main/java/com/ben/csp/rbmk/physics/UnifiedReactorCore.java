@@ -573,6 +573,15 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         this.powerSetpoint = fission;
     }
 
+    /**
+     * Set the power the АР regulator holds. Only meaningful while the regulator is
+     * on; it is what the operator dials in, as distinct from the setpoint silently
+     * latched to whatever the power happened to be when the regulator was engaged.
+     */
+    public void setPowerSetpoint(double p) {
+        this.powerSetpoint = Math.max(0.0, p);
+    }
+
     // --------------------------------------------------------------- readouts
 
     /** The spatial eigenvalue from the neutron balance. */

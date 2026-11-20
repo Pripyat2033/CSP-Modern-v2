@@ -135,3 +135,7 @@ publishing {
         // retrieving dependencies.
     }
 }
+tasks.register('printTestCp') {
+    doLast { println sourceSets.test.runtimeClasspath.asPath }
+}
+
