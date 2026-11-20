@@ -1114,3 +1114,16 @@ are a different build, 24 % off the panel's 6.772 / 4.56 m, so `rod.diameters` i
 65 mm B4C). **OpenMC 0.16.0 IS installed** at `/workspace/tools/omc/env` (+ ENDF/B-VIII.0
 at `/workspace/tools/openmc_data/`) — `import openmc` from the repo root is shadowed by
 the repo's own `openmc/` dir. Full suite 72/72; provenance gate passes.
+
+## SCRAM RATE + power() UNITS (commit ac51f3d, 2026-11-18) — read before quoting ANY number
+`ExperimentVariantsSelfTest` hardcoded 0.2 insertion/s; the model's own constant is
+0.057/s (17.5 s stroke). **26 April peak: +35.4 % at the fake rate, +188.0 % at the real
+one.** Direction never wrong, magnitude was 5x low. The test now reads
+`RbmkGeometry.ROD_INSERTION_PER_S`. **`power()` is ARBITRARY UNITS (reference state = 1.0),
+NOT "times nominal"** — the 26 April variant is seeded at 5.63 of those units; only
+ratios are meaningful, no absolute MW exists. B4C density: 2.52 is the theoretical
+crystal density, 1.65 is 65.5 % of it (a real pellet) — probably the same material
+quoted dense vs fabricated, and "typo for 2.65" is impossible (>100 %). Density moves
+the excursion only 0.9 points; **fuel temperature is FROZEN in the accident test**, which
+is the biggest remaining fidelity gap. Trap: patching `src/main/resources/*.json` does
+NOT affect tests — the classpath reads `build/resources/main/`.
