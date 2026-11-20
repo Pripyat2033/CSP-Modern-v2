@@ -1,5 +1,7 @@
 package com.ben.csp.rbmk.physics;
 
+import com.ben.csp.rbmk.RbmkGeometry;
+
 /**
  * The paranoia test: does the model DISCRIMINATE between the experiment variants,
  * or does it just "run and hold" whatever it is given?
@@ -56,14 +58,19 @@ public final class ExperimentVariantsSelfTest {
 
         check(normal.end < normal.p0 * 0.60,
             "normal run: AZ-5 shuts the core down (" + round(normal.end) + ")");
-        // "Does not shut down" means the power stays at many times nominal, NOT
-        // that it is still rising. With the derived control-rod materials a full
-        // scram does drive k_eff subcritical (the rods work), but it does so only
-        // after a large positive-scram excursion, so 12 s in the power is still
-        // several times nominal — the core never returned to a safe low power.
+        // "Does not shut down" means the power stays far above where it started,
+        // NOT that it is still rising. With the derived control-rod materials a
+        // full scram does drive k_eff subcritical (the rods work), but only after
+        // a large positive-scram excursion, so 20 s in the power is still many
+        // times its starting value - the core never returned to a safe low power.
+        //
+        // Units: power() is in ARBITRARY units normalised so the reference state
+        // is 1.0, NOT "times nominal". The accident run starts at 5.6 of these,
+        // which is a property of the seeded low-power state, not a claim that the
+        // reactor was at 560 % power. Ratios are meaningful; absolute values are not.
         check(accident.end > 3.0,
             "26 April: AZ-5 does NOT shut the core down (" + round(accident.end)
-                + "x nominal)");
+                + "x its own starting power)");
         check(accident.end > normal.end * 5.0,
             "26 April ends far above the normal run ("
                 + round(accident.end) + " vs " + round(normal.end) + ")");
@@ -103,10 +110,17 @@ public final class ExperimentVariantsSelfTest {
             s.step(0.05, 2);
         }
         double p0 = s.power();
-        // AZ-5: the rods drive in at the real emergency speed (~0.2 insertion/s).
+        // AZ-5 at the MODELLED scram rate, not a hand-set one. This used to be a
+        // hardcoded 0.2 insertion/s (a 5 s full stroke), 3.5x faster than the
+        // model's own ROD_INSERTION_PER_S (0.057/s, a 17.5 s stroke from the
+        // panel table) - so the test measured a scram the plant cannot perform.
+        // The rate matters: at the real speed the 26 April excursion is far larger
+        // because the displacer sits in the core much longer before the absorber
+        // follows it.
+        double rate = RbmkGeometry.ROD_INSERTION_PER_S;
         double peak = p0;
-        for (int k = 0; k < 240; k++) {
-            double target = Math.min(1.0, ins + 0.2 * (k * 0.05));
+        for (int k = 0; k < 400; k++) {
+            double target = Math.min(1.0, ins + rate * (k * 0.05));
             s.setCoreState(voidFrac, fuel);
             s.setRodInsertion(target);
             s.step(0.05, 2);

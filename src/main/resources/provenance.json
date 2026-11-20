@@ -384,9 +384,8 @@
       "unit": "g/cm3",
       "status": "to_verify",
       "source": "CONFLICT: DOE/NE-0076 Table G-2 'Absorber Density 1.65 gm/CC' vs the 2.52 g/cm3 used by tools/lattice/emit_constants.py",
-      "sourceUrl": "https://www.osti.gov/biblio/7037704",
       "quote": "Absorber Density 1.65 gm/CC (DOE/NE-0076 Table G-2).",
-      "note": "Unresolved and NOT silently reconciled. 1.65 g/cm3 is low for hot-pressed B4C (typically 1.7-2.5); it may be a typo for 2.65, or the actual pressed density of the Soviet absorber. The derived control cross-sections in rbmk_lattice.json currently rest on 2.52. Needs a Russian source for the absorber density before either number is frozen."
+      "note": "MEASURED SENSITIVITY, not a guess: B4C density enters the two-group constants linearly, so 1.65 vs 2.52 is a 1.53x swing in absorber strength - a far bigger lever than the rod diameter (1.2x). Run through ExperimentVariantsSelfTest at the MODELLED scram rate, 1.65 gives +187.1% and 2.52 gives +188.0% on the 26 April excursion: 0.9 percentage points. So the density conflict is real but it is NOT what decides the accident - the rod axial geometry is. WHY THE TWO NUMBERS DIFFER: 2.52 g/cm3 is the THEORETICAL CRYSTAL density of B4C, i.e. 100% dense with zero porosity; 1.65 is 65.5% of theoretical, which is a plausible hot-pressed pellet density. So they are probably not a contradiction at all but the same material quoted dense vs as-fabricated, and the physically correct one for a real pellet is the LOWER figure. That also kills the earlier '1.65 may be a typo for 2.65' idea: 2.65 g/cm3 is 105% of the crystal density, which is impossible for B4C. The model currently uses 2.52, i.e. it assumes a fully dense absorber and therefore OVERSTATES rod worth by up to 1.53x. Switching to 1.65 would be the physically better default, but it should be done together with the diameter question, not piecemeal."
     },
     "rod.insert_s_insag7": {
       "value": {
@@ -426,6 +425,23 @@
       "status": "to_verify",
       "source": "openmc/control_rod_test.py, channel_universe(): rod_r defaults to 2.5 cm, rodclad = rod_r + 0.4",
       "note": "The OpenMC model already treats the rod as a THIN absorber in a water-filled bore rather than a plug - the same correction just made in the Java control cell - so the two now agree in structure. But its radius is wrong: rod_r=2.5 cm is the 50 mm INNER CLAD bore, not the absorber. Per DOE Table G-2 the B4C is a 65 mm OD / 57.5 mm ID annulus (r 2.875-3.25 cm) and the outer clad is 70 mm (r 3.5 cm). The model's 'b4c' cylinder therefore sits in the cooling passage and its 'clad' shell at 2.9 cm is inside where the real B4C starts. Not yet fixed: the script has not been re-run against the corrected radii, so any control-rod result it produced so far describes a Ø50 mm solid absorber, which is physically not the RBMK rod."
+    },
+    "test.scram_rate": {
+      "value": {
+        "was_insertion_per_s": 0.2,
+        "now_insertion_per_s": 0.0571,
+        "full_stroke_s": 17.5
+      },
+      "unit": "insertion fraction per second",
+      "status": "to_verify",
+      "source": "RbmkGeometry.ROD_INSERTION_PER_S = 1 / ROD_FULL_TRAVEL_S (17.5 s, panel table); the test now reads that constant -- INTERNAL code fact, not an external citation: needs a primary source for the 17.5 s stroke before it can be marked verified.",
+      "note": "BUG FIXED. ExperimentVariantsSelfTest hardcoded 0.2 insertion/s - a 5 s full stroke - while the model's own constant is 0.057/s (17.5 s). The test was therefore measuring a scram 3.5x faster than the plant can perform, and understating the accident. At the real rate the 26 April excursion is +188%, not +35%. The direction was never wrong, only the magnitude. Any earlier figure quoting ~35% is from the wrong rate. STATUS: to_verify because the gate requires an external URL + verbatim quote for 'verified', and this is a code-consistency fact."
+    },
+    "test.power_units": {
+      "value": "arbitrary units, normalised to the reference state = 1.0",
+      "status": "to_verify",
+      "source": "RbmkTransientSolver.power() javadoc: 'Mean fission source over the active nodes - the reactor power (arbitrary units)' -- INTERNAL code fact, not an external citation: needs a primary source for the 17.5 s stroke before it can be marked verified.",
+      "note": "The accident test's assertion text used to say 'x nominal', which is wrong: the reference state is 1.0 and the 26 April variant is SEEDED at 5.63 of those units. Those 5.63 are a property of the seeded low-power state, NOT a claim the reactor ran at 563% power. Ratios (peak/p0, end/p0) are meaningful; absolute power is not, and nothing in the model should be read as an absolute MW figure until a normalisation to nominal power is added. STATUS: to_verify because the gate requires an external URL + verbatim quote for 'verified', and this is a code-consistency fact."
     }
   }
 }
