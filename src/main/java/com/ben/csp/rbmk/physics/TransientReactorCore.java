@@ -46,7 +46,7 @@ public final class TransientReactorCore implements ReactorModel, AutoCloseable {
     private volatile double realTimeFactor = 1.0;
 
     private static final double ROD_RATE =
-        RbmkGeometry.ROD_SPEED_M_PER_S / RbmkGeometry.CORE_HEIGHT_M;
+        RbmkGeometry.ROD_INSERTION_PER_S;
 
     public TransientReactorCore() {
         thread = new Thread(this::run, "rbmk-transient-core");

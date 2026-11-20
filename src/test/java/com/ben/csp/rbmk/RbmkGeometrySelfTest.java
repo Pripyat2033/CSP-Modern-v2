@@ -2,6 +2,8 @@ package com.ben.csp.rbmk;
 
 import java.util.List;
 
+import com.ben.csp.rbmk.physics.RbmkXsec;
+
 /**
  * Standalone self-test for the 1:4 RBMK core geometry and the control-rod
  * mechanism. No mocks: it exercises the real classes.
@@ -126,10 +128,11 @@ public final class RbmkGeometrySelfTest {
         eq(0, countIn(partlyIn, RbmkGeometry.NodeMaterial.B4C, 0, bottomThird),
             "the absorber has not yet reached the bottom of the core");
 
-        // ---- fully inserted: the absorber fills the core ----
+        // ---- fully inserted: the absorber spans the core, less the 0.45 m the
+        //      6.55 m travel cannot reach (NIKIET: absorber 6.772 m, travel 6.55 m) ----
         RbmkGeometry.NodeMaterial[] inserted = RbmkGeometry.rodMaterials(1.0);
-        eq(RbmkGeometry.CORE_HEIGHT_BLOCKS, count(inserted, RbmkGeometry.NodeMaterial.B4C),
-            "fully inserted: B4C fills the whole core");
+        eq(26, count(inserted, RbmkGeometry.NodeMaterial.B4C),
+            "fully inserted: 6.772 m of absorber covers 26 of the 28 nodes");
         eq(0, count(inserted, RbmkGeometry.NodeMaterial.GRAPHITE),
             "fully inserted: the displacer is driven out of the core");
 
@@ -145,11 +148,46 @@ public final class RbmkGeometrySelfTest {
         }
         check(monotonic, "absorber in the core rises monotonically as the rod goes in");
 
-        // ---- travel ----
-        check(Math.abs(RbmkGeometry.ROD_FULL_TRAVEL_S - 17.5) < 0.2,
-            "full rod travel is ~17.5 s at 0.4 m/s (" + RbmkGeometry.ROD_FULL_TRAVEL_S + " s)");
+        // ---- travel: NIKIET gives 6.55 m, NOT the 7 m core height ----
+        // The panel's verified full-stroke time is 17-18 s; that is the authority,
+        // and the speed is derived from it. Asserting the panel range here is what
+        // stops a round "0.4 m/s" from silently putting the rod outside the source.
+        check(RbmkGeometry.ROD_FULL_TRAVEL_S >= 17.0 && RbmkGeometry.ROD_FULL_TRAVEL_S <= 18.0,
+            "full rod travel is inside the panel's 17-18 s ("
+            + RbmkGeometry.ROD_FULL_TRAVEL_S + " s)");
+        check(Math.abs(RbmkGeometry.ROD_SPEED_M_PER_S - RbmkGeometry.ROD_TRAVEL_M
+                / RbmkGeometry.ROD_FULL_TRAVEL_S) < 1e-12,
+            "rod speed is derived from travel and time ("
+            + String.format("%.4f", RbmkGeometry.ROD_SPEED_M_PER_S) + " m/s)");
+        check(Math.abs(RbmkGeometry.ROD_INSERTION_PER_S * RbmkGeometry.ROD_FULL_TRAVEL_S - 1.0) < 1e-12,
+            "one full insertion takes exactly one travel time (not speed/core height,"
+            + " which would mix the 6.55 m travel with the 7 m core)");
+        check(Math.abs(RbmkGeometry.ROD_TRAVEL_M - 6.55) < 1e-9,
+            "rod travel is 6.55 m (NIKIET 6550 mm), so a rod never fully clears the core");
         eq(RbmkGeometry.CONTROL_CHANNELS - RbmkGeometry.RODS_FROM_BELOW, RbmkGeometry.RODS_FROM_ABOVE,
             "187 rods drive from above, 24 (USP) from below");
+
+        // ---- the rod must FIT inside its channel ----
+        // A control channel is a 114 mm bore in a 250 mm cell, so no rod can occupy
+        // more of the cell than the bore does. The cell once used a hand-set 0.75/0.25
+        // graphite/rod split, which implied a Ø141 mm rod in a Ø114 mm hole - 1.24x
+        // the bore - and overstated rod absorption by 53%. These checks fail if a
+        // geometrically impossible rod ever comes back.
+        double pitch = RbmkGeometry.LATTICE_PITCH_M;
+        double hole = RbmkGeometry.CHANNEL_HOLE_M;
+        double maxFrac = Math.PI / 4.0 * hole * hole / (pitch * pitch);
+        check(Math.abs(RbmkXsec.CONTROL_HOLE_FRACTION - maxFrac) < 1e-9,
+            "the control-cell rod fraction is the derived hole fraction ("
+            + String.format("%.5f", RbmkXsec.CONTROL_HOLE_FRACTION) + "), not a hand-set value");
+        check(RbmkXsec.CONTROL_HOLE_FRACTION <= maxFrac + 1e-12,
+            "the rod does not fill more of the cell than the bore does ("
+            + String.format("%.5f", RbmkXsec.CONTROL_HOLE_FRACTION) + " <= "
+            + String.format("%.5f", maxFrac) + ")");
+        // Equivalent rod diameter implied by the cell split, and the bore it must fit.
+        double impliedD = 2.0 * Math.sqrt(RbmkXsec.CONTROL_HOLE_FRACTION * pitch * pitch / Math.PI);
+        check(impliedD <= hole + 1e-9,
+            "the cell split implies a rod of Ø" + String.format("%.1f", impliedD * 1000)
+            + " mm, which fits the Ø" + String.format("%.0f", hole * 1000) + " mm bore");
 
         System.out.println("RbmkGeometrySelfTest: " + checks + " checks passed.");
     }

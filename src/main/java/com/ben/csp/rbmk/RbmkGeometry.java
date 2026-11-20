@@ -94,15 +94,45 @@ public final class RbmkGeometry {
     public static final double FUEL_ROD_LENGTH_M = 3.64;
 
     // --------------------------------------------------------- control rod
-    /** Graphite displacer at the rod foot: 4.5 m. */
-    public static final double ROD_DISPLACER_M = 4.5;
-    /** Telescope: a 1.25 m water-filled gap above the displacer. */
+    // Pre-1986 (2nd generation) rod, as built. Source: NIKIET's own design book,
+    // Abramov, Avdeev, Adamov et al., "Канальный энергетический реактор РБМК",
+    // ed. Yu.M. Cherkashov (GUP NIKIET) — verbatim in
+    // docs/primary-sources/nikiet-rod-geometry-quote.txt:
+    //   "Стержни АР, ЛАР ... состоят из поглотителя длиной 6772 мм,
+    //    телескопического соединения и вытеснителя длиной 4560 мм,
+    //    ход стержней - 6550 мм."
+    /** Graphite displacer at the rod foot: 4.56 m (NIKIET: 4560 mm). */
+    public static final double ROD_DISPLACER_M = 4.56;
+    /**
+     * Telescope: the water-filled gap above the displacer. NIKIET does not state
+     * it; RU Wikipedia gives the withdrawn rod a 1.25 m water gap at each end.
+     * Flagged to verify against the rod drawing.
+     */
     public static final double ROD_TELESCOPE_M = 1.25;
-    /** B4C absorber length; it fills the core when fully inserted. TO VERIFY. */
-    public static final double ROD_ABSORBER_M = CORE_HEIGHT_M;
-    /** Rod travel speed, ~0.4 m/s => ~17.5 s for the full 7 m. */
-    public static final double ROD_SPEED_M_PER_S = 0.4;
-    public static final double ROD_FULL_TRAVEL_S = CORE_HEIGHT_M / ROD_SPEED_M_PER_S; // 17.5
+    /** B4C absorber: 6.772 m (NIKIET: 6772 mm). Shorter than the 7 m core. */
+    public static final double ROD_ABSORBER_M = 6.772;
+    /**
+     * Rod travel, 6.55 m (NIKIET: 6550 mm) — NOT the 7 m core height. A rod
+     * therefore never fully clears the core, which is why a withdrawn rod still
+     * leaves 1.25 m of water below its displacer.
+     */
+    public static final double ROD_TRAVEL_M = 6.55;
+    /**
+     * Full-stroke insertion time, 17.5 s — the mid-point of the panel's verified
+     * 17-18 s ({@code rod.travel}). The 0.4 m/s often quoted is a nominal round
+     * figure: over the 6.55 m travel it would give 16.4 s, faster than the panel
+     * allows, so the panel time is the authority and the speed is derived from it.
+     */
+    public static final double ROD_FULL_TRAVEL_S = 17.5;
+    /** Average rod speed over the 6.55 m travel: 6.55 / 17.5 = 0.374 m/s. */
+    public static final double ROD_SPEED_M_PER_S = ROD_TRAVEL_M / ROD_FULL_TRAVEL_S;
+    /**
+     * Rod drive rate in units of INSERTION per second, which is what the core models
+     * integrate. One full stroke of the travel is one unit of insertion, so this is
+     * simply 1/17.5. It must not be computed as speed/core height: the travel (6.55 m)
+     * is shorter than the core (7 m), and mixing the two gives 18.7 s per stroke.
+     */
+    public static final double ROD_INSERTION_PER_S = 1.0 / ROD_FULL_TRAVEL_S;
     public static final int RODS_FROM_BELOW = 24;                       // УСП, axial shaping
     public static final int RODS_FROM_ABOVE = CONTROL_CHANNELS - RODS_FROM_BELOW; // 187
 
@@ -114,17 +144,17 @@ public final class RbmkGeometry {
      * (0 = fully withdrawn, 1 = fully inserted).
      *
      * <p>From its top down, the rod is: the B4C absorber, the 1.25 m telescope (a
-     * water gap), and the 4.5 m graphite displacer at its foot. Withdrawn, the
-     * displacer sits mid-core with 1.25 m of water above and below it and the
-     * absorber is above the core. Driving the rod in moves the displacer down
-     * through the core, replacing water (a weak absorber) with graphite (almost
+     * water gap), and the 4.56 m graphite displacer at its foot. Withdrawn, the
+     * displacer occupies 1.19 m to 5.75 m, so it sits mid-core with the telescope
+     * above it and 1.19 m of water below. Driving the rod in moves the displacer
+     * down through the core, replacing water (a weak absorber) with graphite (almost
      * none) — a local <em>rise</em> in reactivity before the absorber arrives.
      * That is the "positive scram" effect, and it is pure geometry: a rod modelled
      * as a bare absorber cannot reproduce it.
      */
     public static NodeMaterial[] rodMaterials(double insertion) {
-        double d = clamp01(insertion) * CORE_HEIGHT_M;
-        double displacerTop = 5.75 - d;                        // withdrawn: 1.25..5.75
+        double d = clamp01(insertion) * ROD_TRAVEL_M;
+        double displacerTop = 5.75 - d;                        // withdrawn: 1.19..5.75
         double displacerBottom = displacerTop - ROD_DISPLACER_M;
         double telescopeTop = displacerTop + ROD_TELESCOPE_M;  // withdrawn: 5.75..7.0
         double absorberBottom = telescopeTop;

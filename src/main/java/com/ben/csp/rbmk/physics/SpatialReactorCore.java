@@ -87,7 +87,7 @@ public final class SpatialReactorCore implements ReactorModel {
     private double integralLimit = 0.004;
 
     private static final double ROD_RATE =
-        RbmkGeometry.ROD_SPEED_M_PER_S / RbmkGeometry.CORE_HEIGHT_M;
+        RbmkGeometry.ROD_INSERTION_PER_S;
     private static final double TAU_VOID = 3.0;
     private static final double TAU_FUEL = 10.0;
     private static final double TAU_GRAPHITE = 30.0;

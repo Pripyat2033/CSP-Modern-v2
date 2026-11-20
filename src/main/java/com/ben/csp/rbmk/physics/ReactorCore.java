@@ -60,8 +60,8 @@ public final class ReactorCore implements ReactorModel {
     private static final double INTEGRAL_LIMIT = 0.4;
     private double rodIntegral = 0;
 
-    /** Rod drive speed in units of insertion per second: 0.4 m/s over 7 m. */
-    private static final double ROD_RATE = RbmkGeometry.ROD_SPEED_M_PER_S / RbmkGeometry.CORE_HEIGHT_M;
+    /** Rod drive rate: one full 6.55 m stroke in 17.5 s (panel 17-18 s). */
+    private static final double ROD_RATE = RbmkGeometry.ROD_INSERTION_PER_S;
     /** Void and temperature time constants (s) — representative. TO VERIFY. */
     private static final double TAU_VOID = 3.0;
     private static final double TAU_FUEL = 10.0;

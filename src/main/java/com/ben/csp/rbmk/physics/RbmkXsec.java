@@ -1,5 +1,7 @@
 package com.ben.csp.rbmk.physics;
 
+import com.ben.csp.rbmk.RbmkGeometry;
+
 /**
  * Two-group homogenised neutron cross sections for one node, in cm^-1, plus the
  * material library the RBMK core is built from.
@@ -217,9 +219,35 @@ public record RbmkXsec(
             cell.d2, cell.sa2, cell.nsf2, cell.ss12);
     }
 
-    /** A control channel cell holding the given rod material, plus graphite. */
+    /**
+     * Volume fraction of one lattice cell that lies INSIDE the channel hole, derived
+     * from the geometry (250 mm pitch, 114 mm bore) rather than set by hand:
+     * <pre>
+     *   f_hole = (pi/4 * 0.114^2) / 0.250^2 = 0.16327
+     * </pre>
+     * A control channel is a hole of this area in graphite; whatever sits in the
+     * hole (rod, displacer or water) can occupy at most this fraction of the cell.
+     */
+    public static final double CONTROL_HOLE_FRACTION = controlHoleFraction();
+
+    private static double controlHoleFraction() {
+        double pitch = RbmkGeometry.LATTICE_PITCH_M;
+        double hole = RbmkGeometry.CHANNEL_HOLE_M;
+        return Math.PI / 4.0 * hole * hole / (pitch * pitch);
+    }
+
+    /**
+     * A control channel cell holding the given rod material, plus graphite.
+     *
+     * <p>The split is DERIVED from the channel geometry: the rod fills the bore, the
+     * graphite is everything else in the 250 mm cell. This replaces a hand-set
+     * 0.75/0.25 split, which implied a rod of Ø141 mm inside a Ø114 mm hole — 1.24x
+     * the bore, physically impossible — and so overstated the rod's absorption by
+     * 53%. Registered as {@code xsec.control_hole_fraction}.
+     */
     public static RbmkXsec controlCell(RbmkXsec rodMaterial) {
-        return controlGraphite().scale(0.75).plus(rodMaterial.scale(0.25));
+        return controlGraphite().scale(1.0 - CONTROL_HOLE_FRACTION)
+            .plus(rodMaterial.scale(CONTROL_HOLE_FRACTION));
     }
 
     /** Graphite in the control channel: derived if available, else hand-set. */

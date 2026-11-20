@@ -130,26 +130,93 @@ the TKs around it.
 - **Count**: **211 movable control rods** (2nd generation; 170 in the 1st).
   *(EN Wikipedia — "The RCPS system consists of 211 movable control rods"; "Second
   generation reactor cores ... have 1661 fuel channels and 211 control rod channels")*
+  Confirmed from the **NIKIET design book** (see below): "для реакторов РБМК 2-го
+  поколения ... применяются 211 стержней-поглотителей".
 - **Insertion direction**: **the majority from above**; **24 shortened rods from
   below** (УСП, укороченные стержни-поглотители) for axial power shaping.
-- **Rod composition (the tip effect)**: **4.5 m graphite displacer** + **1.25 m
-  telescope** (a water-filled gap) + a **boron-carbide (B₄C) absorber section**.
-  *(EN Wikipedia — "the control rods have a 4.5 m long graphite section at the end,
-  separated by a 1.25 m long telescope ... and a boron carbide neutron absorber
-  section")*
-- **When fully retracted**: the graphite displacer sits in the **middle of the core
-  height, with 1.25 m of water at each end**. *(EN Wikipedia)*
-- **Speed**: **≈ 0.4 m/s**, i.e. **18–21 s** for full travel. *(EN Wikipedia)*
 
-> **This is the "positive scram" mechanism, and it is pure geometry**: withdrawing a
-> rod pushes its graphite displacer up through the bottom of the core, **displacing
-> water (a weak absorber) with graphite (almost none)** — a local *rise* in
-> reactivity before the B₄C arrives. A core model that does not carry these three
-> axial sections at the right lengths **cannot reproduce the accident**.
+### 3a. The rod dimensions — now from NIKIET, not Wikipedia
+
+The rod lengths below were previously taken from EN Wikipedia and **were wrong in
+detail**. The authoritative figures are in NIKIET's own design book — Abramov,
+Avdeev, Adamov et al., *«Канальный энергетический реактор РБМК»*, ed. Yu. M.
+Cherkashov (GUP NIKIET). The relevant passage is transcribed verbatim in
+`primary-sources/nikiet-rod-geometry-quote.txt`.
+
+| rod type | absorber length | displacer length | stroke |
+|---|---|---|---|
+| **АР / ЛАР** (the standard rod) | **6 772 mm** | **4 560 mm** | **6 550 mm** |
+| **УСП** (shortened, from below) | 4 088 mm | 6 700 mm | 3 500 mm |
+| **БАЗ** (fast scram, no displacer) | 7 250 mm | — | 6 750 mm |
+| **КРО** (post-accident cluster) | 12 elements × 7 600 mm | 16 500 mm sleeve | 7 000 mm |
+
+The three corrections that matter for the accident:
+
+1. **The displacer is 4.56 m, not 4.5 m** — a small but real difference.
+2. **The absorber is 6.772 m, not 7 m** — it is *shorter* than the core, so a
+   fully driven rod does **not** cover the whole core height.
+3. **The stroke is 6.55 m, not 7 m.** A rod therefore **never fully clears the
+   core**: even fully withdrawn, its displacer top sits 1.25 m below the core top.
+   This is *why* there is a water gap at each end of a withdrawn rod — it is a
+   consequence of the stroke, not a separate design choice.
+
+The **telescope** length of 1.25 m is **not** stated by NIKIET; it is taken from
+RU Wikipedia ("имея с обоих концов водяные прослойки длиной 1,25 м") and is
+flagged **to verify** against the rod drawing.
+
+> **This is the "positive scram" mechanism, and it is pure geometry**: driving a
+> rod *in* from the top pushes its graphite displacer **down** through the bottom
+> of the core, **displacing water (a weak absorber) with graphite (almost none)**
+> — a local *rise* in reactivity before the B₄C arrives from above. A core model
+> that does not carry these three axial sections **at these lengths** cannot
+> reproduce the accident.
+
+- **When fully retracted**: the graphite displacer sits in the **middle of the core
+  height, with 1.25 m of water at each end**. *(RU Wikipedia; consistent with the
+  NIKIET stroke of 6.55 m)*
+- **Speed**: **≈ 0.4 m/s**, i.e. **16.4 s** for the 6.55 m stroke (NIKIET stroke ÷
+  the 0.4 m/s of RU Wikipedia). The regulation quotes **18–21 s** end to end,
+  which includes servo run-up and the hydraulic damper.
 
 - **SUZ rod census** (2nd gen, RU Wikipedia — useful for the drive/renderer):
   АЗ emergency 24; РР manual 119; УСП shortened 24; АР automatic 12 (later 8);
   ЛАР local automatic 12; ПК-АЗ over-compensation 24.
+
+### 3b. The rod DIAMETER — not published; bounded by the bore
+
+The rod's outside diameter is **not stated** in any source consulted:
+
+| source | says | gives rod Ø? |
+|---|---|---|
+| Reglament 1E-S-II (1983) | operating limits, flow rates | **no** |
+| INSAG-7, English (Pub913e) | Table II-I, rod worths | **no** |
+| INSAG-7, Russian (Pub913r) | Table П-I, same worths | **no** |
+| NIKIET design book (Abramov et al.) | all rod *lengths* | **no** |
+| RU Wikipedia РБМК-1000 / Концевой эффект | lengths, circuit, speed | **no** |
+
+This is why the task stalled: the number does not appear to be published in the
+open literature at all.
+
+**What we can say for certain.** The rod sits in the channel bore, which is
+**Ø114 mm** at the graphite (the same hole the fuel channel passes through). So
+the rod **cannot** be larger than 114 mm. That gives a hard **upper bound** on how
+much of the lattice cell any rod can occupy:
+
+```
+hole fraction = (pi/4 x 114²) / 250² = 16.33 % of the cell
+```
+
+The model previously used a **hand-set 75/25 graphite/rod split**, which implies a
+rod of **Ø141 mm** — **1.24x the bore, physically impossible**. It overstated the
+rod's absorption, and therefore the rod-in/rod-out swing, by **53 %**. That has been
+corrected to the derived 16.33 % (`RbmkXsec.CONTROL_HOLE_FRACTION`, registered as
+`xsec.control_hole_fraction`), with a self-test that fails if a rod that cannot fit
+ever comes back.
+
+Because 16.33 % is an **upper bound**, the real rod (which leaves an annular water
+gap for the independent cooling circuit) occupies *less*. The true diameter stays
+**UNKNOWN / TO VERIFY** against a NIKIET rod drawing or the channel passport, and
+the bound is honest in the meantime: it is the largest rod the geometry permits.
 
 ---
 

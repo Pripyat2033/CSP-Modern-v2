@@ -113,7 +113,7 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
     private static final double XENON_EQUILIBRIUM = new Xenon(1.0).xenon();
 
     private static final double ROD_RATE =
-        RbmkGeometry.ROD_SPEED_M_PER_S / RbmkGeometry.CORE_HEIGHT_M;
+        RbmkGeometry.ROD_INSERTION_PER_S;
 
     private final RbmkTransientSolver solver = new RbmkTransientSolver();
     private final ChannelCooling cooling = new ChannelCooling(RbmkCore.AXIAL_NODES);

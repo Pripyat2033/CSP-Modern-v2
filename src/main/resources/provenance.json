@@ -326,6 +326,13 @@
       "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/RBMK_Reactor_ChNPP-4.svg",
       "quote": "The panel draws 127 manual rods in one fill (#0067ce); the regulation splits them into РР 103 + ПК-РР 12 + ЛАР 12.",
       "note": "The cartogram can place 24 ПК-АЗ (they have their own fill) but not the 12 ПК-РР, and not the 12 ЛАР. Both are carried in the model as sub-populations with the correct counts and the correct per-type geometry, but their individual channel positions are NOT guessed. Resolving this needs the plant's техническое описание or a SUZ panel photo with the sub-types distinguishable."
+    },
+    "xsec.control_hole_fraction": {
+      "value": 0.16327,
+      "unit": "fraction of the 250 mm lattice cell",
+      "status": "to_verify",
+      "source": "Channel geometry, not a fit: a control channel is a 114 mm bore in a 250 mm-pitch graphite cell (RbmkGeometry.CHANNEL_HOLE_M / LATTICE_PITCH_M), so the hole is (pi/4)*114^2/250^2 = 16.33% of the cell area and the graphite is the other 83.67%.",
+      "note": "Replaces a hand-set 0.75/0.25 graphite/rod split in RbmkXsec.controlCell. That split implied a rod of diameter 2*sqrt(0.25*0.0625/pi) = 141 mm sitting inside a 114 mm hole - 1.24x the bore, physically impossible - and overstated the rod's absorption (and so the rod-in/rod-out swing) by 53%. The 114 mm bore and 250 mm pitch are themselves still sourced only to EN Wikipedia and want a NIKIET/drawing confirmation; the split is nevertheless an upper bound, since no rod can fill more of the cell than the bore does."
     }
   }
 }
