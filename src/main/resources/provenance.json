@@ -34,6 +34,12 @@
       "publisher": "Nucleopedia (de), accessed via the Wayback Machine snapshot of 2022-11-01",
       "url": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
       "note": "Per-type absorber length, displacer length, insertion time, scram time and reactivity worth for units 3 and 4. The live site is Cloudflare-protected; the archived copy is readable."
+    },
+    "DOE-NE-0076": {
+      "title": "Report of the U.S. Department of Energy's Team Analyses of the Chernobyl-4 Atomic Energy Station Accident Sequence, DOE/NE-0076",
+      "publisher": "U.S. Department of Energy, Assistant Secretary for Nuclear Energy, November 1986",
+      "url": "https://www.osti.gov/biblio/7037704",
+      "note": "Independent US government engineering assessment. Appendix G, Table G-2 'Control Rod Specifications' is a dimensioned table of the actual pre-1986 rod, and is the only source found that states the rod DIAMETERS at all. Used because no Russian primary source for the rod diameters has yet been obtained; labelled Western and replaceable."
     }
   },
   "entries": {
@@ -286,7 +292,7 @@
       "source": "SUZ-PANEL-TABLE",
       "sourceUrl": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
       "quote": "AZ Einfahrzeit 6 bis 7 s, Einfallzeit 2,5 s; PK-AZ/AR/RR Einfahrzeit 17 bis 18 s, Einfallzeit 12 s.",
-      "note": "AZ rods are both shorter in travel and far faster in a scram than the rest — the staggering matters for AZ-5."
+      "note": "CONFLICT, recorded not resolved. The panel (SUZ-PANEL-TABLE) gives 17-18 s insertion for PK-AZ/AR/RR and 6-7 s for AZ; INSAG-7 p.51 states 'The time of insertion into the core was the same for all the RCPS rods (18-21 s)'. Two sources disagree on BOTH the absolute time and whether AZ rods are faster. The model uses 17.5 s (panel midpoint, = 0.4 m/s over the 7 m core height), which sits just below the INSAG-7 band. See rod.insert_s_insag7."
     },
     "rod.worth_group": {
       "value": {
@@ -328,11 +334,98 @@
       "note": "The cartogram can place 24 ПК-АЗ (they have their own fill) but not the 12 ПК-РР, and not the 12 ЛАР. Both are carried in the model as sub-populations with the correct counts and the correct per-type geometry, but their individual channel positions are NOT guessed. Resolving this needs the plant's техническое описание or a SUZ panel photo with the sub-types distinguishable."
     },
     "xsec.control_hole_fraction": {
-      "value": 0.16327,
+      "value": 0.16331,
       "unit": "fraction of the 250 mm lattice cell",
       "status": "to_verify",
-      "source": "Channel geometry, not a fit: a control channel is a 114 mm bore in a 250 mm-pitch graphite cell (RbmkGeometry.CHANNEL_HOLE_M / LATTICE_PITCH_M), so the hole is (pi/4)*114^2/250^2 = 16.33% of the cell area and the graphite is the other 83.67%.",
-      "note": "Replaces a hand-set 0.75/0.25 graphite/rod split in RbmkXsec.controlCell. That split implied a rod of diameter 2*sqrt(0.25*0.0625/pi) = 141 mm sitting inside a 114 mm hole - 1.24x the bore, physically impossible - and overstated the rod's absorption (and so the rod-in/rod-out swing) by 53%. The 114 mm bore and 250 mm pitch are themselves still sourced only to EN Wikipedia and want a NIKIET/drawing confirmation; the split is nevertheless an upper bound, since no rod can fill more of the cell than the bore does."
+      "source": "Channel geometry, not a fit: a control channel is a 114 mm bore in a 250 mm-pitch graphite cell (RbmkGeometry.CHANNEL_HOLE_M / LATTICE_PITCH_M), so the hole is (pi/4)*114^2/250^2 = 16.331% of the cell area and the graphite outside it is the other 83.669%.",
+      "note": "This is the BORE fraction - an UPPER BOUND on how much of the cell any rod can occupy, NOT the rod fraction. The rod itself is Ø70 mm (DOE Table G-2), only 6.16% of the cell; the remaining 10.17% of the cell inside the bore is water in the annular gap. See xsec.control_cell_split for the three-region split actually used. History: this entry replaced a hand-set 0.75/0.25 graphite/rod split that implied a Ø141 mm rod in a Ø114 mm hole (1.24x the bore, impossible, 53% overstatement); treating the bore AS the rod then replaced that, but was itself 2.65x too strong. The 114 mm bore and 250 mm pitch are still sourced only to EN Wikipedia and want a NIKIET/drawing confirmation."
+    },
+    "rod.diameters": {
+      "value": {
+        "absorber_outer_mm": 65.0,
+        "absorber_inner_mm": 57.5,
+        "clad_outer_mm": 70.0,
+        "clad_thickness_mm": 2.0,
+        "inner_clad_outer_mm": 50.0,
+        "inner_clad_thickness_mm": 2.0,
+        "displacer_clad_outer_mm": 74.0,
+        "displacer_clad_thickness_mm": 2.5,
+        "absorber_section_cm": 98.4,
+        "total_section_cm": 102.4,
+        "displacer_section_cm": 100.0,
+        "absorber_density_g_cm3": 1.65
+      },
+      "unit": "mm / cm / g·cm-3",
+      "status": "to_verify",
+      "source": "DOE/NE-0076 (Nov 1986), Appendix G, Table G-2 'Control Rod Specifications', PDF p. 177",
+      "sourceUrl": "https://www.osti.gov/biblio/7037704",
+      "quote": "Outer B4C Diameter 6.5 cm; Inner B4C Diameter 5.75 cm; Outer Clad Diameter 7.0 cm; Outer Clad Thickness 0.2 cm; Inner Clad Diameter 5.0 cm; Inner Clad Thickness 0.2 cm; Absorber Length/Section 98.4 cm; Total Length/Section 102.4 cm; Absorber Density 1.65 gm/CC; Displacer Clad Diameter 7.4 cm; Clad Thickness 0.25 cm.",
+      "note": "WESTERN SOURCE — REPLACEABLE, and only PARTLY corroborated. What survives: the DIAMETERS. Table G-2 is internally consistent as an annulus (B4C 65 mm OD / 57.5 mm ID inside a 70 mm clad, 50 mm bore cooling passage) and all three rod envelopes (Ø70 absorber, Ø74 displacer, 79 mm post-Chernobyl KRO sleeve) fit the 114 mm channel bore, so the diameter set is mutually consistent and physically coherent. What does NOT survive: the LENGTHS. The same page says the rod is five absorber sections of 102.4 cm = 5.12 m total with a 5 x 1 m = 5.0 m displacer, but the Russian panel table gives RR/PK-AZ 6.772 m absorber and 4.56 m displacer. That is a 24 % disagreement on absorber length and 10 % on displacer. The DOE report describes an earlier or different rod build, so its lengths must NOT be adopted; the panel lengths stay authoritative. Only the diameters are used from this source, because no Russian source for them has been obtained yet. Recorded in rod.length_conflict."
+    },
+    "xsec.control_cell_split": {
+      "value": {
+        "hole_fraction": 0.16331,
+        "absorber_fraction": 0.06158,
+        "displacer_fraction": 0.06881,
+        "water_gap_fraction": 0.10173
+      },
+      "unit": "volume fraction of the 250 mm lattice cell",
+      "status": "to_verify",
+      "source": "Derived: DOE/NE-0076 Table G-2 rod diameters (Ø70 mm absorber, Ø74 mm displacer) inside the 114 mm channel bore of the 250 mm lattice cell",
+      "sourceUrl": "https://www.osti.gov/biblio/7037704",
+      "quote": "Outer Clad Diameter 7.0 cm ... Displacer Clad Diameter 7.4 cm (DOE/NE-0076 Table G-2); bore 114 mm and pitch 250 mm from RbmkGeometry.",
+      "note": "The ROBUST part: the rod is much smaller than the bore it sits in, so water fills the annular gap and the old model's 'rod = whole bore' was wrong by a large factor. Every candidate diameter (65-80 mm) is far below the 114 mm bore, so the DIRECTION of this correction does not depend on which source is right. The UNCERTAIN part: the exact fractions follow the DOE diameters, which are to_verify (no Russian source yet). If the true absorber OD were 80 mm the absorber fraction would be 0.0804 rather than 0.0616 - a 30 % difference in rod strength. So the magnitude stays flagged until a Russian drawing fixes the diameter. The 2.65x figure quoted above is DOE-specific."
+    },
+    "rod.density": {
+      "value": {
+        "b4c_lattice_code_g_cm3": 2.52,
+        "b4c_doe_table_g_cm3": 1.65
+      },
+      "unit": "g/cm3",
+      "status": "to_verify",
+      "source": "CONFLICT: DOE/NE-0076 Table G-2 'Absorber Density 1.65 gm/CC' vs the 2.52 g/cm3 used by tools/lattice/emit_constants.py",
+      "sourceUrl": "https://www.osti.gov/biblio/7037704",
+      "quote": "Absorber Density 1.65 gm/CC (DOE/NE-0076 Table G-2).",
+      "note": "Unresolved and NOT silently reconciled. 1.65 g/cm3 is low for hot-pressed B4C (typically 1.7-2.5); it may be a typo for 2.65, or the actual pressed density of the Soviet absorber. The derived control cross-sections in rbmk_lattice.json currently rest on 2.52. Needs a Russian source for the absorber density before either number is frozen."
+    },
+    "rod.insert_s_insag7": {
+      "value": {
+        "min_s": 18.0,
+        "max_s": 21.0,
+        "az_6_to_7_s": false
+      },
+      "unit": "s",
+      "status": "verified",
+      "source": "INSAG-7, The Chernobyl Accident: Updating of INSAG-1, p. 51 (section on the fast-response EPS)",
+      "sourceUrl": "https://www-pub.iaea.org/MTCD/Publications/PDF/Pub913e_web.pdf",
+      "quote": "The time of insertion into the core was the same for all the RCPS rods (18-21 s). This means that their division into functional groups of emergency protection rods and manual control rods was a notional one. ... no studies were carried out to determine the required speed of response of the EPS rods in order that the time of core insertion be less than 18s.",
+      "note": "WESTERN/IAEA source, contradicts the panel table in rod.travel on both the time (18-21 vs 17-18 s) and the AZ exception (INSAG-7 says uniform, the panel says AZ is 6-7 s). The 0.4 m/s drive rate is stated three times in INSAG-7 (p.51, p.93, p.113) and is consistent with the panel's 17-18 s over a ~7 m stroke, so the SPEED is agreed even though the TIMES are not. The 18-21 s figure likely includes the slower final seating phase after the 0.4 m/s run. Unresolved; needs a Russian primary source for the insertion-time curve."
+    },
+    "rod.length_conflict": {
+      "value": {
+        "doe_absorber_m": 5.12,
+        "doe_displacer_m": 5.0,
+        "panel_RR_absorber_m": 6.772,
+        "panel_RR_displacer_m": 4.56
+      },
+      "unit": "m",
+      "status": "to_verify",
+      "source": "CONFLICT: DOE/NE-0076 Appendix G p.G-1 and Table G-2 vs SUZ-PANEL-TABLE",
+      "sourceUrl": "https://www.osti.gov/biblio/7037704",
+      "quote": "The RR, AR, LAR, and AZ rods are assembled from five absorbing sections for a total length of 5.12 meters. The USP rods are assembled from three absorbing sections and have a total length of 3.05 meters. ... The displacer is made up of five, one meter long cylindrical sections (DOE/NE-0076 p.G-1).",
+      "note": "DOE 5 x 102.4 cm = 5.12 m absorber and 5 x 1 m displacer contradict the panel's 6.772 m / 4.56 m. Both cannot describe the same rod. The DOE text also says the USP is 3.05 m where the panel says 4.088 m, and that all rods except USP drive from the top. The repo uses the panel lengths (Russian source, preferred) and takes ONLY the diameters from DOE. This conflict is the reason rod.diameters is to_verify, not verified: the diameter figures have no independent Russian confirmation yet."
+    },
+    "rod.openmc_model_geometry": {
+      "value": {
+        "b4c_radius_cm": 2.5,
+        "clad_outer_radius_cm": 2.9,
+        "bore_radius_cm": 5.7,
+        "b4c_density_g_cm3": 2.52
+      },
+      "unit": "cm",
+      "status": "to_verify",
+      "source": "openmc/control_rod_test.py, channel_universe(): rod_r defaults to 2.5 cm, rodclad = rod_r + 0.4",
+      "note": "The OpenMC model already treats the rod as a THIN absorber in a water-filled bore rather than a plug - the same correction just made in the Java control cell - so the two now agree in structure. But its radius is wrong: rod_r=2.5 cm is the 50 mm INNER CLAD bore, not the absorber. Per DOE Table G-2 the B4C is a 65 mm OD / 57.5 mm ID annulus (r 2.875-3.25 cm) and the outer clad is 70 mm (r 3.5 cm). The model's 'b4c' cylinder therefore sits in the cooling passage and its 'clad' shell at 2.9 cm is inside where the real B4C starts. Not yet fixed: the script has not been re-run against the corrected radii, so any control-rod result it produced so far describes a Ø50 mm solid absorber, which is physically not the RBMK rod."
     }
   }
 }

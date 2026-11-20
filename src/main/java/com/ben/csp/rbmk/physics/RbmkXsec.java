@@ -220,14 +220,20 @@ public record RbmkXsec(
     }
 
     /**
-     * Volume fraction of one lattice cell that lies INSIDE the channel hole, derived
-     * from the geometry (250 mm pitch, 114 mm bore) rather than set by hand:
+     * Area fraction of one lattice cell occupied by the rod ENVELOPE (the clad OD),
+     * derived from the real diameters rather than from the bore:
      * <pre>
-     *   f_hole = (pi/4 * 0.114^2) / 0.250^2 = 0.16327
+     *   f_absorber  = (pi/4 * 0.070^2) / 0.250^2 = 0.06158   (Ø70 mm, DOE Table G-2)
+     *   f_displacer = (pi/4 * 0.074^2) / 0.250^2 = 0.06881   (Ø74 mm, DOE Table G-2)
      * </pre>
-     * A control channel is a hole of this area in graphite; whatever sits in the
-     * hole (rod, displacer or water) can occupy at most this fraction of the cell.
+     * The bore fraction (16.33 %) is the HOLE, not the rod. The difference between
+     * the two — 10.17 % of the cell — is water in the annular gap, which the earlier
+     * model silently gave to the absorber.
      */
+    public static final double ROD_ABSORBER_FRACTION = rodFraction(RbmkGeometry.ROD_ABSORBER_OD_M);
+    public static final double ROD_DISPLACER_FRACTION = rodFraction(RbmkGeometry.ROD_DISPLACER_OD_M);
+
+    /** Volume fraction of one lattice cell that lies INSIDE the channel hole. */
     public static final double CONTROL_HOLE_FRACTION = controlHoleFraction();
 
     private static double controlHoleFraction() {
@@ -236,18 +242,52 @@ public record RbmkXsec(
         return Math.PI / 4.0 * hole * hole / (pitch * pitch);
     }
 
+    private static double rodFraction(double od) {
+        double pitch = RbmkGeometry.LATTICE_PITCH_M;
+        return Math.PI / 4.0 * od * od / (pitch * pitch);
+    }
+
     /**
-     * A control channel cell holding the given rod material, plus graphite.
+     * A control channel cell holding the given rod material, plus graphite, plus the
+     * water in the annular gap between the rod and the bore.
      *
-     * <p>The split is DERIVED from the channel geometry: the rod fills the bore, the
-     * graphite is everything else in the 250 mm cell. This replaces a hand-set
-     * 0.75/0.25 split, which implied a rod of Ø141 mm inside a Ø114 mm hole — 1.24x
-     * the bore, physically impossible — and so overstated the rod's absorption by
-     * 53%. Registered as {@code xsec.control_hole_fraction}.
+     * <p>Three regions, each derived from a measured dimension:
+     * <ul>
+     *   <li>rod envelope (Ø70 mm absorber or Ø74 mm displacer) — {@code f_rod};</li>
+     *   <li>water annulus between the rod and the 114 mm bore — {@code f_hole - f_rod};</li>
+     *   <li>graphite outside the bore — {@code 1 - f_hole}.</li>
+     * </ul>
+     *
+     * <p>The previous form gave the rod the WHOLE bore, which overstated absorption
+     * by 2.65x for the absorber (Ø70 in Ø114) and left no water in the gap at all.
+     * That mattered: the water gap is the moderator/absorber that the displacer
+     * pushes out, so removing it also flattened the very positive-scram mechanism the
+     * rod geometry exists to model. Registered as {@code xsec.control_cell_split}.
+     *
+     * @param nodeMaterial which part of the rod occupies this axial node; it selects
+     *     the envelope diameter (a displacer is wider than the absorber it follows)
      */
+    public static RbmkXsec controlCell(RbmkGeometry.NodeMaterial nodeMaterial) {
+        return switch (nodeMaterial) {
+            case B4C -> controlCell(controlB4C(), ROD_ABSORBER_FRACTION);
+            case GRAPHITE -> controlCell(controlGraphite(), ROD_DISPLACER_FRACTION);
+            // No rod here: water fills the whole bore (telescope or empty channel).
+            case WATER -> controlCell(WATER, CONTROL_HOLE_FRACTION);
+        };
+    }
+
+    /** A control cell holding this material with the ABSORBER envelope (Ø70 mm). */
     public static RbmkXsec controlCell(RbmkXsec rodMaterial) {
-        return controlGraphite().scale(1.0 - CONTROL_HOLE_FRACTION)
-            .plus(rodMaterial.scale(CONTROL_HOLE_FRACTION));
+        return controlCell(rodMaterial, ROD_ABSORBER_FRACTION);
+    }
+
+    /** A control cell with the rod envelope given explicitly (absorber or displacer). */
+    public static RbmkXsec controlCell(RbmkXsec rodMaterial, double fRod) {
+        double fHole = CONTROL_HOLE_FRACTION;
+        double fWater = Math.max(0.0, fHole - fRod);
+        return controlGraphite().scale(1.0 - fHole)
+            .plus(WATER.scale(fWater))
+            .plus(rodMaterial.scale(fRod));
     }
 
     /** Graphite in the control channel: derived if available, else hand-set. */

@@ -117,10 +117,12 @@ public final class RodMaterialConsistencySelfTest {
     }
 
     private static String materialTag(RbmkXsec c) {
-        if (same(c, RbmkXsec.controlCell(RbmkXsec.controlB4C()))) {
+        // Classify by the cell the node material actually builds: a displacer node is
+        // Ø74 mm, an absorber node Ø70 mm, an empty node is water filling the bore.
+        if (same(c, RbmkXsec.controlCell(com.ben.csp.rbmk.RbmkGeometry.NodeMaterial.B4C))) {
             return "b4c";
         }
-        if (same(c, RbmkXsec.controlCell(RbmkXsec.controlGraphite()))) {
+        if (same(c, RbmkXsec.controlCell(com.ben.csp.rbmk.RbmkGeometry.NodeMaterial.GRAPHITE))) {
             return "graphite";
         }
         return "water";

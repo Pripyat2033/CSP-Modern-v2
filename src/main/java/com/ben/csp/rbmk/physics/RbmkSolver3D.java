@@ -166,19 +166,11 @@ public final class RbmkSolver3D {
      */
     public void setRodInsertion(double insertion) {
         RbmkGeometry.NodeMaterial[] mats = RbmkGeometry.rodMaterials(insertion);
-        RbmkXsec graphite = RbmkXsec.controlCell(RbmkXsec.controlGraphite());
-        RbmkXsec water = RbmkXsec.controlCell(RbmkXsec.WATER);
-        RbmkXsec b4c = RbmkXsec.controlCell(RbmkXsec.controlB4C());
         for (int i = 0; i < control.length; i++) {
             if (!control[i]) {
                 continue;
             }
-            int a = i % na;
-            cell[i] = switch (mats[a]) {
-                case B4C -> b4c;
-                case GRAPHITE -> graphite;
-                case WATER -> water;
-            };
+            cell[i] = RbmkXsec.controlCell(mats[i % na]);
         }
     }
 

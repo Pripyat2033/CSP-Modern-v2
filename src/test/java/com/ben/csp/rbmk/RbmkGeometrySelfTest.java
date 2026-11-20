@@ -177,17 +177,39 @@ public final class RbmkGeometrySelfTest {
         double hole = RbmkGeometry.CHANNEL_HOLE_M;
         double maxFrac = Math.PI / 4.0 * hole * hole / (pitch * pitch);
         check(Math.abs(RbmkXsec.CONTROL_HOLE_FRACTION - maxFrac) < 1e-9,
-            "the control-cell rod fraction is the derived hole fraction ("
-            + String.format("%.5f", RbmkXsec.CONTROL_HOLE_FRACTION) + "), not a hand-set value");
-        check(RbmkXsec.CONTROL_HOLE_FRACTION <= maxFrac + 1e-12,
-            "the rod does not fill more of the cell than the bore does ("
-            + String.format("%.5f", RbmkXsec.CONTROL_HOLE_FRACTION) + " <= "
-            + String.format("%.5f", maxFrac) + ")");
-        // Equivalent rod diameter implied by the cell split, and the bore it must fit.
-        double impliedD = 2.0 * Math.sqrt(RbmkXsec.CONTROL_HOLE_FRACTION * pitch * pitch / Math.PI);
-        check(impliedD <= hole + 1e-9,
-            "the cell split implies a rod of Ø" + String.format("%.1f", impliedD * 1000)
-            + " mm, which fits the Ø" + String.format("%.0f", hole * 1000) + " mm bore");
+            "the control-channel bore fraction is the derived hole fraction ("
+            + String.format("%.5f", RbmkXsec.CONTROL_HOLE_FRACTION) + ")");
+        // The rod is NOT the bore. DOE/NE-0076 Table G-2 gives the real envelope:
+        // 70 mm absorber clad, 74 mm displacer clad, both inside the 114 mm bore.
+        // The model must use those, not fill the hole with absorber - the error that
+        // the bore-fraction bound above does NOT catch on its own.
+        double absFrac = RbmkXsec.ROD_ABSORBER_FRACTION;
+        double dispFrac = RbmkXsec.ROD_DISPLACER_FRACTION;
+        double absD = 2.0 * Math.sqrt(absFrac * pitch * pitch / Math.PI);
+        double dispD = 2.0 * Math.sqrt(dispFrac * pitch * pitch / Math.PI);
+        check(Math.abs(absD - 0.070) < 1e-6,
+            "the absorber envelope is Ø70 mm (DOE Table G-2), got Ø"
+            + String.format("%.1f", absD * 1000));
+        check(Math.abs(dispD - 0.074) < 1e-6,
+            "the displacer envelope is Ø74 mm (DOE Table G-2), got Ø"
+            + String.format("%.1f", dispD * 1000));
+        check(absFrac < maxFrac && dispFrac < maxFrac,
+            "both rod envelopes are smaller than the bore they sit in");
+        // The gap between rod and bore is water. If it were zero, the displacer could
+        // not push water out of the channel - which is the positive-scram mechanism.
+        double fGap = maxFrac - absFrac;
+        check(fGap > 0.09,
+            "the annular water gap is " + String.format("%.2f", fGap * 100)
+            + "% of the cell - the water the displacer expels");
+        // A cell built from the absorber must contain BOTH rod and gap water, so it
+        // absorbs less than a hypothetical rod that filled the whole bore.
+        RbmkXsec plugged = RbmkXsec.controlGraphite().scale(1.0 - maxFrac)
+            .plus(RbmkXsec.controlB4C().scale(maxFrac));
+        RbmkXsec real = RbmkXsec.controlCell(RbmkGeometry.NodeMaterial.B4C);
+        check(real.sa2() < plugged.sa2(),
+            "the real Ø70 mm rod absorbs less than a rod plugging the Ø114 mm bore ("
+            + String.format("%.3f", real.sa2()) + " < "
+            + String.format("%.3f", plugged.sa2()) + " cm^-1)");
 
         System.out.println("RbmkGeometrySelfTest: " + checks + " checks passed.");
     }

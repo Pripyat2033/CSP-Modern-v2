@@ -112,16 +112,39 @@ public final class RbmkGeometry {
     /** B4C absorber: 6.772 m (NIKIET: 6772 mm). Shorter than the 7 m core. */
     public static final double ROD_ABSORBER_M = 6.772;
     /**
+     * Absorber clad outer diameter, 70 mm. Source: DOE/NE-0076 Table G-2
+     * ({@code rod.diameters}) — "Outer Clad Diameter 7.0 cm", B4C 65 mm OD / 57.5 mm ID
+     * inside a 2 mm clad with a 50 mm bore cooling passage.
+     *
+     * <p>This is the figure the model was missing. The rod is NOT a plug filling its
+     * channel: it is Ø70 mm inside the Ø114 mm bore, so it occupies 6.2 % of the
+     * 250 mm cell while water fills the remaining 10.2 % of the bore. Treating the
+     * whole bore as absorber (as {@link #ROD_ABSORBER_M} alone implied) overstated
+     * rod absorption by 2.65x — the same class of error as the earlier hand-set
+     * 0.75/0.25 split, which was 1.24x the bore.
+     */
+    public static final double ROD_ABSORBER_OD_M = 0.070;
+    /** Graphite displacer clad outer diameter, 74 mm (DOE/NE-0076 Table G-2). */
+    public static final double ROD_DISPLACER_OD_M = 0.074;
+    /**
      * Rod travel, 6.55 m (NIKIET: 6550 mm) — NOT the 7 m core height. A rod
      * therefore never fully clears the core, which is why a withdrawn rod still
      * leaves 1.25 m of water below its displacer.
      */
     public static final double ROD_TRAVEL_M = 6.55;
     /**
-     * Full-stroke insertion time, 17.5 s — the mid-point of the panel's verified
-     * 17-18 s ({@code rod.travel}). The 0.4 m/s often quoted is a nominal round
-     * figure: over the 6.55 m travel it would give 16.4 s, faster than the panel
-     * allows, so the panel time is the authority and the speed is derived from it.
+     * Full-stroke insertion time, 17.5 s — the mid-point of the panel's 17-18 s
+     * ({@code rod.travel}). Two sources disagree and the disagreement is recorded,
+     * not papered over ({@code rod.travel}, {@code rod.insert_s_insag7}):
+     * <ul>
+     *   <li>the panel table: 17-18 s for PK-AZ/AR/RR, 6-7 s for AZ;</li>
+     *   <li>INSAG-7 p.51: "the same for all the RCPS rods (18-21 s)".</li>
+     * </ul>
+     * What both agree on is the 0.4 m/s drive rate (INSAG-7 states it three times).
+     * Over the 7 m core height 0.4 m/s gives 17.5 s, which is this value; over the
+     * 6.55 m travel it gives 16.4 s. The panel time is used because it is the
+     * Russian figure and this model prefers the primary source; the 18-21 s band is
+     * probably the same stroke plus a slow final seating phase.
      */
     public static final double ROD_FULL_TRAVEL_S = 17.5;
     /** Average rod speed over the 6.55 m travel: 6.55 / 17.5 = 0.374 m/s. */

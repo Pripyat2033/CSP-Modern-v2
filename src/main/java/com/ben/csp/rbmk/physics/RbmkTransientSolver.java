@@ -110,24 +110,11 @@ public final class RbmkTransientSolver {
     /** Apply a rod insertion; each axial node gets the rod material there. */
     public void setRodInsertion(double insertion) {
         RbmkGeometry.NodeMaterial[] mats = RbmkGeometry.rodMaterials(insertion);
-        // Same derived control materials the static seeder uses (RbmkSolver3D).
-        // Building these from the hand-set RbmkXsec.GRAPHITE/B4C left the live rods
-        // ~80x weaker than the ones the reference state was seeded with (derived B4C
-        // sa2 36.3 vs hand-set 0.45), so rod worth, the positive scram and AZ-5 in the
-        // live core were driven by hand-set numbers while derived data was shipped.
-        RbmkXsec graphite = RbmkXsec.controlCell(RbmkXsec.controlGraphite());
-        RbmkXsec water = RbmkXsec.controlCell(RbmkXsec.WATER);
-        RbmkXsec b4c = RbmkXsec.controlCell(RbmkXsec.controlB4C());
         for (int i = 0; i < cell.length; i++) {
             if (!control[i]) {
                 continue;
             }
-            int a = i % na;
-            cell[i] = switch (mats[a]) {
-                case B4C -> b4c;
-                case GRAPHITE -> graphite;
-                case WATER -> water;
-            };
+            cell[i] = RbmkXsec.controlCell(mats[i % na]);
         }
     }
 
