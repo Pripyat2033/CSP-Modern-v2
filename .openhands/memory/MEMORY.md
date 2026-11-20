@@ -1098,3 +1098,19 @@ repo's own `openmc/` directory — test imports from `/tmp`.
 `reconstruct_rosfond.py --only U235` works; U-235 @0.0253 eV = **fission 584.90 b,
 capture 98.66 b** (targets 585+-10, 99+-4). Lattice self-tests are STANDALONE
 scripts (`python3 test_endf6.py`), NOT pytest. **Java 31/31 suites green.**
+
+## CONTROL ROD DIAMETERS + the "rod fills its channel" bug (commit 4745769, 2026-11-18)
+`controlCell()` used to give the rod the WHOLE 114 mm bore. It is Ø70 mm. DOE/NE-0076
+Table G-2 (OSTI 7037704, PDF p.177) — B4C 65 OD/57.5 ID, clad 70 mm, displacer 74 mm —
+is the ONLY source in the repo for rod diameters (lengths came from the Russian panel;
+diameters were absent entirely). Fix = three regions: rod envelope + annular water +
+graphite outside the bore. Control-cell sa2 5.931 → 2.238 cm^-1 (2.65x). The annular
+water matters: it is what the displacer expels = the positive-scram mechanism.
+**Take ONLY the diameters from DOE** — its lengths (5.12 m absorber / 5 m displacer)
+are a different build, 24 % off the panel's 6.772 / 4.56 m, so `rod.diameters` is
+`to_verify`. Conflicts recorded not reconciled: `rod.density` (1.65 vs 2.52 g/cm3),
+`rod.insert_s_insag7` (INSAG-7 18–21 s vs panel 17–18 s; both agree on 0.4 m/s),
+`rod.openmc_model_geometry` (script uses rod_r 2.5 cm = the 50 mm inner bore, not the
+65 mm B4C). **OpenMC 0.16.0 IS installed** at `/workspace/tools/omc/env` (+ ENDF/B-VIII.0
+at `/workspace/tools/openmc_data/`) — `import openmc` from the repo root is shadowed by
+the repo's own `openmc/` dir. Full suite 72/72; provenance gate passes.
