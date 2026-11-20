@@ -1045,3 +1045,20 @@ an admin back door. Fixes the hardcoded "pb1" in `ZoneState.spawn`.
 **RESEARCH METHOD THAT WORKS when Tavily is 432:** curl + Wikipedia REST API
 (`/api/rest_v1/page/html/<title>`) + the institution's own site (chnpp.gov.ua). The
 `web-researcher` subagent can hit 500 iterations and die — prefer targeted curl.
+
+## OPENMC IS INSTALLED (corrects an earlier wrong note, 2026-11-18)
+OpenMC 0.16.0 lives at `/workspace/tools/omc/env` (bin/python, bin/openmc) with
+ENDF/B-VIII.0 data at `/workspace/tools/openmc_data/endfb-viii.0-hdf5/cross_sections.xml`.
+Run with `export PATH=/workspace/tools/omc/env/bin:$PATH` and
+`export OPENMC_CROSS_SECTIONS=<that xml>`. `pip install openmc` still fails (not on
+PyPI) and the repo's `./openmc/` dir still shadows `import openmc` from the root.
+The lattice pipeline does not need it, but it is available as an independent check.
+
+## CONTROL-ROD MODEL BUG (open, 2026-11-18)
+`RbmkSolver3D.setRodInsertion` fills control channels from `RbmkXsec.WATER`, a
+hand-set CONSTANT with no void dependence (D2=0.16 vs the fuel cell's 0.80), so
+control channels carry zero void feedback and are ~4.5x too thin. Measured: rods
+mute the 3-D core's void worth only 4% (+0.0515 -> +0.0493 at dial 1.0). The 75/25
+homogenisation is NOT the cause (pure B4C still 84%). The 1-D cell has no rod zone,
+so no lattice table can carry rod feedback. OpenMC's rod test is itself confounded
+(inserting a rod deletes 1/9 of the fuel; a no-absorber water channel gives +0.064).
