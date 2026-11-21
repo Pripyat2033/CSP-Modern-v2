@@ -920,14 +920,6 @@ public final class RbmkTestCommand {
                 + "(flux is the state; feedback loop CLOSED)", uc.simSeconds()),
                 Formatting.WHITE);
         }
-        if (p.core() instanceof com.ben.csp.rbmk.physics.TransientReactorCore tc) {
-            feedback(s, String.format("  spatial core: flux %s, peak %.3f, "
-                + "%.1f ms per 1 ms step, running %.2fx real time",
-                tc.reactivity() == 0 ? "is the state" : "state",
-                tc.peakFission(), tc.stepMs(), tc.realTimeFactor()), Formatting.WHITE);
-            feedback(s, String.format("  physics clock: %.1f s simulated on its own thread",
-                tc.simSeconds()), Formatting.WHITE);
-        }
         feedback(s, String.format("  pumps:     %.0f m3/h total, %d running",
             flowM3h, runningPumps(p)), Formatting.WHITE);
         feedback(s, String.format("  drums:     level %.2f-%.2f, %.1f MPa",

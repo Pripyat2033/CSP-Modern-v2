@@ -18,6 +18,7 @@ import com.ben.csp.rbmk.RbmkGeometry;
  * {@link ReactorModel}, so the plant, the commands and any HUD read it exactly as
  * they read the lumped core.
  */
+@Deprecated
 public final class TransientReactorCore implements ReactorModel, AutoCloseable {
 
     private static final double DT = 0.001;      // fixed 1 ms physics step

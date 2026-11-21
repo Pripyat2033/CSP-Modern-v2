@@ -70,9 +70,8 @@ public final class PlantSystem {
     }
 
     /**
-     * Build the plant around a given core — used to run the time-dependent
-     * spatial solver ({@link com.ben.csp.rbmk.physics.TransientReactorCore}) as
-     * the reactor, so the plant's heat, steam and turbine all follow the flux.
+     * Build the plant around a given core. There is one core —
+     * {@link UnifiedReactorCore} — so in practice this always receives it.
      */
     public PlantSystem(ReactorModel core) {
         this.core = core;
@@ -212,9 +211,6 @@ public final class PlantSystem {
 
     /** Release the core's resources — stops the physics thread when there is one. */
     public void shutdown() {
-        if (core instanceof com.ben.csp.rbmk.physics.TransientReactorCore t) {
-            t.close();
-        }
         if (core instanceof com.ben.csp.rbmk.physics.UnifiedReactorCore u) {
             u.close();
         }

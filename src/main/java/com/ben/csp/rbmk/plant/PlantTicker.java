@@ -56,23 +56,17 @@ public final class PlantTicker {
     }
 
     /**
-     * Start the plant on the TIME-DEPENDENT spatial core: the flux over the real
-     * lattice is the state, stepped at 1 ms on its own thread. This is the live
-     * test of "can Minecraft carry a fully spatial RBMK core".
+     * {@code /rbmk plant start spatial} — retained for muscle memory. The
+     * open-loop {@code TransientReactorCore} it used to launch is retired: it
+     * could not feed back on itself (frozen void/temperature, no xenon), so it
+     * could not reproduce the accident. It is no longer instantiable from here;
+     * there is one core.
      *
-     * @deprecated 2026-11-17: retired. This launched the open-loop
-     *     {@link com.ben.csp.rbmk.physics.TransientReactorCore}, which cannot feed
-     *     back on itself (frozen void/temperature, no xenon) and so cannot
-     *     reproduce the accident. It was reachable from {@code /rbmk plant start
-     *     spatial}, which now starts THE core. Kept under the ZERO DELETION POLICY;
-     *     TODO: User to delete this method (and the class it starts) later.
+     * @deprecated use {@link #startUnified()}.
      */
     @Deprecated
     public static PlantSystem startPlantTransient() {
-        plant = new PlantSystem(new com.ben.csp.rbmk.physics.TransientReactorCore());
-        plant.startUp();
-        lastTickNs = 0;
-        return plant;
+        return startUnified();
     }
 
     /** True when the running plant is driven by the unified spatial core. */

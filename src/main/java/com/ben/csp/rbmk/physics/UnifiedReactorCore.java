@@ -105,10 +105,11 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
      * @deprecated 2026-11-15: no longer used. This lumped point-kinetics power
      *     coefficient double-counted the temperature feedback the spatial core
      *     already carries in its cross sections, so {@link #reactivity()} dropped it.
-     *     Kept only to record where the old readout came from.
+     *     The value is recorded here so the old readout can be reconstructed, but it
+     *     is no longer taken from the retired lumped model.
      */
     @Deprecated
-    private static final double POWER_COEFF = ReactivityModel.POWER_COEFF;
+    private static final double POWER_COEFF = -0.005;
     /** Xenon concentration at the full-power equilibrium (the worth normaliser). */
     private static final double XENON_EQUILIBRIUM = new Xenon(1.0).xenon();
 
@@ -463,7 +464,8 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
 
     @Override
     public double power() {
-        // Total thermal power = fission + decay heat (see ReactorCore.power()).
+        // Total thermal power = fission + decay heat. Decay heat is the part that
+        // cannot be switched off, so a scrammed core still makes ~6.5 % of nominal.
         return DecayHeat.FISSION_SHARE * fission + decayHeat.total();
     }
 

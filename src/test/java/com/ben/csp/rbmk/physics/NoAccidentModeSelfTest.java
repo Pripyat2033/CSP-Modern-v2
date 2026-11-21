@@ -38,6 +38,8 @@ public final class NoAccidentModeSelfTest {
     public static void main(String[] args) {
         System.out.println("=== NoAccidentModeSelfTest ===");
         testNoModeField();
+        testNoForcingMethod();
+        testNoForcingVocabularyInSource();
         testSameCoreBothBehaviours();
         testPositiveScramAtNominal();
         testRunawayByOrdinaryDecisions();
@@ -61,7 +63,139 @@ public final class NoAccidentModeSelfTest {
             offenders.isEmpty(), "found " + offenders);
     }
 
-    /** 2. The same object holds nominal power and is then driven super-critical. */
+    /**
+     * 2. No PUBLIC METHOD lets a caller WRITE the outcome.
+     *
+     * <p>This is the sharpest form of the rule. A flag is crude; a setter is worse,
+     * because it looks like ordinary API. If the core exposed {@code setReactivity},
+     * {@code setPower} or {@code setKeff}, a test could simply write the number it
+     * wanted to see and then assert it. The reactor must be driven only through
+     * things an operator can physically do — move a rod, set a regulator target, let
+     * the plant change the coolant flow — and everything else must be a CONSEQUENCE
+     * of the neutron balance.
+     *
+     * <p>So: the production core may not expose a setter whose name writes power,
+     * reactivity, k_eff, fission rate or flux. The only permitted {@code set*} verbs
+     * are the operator's own (rod target, regulator, setpoint, coolant flow, physics
+     * timestep) and modelling-fidelity switches that do not write the answer.
+     */
+    private static void testNoForcingMethod() {
+        List<String> offenders = new ArrayList<>();
+        for (java.lang.reflect.Method m : UnifiedReactorCore.class.getDeclaredMethods()) {
+            if (!java.lang.reflect.Modifier.isPublic(m.getModifiers())) {
+                continue;
+            }
+            String n = m.getName().toLowerCase();
+            if (n.contains("reactivity") || n.contains("keff") || n.contains("flux")
+                || n.contains("fission") || n.contains("xenon") || n.contains("void")
+                || n.contains("accident") || n.contains("blowup") || n.contains("explode")) {
+                // A public method whose name is one of these is only allowed to READ.
+                if (m.getParameterCount() == 0) {
+                    continue;
+                }
+                offenders.add(m.getName() + "/" + m.getParameterCount());
+            }
+            // A bare "setPower(...)" is a direct write of the answer, even though the
+            // legitimate "setPowerSetpoint(...)" contains the same prefix.
+            if (n.equals("setpower") || n.equals("setfissionpower") || n.equals("setkeff")) {
+                offenders.add(m.getName() + "/" + m.getParameterCount());
+            }
+        }
+        check("no public method can WRITE power, reactivity, k_eff, flux or xenon",
+            offenders.isEmpty(), "found " + offenders);
+    }
+
+    /**
+     * 3. The production physics source carries no forcing vocabulary at all.
+     *
+     * <p>The field and method scans above only see the compiled core. This one reads
+     * the source of every class in {@code com.ben.csp.rbmk.physics} and fails if any
+     * of them contains a word that implies the accident is switched on rather than
+     * allowed to happen — {@code explode}, {@code detonate}, {@code cheat},
+     * {@code blowup}, {@code forceAccident}, {@code accidentMode}. Comments and
+     * string literals are stripped first, so an honest explanation of the accident
+     * ("this is the accident regime") does not trip it — only live code can.
+     *
+     * <p>If the sources cannot be found (a packaged build), the check reports that it
+     * was skipped rather than silently passing.
+     */
+    private static void testNoForcingVocabularyInSource() {
+        String[] banned = {"explode", "detonate", "blowup", "forceaccident", "accidentmode",
+            "cheat", "tripwire"};
+        java.io.File dir = new java.io.File("src/main/java/com/ben/csp/rbmk/physics");
+        if (!dir.isDirectory()) {
+            System.out.println("  [SKIP] source scan: " + dir + " not found (packaged build)");
+            return;
+        }
+        java.io.File[] files = dir.listFiles((d, n) -> n.endsWith(".java"));
+        if (files == null) {
+            System.out.println("  [SKIP] source scan: could not list " + dir);
+            return;
+        }
+        List<String> offenders = new ArrayList<>();
+        for (java.io.File f : files) {
+            String code = stripCommentsAndStrings(readFile(f)).toLowerCase();
+            for (String w : banned) {
+                if (code.contains(w)) {
+                    offenders.add(f.getName() + ":" + w);
+                }
+            }
+        }
+        check("no physics source contains accident-forcing vocabulary ("
+            + files.length + " files scanned)", offenders.isEmpty(), "found " + offenders);
+    }
+
+    /** Read a file as text, or "" if it cannot be read. */
+    private static String readFile(java.io.File f) {
+        try {
+            return new String(java.nio.file.Files.readAllBytes(f.toPath()),
+                java.nio.charset.StandardCharsets.UTF_8);
+        } catch (java.io.IOException e) {
+            return "";
+        }
+    }
+
+    /**
+     * Remove line comments, block comments and string/char literals, so a scan sees
+     * only the code that actually runs. Crude but sufficient: a banned word can only
+     * hide in a comment or a literal, and neither can force a reactor anywhere.
+     */
+    private static String stripCommentsAndStrings(String s) {
+        StringBuilder out = new StringBuilder(s.length());
+        int i = 0;
+        int n = s.length();
+        while (i < n) {
+            char c = s.charAt(i);
+            if (c == '/' && i + 1 < n && s.charAt(i + 1) == '/') {
+                while (i < n && s.charAt(i) != '\n') {
+                    i++;
+                }
+            } else if (c == '/' && i + 1 < n && s.charAt(i + 1) == '*') {
+                i += 2;
+                while (i + 1 < n && !(s.charAt(i) == '*' && s.charAt(i + 1) == '/')) {
+                    i++;
+                }
+                i += 2;
+            } else if (c == '"' || c == '\'') {
+                char q = c;
+                i++;
+                while (i < n && s.charAt(i) != q) {
+                    if (s.charAt(i) == '\\') {
+                        i++;
+                    }
+                    i++;
+                }
+                i++;
+                out.append(' ');
+            } else {
+                out.append(c);
+                i++;
+            }
+        }
+        return out.toString();
+    }
+
+    /** 4. The same object holds nominal power and is then driven super-critical. */
     private static void testSameCoreBothBehaviours() {
         UnifiedReactorCore c = new UnifiedReactorCore();
         c.setPhysicsDt(0.05);
@@ -84,7 +218,7 @@ public final class NoAccidentModeSelfTest {
     }
 
     /**
-     * 3. At the NOMINAL state, the derived rod worth is non-monotonic: k_eff rises
+     * 5. At the NOMINAL state, the derived rod worth is non-monotonic: k_eff rises
      * over the first part of insertion (the graphite displacer replacing water in
      * the bottom of the channel) before it falls. This is the positive scram, and it
      * is present with no xenon pit and no special shape.
@@ -98,7 +232,7 @@ public final class NoAccidentModeSelfTest {
     }
 
     /**
-     * 4. From nominal, ordinary rod decisions alone reach the runaway. The only
+     * 6. From nominal, ordinary rod decisions alone reach the runaway. The only
      * control used is {@code setRodTarget}; no flag, no mode, no special state.
      */
     private static void testRunawayByOrdinaryDecisions() {
