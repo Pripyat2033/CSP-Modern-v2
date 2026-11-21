@@ -22,8 +22,22 @@ public final class Xenon {
     public static final double GAMMA_XE = 0.00237;    // direct fission yield of Xe-135
     public static final double SIGMA_XE = 2.65e-18;   // Xe-135 micro absorption, cm^2
 
-    /** Full-power thermal flux, n/cm^2.s, for the relative scale. TO VERIFY. */
-    public static final double FLUX_FULL = 3.0e13;
+    /**
+     * Full-power core-average thermal flux, n/cm^2.s.
+     *
+     * <p>DERIVED (provenance {@code xenon.flux_full}), not fitted: phi = P / (E_f * Sigma_f
+     * * V) with P = 3200 MWt, E_f = 200 MeV, Sigma_f = 0.00286 /cm (the shipped lattice
+     * table) and V = 756 m3 (the homogenised core). The same inputs give 4.23 kW/litre,
+     * inside the RBMK's 4-5 kW/litre band, which is the consistency check on the
+     * normalisation.
+     *
+     * <p>This number sets how fast xenon is BURNED, so it sets the depth of the xenon
+     * pit: at the old unsourced 3.0e13 the pit peaked 1.91x equilibrium, at this value
+     * 2.41x. The pit is what forced the operators to withdraw rods past the ORM limit,
+     * so this is on the accident path. It is still {@code to_verify} because 200 MeV and
+     * nu = 2.43 are textbook rather than NIKIET values.
+     */
+    public static final double FLUX_FULL = 4.62e13;
 
     private double iodine;
     private double xenon;

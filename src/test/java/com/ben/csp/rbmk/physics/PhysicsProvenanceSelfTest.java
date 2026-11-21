@@ -42,13 +42,19 @@ public final class PhysicsProvenanceSelfTest {
         check(!PhysicsProvenance.toVerify().isEmpty(),
             "the reference values are flagged to_verify, not passed off as verified");
 
-        // every VERIFIED entry must carry a citation we can check: a source URL
-        // and a verbatim quote. This is what stops "verified" from being an
+        // every VERIFIED entry must carry a citation we can check: either a source
+        // URL or a primary document held in this repo (which must actually exist on
+        // disk), plus a verbatim quote. This is what stops "verified" from being an
         // assertion with no evidence behind it.
         for (String key : PhysicsProvenance.verified()) {
             PhysicsProvenance.Entry e = PhysicsProvenance.get(key);
-            check(e.sourceUrl() != null && e.sourceUrl().startsWith("http"),
-                "verified entry '" + key + "' cites a source URL");
+            String url = e.sourceUrl() == null ? "" : e.sourceUrl();
+            boolean web = url.startsWith("http");
+            boolean inRepo = url.startsWith("docs/")
+                && java.nio.file.Files.isRegularFile(java.nio.file.Path.of(url));
+            check(web || inRepo,
+                "verified entry '" + key + "' cites a source URL or an existing in-repo document ('"
+                    + url + "')");
             check(e.quote() != null && e.quote().length() > 10,
                 "verified entry '" + key + "' carries a verbatim quote");
         }

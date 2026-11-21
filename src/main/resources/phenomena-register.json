@@ -1,10 +1,11 @@
 {
   "_comment": "The PHENOMENA register: the completeness authority for the reactor PHYSICS, the twin of equipment-register.json. Mission rule: nothing is guessed, and nothing is silently omitted. Every phenomenon a real RBMK-1000 exhibits must appear here, with a source and a status. The reason it exists: an item the Director did not name must not silently vanish. For equipment the risk was a missing machine; for physics the risk is a missing FEEDBACK or TRANSIENT - the reactor then LOOKS right and BEHAVES wrong, which is the failure the xenon-readout bug already demonstrated (xenon was displayed but never entered the neutron balance). Status is one of: modelled (coupled into the neutron/thermal balance, and a self-test measures it), readout (computed and displayed, but NOT coupled - it cannot change k_eff), named-only (described in a source, not yet built), unsourced (expected to exist but with no source found - MUST be resolved or explicitly justified as absent). The spine source is INSAG-7 section 2 (the design features that 'had a primary influence on the course of the accident'), plus the Soviet operating regulation (Reglament 1E-S-II, 1983) and NUREG-1250. The gate is PhenomenaRegister.summary(): it prints the counts so 'is anything missing?' cannot be quietly zero.",
   "_statusLegend": {
-    "modelled": "coupled into the neutron/thermal balance; a self-test measures its effect",
-    "readout": "computed and displayed but NOT coupled; cannot change k_eff",
-    "named-only": "described in a source, not yet built",
-    "unsourced": "expected to exist, no source found yet - must be resolved or justified absent"
+    "modelled": "Coupled into the neutron/thermal balance (or a live plant action); a self-test measures it.",
+    "readout": "Computed and DISPLAYED but NOT coupled — cannot change k_eff. This is the xenon failure mode; a bug.",
+    "blocked_on_data": "Built and ready to couple, but the required data cannot be obtained with the current library/toolchain. Recorded so it cannot be forgotten.",
+    "named_only": "Described in a source, not built.",
+    "unsourced": "Expected to exist, no source found — MUST be resolved or justified absent."
   },
   "items": [
     {
@@ -63,9 +64,9 @@
       "name_ru": "Температурный коэффициент графита",
       "class": "Feedback",
       "source": "INSAG-7 2; NUREG-1250 (signs disagree between sources)",
-      "status": "readout",
+      "status": "blocked_on_data",
       "where": "UnifiedReactorCore.graphiteTempC -> RbmkXsec.fuelCell(.., graphiteTempC) -> RbmkGraphiteTemp.apply (GATED)",
-      "note": "POSITIVE and slow, but small. The SIGN is now resolved by derivation (openmc/rbmk_graphite_mgxs.py: +1.17e-5 /degC, positive), and the coupling is BUILT (RbmkGraphiteTemp -> RbmkXsec.fuelCell). But it is GATED: matchesLattice() activates it only when rbmk_lattice.json is the OpenMC table, and the shipped table is the 1-D tools/lattice one (the pending Step 1b). So in the shipped configuration graphite cannot change k_eff = READOUT. Ship the OpenMC table and this becomes modelled."
+      "note": "POSITIVE and slow. The SIGN is derived (openmc/rbmk_graphite_mgxs.py: +1.17e-5/degC). The coupling is BUILT: graphiteTempC -> RbmkGraphiteTemp.apply -> RbmkXsec.fuelCell. It does not fire because RbmkGraphiteTemp.matchesLattice() is true only for the OpenMC lattice table, and the shipped table is the ROSFOND/1-D one. The slope is a FRACTIONAL change of the OpenMC cell's constants, so applying it to a different table flips the sign — the gate is correct, not a bug. To unblock: produce the temperature sweep from the ROSFOND cell, which needs MF=7 thermal scattering (S(a,b)) for carbon at several temperatures. The repo has NO S(a,b) path (no MF=7 reader, no thermal files), so this cannot be derived from ROSFOND as the toolchain stands. Blocked on data, not on code."
     },
     {
       "id": "feedback.power",
@@ -113,9 +114,29 @@
       "name_ru": "Оперативный запас реактивности (ОЗР)",
       "class": "Operations",
       "source": "INSAG-7 2.5, 4.2; Reglament 1E-S-II",
+      "status": "modelled",
+      "where": "UnifiedReactorCore.orm() -> RodBank.orm(); limits in provenance orm.reference",
+      "note": "The reactivity left if every rod were withdrawn, in 'equivalent fully-inserted manual rods' (SKALA request K0S0000). BUILT and measured by OrmSelfTest (36 checks): RodBank sums the individual rods' worths from the cartogram, and the limits are sourced (provenance orm.reference: nominal 45-48, warning 43, limit 30, from the SKALA walkthrough and Reglament 1E-S-II 9). This is an operational quantity derived FROM the rod state, not a reactivity feedback, so 'coupled to k_eff' is the wrong test for it — the rod state is already in the neutron balance. ENFORCEMENT is a separate phenomenon (orm.limit_enforcement) and it is missing."
+    },
+    {
+      "id": "orm.limit_enforcement",
+      "name_en": "ORM limit enforcement (warning at 43, prohibition at 30)",
+      "name_ru": "Контроль ОЗР",
+      "class": "Operations",
+      "source": "Reglament 1E-S-II 9; SKALA walkthrough; provenance orm.reference",
+      "status": "modelled",
+      "where": "RodBank.margin() -> UnifiedReactorCore.ormMargin(); shown in /rbmk status",
+      "note": "A real unit is bound by the regulation's ORM limits: «не менее 26÷30 стержней» at nominal, below 26 only with the chief engineer's permission, and «при снижении … до 15 стержней реактор должен быть немедленно заглушен». Now ENFORCED as an ALARM: RodBank.margin() classifies the live margin into NOMINAL (>=26) / PERMISSION_ONLY (<26) / SHUTDOWN_REQUIRED (<=15), and /rbmk status prints the band, red at SHUTDOWN_REQUIRED. It is deliberately an alarm and NOT a lockout: the regulation forbids the action, the machinery does not physically stop the operator, and unit 4 was run at ~8 rods with nothing stopping it. OrmSelfTest checks the bands land on the regulation's values. CAVEAT: the ORM SCALE is currently ~1.6x high (a plausible operating point reads 47 rods, not 26-30) — see provenance orm.scale_calibration; the limits are right, the rod-worth calibration is not. What is still missing is the annunciation PANEL — that is plant.alarm_panel."
+    },
+    {
+      "id": "plant.alarm_panel",
+      "name_en": "Annunciation panel (SKALA alarms as lamps, not chat text)",
+      "name_ru": "Панель сигнализации",
+      "class": "Plant",
+      "source": "SKALA; the operator interface described in the walkthrough",
       "status": "named-only",
       "where": "-",
-      "note": "The extra reactivity if all rods were withdrawn, in 'equivalent rods' (the ORM >= 15 limit; ~8 at the accident). The core computes a reactivity, but there is no ORM readout or limit enforcement yet. A key operator-facing quantity."
+      "note": "Real alarms appear on an annunciator panel with a lamp and a horn per setpoint. Here every alarm is a line of chat text, so an operator can miss it, and there is no horn. The ORM bands, the trip reasons and the level alarms all exist as values but have no physical annunciation. This is what makes 'the operator was warned' true in a way a worker would recognise."
     },
     {
       "id": "control.az5",
@@ -193,9 +214,9 @@
       "name_ru": "Разогрев графита",
       "class": "Thermal-hydraulics",
       "source": "INSAG-7 2; graphite time constant",
-      "status": "readout",
+      "status": "blocked_on_data",
       "where": "UnifiedReactorCore.graphiteTempC (computed; feedback gated, see feedback.graphite)",
-      "note": "Computed with a slow time constant. The feedback link is built but gated off by the shipped lattice table (see feedback.graphite)."
+      "note": "Computed with a slow time constant (TAU_GRAPHITE) and fed to the graphite feedback. Blocked for the same reason as feedback.graphite: the value is computed but cannot reach k_eff until the lattice/graphite-slope pair matches. Not displayed to the operator, so it is not a misleading readout — it is a dead internal quantity awaiting its data."
     },
     {
       "id": "kinetics.spatial_instability",
@@ -229,13 +250,33 @@
     },
     {
       "id": "plant.trip_matrix",
-      "name_en": "Protection trips (high power, low level, low flow, etc.)",
+      "name_en": "Protection trips: separator level, low feedwater, loss of two MCPs",
       "name_ru": "Аварийные защиты",
       "class": "Plant",
       "source": "INSAG-7 2.7; Reglament 1E-S-II; RBMK-PLANT-SYSTEMS.md",
       "status": "modelled",
-      "where": "PlantSystem.checkTrips",
-      "note": "The trip matrix that raises AZ-5 on abnormal conditions."
+      "where": "PlantSystem.checkTrips -> scram()",
+      "note": "Raises АЗ-5 on: high/low separator level, feedwater flow to 0.75 of CURRENT, loss of two MCPs on one side. Each reads live plant state and ACTS (scram drops the rods and trips the pumps), so this is genuinely coupled. The feedwater item was FIXED this session: it was an absolute 10% of nominal (a different protection, firing far too late); it is now the regulation's АЗ-1 rate-of-drop trip «до 0,75 текущего» (ГЛАВА 3 item 2), held against a trailing 60 s window so a slow ramp does not trip it. Measured: a fall to 70% trips, a fall to 80% does not (PlantSelfTest)."
+    },
+    {
+      "id": "plant.trip_high_power",
+      "name_en": "High-power trip (AZ-5 on overpower)",
+      "name_ru": "АЗ по мощности",
+      "class": "Plant",
+      "source": "Reglament 1E-S-II (setpoint to be read from the regulation)",
+      "status": "named-only",
+      "where": "-",
+      "note": "The regulation has NO single '104% overpower' trip. Its power protection is TWO protections (ГЛАВА 3, АЗ-5): a RATE trip — «уменьшение периода разгона до 10±2 сек при мощности до 160 мВт(т) … и до 20 сек в остальном диапазоне» — and a MARGIN trip — «повышение уровня мощности на 0,5% Nном» below 5% power, «на 10% Nном над заданным» in the 5-100% range. NEITHER is implemented in checkTrips, so in AccidentSequence the unit runs up with no automatic protection at all. This is the most important missing trip: it is the one that would have caught the runaway. Setpoints now SOURCED (provenance trip.az1_az5_setpoints), so this is buildable — it is no longer blocked on data, only on implementation."
+    },
+    {
+      "id": "plant.trip_pressure",
+      "name_en": "High-pressure trip",
+      "name_ru": "АЗ по давлению",
+      "class": "Plant",
+      "source": "Reglament 1E-S-II; docs/RBMK-PLANT-SYSTEMS.md line 240",
+      "status": "named-only",
+      "where": "-",
+      "note": "The regulation gives the setpoint: «повышение давления в реакторном пространстве до аварийной уставки – 0,15 кгс/см2» (ГЛАВА 3, АЗ-5 item з), plus «повышение давления в барабан-сепараторах до 75 кгс/см2 (абсолютного)» (item о). Neither is implemented — the separator pressure in the model drifts to a setpoint and never trips. Now SOURCED (provenance trip.az1_az5_setpoints), so buildable."
     },
     {
       "id": "plant.eccl",

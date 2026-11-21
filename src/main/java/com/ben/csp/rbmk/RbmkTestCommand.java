@@ -19,6 +19,7 @@ import com.ben.csp.rbmk.plant.PlantTicker;
 import com.ben.csp.rbmk.plant.SteamSeparator;
 import com.ben.csp.rbmk.module.ModuleRegistry;
 import com.ben.csp.rbmk.module.PlantModule;
+import com.ben.csp.rbmk.physics.RodBank;
 import com.ben.csp.rbmk.physics.ReactorModel;
 import com.ben.csp.rbmk.physics.OpenMcResult;
 import com.ben.csp.rbmk.physics.PhenomenaRegister;
@@ -919,6 +920,19 @@ public final class RbmkTestCommand {
             feedback(s, String.format("  physics clock: %.1f s simulated on its own thread "
                 + "(flux is the state; feedback loop CLOSED)", uc.simSeconds()),
                 Formatting.WHITE);
+            RodBank.Margin margin = uc.ormMargin();
+            String warn = switch (margin) {
+                case SHUTDOWN_REQUIRED -> "  *** ORM AT OR BELOW 15 — REGULATION "
+                    + "REQUIRES IMMEDIATE SHUTDOWN ***";
+                case PERMISSION_ONLY -> "  ** ORM BELOW 26 — CHIEF ENGINEER PERMISSION "
+                    + "REQUIRED **";
+                case NOMINAL -> "";
+            };
+            feedback(s, String.format("  ORM:       %.1f equivalent manual rods%s",
+                uc.orm(), warn),
+                margin == RodBank.Margin.SHUTDOWN_REQUIRED ? Formatting.RED
+                    : margin == RodBank.Margin.PERMISSION_ONLY ? Formatting.YELLOW
+                    : Formatting.WHITE);
         }
         feedback(s, String.format("  pumps:     %.0f m3/h total, %d running",
             flowM3h, runningPumps(p)), Formatting.WHITE);

@@ -52,4 +52,24 @@ public interface ReactorModel {
 
     /** Hand the rods to the automatic regulator (АР) or take them back. */
     void setAutoRegulator(boolean on);
+
+    /**
+     * The reactor period, s: positive while the power rises, infinite when steady,
+     * {@link Double#NaN} when it cannot yet be measured. The АЗ-5 rate protection
+     * (ГЛАВА 3 item б) trips on this.
+     *
+     * <p>Default NaN so the retired cores need no change; only the live core
+     * overrides it.
+     */
+    default double reactorPeriod() {
+        return Double.NaN;
+    }
+
+    /**
+     * The power level being held, as a fraction of nominal. The АЗ-5 power-margin
+     * protection (ГЛАВА 3 items в, г) compares the live power against it.
+     */
+    default double powerSetpoint() {
+        return 1.0;
+    }
 }

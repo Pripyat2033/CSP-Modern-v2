@@ -40,6 +40,7 @@ public final class PhenomenaRegisterSelfTest {
         testSourcesPresent();
         testStatusSplitIsHonest();
         testSummaryAddsUp();
+        testSafetyBarriersRegistered();
         System.out.printf("%nPhenomenaRegisterSelfTest: %d checks, %d failures%n",
             checks, failures);
         if (failures > 0) {
@@ -102,8 +103,8 @@ public final class PhenomenaRegisterSelfTest {
         check("xenon feedback's 'where' names RbmkXsec.fuelCell",
             xenonP != null && xenonP.where().contains("fuelCell") && fuelCellTakesXenon,
             xenonP == null ? "MISSING" : xenonP.where());
-        check("graphite is honestly a READOUT, not modelled",
-            graphiteP != null && graphiteP.status() == PhenomenaRegister.Status.READOUT,
+        check("graphite is honestly BLOCKED_ON_DATA, not claimed modelled",
+            graphiteP != null && graphiteP.status() == PhenomenaRegister.Status.BLOCKED_ON_DATA,
             graphiteP == null ? "MISSING" : graphiteP.status().toString());
     }
 
@@ -127,9 +128,12 @@ public final class PhenomenaRegisterSelfTest {
         check("the register admits unbuilt phenomena (named-only not empty)",
             !PhenomenaRegister.namedOnly().isEmpty(),
             "named-only=" + PhenomenaRegister.namedOnly().size());
-        check("the register surfaces at least one READOUT (the xenon failure mode)",
-            !PhenomenaRegister.readout().isEmpty(),
+        check("no phenomenon is computed-but-uncoupled (READOUT is a bug)",
+            PhenomenaRegister.readout().isEmpty(),
             "readout=" + PhenomenaRegister.readout().size());
+        check("the blocked-on-data items name their cause",
+            PhenomenaRegister.blockedOnData().stream().allMatch(i -> i.note().length() > 80),
+            "blocked=" + PhenomenaRegister.blockedOnData().size());
         check("no phenomenon is unsourced",
             PhenomenaRegister.unsourced().isEmpty(),
             "unsourced=" + PhenomenaRegister.unsourced().size());
@@ -138,10 +142,30 @@ public final class PhenomenaRegisterSelfTest {
     /** 6. The summary counts add up. */
     private static void testSummaryAddsUp() {
         int sum = PhenomenaRegister.modelled().size() + PhenomenaRegister.readout().size()
+            + PhenomenaRegister.blockedOnData().size()
             + PhenomenaRegister.namedOnly().size() + PhenomenaRegister.unsourced().size();
         check("status counts add up to the item count",
             sum == PhenomenaRegister.size(),
             "sum=" + sum + " size=" + PhenomenaRegister.size());
+    }
+
+    /**
+     * 7. The safety barriers an operator depends on are registered and are HONEST about
+     * being missing. ORM enforcement and the high-power trip are the two whose absence
+     * would let an operator reach a state no real unit could reach, so they must not be
+     * silently absent from the register.
+     */
+    private static void testSafetyBarriersRegistered() {
+        for (String id : new String[] {"orm.limit_enforcement", "plant.trip_high_power",
+            "plant.trip_pressure"}) {
+            PhenomenaRegister.Item it = find(id);
+            check(id + " is registered (its absence must be visible)",
+                it != null, it == null ? "MISSING" : it.status().toString());
+        }
+        PhenomenaRegister.Item orm = find("orm.margin");
+        check("ORM readout itself is modelled (the rod state is real)",
+            orm != null && orm.status() == PhenomenaRegister.Status.MODELLED,
+            orm == null ? "MISSING" : orm.status().toString());
     }
 
     private static PhenomenaRegister.Item find(String id) {

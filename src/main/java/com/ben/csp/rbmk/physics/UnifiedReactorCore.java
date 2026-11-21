@@ -503,6 +503,14 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
         return rods == null ? 0.0 : rods.orm();
     }
 
+    /**
+     * The ORM band against the regulation's setpoints (warning 43, prohibition 30).
+     * An alarm state, not a lockout: the operator is warned, and can still act.
+     */
+    public RodBank.Margin ormMargin() {
+        return rods == null ? RodBank.Margin.NOMINAL : rods.margin();
+    }
+
     /** The per-rod state behind {@link #orm()}. */
     public RodBank rodBank() {
         return rods;
@@ -518,6 +526,7 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
      * it can see, delayed neutrons included. The window is a few seconds so the
      * reading is not dominated by a single step.
      */
+    @Override
     public double reactorPeriod() {
         double span = simSeconds - periodRefSeconds;
         if (span < PERIOD_MIN_SPAN_S || !(fission > 0) || !(periodRefPower > 0)) {
@@ -582,6 +591,11 @@ public final class UnifiedReactorCore implements ReactorModel, AutoCloseable {
      */
     public void setPowerSetpoint(double p) {
         this.powerSetpoint = Math.max(0.0, p);
+    }
+
+    @Override
+    public double powerSetpoint() {
+        return powerSetpoint;
     }
 
     // --------------------------------------------------------------- readouts

@@ -43,8 +43,14 @@ public final class PhenomenaRegister {
     public enum Status {
         /** Coupled into the neutron/thermal balance; a self-test measures it. */
         MODELLED,
-        /** Computed and displayed but NOT coupled; cannot change k_eff. */
+        /** Computed and displayed but NOT coupled; cannot change k_eff. A bug. */
         READOUT,
+        /**
+         * Built and ready to couple, but the data it needs cannot be obtained with the
+         * current library or toolchain. Recorded so it cannot be forgotten. This is not
+         * a bug and not a backlog item: it is a stated limitation with a named cause.
+         */
+        BLOCKED_ON_DATA,
         /** Described in a source, not yet built. */
         NAMED_ONLY,
         /** Expected to exist, no source found — MUST be resolved or justified absent. */
@@ -57,6 +63,7 @@ public final class PhenomenaRegister {
             return switch (s.trim().toLowerCase().replace('-', '_')) {
                 case "modelled", "modeled" -> MODELLED;
                 case "readout" -> READOUT;
+                case "blocked_on_data", "blocked" -> BLOCKED_ON_DATA;
                 case "named_only", "named" -> NAMED_ONLY;
                 default -> UNSOURCED;
             };
@@ -100,6 +107,11 @@ public final class PhenomenaRegister {
         return byStatus(Status.READOUT);
     }
 
+    /** Phenomena built but held back by missing data (library or toolchain). */
+    public static List<Item> blockedOnData() {
+        return byStatus(Status.BLOCKED_ON_DATA);
+    }
+
     /** Phenomena described in a source but not yet built. */
     public static List<Item> namedOnly() {
         return byStatus(Status.NAMED_ONLY);
@@ -129,8 +141,8 @@ public final class PhenomenaRegister {
     public static String summary() {
         return String.format(
             "phenomena register: %d phenomena — %d modelled, %d readout (NOT coupled), "
-                + "%d named-only, %d unsourced",
-            ITEMS.size(), modelled().size(), readout().size(),
+                + "%d blocked on data, %d named-only, %d unsourced",
+            ITEMS.size(), modelled().size(), readout().size(), blockedOnData().size(),
             namedOnly().size(), unsourced().size());
     }
 

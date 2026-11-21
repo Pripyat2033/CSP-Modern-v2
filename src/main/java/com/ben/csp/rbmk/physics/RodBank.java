@@ -139,6 +139,56 @@ public final class RodBank {
         return totalWorth() / unitWorth;
     }
 
+    /**
+     * ORM band, from the plant's operating regulation, provenance {@code orm.reference}.
+     *
+     * <p>Source: ТЕХНОЛОГИЧЕСКИЙ РЕГЛАМЕНТ 1Э-С-II (1983), ГЛАВА 9 — «не менее 26÷30
+     * стержней» at nominal power; below 26 only with the chief engineer's permission;
+     * «при снижении … до 15 стержней реактор должен быть немедленно заглушен».
+     */
+    public enum Margin {
+        /** At or above the 26-30 band: the regulated operating margin. */
+        NOMINAL,
+        /** Below 26: permitted only with the chief engineer's written permission. */
+        PERMISSION_ONLY,
+        /** At or below 15: the regulation requires immediate shutdown. */
+        SHUTDOWN_REQUIRED;
+
+        /** True when the operator must be told the margin is out of band. */
+        public boolean alarmed() {
+            return this != NOMINAL;
+        }
+    }
+
+    /** Lower edge of the regulated band, equivalent manual rods (ГЛАВА 9). */
+    public static final double ORM_NOMINAL = 26;
+    /** Below this, only with the chief engineer's permission (ГЛАВА 9). */
+    public static final double ORM_PERMISSION_FLOOR = 26;
+    /** At or below this, the reactor must be shut down immediately (ГЛАВА 9). */
+    public static final double ORM_SHUTDOWN = 15;
+
+    /**
+     * Classify the current margin against the regulation's limits.
+     *
+     * <p>This is an ALARM, not a lockout. The regulation says the reactor "must be
+     * shut down immediately" at 15 rods — an instruction to the operator, not a
+     * mechanism that drops the rods by itself. Modelling it as a lockout would make
+     * the accident unreachable by the very action that caused it: unit 4 was run at
+     * ~8 rods, below the shutdown line, and nothing physically stopped it. So the
+     * reactor reports the band and lets the operator decide, which is exactly the
+     * position the crew were in.
+     */
+    public Margin margin() {
+        double m = orm();
+        if (m <= ORM_SHUTDOWN) {
+            return Margin.SHUTDOWN_REQUIRED;
+        }
+        if (m < ORM_NOMINAL) {
+            return Margin.PERMISSION_ONLY;
+        }
+        return Margin.NOMINAL;
+    }
+
     /** The worth of one fully inserted manual rod, dk/k. */
     public double unitWorth() {
         return unitWorth;

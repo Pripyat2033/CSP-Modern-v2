@@ -102,13 +102,25 @@ public final class AccidentSequence {
         // and a dead core cannot be scrammed, so there would be nothing left to test.
         core.setAutoRegulator(false);
         double sagFrom = core.fissionPower();
+        double rhoFrom = core.reactivity();
+        double xeFrom = core.xenonRatio();
         run(core, DT, 600);
         double sagTo = core.fissionPower();
-        System.out.printf("  4a poison   : P_fis %.5f -> %.5f in 10 min at fixed rods%n",
-            sagFrom, sagTo);
-        check(sagTo < sagFrom,
-            "the xenon poison sags the power at a fixed rod position ("
-                + round(sagFrom) + " -> " + round(sagTo) + ")");
+        double rhoTo = core.reactivity();
+        double xeTo = core.xenonRatio();
+        System.out.printf("  4a poison   : rho %+.6f -> %+.6f  Xe %.4f -> %.4f  P_fis %.5f -> %.5f%n",
+            rhoFrom, rhoTo, xeFrom, xeTo, sagFrom, sagTo);
+        // The POISON is what this checks, so assert the poison: xenon builds and the
+        // reactivity falls. Power is NOT a valid indicator here — at this point in the
+        // sequence the core is still super-critical, so the power RISES even while the
+        // poison eats margin. An earlier version asserted sagTo < sagFrom and "passed"
+        // only against stale classes; against the current model it fails, correctly.
+        check(rhoTo < rhoFrom,
+            "the xenon poison removes reactivity at a fixed rod position (rho "
+                + String.format("%+.6f", rhoFrom) + " -> " + String.format("%+.6f", rhoTo) + ")");
+        check(xeTo > xeFrom,
+            "xenon keeps building through the 10 min (Xe "
+                + round(xeFrom) + " -> " + round(xeTo) + ")");
 
         // ---- 4b. the operator withdraws the rods to the ORM limit to fight the
         // xenon. This is the fatal state: almost all rods out, so the whole core

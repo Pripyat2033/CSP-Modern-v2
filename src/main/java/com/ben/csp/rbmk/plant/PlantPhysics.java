@@ -86,6 +86,24 @@ public final class PlantPhysics {
     public static final double T_FEEDWATER_C = 160.0;
     /** Feedwater flow equals steam production at steady state (kg/s). */
     public static final double MFLOW_FEEDWATER_KGS = 1500.0;
+    /**
+     * АЗ-1 feedwater protection: trip when flow falls to 0.75 of its current value.
+     * Reglament 1Э-С-II ГЛАВА 3, АЗ-1 item 2: «снижение расхода питательной воды до
+     * 0,75 текущего» (provenance {@code trip.az1_az5_setpoints}).
+     */
+    public static final double FEEDWATER_TRIP_FRACTION = 0.75;
+
+    // ---------------------------------------------------- АЗ-5 power protection
+    // ГЛАВА 3 items б, в, г of Reglament 1Э-С-II. There is no single "overpower
+    // setpoint": the protection is a RATE trip plus a MARGIN over the held level.
+    /** Rate trip, short period while below 5 % Nnom: «до 10±2 сек». */
+    public static final double AZ5_PERIOD_S_BELOW_5PCT = 12.0;
+    /** Rate trip, short period in the rest of the range: «до 20 сек». */
+    public static final double AZ5_PERIOD_S_ABOVE_5PCT = 20.0;
+    /** Power margin over the setpoint, below 5 % Nnom: «на 0,5% Nном». */
+    public static final double AZ5_POWER_MARGIN_BELOW_5PCT = 0.005;
+    /** Power margin over the setpoint, 5-100 % Nnom: «на 10% Nном». */
+    public static final double AZ5_POWER_MARGIN_5_TO_100PCT = 0.10;
 
     // ---------------------------------------------------------- steam enthalpy
     /** Saturated steam enthalpy at 6.9 MPa (J/kg). */

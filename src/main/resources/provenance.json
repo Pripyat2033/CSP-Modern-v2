@@ -310,19 +310,18 @@
     },
     "orm.reference": {
       "value": {
-        "nominal": [
-          45,
-          48
-        ],
-        "warning": 43,
-        "limit": 30
+        "nominal_min": 26,
+        "nominal_max": 30,
+        "chief_engineer_permission_below": 26,
+        "shutdown_required_at": 15,
+        "power_raise_floor": 15
       },
-      "unit": "equivalent fully-inserted manual rods",
+      "unit": "equivalent manual rods (the regulation counts rods, not dk/k)",
       "status": "verified",
-      "source": "SKALA simulator walkthrough (Chornobyl Family, video 1JSP_gVXZTs)",
-      "sourceUrl": "https://www.youtube.com/watch?v=1JSP_gVXZTs",
-      "quote": "A normal value is approximately 45 to 48 rods. ... the warning set point is 43 rods. And if the margin falls to 30 rods, continued operation is no longer permitted.",
-      "note": "ORM is a rod count, not a percentage and not dk/k. Corroborated by the units 3/4 regulation §9, which states the margin in rods: not less than 26-30 rods normally, may fall to 15 during a power raise."
+      "source": "ТЕХНОЛОГИЧЕСКИЙ РЕГЛАМЕНТ 1Э-С-II (1983), ГЛАВА 9, §9.0 — the plant's own operating regulation, signed by B r y u k h a n o v / F o m i n / D y a t l o v / L y u t o v / G e l l e r m a n. Held in the repo at docs/primary-sources/reglament-1E-S-II-1983.txt",
+      "sourceUrl": "docs/primary-sources/Reglament-1E-S-II-1983-ChAES-RBMK-1000.pdf",
+      "quote": "«На номинальной мощности в стационарном режиме величина оперативного запаса реактивности должна составлять не менее 26÷30 стержней. Работа реактора при запасе менее 26 стержней допускается с разрешения главного инженера станции. При снижении оперативного запаса реактивности до 15 стержней реактор должен быть немедленно заглушен.» (ГЛАВА 9, lines 1939-1944). Also ГЛАВА 6 §6.6.4 and ГЛАВА 7 §7.1: during a power raise the margin must not fall below 15 rods.",
+      "note": "PRIMARY SOURCE, and it supersedes the earlier value. This entry previously carried nominal 45-48 / warning 43 / limit 30 marked 'verified' from a YouTube SKALA simulator walkthrough (1JSP_gVXZTs), with this regulation demoted to a footnote. That was backwards: the walkthrough is a game, the regulation is the document the plant ran on and Dyatlov signed. The regulation's numbers are now the authority. The walkthrough's 45-48 is not necessarily wrong — it may describe a different unit or a later revision — but it cannot outrank the primary text, and the 43 'warning' setpoint has NO basis in the regulation at all, so it is dropped. CONSEQUENCE: the ORM alarm in RodBank must be re-derived from these numbers (26/30 nominal band, 15 shutdown), not from 45/43/30."
     },
     "rod.pk_rr_positions": {
       "value": "unresolved (12 rods inside the panel's 127-rod blue category)",
@@ -442,6 +441,41 @@
       "status": "to_verify",
       "source": "RbmkTransientSolver.power() javadoc: 'Mean fission source over the active nodes - the reactor power (arbitrary units)' -- INTERNAL code fact, not an external citation: needs a primary source for the 17.5 s stroke before it can be marked verified.",
       "note": "The accident test's assertion text used to say 'x nominal', which is wrong: the reference state is 1.0 and the 26 April variant is SEEDED at 5.63 of those units. Those 5.63 are a property of the seeded low-power state, NOT a claim the reactor ran at 563% power. Ratios (peak/p0, end/p0) are meaningful; absolute power is not, and nothing in the model should be read as an absolute MW figure until a normalisation to nominal power is added. STATUS: to_verify because the gate requires an external URL + verbatim quote for 'verified', and this is a code-consistency fact."
+    },
+    "xenon.flux_full": {
+      "value": 46200000000000.0,
+      "unit": "n/cm^2/s (core-average thermal flux at nominal power)",
+      "status": "to_verify",
+      "source": "DERIVED from the shipped lattice table and geometry, not fitted: phi = P_fis / (E_f * Sigma_f * V), with P_fis = 3200 MWt (PlantPhysics.P_THERMAL_W), E_f = 200 MeV, Sigma_f = (nsf1+nsf2)/nu from rbmk_lattice.json (0.00286 /cm, cell-homogenised), V = 1661 * 0.25^2 * 7.28 = 756 m3 (the homogenised core). Gives 4.62e13 n/cm^2/s. Consistency: the same inputs give 4.23 kW/litre, in the RBMK's documented 4-5 kW/litre band, so the normalisation is self-consistent.",
+      "note": "REPLACES the unsourced Xenon.FLUX_FULL = 3.0e13. That value is 1.54x low. It matters: at 3.0e13 the xenon pit peaks 1.91x equilibrium at 8.5 h; at 4.62e13 it peaks 2.41x at 8.8 h, a 26 % deeper pit. The pit is what forced the operators to withdraw rods into the ORM violation, so this is on the accident path. Still to_verify because E_f=200 MeV and nu=2.43 are textbook, not from a NIKIET source; the sensitivity to both is weak (phi ~ 1/(E_f*nu)), but they must be pinned."
+    },
+    "orm.scale_calibration": {
+      "value": 47.1,
+      "unit": "rods (model ORM at a plausible operating point, ~31% insertion)",
+      "status": "to_verify",
+      "source": "MEASURED from OrmSelfTest against the shipped cartogram; the regulation target is ГЛАВА 9 of 1Э-С-II (26-30 rods).",
+      "note": "KNOWN DEFECT, surfaced not hidden. The model reads ~47 rods where the regulation says 26-30, so the ORM SCALE is ~1.6x high even though the LIMITS are now the regulation's. Cause is either the rod-worth unit (unitWorth = worth of one fully inserted manual rod) or the per-rod worth curve in RodWorth/Cartogram. Until it is fixed, an operator reading ORM in-game will see a number ~1.6x too high and may believe he has more margin than he does — which is the exact error that killed unit 4, so this matters more than a normal calibration item. The 45-48 figure from the SKALA walkthrough matches the model, which is why the error went unnoticed: the model was tuned to the video, not the regulation."
+    },
+    "trip.az1_az5_setpoints": {
+      "value": {
+        "feedwater_flow_az1": "0.75 of current flow",
+        "mcp_flow_az1_m3h": 5000,
+        "period_az5_s_above_5pct": 20,
+        "period_az5_s_below_5pct": "10 +/- 2",
+        "power_margin_az5_pct_below_5pct": 0.5,
+        "power_margin_az5_pct_5_to_100": 10,
+        "reactor_space_pressure_kgf_cm2": 0.15,
+        "separator_pressure_kgf_cm2_abs": 75,
+        "separator_level_low_mm": -1100,
+        "separator_level_high_mm": 250,
+        "suz_water_flow_m3h": 800
+      },
+      "unit": "mixed, as the regulation states them (see quote)",
+      "status": "verified",
+      "source": "ТЕХНОЛОГИЧЕСКИЙ РЕГЛАМЕНТ 1Э-С-II (1983), ГЛАВА 3 «ПЕРЕЧЕНЬ АВАРИЙНЫХ ЗАЩИТ РЕАКТОРА», items АЗ-1 .. АЗ-5. Repo: docs/primary-sources/reglament-1E-S-II-1983.txt lines 977-1046",
+      "quote": "АЗ-1: «снижение расхода питательной воды до 0,75 текущего»; «снижение расхода воды в КМПЦ … через любой из 3-х ГЦН … до 5000 м3/ч». АЗ-5: «уменьшение периода разгона до 10±2 сек при мощности … до 160 мВт(т) … и до 20 сек в остальном диапазоне»; «повышение уровня мощности на 0,5% Nном … при мощности до 160 Мвт(т)»; «повышение уровня мощности на 10% Nном над заданным при мощности 160÷3200 мВт(т)»; «повышение давления в реакторном пространстве до аварийной уставки – 0,15 кгс/см2»; «повышение давления в барабан-сепараторах до 75 кгс/см2 (абсолютного)»; «снижение уровней в барабан-сепараторах … до величины -1100 мм»; «повышение уровней … до +250 мм»; «снижение расхода воды в напорный коллектор СУЗ до аварийной уставки (800 м3/ч)».",
+      "note": "These are the PROTECTION SETPOINTS, from the plant's own regulation, so they replace the earlier 'setpoint to be read from the regulation' placeholders. Note the regulation has NO single '104% overpower' number: the power protection is a MARGIN over the setpoint (10% Nnom over the заданный level in the 5-100% range, 0.5% below 5%), plus a period (rate) protection at 20 s. So a '104% trip' was the wrong shape; the real protection is a rate trip and a margin trip. IMPLEMENTATION GAP: PlantSystem.checkTrips currently trips feedwater at 0.1 of nominal, not at the regulation's 0.75 of CURRENT flow, and implements none of the period, power-margin, pressure or separator-pressure trips.",
+      "sourceUrl": "docs/primary-sources/Reglament-1E-S-II-1983-ChAES-RBMK-1000.pdf"
     }
   }
 }

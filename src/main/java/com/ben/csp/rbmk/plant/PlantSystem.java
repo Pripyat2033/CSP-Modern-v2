@@ -28,6 +28,14 @@ import com.ben.csp.rbmk.physics.UnifiedReactorCore;
  */
 public final class PlantSystem {
 
+    /**
+     * Below this fission power the reactor period is not a usable signal: at a few
+     * hundred kW the power wanders on noise and a rate trip would fire spuriously.
+     * The regulation's own rate setpoint only applies «при мощности … до 160 мВт(т)»
+     * and up, so a floor of ~0.1 % Nnom is consistent with it.
+     */
+    private static final double POWER_TRIP_FLOOR = 0.001;
+
     private final ReactorModel core;
 
     private final MainCirculatingPump[] pumps =
@@ -319,8 +327,47 @@ public final class PlantSystem {
                 return;
             }
         }
-        if (feedwater.flowKgS() < 0.1 * PlantPhysics.MFLOW_FEEDWATER_KGS) {
-            scram("low feedwater flow");
+        // АЗ-5 (ГЛАВА 3 item б): a RATE trip. «уменьшение периода разгона до 10±2 сек при
+        // мощности … до 160 мВт(т) (~5% Nном) и до 20 сек в остальном диапазоне». This is
+        // the protection that would have caught the runaway, and the model had NO rate
+        // trip at all. A period is only actionable while it is positive (power rising)
+        // and the power is above the measurement floor, so a settling core does not trip.
+        double period = core.reactorPeriod();
+        if (!Double.isNaN(period) && period > 0 && core.fissionPower() > POWER_TRIP_FLOOR) {
+            double limit = core.fissionPower() < 0.05
+                ? PlantPhysics.AZ5_PERIOD_S_BELOW_5PCT
+                : PlantPhysics.AZ5_PERIOD_S_ABOVE_5PCT;
+            if (period < limit) {
+                scram(String.format(
+                    "АЗ-5: reactor period %.1f s is shorter than the %.0f s setpoint "
+                        + "(power rising at %.1f%% Nnom)", period, limit,
+                    100 * core.fissionPower()));
+                return;
+            }
+        }
+
+        // АЗ-5 (ГЛАВА 3 items в, г): a power MARGIN trip over the level being held —
+        // «повышение уровня мощности на 0,5% Nном» below 5% power, «на 10% Nном над
+        // заданным» in the 5-100% range. This is the regulation's real overpower
+        // protection; there is no single "104%" number in it.
+        double fission = core.fissionPower();
+        double margin = fission < 0.05
+            ? PlantPhysics.AZ5_POWER_MARGIN_BELOW_5PCT
+            : PlantPhysics.AZ5_POWER_MARGIN_5_TO_100PCT;
+        if (fission > core.powerSetpoint() + margin) {
+            scram(String.format(
+                "АЗ-5: power %.1f%% is more than %.0f%% Nnom above the setpoint %.1f%%",
+                100 * fission, 100 * margin, 100 * core.powerSetpoint()));
+            return;
+        }
+
+        // АЗ-1 (ГЛАВА 3, item 2): flow down to 0.75 of CURRENT, a rate-of-drop trip.
+        // The old test was an absolute 10% of nominal, which is a different protection
+        // and fires far too late — a genuine defect the regulation exposed.
+        if (feedwater.lowFlowTrip()) {
+            scram("АЗ-1: feedwater flow fell to 0.75 of its current value ("
+                + Math.round(feedwater.flowKgS()) + " of "
+                + Math.round(feedwater.referenceFlowKgS()) + " kg/s)");
             return;
         }
         // loss of two pumps on one side

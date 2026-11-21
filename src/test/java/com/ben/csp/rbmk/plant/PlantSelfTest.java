@@ -14,6 +14,7 @@ public final class PlantSelfTest {
         heatBalance();
         steadyState();
         trips();
+        feedwaterProtection();
         eccs();
         subsystems();
         System.out.println("PlantSelfTest: " + checks + " checks passed.");
@@ -172,6 +173,33 @@ public final class PlantSelfTest {
         check(e.remainingWaterKg() < 0.1 * 12 * Eccs.ACCUMULATOR_WATER_KG,
             "the accumulators empty after ~100 s of injection");
         check(e.injectionKgS() > 0, "the long-term pumps keep injecting");
+    }
+
+    /**
+     * The АЗ-1 feedwater protection is a RATE-OF-DROP trip: «снижение расхода
+     * питательной воды до 0,75 текущего» (ГЛАВА 3). It must fire on a real drop and
+     * must not fire on a mild one or at steady state.
+     */
+    private static void feedwaterProtection() {
+        check(PlantPhysics.FEEDWATER_TRIP_FRACTION == 0.75,
+            "the feedwater trip is the regulation's 0.75 of current flow");
+
+        check(feedwaterTripsAt(900), "a fall to 60% of flow trips АЗ-1");
+        check(feedwaterTripsAt(1050), "a fall to 70% of flow trips АЗ-1");
+        check(!feedwaterTripsAt(1200), "a fall to 80% of flow does NOT trip АЗ-1");
+        check(!feedwaterTripsAt(1500), "steady flow does not trip АЗ-1");
+    }
+
+    /** True when a drop to {@code demandKgS} trips the protection within 20 s. */
+    private static boolean feedwaterTripsAt(double demandKgS) {
+        FeedwaterSystem f = new FeedwaterSystem();
+        for (int i = 0; i < 400; i++) {
+            f.step(0.5, PlantPhysics.MFLOW_FEEDWATER_KGS, PlantPhysics.MFLOW_FEEDWATER_KGS);
+        }
+        for (int i = 0; i < 40; i++) {
+            f.step(0.5, demandKgS, demandKgS);
+        }
+        return f.lowFlowTrip();
     }
 
     // ------------------------------------------------------------- helpers

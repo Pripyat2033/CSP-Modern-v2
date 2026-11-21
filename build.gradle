@@ -119,6 +119,69 @@ tasks.register('checkProvenance') {
 
 tasks.named('check') { dependsOn 'checkProvenance' }
 
+// Phenomena gate (option A): the completeness authority for the reactor PHYSICS.
+// A phenomenon that is COMPUTED but NOT COUPLED is a bug by definition — the
+// quantity moves on a display while k_eff does not, which is exactly the xenon
+// failure this register was built to catch. So READOUT fails the build.
+//
+// NAMED_ONLY does NOT fail the build: there are 10 of them and they are a real
+// backlog, so failing on them would only get this gate switched off. They are
+// printed as a blocking notice on every build instead, with a count that cannot
+// be quietly ignored, and --strict (or -PstrictPhenomena) makes them fatal too.
+tasks.register('checkPhenomena') {
+    description = 'Fails if a phenomenon is computed but not coupled (READOUT).'
+    group = 'verification'
+    def register = file('src/main/resources/phenomena-register.json')
+    def strict = project.hasProperty('strictPhenomena')
+    doLast {
+        if (!register.exists()) {
+            throw new GradleException("phenomena-register.json is missing — the physics is untracked")
+        }
+        def json = new groovy.json.JsonSlurper().parseText(register.text)
+        def items = json.items
+        def byStatus = items.groupBy {
+            (it.status ?: 'unsourced').toString().toLowerCase().replace('-', '_')
+        }
+        def readout = byStatus['readout'] ?: []
+        def blocked = byStatus['blocked_on_data'] ?: []
+        def named = byStatus['named_only'] ?: []
+        def unsourced = byStatus['unsourced'] ?: []
+        def modelled = byStatus['modelled'] ?: []
+
+        logger.lifecycle("Phenomena: ${items.size()} registered — ${modelled.size()} modelled, "
+            + "${readout.size()} readout (NOT coupled), ${blocked.size()} blocked on data, "
+            + "${named.size()} named-only, ${unsourced.size()} unsourced")
+
+        if (!readout.isEmpty()) {
+            def lines = readout.collect { "  - ${it.id}: ${it.name_en}" }.join('\n')
+            throw new GradleException("Phenomena computed but NOT coupled (READOUT). A "
+                + "quantity that is displayed but cannot change k_eff is a bug — either "
+                + "couple it or drop the readout:\n" + lines)
+        }
+        if (!unsourced.isEmpty()) {
+            def lines = unsourced.collect { "  - ${it.id}: ${it.name_en}" }.join('\n')
+            throw new GradleException("Phenomena with NO source (unsourced). Cite a source "
+                + "or justify its absence:\n" + lines)
+        }
+        if (!blocked.isEmpty()) {
+            logger.lifecycle("Phenomena: ${blocked.size()} phenomena are BLOCKED ON DATA "
+                + "(built, cannot couple without a library/toolchain that is not present):")
+            blocked.each { logger.lifecycle("  - ${it.id}: ${it.name_en}") }
+        }
+        if (!named.isEmpty()) {
+            logger.lifecycle("Phenomena: ${named.size()} phenomena are named-only (not built). "
+                + "This is the physics backlog — the register says what a real RBMK does and "
+                + "the model does not:")
+            named.each { logger.lifecycle("  - ${it.id}: ${it.name_en}") }
+            if (strict) {
+                throw new GradleException("${named.size()} named-only phenomena (strict mode).")
+            }
+        }
+    }
+}
+
+tasks.named('check') { dependsOn 'checkPhenomena' }
+
 // configure the maven publication
 publishing {
     publications {
