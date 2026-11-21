@@ -1169,3 +1169,42 @@ the ORM violation means. Open question for Ben: define the two start states by
 (a) solving their critical xenon, (b) driving them there with АР from
 `selfConsistentSeed()`, or (c) running the variants on `UnifiedReactorCore` like
 `AccidentSequence` does. I lean (c).
+
+## ONE CORE, NO FLAG — Ben's two absolute rules (commit cc2b88a, 2026-11-18)
+
+**1. `UnifiedReactorCore` is the ONLY core.** `ReactorCore` (lumped point kinetics),
+`SpatialReactorCore` (static eigenvalue), `TransientReactorCore` (open-loop threaded)
+are all retired. They are `@Deprecated` AND unreachable — de-wired, NOT deleted,
+because `AGENTS.md` has a **ZERO DELETION POLICY**: never run `rm`; comment out or
+deprecate and tell Ben to delete. The de-wiring that mattered was
+`PlantTicker.startPlantTransient()`, which could still instantiate the open-loop
+core in front of an operator. Also removed: `PlantSystem.shutdown()` and
+`/rbmk plant status` `instanceof TransientReactorCore` branches. `UnifiedReactorCore`
+no longer reads `ReactivityModel.POWER_COEFF` (was @Deprecated dead code, but the
+reference meant production still depended on the lumped model).
+
+**2. NOTHING may encourage/force the accident.** Ben: "it's impossible, it's
+illegal... the accident can occur under regular normal operating conditions
+regardless of what the operating crew do" (Dyatlov's claim). No flag, no mode, no
+setter that writes the answer. The accident must EMERGE from physics + geometry +
+thermal properties.
+
+**The guard is `NoAccidentModeSelfTest` (6 checks) — extend it, never weaken it.**
+It scans (a) `UnifiedReactorCore` FIELDS for accident/mode/experiment, (b) all
+PUBLIC METHODS for any that WRITE power/reactivity/keff/flux/xenon (a setter is a
+better forcing mechanism than a flag and looks like ordinary API), (c) the SOURCE
+of all 27 `rbmk/physics` classes for forcing vocabulary (explode, detonate, cheat,
+blowup, forceAccident, accidentMode) with comments+strings stripped so honest prose
+about the accident does not trip it.
+
+**PROOF it is emergent** (stock core, only `setRodTarget`/`setAutoRegulator`):
+nominal P=0.9999 → rods 0.90 P=0.0706 → АР holds 200 MWt 4 h, Xe=1.65x, ins 0.821 →
+rods 0.10 rho=+0.0196 → AZ-5: rho +0.019561→+0.023023, P_fis 0.143→0.151→0.104.
+Positive scram comes from the graphite-displacer rod geometry; the low margin from
+the void worth. Nothing asks for it.
+
+**Test-run recipe:** `gradlew check` runs ONLY `checkProvenance` — every physics test
+is a `main()` class. Classpath: `./gradlew -q printTestCp > /tmp/testcp.txt`, then
+`java -cp "$(cat /tmp/testcp.txt)" com.ben.csp.rbmk.physics.<Class>`. `/tmp` is
+wiped on terminal reset. The 6 h xenon tests take ~10 min each; run them in the
+background with nohup.
