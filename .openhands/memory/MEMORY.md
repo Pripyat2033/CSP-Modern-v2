@@ -104,9 +104,12 @@ be on the classpath or the lattice loads as "unknown").
 
 ## FABRIC VERSIONS — there is NO "Fabric 1.16" (2026-11-18)
 The mod is MC **1.20.1**: gradle.properties pins loader 0.15.11, yarn 1.20.1+build.10,
-Fabric API 0.91.0+1.20.1. Live Fabric meta: loader latest 0.20.1; API for 1.20.1 up to
-0.92.9+1.20.1. Test server uses loader 0.16.10 + API 0.92.12. Pinned values are valid,
-just conservative.
+Fabric API 0.91.0+1.20.1. Live Fabric meta re-checked 2026-11-18: loader latest 0.20.1
+(255 builds for 1.20.1); API for 1.20.1 up to 0.92.12+1.20.1. Test server uses loader
+0.16.10 + API 0.92.12. Pinned values are valid, just conservative. **Loom** (the Gradle
+plugin) is pinned `1.6-SNAPSHOT` (1.6.6 latest in that line) and a separate **1.16.3**
+Loom line exists — so "Fabric 1.16" most likely means Loom 1.16, or the 0.16.x loader
+the test server runs. Four distinct numbers; never conflate them.
 
 ## THE MATERIALS GAP -- Ben's THIRD gut-catch, PROVEN (2026-11-17)
 Ben said (no jargon): "I have a gut feeling we're subtly making a huge mistake
