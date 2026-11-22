@@ -22,8 +22,15 @@ import java.util.List;
  *   ORM = sum_over_rods  W_rod(insertion_rod)  /  W_manual(1.0)
  * </pre>
  * where {@code W_manual(1.0)} is one fully inserted manual rod. The plant's
- * reference values ({@code orm.reference}): nominal 45-48 rods, warning 43, and 30
- * below which operation is not permitted.
+ * reference values ({@code orm.reference}) are the regulation's: not less than
+ * 26-30 rods at nominal, below 26 only with the chief engineer's permission, and
+ * immediate shutdown at 15 (ТЕХНОЛОГИЧЕСКИЙ РЕГЛАМЕНТ 1Э-С-II, ГЛАВА 9).
+ *
+ * <p><b>Known gap.</b> The model currently reads far above that band because the
+ * fuel is FRESH (lattice k_inf = 1.2893) and there is no burnup, so criticality is
+ * forced by rescaling the fission source rather than by fission-product poisoning.
+ * The scale here is not the fault — it is anchored to "24 АЗ rods = 2 beta_eff".
+ * See provenance {@code orm.scale_calibration}.
  */
 public final class RodBank {
 

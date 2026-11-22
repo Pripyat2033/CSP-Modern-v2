@@ -221,16 +221,19 @@ public final class OrmSelfTest {
         bank.step(1000.0, false);
         double ormOp = bank.orm();
         // HONEST DISCREPANCY, not a pass: the regulation (ГЛАВА 9) puts the operating
-        // margin at 26-30 rods, and this operating point reads ~47. So the model's ORM
-        // SCALE is roughly 1.6x high even though its LIMITS are now the regulation's.
-        // Either the rod-worth unit or the worth curve is off. This test asserts the
-        // gap is recorded rather than asserting the old 45-48 video band as correct.
+        // margin at 26-30 rods, and this operating point reads far higher.
+        // ROOT CAUSE (2026-11-18): NOT a rod-worth scale error — that scale is
+        // anchored to "24 АЗ rods = 2 beta_eff" and matches it. The cause is that the
+        // lattice table is FRESH fuel (k_inf = 1.2893) and the solver has no burnup,
+        // so it forces criticality by rescaling the fission source (nsfScale = 1/k).
+        // A fresh core must hold ~29% dk/k of excess in the rods; the regulation's
+        // 26-30 rods is only ~1.5% dk/k. Fix = model burnup, NOT a retune.
         check("operating ORM is recorded, and its gap to the regulation is visible",
-            ormOp > 0, String.format("ORM=%.1f rods vs regulation 26-30 (scale %.1fx high)",
-                ormOp, ormOp / 28.0));
+            ormOp > 0, String.format("ORM=%.1f rods vs regulation 26-30 (fresh fuel, no burnup)",
+                ormOp));
         check("the ORM scale is currently ABOVE the regulation's band (known defect)",
             ormOp > 30.0,
-            String.format("ORM=%.1f — rod-worth calibration is the open item", ormOp));
+            String.format("ORM=%.1f — burnup is the open item, not rod-worth scale", ormOp));
 
         // ---- 8. the ORM alarm fires at the REGULATION's limits ----
         // An alarm, not a lockout: the operator is warned and can still act. The
