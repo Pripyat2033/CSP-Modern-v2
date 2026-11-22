@@ -895,6 +895,25 @@ Short form: download Fabric server launcher + Fabric API 0.92.12+1.20.1 for MC 1
 `save-all flush`, `stop`; then `tools/make_energoblok_kit.py` and serve the zip on
 port 12000. **Gradle needs `JAVA_HOME` exported; `--offline` fails (foojay plugin).**
 
+## BURNUP: THE ORM GAP IS 70% BURNUP, NOT 100% (2026-11-18)
+
+`tools/lattice/burnup.py` + `test_burnup.py` (14 checks) compute the full reactivity
+balance at unit 4's 10.3 MWd/kg on the repo's own 69-group solver + ENDF/B-VIII.0.
+k_eff including leakage: fresh **+21359 pcm (394 rods)** -> burned+FP+Xe+Sm
+**+6500 pcm (120 rods)**. Regulation band 26-30 rods = +1408..+1625 pcm, so a
+**+4875 pcm (90 rod) gap remains**. Burnup closes ~70% of the 202-rod gap recorded in
+`provenance.json` `orm.scale_calibration` — the direction was right, the magnitude is not.
+
+**Tested and REJECTED, quantitatively:** fission products would need sigma_c ~360 b
+(7x textbook 50 b) to close it; the 211 control channels as water cost only ~650 pcm.
+**So do NOT seed an arbitrary FP inventory to force ORM to 26-30 — that fits the answer.**
+Likely residual: fresh k_inf 1.34442 is high vs the shipped table's 1.2893, and 10.3 is a
+core AVERAGE while the margin is set by the LEAST-burned channels -> model a burnup
+DISTRIBUTION next. Void coefficient is now POSITIVE at burnup (asserted in the test;
+`test_rosfond_pinned.py` independently expects +9.44 beta). New provenance keys:
+`orm.burnup_balance` (derived), `burnup.target_mwd_per_kg` (to_verify — no page pin yet).
+Details in `.openhands/memory/2026-11-18.md`.
+
 ## ENGINE RESEARCH is already done (2026-11-12)
 `docs/RESEARCH-minecraft-custom-engines.md` (259 lines, sourced) + `ENGINE-DECISION.md`
 answer "can Minecraft run a custom engine alongside/under it?": yes — the mod already

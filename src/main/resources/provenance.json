@@ -449,6 +449,27 @@
       "source": "DERIVED from the shipped lattice table and geometry, not fitted: phi = P_fis / (E_f * Sigma_f * V), with P_fis = 3200 MWt (PlantPhysics.P_THERMAL_W), E_f = 200 MeV, Sigma_f = (nsf1+nsf2)/nu from rbmk_lattice.json (0.00286 /cm, cell-homogenised), V = 1661 * 0.25^2 * 7.28 = 756 m3 (the homogenised core). Gives 4.62e13 n/cm^2/s. Consistency: the same inputs give 4.23 kW/litre, in the RBMK's documented 4-5 kW/litre band, so the normalisation is self-consistent.",
       "note": "REPLACES the unsourced Xenon.FLUX_FULL = 3.0e13. That value is 1.54x low. It matters: at 3.0e13 the xenon pit peaks 1.91x equilibrium at 8.5 h; at 4.62e13 it peaks 2.41x at 8.8 h, a 26 % deeper pit. The pit is what forced the operators to withdraw rods into the ORM violation, so this is on the accident path. Still to_verify because E_f=200 MeV and nu=2.43 are textbook, not from a NIKIET source; the sensitivity to both is weak (phi ~ 1/(E_f*nu)), but they must be pinned."
     },
+    "orm.burnup_balance": {
+      "value": {
+        "fresh_k_eff_excess_pcm": 21359,
+        "burned_10.3_k_eff_excess_pcm": 6500,
+        "burned_10.3_rods": 120,
+        "regulation_band_pcm": [1408, 1625],
+        "residual_gap_pcm": 4875
+      },
+      "unit": "pcm and equivalent manual rods, k_eff including bare-cylinder leakage",
+      "status": "derived",
+      "source": "COMPUTED by tools/lattice/burnup.py (report()) against the repo's own 69-group solver and ENDF/B-VIII.0 cache; guarded by tools/lattice/test_burnup.py (14 checks). Fuel depletion U-235 -> Pu-239/240/241 with Bondarenko-shielded capture; lumped FP 50 b 1/v (Lamarsh Table 3.2); equilibrium Xe-135 and Sm-149; leakage from bare-cylinder B^2 at 11.8 m x 7.0 m with the cell's own migration area.",
+      "note": "BURNUP DOES MOST OF THE WORK, AND IS NOT THE WHOLE STORY. Fresh fuel carries +21359 pcm of k_eff excess (394 rods); at 10.3 MWd/kg with FP and equilibrium poisons it is +6500 pcm (120 rods). So depletion closes about 70% of the gap the orm.scale_calibration note describes (202 rods held in the rods at the model's critical point). It does NOT reach 26-30 rods: 120 rods is still 4x the regulation band. Two candidate explanations were tested and REJECTED quantitatively, not waved away: (a) fission products cannot close it - reaching 26-30 rods needs a lumped sigma_c of about 360 b, seven times the textbook 50 b, and (b) the 211 control channels sitting as water columns cost only about 650 pcm. CONSEQUENCE: do not seed an arbitrary FP inventory to force ORM to 26-30; that would fit the answer. The residual gap is most likely the lattice's fresh-fuel k_inf being too high (1.34442 vs the ~1.29 in the shipped table) and the absence of any in-core burnup distribution - unit 4's 10.3 MWd/kg is a core AVERAGE, and the regulation margin is set by the least-burned channels. Modelling a burnup DISTRIBUTION, not a single average, is the next step.",
+      "history": "Supersedes the qualitative claim in orm.scale_calibration that the gap is 'exactly the burnup/fission-product reactivity'. That direction is right; the magnitude is not - burnup explains ~70%, not 100%."
+    },
+    "burnup.target_mwd_per_kg": {
+      "value": 10.3,
+      "unit": "MWd/kg U (core-average discharge burnup at the accident)",
+      "status": "to_verify",
+      "source": "Carried from the earlier session's reading of INSAG-7 for unit 4; NOT yet re-pinned to a page/quote in this repo.",
+      "note": "NEEDS A PRIMARY CITATION before it is load-bearing. The sensitivity is real: burnup sets the whole reactivity balance above. What IS verified independently is the BURNUP RATE, 0.0167 MWd/kg/day, derived from 3200 MWt over 192 t of uranium at 9.173 g/cm3 - and the cross-check that 3 full-power years at that rate gives 18.3 MWd/kg, in the RBMK's documented ~20 MWd/kg discharge range. If 10.3 is wrong, re-run burnup.py at the right value; the tool takes it as a parameter."
+    },
     "orm.scale_calibration": {
       "value": 47.1,
       "unit": "rods (model ORM at a plausible operating point, ~31% insertion)",
