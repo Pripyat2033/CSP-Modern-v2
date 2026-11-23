@@ -1319,3 +1319,53 @@ not a different model from 1.3445, it is the same code with a bad dimension.
    parameter**, making a 44 cm radius tube that filled the cell → k_inf 0.414.
    Caught only because both bores gave *identical nonsense*. When adding a physical
    CLI arg, print the converted value and check it against a known dimension.
+
+## WIRING AUDIT (2026-11-18): what is actually connected to what
+Ben asked "how far can we push physics realism, and should I wire REKORD now or do
+the enterprise side?" Answer rests on this audit — don't re-derive it.
+
+**REKORD / radiology is a SKELETON, not a simulator.** 20 files, ~600 lines, all
+small data records (`Isotope`, `SourceTerm`, `ShieldingProperties`, ...). Verified:
+- **Zero consumers.** `grep -rn radiology --include=*.java src/` outside the
+  `radiology/` package returns NOTHING. Nothing imports it.
+- **Zero data.** `IsotopeRegistry`/`SourceTermRegistry`/`ShieldingMaterialRegistry`
+  are empty maps with a `load*()` method that is never called. No isotopes, no
+  source terms, no shielding values exist anywhere.
+- `REKORDSolverManager`/`REKORDSolverLibrary` (native `rbmk_solver`) are ALSO
+  unused, and the only built artifact is **`librbmk_solver.dylib`** — macOS only.
+- **No player dose tracking exists at all** (no `playerDose`/`sievert`/`exposure`).
+  So "remove the top shield and get radiation" is currently impossible — not
+  because a wire is missing, but because there is no source, no transport, and no
+  dose sink.
+**Consequence: wiring REKORD is not "connecting a system", it is BUILDING one** —
+source term + inventory + transport + dose + effects, 4 layers of new physics.
+
+**The prerequisite is missing: there is no fission-product inventory in the game.**
+`grep deplet|burnup src/main/java/.../rbmk/` is EMPTY. `DecayHeat` is real (6-group
+Ansatz, ~6.5 % equilibrium) but it tracks *heat fractions*, not *nuclide atoms*.
+A source term needs Bq, which needs atoms, which needs depletion. Burnup exists
+only design-time in `tools/lattice/burnup.py` (`Cell.burn()`), not in the game.
+
+**Enterprise/Prombaza are FURTHER ALONG than REKORD but still not a closed loop.**
+- `prombaza/` 1250 lines incl. a real `PrombazaCommand` (275), `GoodsYard` (212),
+  `IncomingControl` (162), `PrombazaControl` (177). Genuinely wired into
+  `zone/MaterialSupply.java`, which is a good honest model (supplier quality spread
+  marked RECONSTRUCTION, входной контроль, defects carried into the build).
+- `enterprise/` 961 lines, has `Enterprise`, `Facility`, `Contract`,
+  `ConstructionAdministration`, `HistoricalFigures`, `CriminalLiability`.
+- **BUT nothing CONSUMES the enterprise's output** (`EnterpriseStatus`,
+  `ConstructionAdministration`, `Contract` have no readers in `zone/`), and
+  **`rbmk/` never imports `EnterpriseLifecycle`/`ZoneState` for gating** — the only
+  hit is `RbmkTestCommand` reading `zone().enterprises()` for a *report*. So the
+  RBMK plant builds regardless of the enterprise economy. The loop is open at the
+  plant end.
+
+**Equipment register (the completeness authority)**: 140 items — 25 modelled,
+114 named-only, 1 unsourced. The "named-only" 114 is the honest ceiling on
+"model every machine".
+
+**Physics realism ceiling, measured**: k_inf is uncertain by ~6400 pcm from ring
+radii alone (undocumented); the in-house solver vs OpenMC referee disagree by
+~9267 pcm (fast-group over-shielding). So quantitative accuracy is capped by
+missing source documents, NOT by missing code. Point-kinetics, xenon, decay heat,
+Doppler, graphite temp, void feedback, rod worth, ECCS, turbines are all real.
