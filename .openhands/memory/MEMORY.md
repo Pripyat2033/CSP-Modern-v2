@@ -1256,3 +1256,39 @@ reflective plane and loses every particle. Also: **any unrecognised
 `derived` broke `PhysicsProvenanceSelfTest`; DERIVED is now a real status).
 Pre-existing test failures, NOT caused by this work: `RbmkSolverMGSelfTest`,
 `SpatialReactorCoreSelfTest`.
+
+## SOURCE INVENTORY (checked 2026-11-18) — what we actually hold, and two fakes
+Primary documents on disk are ONLY: `tools/insag7.pdf` + `.txt` (7.5 MB, real),
+`docs/primary-sources/Reglament-1E-S-II-1983-ChAES-RBMK-1000.pdf` + `.txt` (real),
+and `docs/primary-sources/nikiet-rod-geometry-quote.txt` (NIKIET book excerpt).
+**We do NOT hold a техническое описание, and NUREG-1250 is NOT on disk.**
+`/workspace/tools/nureg1250.pdf` is **402 bytes of Akamai "Access Denied" HTML** —
+a failed `curl`, not a document. ~15 repo source comments cite "NUREG-1250" on the
+strength of it. nrc.gov returns 403 for direct PDF fetches (Akamai blocks the
+sandbox); don't burn time retrying it.
+
+**Two "18" traps that look like the fuel bundle but are not:**
+1. The NIKIET quote's "18" = **18 steel absorber strips (ПЭЛ)** in a circle in the
+   lower link of a modernised РР control rod (14 filled with Dy₂TiO₅, 4 empty).
+   Nothing to do with the 18 *fuel rods* in a ТВС. A grep for "18" merges them.
+2. INSAG-7 Table II-I gives the bundle only as **"18/13.6 mm"** (count/diameter) —
+   no ring radii, no pitch, no layout. Line ~4444 of `insag7.txt`.
+
+## FUEL-BUNDLE RING RADII — derivable, not huntable (commit 33af6bb)
+For 6 inner + 12 outer rods with EQUAL nearest-neighbour spacing: inner chord =
+r1 (6 rods @60°), outer chord = 2 r2 sin15, so equal spacing forces
+**r2 = 2 r1 cos15 = 1.93185 r1** (pure geometry, `UNIFORM_RATIO` in omc_referee).
+The bore bounds r1 to **[1.360, 1.926] cm** on an 88 mm bore (`ring_family()`).
+Measured: tight 1.360/2.627 → k_inf **1.13755**; loose 1.926/3.720 → **1.22687**.
+**This only narrows 7,400 → 6,400 pcm — it does NOT pin the answer.** The 1.80/3.20
+default sits 821 pcm from the family midpoint and is legal but NOT uniform (its
+uniform partner would be 3.477). Don't oversell the derivation; the referee stays
+±3,000 pcm until the real drawing is found.
+**UNRESOLVED CONFLICT worth settling first (cheap, ~1,000–2,000 pcm):** repo uses
+an **88 mm** bore (EN Wikipedia "8.4 cm inner"); INSAG-7 §11 says channels were
+**"tubes 80 mm in diameter"**. On 80 mm the loose family end is physically
+impossible (r2 ≤ 3.32), pulling everything down. Resolve the bore before quoting
+any referee k_inf.
+**OpenMC env gotcha:** the binary is at `/workspace/tools/omc/env/bin/openmc` but is
+NOT on PATH in a fresh session — `FileNotFoundError: 'openmc'`. Prepend that bin
+dir to PATH, and use the omc-env python (system python3 has no numpy).
