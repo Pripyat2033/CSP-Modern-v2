@@ -48,6 +48,14 @@ Reactivity `rho = (k_void - k_water) / (k_water * k_void)`.
 | ENDF/B-VIII.0 | 1.2960 | 1.4064 | +0.06053 | +9.31 |
 | ROSFOND-2010 | 1.2893 | 1.4001 | +0.06137 | **+9.44** |
 
+> **These absolute k values are stale (2026-11-18).** They predate commit
+> `4ed6660` (the missing-MT4 inelastic-scattering fix). Re-running the same code
+> today gives **1.34450 (ENDF)** and **1.33626 (ROSFOND)**, not 1.2960 / 1.2893,
+> and an independent OpenMC referee on the same cell gives **~1.19**. The void
+> *coefficient* in this table was measured as a difference of two runs of one
+> code, so it is far less sensitive to that fix than the absolute levels are —
+> but the levels themselves should not be quoted. See `docs/K-INF-REFEREE.md`.
+
 **The two libraries agree on the void coefficient: +9.44 beta vs +9.31 beta, a
 1.4% difference.**
 

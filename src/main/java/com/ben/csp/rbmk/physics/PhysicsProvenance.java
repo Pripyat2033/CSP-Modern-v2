@@ -39,7 +39,7 @@ public final class PhysicsProvenance {
 
     /** How much a constant rests on a source. */
     public enum Status {
-        VERIFIED, TO_VERIFY, PLACEHOLDER;
+        VERIFIED, TO_VERIFY, DERIVED, PLACEHOLDER;
 
         static Status parse(String s) {
             if (s == null) {
@@ -48,6 +48,12 @@ public final class PhysicsProvenance {
             return switch (s.trim().toLowerCase()) {
                 case "verified" -> VERIFIED;
                 case "to_verify" -> TO_VERIFY;
+                // DERIVED means computed by our own code from cited inputs (e.g.
+                // the burnup balance from tools/lattice/burnup.py), as opposed to
+                // copied from a document or invented. Without this case such an
+                // entry fell through to PLACEHOLDER and was reported as an
+                // unresolved guess, which it is not.
+                case "derived" -> DERIVED;
                 default -> PLACEHOLDER;
             };
         }
@@ -104,6 +110,17 @@ public final class PhysicsProvenance {
         List<String> out = new ArrayList<>();
         for (Entry e : ENTRIES.values()) {
             if (e.status() == Status.VERIFIED) {
+                out.add(e.key());
+            }
+        }
+        return out;
+    }
+
+    /** Keys computed by our own code from cited inputs, not copied from a document. */
+    public static List<String> derived() {
+        List<String> out = new ArrayList<>();
+        for (Entry e : ENTRIES.values()) {
+            if (e.status() == Status.DERIVED) {
                 out.add(e.key());
             }
         }

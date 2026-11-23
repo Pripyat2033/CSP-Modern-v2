@@ -31,6 +31,13 @@ import java.util.List;
  * forced by rescaling the fission source rather than by fission-product poisoning.
  * The scale here is not the fault — it is anchored to "24 АЗ rods = 2 beta_eff".
  * See provenance {@code orm.scale_calibration}.
+ *
+ * <p><b>That k_inf is itself superseded.</b> 1.2893 is what the shipped lattice
+ * table carries; the same generator run today gives 1.3445, and an independent
+ * OpenMC referee on the same cell gives ~1.19 (see docs/K-INF-REFEREE.md). All
+ * three are well above critical, so the gap described above is real under every
+ * model — but its SIZE is not yet trustworthy, because the rod-bundle ring radii
+ * are undocumented and move k_inf by ~7,000 pcm on their own.
  */
 public final class RodBank {
 

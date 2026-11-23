@@ -71,6 +71,13 @@ public final class PhysicsProvenanceSelfTest {
         check(fb != null && fb.status() == PhysicsProvenance.Status.PLACEHOLDER && fb.fallback(),
             "the legacy feedback scale is a marked fallback, not an active guess");
 
+        // a computed constant must stay computed. If the status string stops being
+        // recognised it silently degrades to PLACEHOLDER and this entry reappears
+        // in the unresolved list above, so pin it here where the reason is obvious.
+        PhysicsProvenance.Entry bb = PhysicsProvenance.get("orm.burnup_balance");
+        check(bb != null && bb.status() == PhysicsProvenance.Status.DERIVED,
+            "the burnup balance is registered as derived, not as an unresolved guess");
+
         // the registry must agree with the code it describes
         PhysicsProvenance.Entry beta = PhysicsProvenance.get("delayed.beta_eff");
         check(beta != null && beta.status() == PhysicsProvenance.Status.TO_VERIFY,
