@@ -1292,3 +1292,30 @@ any referee k_inf.
 **OpenMC env gotcha:** the binary is at `/workspace/tools/omc/env/bin/openmc` but is
 NOT on PATH in a fresh session — `FileNotFoundError: 'openmc'`. Prepend that bin
 dir to PATH, and use the omc-env python (system python3 has no numpy).
+
+## BORE SETTLED (commit 61c0bd0, 2026-11-18): 88 mm is the OD, the bore is 80 mm
+The repo called 88 mm the pressure-tube **inner** diameter and built a 4 mm wall
+outward (96 mm tube in a 114 mm graphite hole). **Wrong.** Russian tube notation is
+*outer × wall*, so **"88 × 4" = 88 OD / 4 wall / 80 ID** — and INSAG-7 §11 says
+"tubes 80 mm in diameter", which is exactly that. EN Wikipedia's "8.4 cm inner,
+4 mm walls" does not agree with itself (8.4 cm = 84 mm) and was the bad source.
+**Measured effect: only 148 pcm** (88 mm → 1.19207, 80 mm → 1.19417). I had
+predicted 1,000–2,000 pcm and was wrong. It is a CORRECTNESS fix, not a physics
+fix; ring radii remain the dominant unknown by ~40×. Don't re-litigate the bore.
+Carried through: `rbmk_cell.TUBE_ID/OD` 8.8/9.6→8.0/8.8, `RbmkGeometry
+.PRESSURE_TUBE_ID_M` 0.088→0.080 (unused elsewhere), `rosfond_pinned.json` regen
+(kWater 1.28932→1.28245, kVoid→1.40145, rhoInBeta 9.441→10.186), `rbmk_lattice
+.json` re-emitted. **So "shipped 1.28932" was ROSFOND on the WRONG BORE** — it is
+not a different model from 1.3445, it is the same code with a bad dimension.
+
+## TWO REGEN TRAPS THAT ALMOST SHIPPED A WRONG ANSWER (2026-11-18)
+1. **`emit_constants.py` defaults to the ENDF library, NOT ROSFOND.** Running it
+   bare silently wrote an ENDF table (1.28873, `library: "to_verify"`) — and
+   because 1.28873 is *close* to the real 1.28245 it nearly passed as correct.
+   **Always `--source rosfond`, then check the `library` field in the output.**
+   This is the same class of bug as the `openmc -s` seed trap: a silent fallback
+   that looks like a result.
+2. **Unit traps in new CLI flags.** First `--tube-id` attempt passed **mm into a cm
+   parameter**, making a 44 cm radius tube that filled the cell → k_inf 0.414.
+   Caught only because both bores gave *identical nonsense*. When adding a physical
+   CLI arg, print the converted value and check it against a known dimension.
