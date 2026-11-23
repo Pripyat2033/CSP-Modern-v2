@@ -1230,3 +1230,29 @@ is a `main()` class. Classpath: `./gradlew -q printTestCp > /tmp/testcp.txt`, th
 `java -cp "$(cat /tmp/testcp.txt)" com.ben.csp.rbmk.physics.<Class>`. `/tmp` is
 wiped on terminal reset. The 6 h xenon tests take ~10 min each; run them in the
 background with nohup.
+
+## OPENMC REFEREE for the lattice k_inf (commit 87ca5bd, 2026-11-18) — read before quoting k_inf
+The in-house 69-group solver had **no independent check**. The "shipped 1.2893 vs
+current 1.3445" question is NOT physics: both are the same solver on different
+commits (1.2893 predates the missing-MT4 fix `4ed6660`). **The game's
+`rbmk_lattice.json` row 0 is the stale number.** Referee now exists:
+`tools/lattice/omc_referee.py` (+ `test_omc_referee.py`, 9 checks), doc
+`docs/K-INF-REFEREE.md`. OpenMC hetero = **1.192 ± 0.001** (3 seeds agree),
+homog 1.07494, ring bracket 1.151–1.225 → in-house is **~9,500 pcm high
+(176 equiv. manual rods; rod worth 54.17 pcm)**. Mechanism = Bondarenko
+self-shielding (k swings 0.705→1.3445 on sigma0 alone; repo over-shields fast
+absorption ~2.4x). Ruled out: group-averaging resolution (<50 pcm) and bad data
+(U-238 capture RI = 274.5 b vs textbook 277 b).
+**BLOCKER = an unpublished dimension, not the solver:** the 18-rod bundle ring
+radii (1.80/3.20 is only "fits the 88 mm bore") move k_inf **7,400 pcm**. The
+referee can only bracket until an assembly drawing is sourced. The void
+coefficient from this model (+0.084) does **not** reconcile with the repo's
+recorded OpenMC +0.035 — do not quote either.
+Two OpenMC traps worth remembering: `openmc -s N` names the statepoint and does
+**not** seed the RNG (use `Settings.seed`, else "different seeds" are identical
+and convergence is faked); and a point source at the origin sits ON the z=0
+reflective plane and loses every particle. Also: **any unrecognised
+`provenance.json` status string silently becomes PLACEHOLDER** (that is why
+`derived` broke `PhysicsProvenanceSelfTest`; DERIVED is now a real status).
+Pre-existing test failures, NOT caused by this work: `RbmkSolverMGSelfTest`,
+`SpatialReactorCoreSelfTest`.
