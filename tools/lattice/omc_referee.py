@@ -111,7 +111,8 @@ def _import_openmc():
         sys.path[:] = saved
 
 
-def build(model, outdir, ring1, ring2, water_rho, particles, batches, seed):
+def build(model, outdir, ring1, ring2, water_rho, particles, batches, seed,
+          tube_id=TUBE_IR * 20.0, tube_wall=0.4):
     openmc = _import_openmc()
 
     half = PITCH_CM / 2
@@ -171,8 +172,8 @@ def build(model, outdir, ring1, ring2, water_rho, particles, batches, seed):
         cells = [openmc.Cell(fill=hom, region=box())]
         materials = [hom]
     else:
-        tube_in = openmc.ZCylinder(r=TUBE_IR)
-        tube_out = openmc.ZCylinder(r=TUBE_OR)
+        tube_in = openmc.ZCylinder(r=tube_id / 20.0)
+        tube_out = openmc.ZCylinder(r=tube_id / 20.0 + tube_wall)
         bore = openmc.ZCylinder(r=BORE_R)
         carrier = openmc.ZCylinder(r=CARRIER_R)
 
@@ -252,6 +253,10 @@ def main(argv=None):
     ap.add_argument("--model", choices=("hetero", "homog"), default="hetero")
     ap.add_argument("--ring1", type=float, default=RING1_DEF)
     ap.add_argument("--ring2", type=float, default=RING2_DEF)
+    ap.add_argument("--tube-id", type=float, default=TUBE_IR * 20.0,
+                    help="pressure-tube INNER diameter, mm (88 or 80)")
+    ap.add_argument("--tube-wall", type=float, default=0.4,
+                    help="pressure-tube wall thickness, cm")
     ap.add_argument("--water-rho", type=float, default=0.75,
                     help="coolant density g/cm3; 0.036 for a voided channel")
     ap.add_argument("--particles", type=int, default=20000)
@@ -262,10 +267,12 @@ def main(argv=None):
 
     outdir = tempfile.mkdtemp(prefix="omc_referee_")
     build(args.model, outdir, args.ring1, args.ring2, args.water_rho,
-          args.particles, args.batches, args.seed)
+          args.particles, args.batches, args.seed,
+          tube_id=args.tube_id, tube_wall=args.tube_wall)
     k, unc = run(outdir, args.seed)
-    print("%-7s water=%.3f ring=%.2f/%.2f  k_inf = %.5f +/- %.5f"
-          % (args.model, args.water_rho, args.ring1, args.ring2, k, unc))
+    print("%-7s water=%.3f tube=%.0f/%.1fmm ring=%.2f/%.2f  k_inf = %.5f +/- %.5f"
+          % (args.model, args.water_rho, args.tube_id, args.tube_wall * 10,
+             args.ring1, args.ring2, k, unc))
     if args.keep:
         print("run directory:", outdir)
     return 0

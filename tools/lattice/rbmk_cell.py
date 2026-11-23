@@ -41,7 +41,7 @@ BOUNDS = np.exp(np.linspace(np.log(E_MIN), np.log(E_MAX), N_GROUPS + 1))
 # ------------------------------------------------------------- geometry (cm)
 PITCH = 25.0                            # 250 mm square lattice
 HOLE_D = 11.4                           # 114 mm graphite bore
-TUBE_ID, TUBE_OD = 8.8, 9.6             # 88 mm bore, 4 mm wall
+TUBE_ID, TUBE_OD = 8.0, 8.8             # 80 mm bore, 4 mm wall ("88 x 4" tube)
 ROD_OD = 1.36                           # 13.6 mm fuel rod
 ROD_CLAD_T = 0.09                       # 0.9 mm clad
 ROD_FUEL_D = ROD_OD - 2 * ROD_CLAD_T    # 11.8 mm pellet

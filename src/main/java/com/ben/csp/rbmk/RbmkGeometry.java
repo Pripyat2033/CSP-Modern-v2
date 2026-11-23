@@ -35,8 +35,13 @@ public final class RbmkGeometry {
     public static final double GRAPHITE_BLOCK_M = 0.250;
     /** The 114 mm hole drilled through each graphite block. */
     public static final double CHANNEL_HOLE_M = 0.114;
-    /** Pressure tube (ТК) bore, 88 mm, wall 4 mm, Zr + 2.5 % Nb in core. */
-    public static final double PRESSURE_TUBE_ID_M = 0.088;
+    /**
+     * Pressure tube (ТК), Zr + 2.5 % Nb in core. The standard designation is
+     * "88 x 4" -- Russian tube notation is outer diameter x wall -- so the bore is
+     * 80 mm. INSAG-7 §11 states the channels were "tubes 80 mm in diameter",
+     * which agrees. Earlier revisions read 88 mm as the bore, an 8 mm error.
+     */
+    public static final double PRESSURE_TUBE_ID_M = 0.080;
     public static final double PRESSURE_TUBE_WALL_M = 0.004;
 
     // ------------------------------------------------- active core / stack

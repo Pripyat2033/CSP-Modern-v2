@@ -75,11 +75,16 @@ count work.
 The "technological channel" is the pressure tube that carries one fuel assembly and
 the boiling water. It is a **vertical tube through the whole stack**, not a block.
 
-- **Inner diameter**: **88 mm (8.4 cm)** — the tube the fuel assembly sits in.
-  *(EN Wikipedia — "each fuel assembly is enclosed in an individual 8.4 cm (inner)
-  diameter pipe (called a 'technological channel')" and "... 8.4 cm in inner diameter
-  with 4 mm thick walls")*
-- **Wall**: **≈ 4 mm**.
+- **Dimensions**: the tube is **88 mm OUTER diameter, 4 mm wall, 80 mm INNER
+  diameter**. Russian tube notation is *outer × wall*, so "88 × 4" is the standard
+  designation. INSAG-7 §11 independently states the channels were *"tubes 80 mm in
+  diameter"*, which is the inner diameter — the two agree.
+  *(INSAG-7 §11; EN Wikipedia gives "8.4 cm (inner) diameter ... 4 mm thick
+  walls", which would be an 84 mm bore. That figure is treated as approximate; the
+  88/4 → 80 mm reading reconciles it with INSAG-7 and is used here.)*
+  **Corrected 2026-11-18: earlier revisions of this file called 88 mm the INNER
+  diameter and built a 96 mm outer tube. That was an 8 mm error on the diameter.**
+  The physics effect is small (148 pcm on k_inf) but the dimension was wrong.
 - **Material**: the **central (in-core) section is zirconium–niobium alloy
   Zr + 2.5 % Nb**; the **upper and lower sections are stainless steel**; the two are
   joined by welded transition pieces. *(RU Wikipedia, РБМК — "Центральная часть ...

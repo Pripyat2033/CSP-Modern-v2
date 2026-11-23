@@ -21,7 +21,7 @@ scattering. Running today's code on the same input gives:
 
 | path | k_inf |
 |---|---|
-| `spec.build_fine(weight_combined, 0)` + `solve_k`, ENDF/B-VIII.0 | **1.34450** |
+| `spec.build_fine(weight_combined, 0)` + `solve_k`, ENDF/B-VIII.0 | **1.34276** |
 | same, ROSFOND-2010 | **1.33626** |
 | `src/main/resources/rbmk_lattice.json` row 0 (shipped, ROSFOND) | **1.28932** |
 
@@ -41,7 +41,7 @@ it. Measured directly, by scaling the Dancoff factor:
 |---|---|---|
 | 0.0 | 41.65 | 1.30661 |
 | 0.3 | 29.16 | 1.32317 |
-| **0.6 (shipped)** | **16.66** | **1.34450** |
+| **0.6 (shipped)** | **16.66** | **1.34276** |
 | 0.9 | 4.17 | 1.37968 |
 
 And with self-shielding switched off entirely: **k_inf = 0.70494**. A 64,000 pcm
@@ -129,12 +129,35 @@ better than ±3,000 pcm. The 1.80/3.20 guess is not badly wrong — it is simply
 unjustified, and a uniform-spacing partner (1.80 / 3.477) is at least as
 defensible.
 
-Note also that the bore itself is contested: the repo uses **88 mm** (EN Wikipedia,
-"8.4 cm inner"), while INSAG-7 §11 says the channels were **"tubes 80 mm in
-diameter"**. Under an 80 mm bore the loose end of the family is physically
-impossible (r2 ≤ 3.32 cm), which would pull the whole family down by roughly
-1,000–2,000 pcm. **This conflict should be resolved before either number is
-quoted**, and it is cheaper to resolve than the rod layout.
+Note also that the bore itself is contested. Three numbers appear:
+
+- the repo uses **88 mm as the INNER diameter** with a 4 mm wall (EN Wikipedia,
+  read as "8.4 cm inner ... 4 mm thick walls" — but 8.4 cm is 84 mm, not 88);
+- **INSAG-7 §11** says the channels were **"tubes 80 mm in diameter"**;
+- EN Wikipedia's "8.4 cm (inner)" would give an 84 mm bore.
+
+**These reconcile to one tube, and the repo has the reading wrong.** Russian tube
+notation is *outer diameter × wall*, so a **"88 × 4"** tube has an **88 mm outer**
+diameter, a 4 mm wall, and an **80 mm inner** diameter — which is exactly INSAG-7's
+"80 mm". The repo took the 88 as the *inner* diameter and built the wall outward,
+making the bore 8 mm too wide on the diameter.
+
+**But the measured consequence is small, and my earlier estimate was wrong.** I
+predicted this was worth 1,000–2,000 pcm. It is worth **148 pcm**:
+
+| bore (inner) | k_inf |
+|---|---|
+| 88 mm (repo today) | 1.19207 ± 0.00100 |
+| 80 mm (correct) | 1.19417 ± 0.00096 |
+
+That is 2.3 % of the ring-radii band and 1.5 % of the in-house/referee gap. **The
+bore is a correctness fix, not a physics fix** — worth doing because a wrong
+dimension in a document that claims to cite its sources is a defect in its own
+right, but not worth any more effort than it has already had. The ring radii remain
+the dominant unknown by a factor of ~40.
+
+`omc_referee.py` now takes `--tube-id` (mm) and `--tube-wall` (cm) so this can be
+re-measured instead of re-argued.
 
 ### Two traps in the source material (found while checking this)
 
@@ -164,7 +187,7 @@ rod**. Fresh excess reactivity:
 
 | case | k_inf | excess pcm | equivalent rods |
 |---|---|---|---|
-| in-house ENDF 1.34450 | 1.34450 | 25,623 | 473 |
+| in-house ENDF 1.34276 | 1.34276 | 25,527 | 471 |
 | shipped table 1.28932 | 1.28932 | 22,440 | 414 |
 | in-house ROSFOND 1.33626 | 1.33626 | 25,164 | 464 |
 | **OpenMC hetero nominal** | **1.19207** | **16,112** | **297** |
@@ -179,7 +202,7 @@ required reserve. On the referee's ~300 rods it is still **10x**. So:
    is grossly over-reactive under every model. The accident's small ORM margin is
    real physics, not an artifact of the stale number.
 2. **But 176 rods of the claimed excess is model error.** The gap between the
-   in-house 1.3445 and the referee's 1.1921 is **9,511 pcm = 176 rods**. Any
+   in-house 1.3428 and the referee's 1.1942 is **9,267 pcm = 171 rods**. Any
    statement of the form "we are N rods outside the regulation band" inherits
    that error, so the *size* of the ORM shortfall quoted in the burnup work should
    be treated as an upper bound until the rod-bundle layout is sourced.
@@ -189,17 +212,17 @@ required reserve. On the referee's ~300 rods it is still **10x**. So:
 
 ## 5. What to do next
 
-Ordered by value per unit effort, which is NOT the order the first version of this
-doc gave:
+Ordered by measured value per unit effort, not by how interesting the question is.
 
-1. **Resolve the bore: 88 mm or 80 mm?** This is a two-source conflict that can be
-   settled from documents we can actually reach (regulatory/design text), it bounds
-   the ring-radii family from above, and it is worth ~1,000–2,000 pcm. Cheapest
-   real gain available.
+1. **Accept the bore correction (148 pcm) and move on.** The pressure tube is
+   "88 × 4" = 88 mm outer / 80 mm inner, which matches INSAG-7. Update the repo
+   dimensions, note the correction, and do not spend further effort here — the
+   physics effect is 2.3 % of the ring band. (Done in the model; see §4.)
 2. **Find the fuel-assembly drawing (ТВС), not the техническое описание.** We do
    not hold a ТО. What is needed is one plan-view drawing of the 18-rod bundle. If
    it cannot be found, use the uniform-spacing family (r2 = 1.93185 r1) and state
-   the ±3,000 pcm band honestly rather than picking 1.80/3.20 silently.
+   the ±3,000 pcm band honestly rather than picking 1.80/3.20 silently. **This is
+   the only remaining unknown worth more than a few hundred pcm.**
 3. **Then** re-run `omc_referee.py --model hetero` and adopt its k_inf, or find why
    the in-house solver over-shields by 2.4x in the fast group.
 4. Refresh `docs/ROSFOND-SWAP-MEASURED.md` and the `RodBank.java` comment; the

@@ -95,6 +95,38 @@ class GeometryConstants(unittest.TestCase):
         self.assertGreater(sep, ref.ROD_R)
 
 
+class BoreReconciliation(unittest.TestCase):
+    """The three published bore numbers must reconcile to one tube.
+
+    Repo: 88 mm called INNER.  INSAG-7: "tubes 80 mm in diameter".
+    EN wiki: "8.4 cm inner, 4 mm walls".  Russian tube notation is
+    outer x wall, so "88 x 4" gives 88 OD / 80 ID -- which is INSAG-7's 80.
+    """
+
+    def test_eighty_eight_by_four_gives_an_eighty_millimetre_bore(self):
+        od_mm, wall_mm = 88.0, 4.0
+        self.assertAlmostEqual(od_mm - 2 * wall_mm, 80.0)
+
+    def test_repo_bore_is_the_outer_diameter_mislabelled(self):
+        """TUBE_IR*20 is the repo's bore; it equals the tube OD, not the ID."""
+        self.assertAlmostEqual(ref.TUBE_IR * 20.0, 88.0)
+        # the true bore is the OD minus two walls
+        self.assertAlmostEqual(ref.TUBE_IR * 20.0 - 2 * 4.0, 80.0)
+
+    def test_bore_change_is_a_small_perturbation(self):
+        """Measured: 88 -> 80 mm bore moves k_inf by ~148 pcm, not ~1500.
+
+        Pinned so the doc's "148 pcm, 2.3% of the ring band" claim cannot drift
+        away from the numbers it was computed from.
+        """
+        k_88, k_80 = 1.19207, 1.19417
+        pcm = lambda k: (k - 1.0) / k * 1e5
+        delta = abs(pcm(k_80) - pcm(k_88))
+        self.assertAlmostEqual(delta, 148.0, delta=5.0)
+        # and it must stay a small fraction of the ring-radii band
+        self.assertLess(delta, 0.05 * 6400)
+
+
 class InHouseSolver(unittest.TestCase):
     """The in-house numbers the doc quotes must still be reproducible."""
 
@@ -108,7 +140,7 @@ class InHouseSolver(unittest.TestCase):
 
     def test_kinf_is_the_documented_value(self):
         """ENDF/B-VIII.0 fresh cell. If this moves, update the doc's table."""
-        self.assertAlmostEqual(self.k, 1.34450, places=4)
+        self.assertAlmostEqual(self.k, 1.34276, places=4)
 
     def test_kinf_is_above_the_shipped_table(self):
         """The shipped lattice table still carries the stale 1.2893."""
@@ -158,7 +190,7 @@ class ReactivityArithmetic(unittest.TestCase):
         Even the LOOSEST ring layout the bore allows comes out below the
         in-house solver's answer.
         """
-        loose, in_house = 1.22487, 1.34450
+        loose, in_house = 1.22487, 1.34276
         self.assertLess(loose, in_house)
         self.assertGreater((in_house - loose) / (in_house * loose) * 1e5, 5000)
 
