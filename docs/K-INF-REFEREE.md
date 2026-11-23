@@ -79,12 +79,74 @@ number is converged; the spread is the geometry assumption, not statistics.
 
 ### The dominant uncertainty is an undocumented dimension
 
-The 18 fuel rods' **ring radii are not published**. The nominal 1.80 / 3.20 cm is
-chosen so 18 rods plus the carrier fit the 88 mm bore without overlap; it is not
-sourced. It moves k_inf across **7,400 pcm** (1.151 to 1.225), which is larger
-than the in-house solver's entire self-shielding uncertainty. **Until the real
-rod-bundle layout is found in a Russian primary source, the referee can only
-bracket the answer, not pin it.** It brackets it below every in-house value.
+The 18 fuel rods' **ring radii are not published** in any document we hold. The
+nominal 1.80 / 3.20 cm is chosen so 18 rods plus the carrier fit the 88 mm bore
+without overlap; it is not sourced. It moves k_inf across **7,400 pcm** (1.151 to
+1.225), which is larger than the in-house solver's entire self-shielding
+uncertainty.
+
+**An earlier version of this section said the fix was to "hunt the ring radii in
+the техническое описание". That advice was wrong on two counts, and both are worth
+recording because they will recur.**
+
+First, **we do not hold a техническое описание**. The primary documents in the
+repository are INSAG-7, the 1983 operating regulation (Регламент 1Э-С-II), and a
+transcribed NIKIET book excerpt on *control-rod* geometry. None of them contains
+the fuel-bundle drawing. So "hunt it in the ТО" was advice to search a document
+that does not exist here.
+
+Second, **the radii are largely derivable, so they do not need a document.** A
+bundle of 6 inner + 12 outer rods built with common spacers has its nearest
+neighbour distances set by geometry:
+
+- inner–inner chord (6 rods) = 2 r1 sin 30° = **r1**
+- outer–outer chord (12 rods) = 2 r2 sin 15°
+- inner–outer distance at a 15° offset = sqrt(r1² + r2² − 2 r1 r2 cos 15°)
+
+Setting all three equal gives **r2 = 2 r1 cos 15° = 1.93185 r1** — a scale-free
+ratio. The bore then pins the scale (outer rod must clear the wall, inner rods
+must not touch). On the 88 mm bore that is a **one-parameter family**:
+
+| constraint | value |
+|---|---|
+| non-overlap (inner rods clear each other) | r1 ≥ 1.360 cm |
+| wall clearance (outer rod inside bore) | r1 ≤ 1.926 cm |
+| uniform-spacing ratio | r2 = 1.93185 r1 |
+
+Measured across that family:
+
+| case | k_inf |
+|---|---|
+| family, tight r1 = 1.360 / r2 = 2.627 | **1.13755 ± 0.00101** |
+| the arbitrary 1.80 / 3.20 guess | 1.19207 ± 0.00100 |
+| family, loose r1 = 1.926 / r2 = 3.720 | **1.22687 ± 0.00101** |
+
+**But this only narrows the bracket from 7,400 to 6,400 pcm.** The derived family
+is still nearly as wide as the arbitrary one, and the 1.80/3.20 guess sits only
+821 pcm above the family's midpoint. So the honest position is: the radii are
+*bounded*, not *pinned*, and a derived family does **not** rescue the referee to
+better than ±3,000 pcm. The 1.80/3.20 guess is not badly wrong — it is simply
+unjustified, and a uniform-spacing partner (1.80 / 3.477) is at least as
+defensible.
+
+Note also that the bore itself is contested: the repo uses **88 mm** (EN Wikipedia,
+"8.4 cm inner"), while INSAG-7 §11 says the channels were **"tubes 80 mm in
+diameter"**. Under an 80 mm bore the loose end of the family is physically
+impossible (r2 ≤ 3.32 cm), which would pull the whole family down by roughly
+1,000–2,000 pcm. **This conflict should be resolved before either number is
+quoted**, and it is cheaper to resolve than the rod layout.
+
+### Two traps in the source material (found while checking this)
+
+1. **The NIKIET quote is about control rods, not fuel.** Its "18" is *18 steel
+   absorber strips (ПЭЛ) in a circle* in the lower link of a modernised РР rod
+   (14 filled with Dy₂TiO₅, 4 empty) — a completely different object from the 18
+   *fuel rods* in a ТВС. The two "18"s are a coincidence. Do not let a text search
+   for "18" merge them.
+2. **`/workspace/tools/nureg1250.pdf` is not NUREG-1250.** It is 402 bytes of
+   Akamai "Access Denied" HTML, left over from a failed `curl`. Several source
+   comments in the repo cite "NUREG-1250" on the strength of a file that was never
+   downloaded. Those citations are not currently backed by anything on disk.
 
 ### Cross-check that did not agree — flagged, not buried
 
@@ -127,13 +189,25 @@ required reserve. On the referee's ~300 rods it is still **10x**. So:
 
 ## 5. What to do next
 
-1. **Find the rod-bundle ring radii in a Russian primary source** (the assembly
-   drawing / техническое описание). This is now the single highest-value unknown
-   in the lattice model — worth more than any solver refinement.
-2. Then re-run `omc_referee.py --model hetero` and adopt its k_inf, or find why
+Ordered by value per unit effort, which is NOT the order the first version of this
+doc gave:
+
+1. **Resolve the bore: 88 mm or 80 mm?** This is a two-source conflict that can be
+   settled from documents we can actually reach (regulatory/design text), it bounds
+   the ring-radii family from above, and it is worth ~1,000–2,000 pcm. Cheapest
+   real gain available.
+2. **Find the fuel-assembly drawing (ТВС), not the техническое описание.** We do
+   not hold a ТО. What is needed is one plan-view drawing of the 18-rod bundle. If
+   it cannot be found, use the uniform-spacing family (r2 = 1.93185 r1) and state
+   the ±3,000 pcm band honestly rather than picking 1.80/3.20 silently.
+3. **Then** re-run `omc_referee.py --model hetero` and adopt its k_inf, or find why
    the in-house solver over-shields by 2.4x in the fast group.
-3. Refresh `docs/ROSFOND-SWAP-MEASURED.md` and the `RodBank.java` comment; the
+4. Refresh `docs/ROSFOND-SWAP-MEASURED.md` and the `RodBank.java` comment; the
    1.2893 is stale and the game's lattice table is running on it.
+
+**Do not** spend effort searching for NUREG-1250 content until a real copy is
+obtained — the file on disk is a failed download, so anything "confirmed by
+NUREG-1250" in this repo is currently confirmed by nothing.
 
 ## Reproducing
 

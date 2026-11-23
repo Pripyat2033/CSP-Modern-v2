@@ -35,6 +35,41 @@ class GeometryConstants(unittest.TestCase):
         self.assertAlmostEqual(ref.PELLET_R, 0.575)
         self.assertAlmostEqual(ref.CARRIER_R, 0.65)
 
+    def test_uniform_spacing_ratio(self):
+        """6 inner + 12 outer rods with equal nearest-neighbour spacing.
+
+        inner-inner chord = r1 (6 rods), outer-outer = 2 r2 sin15, so equal
+        spacing forces r2 = 2 r1 cos15. This is geometry, not a source value.
+        """
+        import math
+        self.assertAlmostEqual(ref.UNIFORM_RATIO, 2 * math.cos(math.radians(15)),
+                               places=9)
+        self.assertAlmostEqual(ref.UNIFORM_RATIO, 1.93185, places=5)
+
+    def test_derived_ring_family_is_a_narrow_band(self):
+        """The bore bounds the uniform-spacing family to a finite interval.
+
+        If this ever widens dramatically the doc's +/-3000 pcm claim is wrong.
+        """
+        lo, hi = ref.ring_family()
+        self.assertGreater(lo, 1.0)
+        self.assertLess(hi, 2.5)
+        self.assertLess(hi - lo, 1.0)
+
+    def test_default_radii_sit_inside_the_family_but_are_not_uniform(self):
+        """1.80/3.20 is a legal layout, just not the uniform one.
+
+        Pinned so nobody silently "fixes" the default to look consistent.
+        """
+        import math
+        lo, hi = ref.ring_family()
+        self.assertTrue(lo <= ref.RING1_DEF <= hi)
+        self.assertAlmostEqual(ref.RING2_DEF, 3.20)
+        self.assertNotAlmostEqual(ref.RING2_DEF / ref.RING1_DEF,
+                                  ref.UNIFORM_RATIO, places=2)
+        # a uniform partner for r1=1.80 would be r2=3.477, still inside the bore
+        self.assertLess(1.80 * ref.UNIFORM_RATIO + ref.ROD_R, ref.TUBE_IR)
+
     def test_rods_fit_inside_the_bore(self):
         """18 rods on the two rings plus the carrier, no overlap.
 

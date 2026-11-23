@@ -51,10 +51,30 @@ HOLE_R = 0.10               # 2 mm central hole
 CARRIER_R = 13.0 / 2 / 10   # 13 mm carrier rod
 ACTIVE_CM = 680.0           # 6.86 m of active fuel in the 10.025 m assembly
 
-# Ring radii are NOT in the documents. These values put 18 rods plus the carrier
-# inside the 88 mm bore with no overlap; --ring1/--ring2 exist so the effect of
-# this assumption can be measured instead of hidden.
+# Ring radii are NOT in any document we hold. These values put 18 rods plus the
+# carrier inside the 88 mm bore with no overlap; --ring1/--ring2 exist so the
+# effect of this assumption can be measured instead of hidden.
 RING1_DEF, RING2_DEF = 1.80, 3.20
+
+# A bundle of 6 inner + 12 outer rods with EQUAL nearest-neighbour spacing has
+# its two radii locked in a fixed ratio: the inner-inner chord is r1 (6 rods at
+# 60 deg), the outer-outer chord is 2 r2 sin 15, and equal spacing gives
+# r2 = 2 r1 cos 15. That is geometry, not a sourced value, and it lets the bore
+# bound the radii to a one-parameter family instead of leaving them free.
+UNIFORM_RATIO = 2.0 * math.cos(math.radians(15.0))
+
+
+def ring_family(rod_r=ROD_R, bore_r=TUBE_IR, carrier_r=CARRIER_R):
+    """Bounds on r1 for the uniform-spacing 6+12 layout in this bore.
+
+    Lower bound: inner rods must not touch each other (r1 >= 2 rod radii).
+    Upper bound: the outermost rod must stay inside the bore wall.
+    The result is a BAND, not a value -- the layout is still under-determined,
+    which is the point of exposing it.
+    """
+    r1_lo = 2.0 * rod_r
+    r1_hi = (bore_r - rod_r) / UNIFORM_RATIO
+    return r1_lo, r1_hi
 
 
 def _repo_composition():
