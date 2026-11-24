@@ -33,6 +33,7 @@ public final class IsotopeDataSelfTest {
         testIsomers();
         testReleaseGroups();
         testNoDoubleCountedLines();
+        testNoConflictingDuplicates();
         System.out.printf("%nIsotopeDataSelfTest: %d checks, %d failures%n", checks, failures);
         if (failures > 0) {
             throw new AssertionError(failures + " check(s) failed");
@@ -207,6 +208,29 @@ public final class IsotopeDataSelfTest {
         }
         check("no emission line is counted twice", duplicated == 0,
             duplicated + " duplicates");
+    }
+
+    /**
+     * Two rows at the same energy carrying DIFFERENT intensities mean the merge
+     * failed to pick one. That is how the Kr-85 13.336/13.396 keV x-ray pair
+     * looked before the tie-break was made deterministic, and it silently made
+     * the generated file differ between runs.
+     */
+    private static void testNoConflictingDuplicates() {
+        int conflicts = 0;
+        for (Isotope i : IsotopeRegistry.getInstance().all()) {
+            java.util.Map<String, Double> seen = new java.util.HashMap<>();
+            for (Isotope.Emission e : i.emissions()) {
+                String key = e.type() + "@" + Math.round(e.energyMeV() * 1e6);
+                Double prev = seen.put(key, e.intensity());
+                if (prev != null && Math.abs(prev - e.intensity()) > 1e-9) {
+                    conflicts++;
+                    System.out.println("    conflicting duplicate " + i.symbol() + " " + key);
+                }
+            }
+        }
+        check("duplicate energy groups carry one intensity", conflicts == 0,
+            conflicts + " conflicts");
     }
 
     private static boolean grouped(String group, String symbol) {

@@ -256,7 +256,7 @@
           "intensityPercent": 0.00015402718349330176,
           "shell": "KpB2",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.000154
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "XRAY",
@@ -266,7 +266,7 @@
           "intensityPercent": 0.001209007892351533,
           "shell": "KB",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.001209
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "XRAY",
@@ -276,7 +276,7 @@
           "intensityPercent": 0.0010549807088582313,
           "shell": "KpB1",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.001055
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "XRAY",
@@ -316,7 +316,7 @@
           "intensityPercent": 0.004140218215647913,
           "shell": "KA1",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.00414
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "XRAY",
@@ -326,7 +326,7 @@
           "intensityPercent": 0.0021632640176760345,
           "shell": "KA2",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.002163
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "XRAY",
@@ -356,7 +356,7 @@
           "intensityPercent": 0.0003846658753522248,
           "shell": "L",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.000385
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "XRAY",
@@ -671,7 +671,7 @@
           "intensity": 1.1999999999999999e-05,
           "intensityPercent": 0.0012,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.0012
+          "discardedIntensityPercent": 0.00075
         },
         {
           "type": "GAMMA",
@@ -680,7 +680,7 @@
           "intensity": 0.9998260000000001,
           "intensityPercent": 99.9826,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 99.9826
+          "discardedIntensityPercent": 0.25
         },
         {
           "type": "GAMMA",
@@ -725,7 +725,7 @@
           "energyKeV": 8.296,
           "intensity": 1.3453257951684462e-05,
           "intensityPercent": 0.0013453257951684461,
-          "shell": "KB",
+          "shell": "KpB1",
           "duplicateRows": 2,
           "discardedIntensityPercent": 0.001345
         },
@@ -735,7 +735,7 @@
           "energyKeV": 7.677,
           "intensity": 0.03814906926837847,
           "intensityPercent": 3.8149069268378475,
-          "shell": "KB",
+          "shell": "KpB1",
           "duplicateRows": 2,
           "discardedIntensityPercent": 3.814907
         },
@@ -803,13 +803,6 @@
       "stable": false,
       "discardedMaterial": [
         {
-          "type": "GAMMA",
-          "energyKeV": 1332.492,
-          "keptPercent": 99.9826,
-          "discardedPercent": 99.9826,
-          "rows": 2
-        },
-        {
           "type": "XRAY",
           "energyKeV": 7.677,
           "keptPercent": 3.8149069268378475,
@@ -874,7 +867,7 @@
           "energyKeV": 6.512,
           "intensity": 0.03398816048947971,
           "intensityPercent": 3.398816048947971,
-          "shell": "KB",
+          "shell": "KpB1",
           "duplicateRows": 2,
           "discardedIntensityPercent": 3.398816
         },
@@ -1623,7 +1616,7 @@
           "type": "BETA",
           "energyMeV": 0.2423,
           "energyKeV": 242.3,
-          "maxEnergyKeV": 741.0,
+          "maxEnergyKeV": 730.0,
           "intensity": 0.0128,
           "intensityPercent": 1.28,
           "duplicateRows": 2,
@@ -5600,7 +5593,7 @@
           "intensity": 0.00301,
           "intensityPercent": 0.301,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.301,
+          "discardedIntensityPercent": 0.0,
           "gammaRowsAlsoListedAsXray": 12
         },
         {
@@ -5621,7 +5614,7 @@
           "intensityPercent": 0.309,
           "shell": "KB",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.309
+          "discardedIntensityPercent": 0.000279
         },
         {
           "type": "XRAY",
@@ -5671,7 +5664,7 @@
           "intensityPercent": 1.14,
           "shell": "KA1",
           "duplicateRows": 2,
-          "discardedIntensityPercent": 1.14
+          "discardedIntensityPercent": 0.00103
         },
         {
           "type": "XRAY",
@@ -5725,15 +5718,7 @@
         }
       ],
       "stable": false,
-      "discardedMaterial": [
-        {
-          "type": "XRAY",
-          "energyKeV": 13.396,
-          "keptPercent": 1.14,
-          "discardedPercent": 1.14,
-          "rows": 2
-        }
-      ],
+      "discardedMaterial": [],
       "source": "IAEA Nuclear Data Services, ENSDF-derived: https://nds.iaea.org/relnsd/v1/data?fields=levels&nuclides=Kr85"
     },
     {
@@ -6790,7 +6775,7 @@
           "intensity": 0.003633,
           "intensityPercent": 0.3633,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.3633
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "GAMMA",
@@ -7918,7 +7903,7 @@
           "energyKeV": 7.677,
           "intensity": 0.0415295753205262,
           "intensityPercent": 4.15295753205262,
-          "shell": "KB",
+          "shell": "KpB1",
           "duplicateRows": 2,
           "discardedIntensityPercent": 4.152958
         },
@@ -11322,7 +11307,7 @@
           "intensity": 1.96e-06,
           "intensityPercent": 0.000196,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 0.000196
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "GAMMA",
@@ -11601,7 +11586,7 @@
           "intensity": 9.700000000000001e-08,
           "intensityPercent": 9.7e-06,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 1e-05
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "GAMMA",
@@ -11907,7 +11892,7 @@
           "intensity": 1.21e-08,
           "intensityPercent": 1.21e-06,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 1e-06
+          "discardedIntensityPercent": 0.0
         },
         {
           "type": "GAMMA",
@@ -19426,7 +19411,7 @@
           "intensity": 2.8e-08,
           "intensityPercent": 2.8e-06,
           "duplicateRows": 2,
-          "discardedIntensityPercent": 3e-06
+          "discardedIntensityPercent": 1e-06
         },
         {
           "type": "GAMMA",

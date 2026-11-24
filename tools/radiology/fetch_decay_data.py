@@ -283,14 +283,25 @@ def _merge_duplicate_emissions(emissions: list[dict]) -> list[dict]:
 
     ENSDF lists some transitions more than once: the same gamma can appear as the
     evaluated main line and again as a weak branch or an unassigned duplicate.
-    Summing them is only safe for independent channels; for the same transition
-    listed twice it double-counts dose. The API gives no reliable flag to tell
-    the cases apart, so the honest handling is to keep the largest single
-    intensity and record how many rows were folded and what was discarded --
-    never silently add. Where the discarded sum is material the isotope is
-    reported so a human can check it against the evaluated file.
+    The repeats are NOT ordered by strength and are NOT ordered by anything else
+    the API exposes, so two rules are needed:
+
+    * keep the STRONGEST listing, because a repeat can be the real line (I-132's
+      667.7 keV appears at 13.9% and again at 98.7%; keeping the first row
+      understates its dose sevenfold);
+    * break exact ties deterministically, because two rows can carry identical
+      energy AND intensity and differ only in a label (Co-60's 8.296 keV X-ray is
+      listed as both 'KB' and 'KpB1'). Choosing by arrival order would make the
+      generated file differ between runs, which would break reproducibility.
+
+    The discarded intensity is recorded rather than added, and material discards
+    are surfaced per isotope for a human to check.
     """
     merged: dict[tuple, dict] = {}
+
+    def rank(e: dict) -> tuple:
+        return (e["intensityPercent"] or 0.0, str(e.get("shell") or ""))
+
     for e in emissions:
         key = (e["type"], round(e["energyKeV"], 3))
         if key not in merged:
@@ -298,17 +309,16 @@ def _merge_duplicate_emissions(emissions: list[dict]) -> list[dict]:
             continue
         kept = merged[key]
         kept["duplicateRows"] += 1
-        # Keep the STRONGEST listing, not the first one seen. ENSDF can repeat a
-        # transition, and the repeats are not ordered by strength: I-132's
-        # 667.7 keV line appears once at 13.9% and once at 98.7%, which is the
-        # real intensity. Keeping the first row would understate the dose from
-        # that isotope by a factor of seven.
+        if rank(e) > rank(kept):
+            # The row currently held is the one being dropped.
+            dropped = kept["intensityPercent"] or 0.0
+            for k in ("intensityPercent", "intensity", "shell", "uncertaintyKeV"):
+                if k in e:
+                    kept[k] = e[k]
+        else:
+            dropped = e["intensityPercent"] or 0.0
         kept["discardedIntensityPercent"] = round(
-            kept["discardedIntensityPercent"] + (kept["intensityPercent"] or 0.0), 6)
-        if (e["intensityPercent"] or 0.0) > (kept["intensityPercent"] or 0.0):
-            kept.update({k: e[k] for k in e if k != "intensityPercent"})
-            kept["intensityPercent"] = e["intensityPercent"]
-            kept["intensity"] = e["intensity"]
+            kept["discardedIntensityPercent"] + dropped, 6)
     return list(merged.values())
 
 
