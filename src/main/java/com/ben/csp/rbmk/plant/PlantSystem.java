@@ -1,5 +1,6 @@
 package com.ben.csp.rbmk.plant;
 
+import com.ben.csp.grid.PlantElectricalNetwork;
 import com.ben.csp.rbmk.physics.ReactorModel;
 import com.ben.csp.rbmk.physics.UnifiedReactorCore;
 
@@ -55,6 +56,11 @@ public final class PlantSystem {
     /** Bearing/governing oil system per turbine. */
     private final OilSystem[] oil = new OilSystem[PlantPhysics.TURBINE_COUNT];
 
+    /** The unit's electrical plant: switchyard, transformers, buses, pump motors. */
+    private final PlantElectricalNetwork electrical = new PlantElectricalNetwork();
+    /** True once every pump motor has been attached to a house section. */
+    private boolean motorsAttached;
+
     private boolean scrammed = false;
     private String tripReason = null;
     private double timeS = 0;
@@ -84,6 +90,31 @@ public final class PlantSystem {
     public PlantSystem(ReactorModel core) {
         this.core = core;
         initEquipment();
+        attachPumpMotors();
+    }
+
+    /**
+     * Put every main circulating pump's motor on a house section. The real plant
+     * splits the running pumps between the two sections, so that losing one
+     * section leaves half the circulation and losing both leaves none. Three
+     * running pumps per section is 18 MW each.
+     */
+    private void attachPumpMotors() {
+        int running = 0;
+        for (int i = 0; i < pumps.length; i++) {
+            boolean sectionA = (running % 2) == 0;
+            electrical.addPumpMotor("mcp" + i + ".motor", pumps[i],
+                PlantPhysics.MCP_MOTOR_W / 1e6, sectionA);
+            if (!pumps[i].standby()) {
+                running++;
+            }
+        }
+        motorsAttached = true;
+    }
+
+    /** The unit's electrical network. */
+    public PlantElectricalNetwork electrical() {
+        return electrical;
     }
 
     private void initEquipment() {
@@ -233,6 +264,15 @@ public final class PlantSystem {
         core.step(dt);
         double powerFraction = core.power();
 
+        // 1b. the electrical plant resolves first: which buses are live decides
+        // which pump motors are turning, which decides the flow below.
+        electrical.generator().setOutputMw(electricalOutputW() / 1e6);
+        if (scrammed) {
+            // A scram trips the turbine, which opens the generator breaker.
+            electrical.generator().trip();
+        }
+        electrical.step(dt);
+
         // 2. the pumps circulate coolant; below 500 MWt they throttle
         double circuitFlowKgS = 0;
         for (MainCirculatingPump p : pumps) {
@@ -280,6 +320,10 @@ public final class PlantSystem {
         for (Turbine t : turbines) {
             t.step(dt, perTurbine);
         }
+
+        // 4b. the generators follow the turbines. The output only reaches the
+        // switchyard while the generator breaker is closed.
+        electrical.generator().setOutputMw(electricalOutputW() / 1e6);
 
         // 5. the condensers reject the waste heat
         for (int i = 0; i < condensers.length; i++) {

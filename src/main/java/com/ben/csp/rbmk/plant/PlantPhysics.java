@@ -70,8 +70,20 @@ public final class PlantPhysics {
     public static final double TURBINE_RPM = 3000.0;
     /** Steam to power efficiency (derived from the heat balance). */
     public static final double TURBINE_EFFICIENCY = 0.33;
-    /** Turbine coastdown time constant on loss of steam (s). */
-    public static final double TURBINE_COAST_TAU_S = 20.0;
+    /**
+     * Turbogenerator rundown time constant on loss of steam (s).
+     *
+     * <p>Was 20 s, which was wrong. {@code docs/RBMK-PLANT-SYSTEMS.md} §8 records
+     * the rundown as <b>45-50 s</b> (WP §132, §136), and this is not a detail: the
+     * rundown length is the whole reason the test was run. The coast is what was
+     * supposed to carry the pumps until the diesel generator picked up, so a 20 s
+     * constant made the modelled rundown fail too early and for the wrong reason.
+     *
+     * <p>45 s is the short end of the sourced range, chosen so the model errs
+     * toward a faster rundown: if the plant cannot ride through 45 s it certainly
+     * cannot ride through 50 s.
+     */
+    public static final double TURBINE_COAST_TAU_S = 45.0;
 
     // -------------------------------------------------------------- condenser
     /** Condenser cooling water flow per turbine, 82,880 t/h. */
