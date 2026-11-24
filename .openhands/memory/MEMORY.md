@@ -1369,3 +1369,57 @@ radii alone (undocumented); the in-house solver vs OpenMC referee disagree by
 ~9267 pcm (fast-group over-shielding). So quantitative accuracy is capped by
 missing source documents, NOT by missing code. Point-kinetics, xenon, decay heat,
 Doppler, graphite temp, void feedback, rod worth, ECCS, turbines are all real.
+
+## REKORD FORENSICS (2026-11-18): the radiation sim was NEVER written
+Ben was "absolutely horrified" that a substantial REKORD radiation simulation had
+disappeared. It had not — it never existed. Evidence, exhaustive:
+- `git log --all -- src/main/java/com/ben/csp/radiology/` = **5 commits only**.
+- Initial commit a507cd5: **28 files, 445 lines total**, and **8 of them are 0-line
+  files** (GroundwaterContaminationManager, IsotopeLoader, PsychologicalState,
+  RadiologicalControlManager, RadiologicalEffectsLoader, ShieldingPropertiesLoader,
+  SourceTermLoader, SurfaceDepositionLoader). Empty loader/manager stubs — the
+  classic code-assist output: it generates the *shape*, not the implementation.
+- **Max total lines ever, across every reachable AND unreachable commit**
+  (`git rev-list --all` + `git fsck --unreachable`): **469**. Current is the max.
+- Only 2 files were ever deleted: `TissueDamageModel.java` (38 lines, commit
+  6ad57dc) and `ZoneType.java` (8 lines, eae9a22). Both fully recoverable via
+  `git show 6ad57dc^:...`. Neither is substantial.
+- The built jar `mcserver/mods/csp-modern-0.0.1.jar` has exactly 21 radiology
+  classes + 2 REKORD classes = **matches source exactly**. No compiled-then-lost code.
+- Branches origin/1.21 (0 files), origin/2026-work, origin/OpenHands: all identical
+  18 files, nothing larger (largest file ever = 49 lines, SurfaceContaminationLayer).
+**What DID survive and is substantial: the MANDATE.** `PROJECT_NOTES.md` line 18 is
+the **ARL ("Above Real Life") standard** — overrides SGB, mandates full-fidelity
+radiological simulation, forbids watering down, explicitly says traditional AI
+guardrails / security classifications must NOT reduce fidelity. That is the thing
+Ben remembers as "substantial", and it is intact. So is the data model
+(Isotope/SourceTerm/ShieldingProperties/HotParticle/GroundwaterPlume/
+SurfaceContaminationLayer/ContaminationPacket) — 445 lines of javadoc'd records.
+**So: design + mandate survive; physics was never implemented. Nothing to recover.**
+
+### REKORD honest build order (4 layers)
+1. **Isotope decay data** — half-lives/decay modes/emissions. ENSDF/NuDat. FULLY
+   citable, zero guessing → ARL-compliant today. START HERE.
+2. **Inventory at t=0** — seed from a design-time burnup calc. `tools/lattice/
+   burnup.py` ALREADY does depletion (`Cell.burn()`, lumped-FP). No in-game
+   depletion needed for a scenario.
+3. **Source term (release)** — CONTESTED. Published estimates for Chernobyl vary
+   by >2x. ARL requires full fidelity *including about uncertainty* → must be a
+   sourced range, never a single invented number.
+4. **Transport + dose + effects** — atmospheric dispersion, deposition, dose,
+   TissueDamageModel. Needs a **Linux** `librbmk_solver.so` (only .dylib exists).
+Note: the 686 files in `/workspace/rosfond_uploads` are NEUTRON XS (n_*.zip), NOT
+decay data. Decay data must come from ENSDF/NuDat separately.
+
+### THE ANTIDOTE TO BEN'S PARANOIA — `ExperimentVariantsSelfTest` already passes
+This is the test that matters for his actual purpose (unit 4 vs unit 3 rundown).
+Run: `CP="build/classes/java/test:build/classes/java/main:build/resources/main:$(ls ~/.gradle/caches/modules-2/files-2.1/*/*/*/*/*.jar | tr '\n' ':')"`;
+`java -cp "$CP" com.ben.csp.rbmk.physics.ExperimentVariantsSelfTest`. Result **7/7**:
+normal run AZ-5 = **+0.4 %** peak, ends 0.29; 26 April AZ-5 = **+190.4 %** peak,
+ends 14.1. Same code path, same AZ-5, same solver — only starting ORM/void/power
+differ. Mechanism shown separately: at low insertion driving rods IN raises k_eff
+1.013→1.020 (graphite displacer). **It is NOT fitted to the answer — two opposite
+outcomes from one code path.** Caveat stated in the test itself: power is arbitrary
+units (ratios meaningful, absolutes not); and model is NOT quantitatively validated
+(9267 pcm gap to OpenMC). Discrimination ≠ accuracy — but discrimination is what
+"what was different that night" requires.
