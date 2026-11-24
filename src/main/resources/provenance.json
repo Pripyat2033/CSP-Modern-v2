@@ -19,18 +19,18 @@
     },
     "OpenMC": {
       "title": "OpenMC 0.16.0 Monte Carlo neutron transport (computed in this repo), ENDF/B-VIII.0 cross-sections",
-      "publisher": "MIT / Argonne National Laboratory — openmc.org",
+      "publisher": "MIT / Argonne National Laboratory \u2014 openmc.org",
       "url": "https://docs.openmc.org",
-      "note": "Not a document but an independent COMPUTATION: a first-principles lattice-cell model of an RBMK fuel channel (openmc/rbmk_cell.py, openmc/rbmk_void_coeff.py). No tabulated coefficient is fed in — the void coefficient is derived from cross-section data plus graphite S(a,b). It yields +0.035 dk/k per unit void at the operating point (simple dk/k). An earlier version gave +0.015 and appeared to corroborate INSAG-7 (+0.02); that agreement was an artefact of two channel-geometry errors (an 80 mm bore instead of 88 mm, and fuel/water volume fractions of 0.62/0.26 instead of the true 0.324/0.570) and is WITHDRAWN. See docs/VOID-COEFF-ROOT-CAUSE.md."
+      "note": "Not a document but an independent COMPUTATION: a first-principles lattice-cell model of an RBMK fuel channel (openmc/rbmk_cell.py, openmc/rbmk_void_coeff.py). No tabulated coefficient is fed in \u2014 the void coefficient is derived from cross-section data plus graphite S(a,b). It yields +0.035 dk/k per unit void at the operating point (simple dk/k). An earlier version gave +0.015 and appeared to corroborate INSAG-7 (+0.02); that agreement was an artefact of two channel-geometry errors (an 80 mm bore instead of 88 mm, and fuel/water volume fractions of 0.62/0.26 instead of the true 0.324/0.570) and is WITHDRAWN. See docs/VOID-COEFF-ROOT-CAUSE.md."
     },
     "SUZ-CARTOGRAM": {
       "title": "SUZ control-panel cartogram of ChNPP Unit 4 (RBMK_Reactor_ChNPP-4.svg)",
-      "publisher": "Wikimedia Commons (drawn from the unit's SUZ panel); legend confirmed against the Nucleopedia SUZ panel table and the units 3/4 operating regulation §2.11.6",
+      "publisher": "Wikimedia Commons (drawn from the unit's SUZ panel); legend confirmed against the Nucleopedia SUZ panel table and the units 3/4 operating regulation \u00a72.11.6",
       "url": "https://upload.wikimedia.org/wikipedia/commons/5/59/RBMK_Reactor_ChNPP-4.svg",
       "note": "The SVG carries 1,884 rect elements, one per channel, with an explicit fill per rod type. Decoded geometry is committed as rbmk_cartogram_ch4.json. Counts reproduce exactly: AZ 24, PK-AZ 24, AR 12, USP 24, RR 127, DKE 12, TK 1,661 = 1,872 channels."
     },
     "SUZ-PANEL-TABLE": {
-      "title": "Nucleopedia: Benutzer:TZV/Reaktorunfall — Steuer- und Kontrollsystem table",
+      "title": "Nucleopedia: Benutzer:TZV/Reaktorunfall \u2014 Steuer- und Kontrollsystem table",
       "publisher": "Nucleopedia (de), accessed via the Wayback Machine snapshot of 2022-11-01",
       "url": "https://web.archive.org/web/20221101114619/https://de.nucleopedia.org/wiki/Benutzer:TZV/Reaktorunfall",
       "note": "Per-type absorber length, displacer length, insertion time, scram time and reactivity worth for units 3 and 4. The live site is Cloudflare-protected; the archived copy is readable."
@@ -69,7 +69,7 @@
       "unit": "1/s",
       "status": "to_verify",
       "source": "Keepin six-group set (Western evaluation).",
-      "note": "The RBMK used its own six-group set — replace from a NIKIET/ABBN source. INSAG-7 Annex II notes the accident analyses used 18 delayed-neutron groups, so a higher-group RBMK set exists."
+      "note": "The RBMK used its own six-group set \u2014 replace from a NIKIET/ABBN source. INSAG-7 Annex II notes the accident analyses used 18 delayed-neutron groups, so a higher-group RBMK set exists."
     },
     "delayed.beta_fractions": {
       "value": [
@@ -92,7 +92,7 @@
       "source": "INSAG-7 Table II-I (p. 105), 'Void coefficient of reactivity at the working point' = +2.0e-4 per % void; +2.0e-4 per 1% = 0.020 per unit void fraction. INSAG-7 sec. 2.1 gives the full range: -1.3e-4 (fresh fuel) to +(2.0-2.5)e-4 per % void (steady-state refuelling).",
       "sourceUrl": "https://www-pub.iaea.org/MTCD/publications/PDF/Pub913e_web.pdf",
       "quote": "Void coefficient of reactivity af at the working point (%-' (5k/k) void) +2.0 x 10\"4",
-      "corroboration": "OpenMC lattice-cell Monte Carlo (openmc/, ENDF/B-VIII.0) gives +0.035 dk/k per unit void at the operating point (simple dk/k), with the channel geometry corrected, independently — same sign as the +0.02 above but ~1.75x larger (a single-channel infinite lattice overstates the whole-core operating coefficient). The earlier +0.015 'agreement' is WITHDRAWN: it came from a channel-geometry error. Minecraft displays this result via /rbmk openmc (OpenMcResult.java)."
+      "corroboration": "OpenMC lattice-cell Monte Carlo (openmc/, ENDF/B-VIII.0) gives +0.035 dk/k per unit void at the operating point (simple dk/k), with the channel geometry corrected, independently \u2014 same sign as the +0.02 above but ~1.75x larger (a single-channel infinite lattice overstates the whole-core operating coefficient). The earlier +0.015 'agreement' is WITHDRAWN: it came from a channel-geometry error. Minecraft displays this result via /rbmk openmc (OpenMcResult.java)."
     },
     "feedback.doppler_coeff": {
       "value": -1.2e-05,
@@ -123,7 +123,7 @@
       "unit": "dk/k per unit xenon ratio",
       "status": "to_verify",
       "source": "Reference value; INSAG-7 does not tabulate a xenon worth.",
-      "note": "To confirm against a NIKIET/design source. (Note: Xenon.java uses a -0.03 equilibrium scale, and ReactorCore/SpatialReactorCore hard-code 0.024 separately — these should be reconciled to one sourced value.)"
+      "note": "To confirm against a NIKIET/design source. (Note: Xenon.java uses a -0.03 equilibrium scale, and ReactorCore/SpatialReactorCore hard-code 0.024 separately \u2014 these should be reconciled to one sourced value.)"
     },
     "rodworth.scale": {
       "value": 0.08,
@@ -318,10 +318,10 @@
       },
       "unit": "equivalent manual rods (the regulation counts rods, not dk/k)",
       "status": "verified",
-      "source": "ТЕХНОЛОГИЧЕСКИЙ РЕГЛАМЕНТ 1Э-С-II (1983), ГЛАВА 9, §9.0 — the plant's own operating regulation, signed by B r y u k h a n o v / F o m i n / D y a t l o v / L y u t o v / G e l l e r m a n. Held in the repo at docs/primary-sources/reglament-1E-S-II-1983.txt",
+      "source": "\u0422\u0415\u0425\u041d\u041e\u041b\u041e\u0413\u0418\u0427\u0415\u0421\u041a\u0418\u0419 \u0420\u0415\u0413\u041b\u0410\u041c\u0415\u041d\u0422 1\u042d-\u0421-II (1983), \u0413\u041b\u0410\u0412\u0410 9, \u00a79.0 \u2014 the plant's own operating regulation, signed by B r y u k h a n o v / F o m i n / D y a t l o v / L y u t o v / G e l l e r m a n. Held in the repo at docs/primary-sources/reglament-1E-S-II-1983.txt",
       "sourceUrl": "docs/primary-sources/Reglament-1E-S-II-1983-ChAES-RBMK-1000.pdf",
-      "quote": "«На номинальной мощности в стационарном режиме величина оперативного запаса реактивности должна составлять не менее 26÷30 стержней. Работа реактора при запасе менее 26 стержней допускается с разрешения главного инженера станции. При снижении оперативного запаса реактивности до 15 стержней реактор должен быть немедленно заглушен.» (ГЛАВА 9, lines 1939-1944). Also ГЛАВА 6 §6.6.4 and ГЛАВА 7 §7.1: during a power raise the margin must not fall below 15 rods.",
-      "note": "PRIMARY SOURCE, and it supersedes the earlier value. This entry previously carried nominal 45-48 / warning 43 / limit 30 marked 'verified' from a YouTube SKALA simulator walkthrough (1JSP_gVXZTs), with this regulation demoted to a footnote. That was backwards: the walkthrough is a game, the regulation is the document the plant ran on and Dyatlov signed. The regulation's numbers are now the authority. The walkthrough's 45-48 is not necessarily wrong — it may describe a different unit or a later revision — but it cannot outrank the primary text, and the 43 'warning' setpoint has NO basis in the regulation at all, so it is dropped. CONSEQUENCE: the ORM alarm in RodBank must be re-derived from these numbers (26/30 nominal band, 15 shutdown), not from 45/43/30."
+      "quote": "\u00ab\u041d\u0430 \u043d\u043e\u043c\u0438\u043d\u0430\u043b\u044c\u043d\u043e\u0439 \u043c\u043e\u0449\u043d\u043e\u0441\u0442\u0438 \u0432 \u0441\u0442\u0430\u0446\u0438\u043e\u043d\u0430\u0440\u043d\u043e\u043c \u0440\u0435\u0436\u0438\u043c\u0435 \u0432\u0435\u043b\u0438\u0447\u0438\u043d\u0430 \u043e\u043f\u0435\u0440\u0430\u0442\u0438\u0432\u043d\u043e\u0433\u043e \u0437\u0430\u043f\u0430\u0441\u0430 \u0440\u0435\u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u0438 \u0434\u043e\u043b\u0436\u043d\u0430 \u0441\u043e\u0441\u0442\u0430\u0432\u043b\u044f\u0442\u044c \u043d\u0435 \u043c\u0435\u043d\u0435\u0435 26\u00f730 \u0441\u0442\u0435\u0440\u0436\u043d\u0435\u0439. \u0420\u0430\u0431\u043e\u0442\u0430 \u0440\u0435\u0430\u043a\u0442\u043e\u0440\u0430 \u043f\u0440\u0438 \u0437\u0430\u043f\u0430\u0441\u0435 \u043c\u0435\u043d\u0435\u0435 26 \u0441\u0442\u0435\u0440\u0436\u043d\u0435\u0439 \u0434\u043e\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f \u0441 \u0440\u0430\u0437\u0440\u0435\u0448\u0435\u043d\u0438\u044f \u0433\u043b\u0430\u0432\u043d\u043e\u0433\u043e \u0438\u043d\u0436\u0435\u043d\u0435\u0440\u0430 \u0441\u0442\u0430\u043d\u0446\u0438\u0438. \u041f\u0440\u0438 \u0441\u043d\u0438\u0436\u0435\u043d\u0438\u0438 \u043e\u043f\u0435\u0440\u0430\u0442\u0438\u0432\u043d\u043e\u0433\u043e \u0437\u0430\u043f\u0430\u0441\u0430 \u0440\u0435\u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u0438 \u0434\u043e 15 \u0441\u0442\u0435\u0440\u0436\u043d\u0435\u0439 \u0440\u0435\u0430\u043a\u0442\u043e\u0440 \u0434\u043e\u043b\u0436\u0435\u043d \u0431\u044b\u0442\u044c \u043d\u0435\u043c\u0435\u0434\u043b\u0435\u043d\u043d\u043e \u0437\u0430\u0433\u043b\u0443\u0448\u0435\u043d.\u00bb (\u0413\u041b\u0410\u0412\u0410 9, lines 1939-1944). Also \u0413\u041b\u0410\u0412\u0410 6 \u00a76.6.4 and \u0413\u041b\u0410\u0412\u0410 7 \u00a77.1: during a power raise the margin must not fall below 15 rods.",
+      "note": "PRIMARY SOURCE, and it supersedes the earlier value. This entry previously carried nominal 45-48 / warning 43 / limit 30 marked 'verified' from a YouTube SKALA simulator walkthrough (1JSP_gVXZTs), with this regulation demoted to a footnote. That was backwards: the walkthrough is a game, the regulation is the document the plant ran on and Dyatlov signed. The regulation's numbers are now the authority. The walkthrough's 45-48 is not necessarily wrong \u2014 it may describe a different unit or a later revision \u2014 but it cannot outrank the primary text, and the 43 'warning' setpoint has NO basis in the regulation at all, so it is dropped. CONSEQUENCE: the ORM alarm in RodBank must be re-derived from these numbers (26/30 nominal band, 15 shutdown), not from 45/43/30."
     },
     "rod.pk_rr_positions": {
       "value": "unresolved (12 rods inside the panel's 127-rod blue category)",
@@ -329,15 +329,15 @@
       "status": "to_verify",
       "source": "SUZ-CARTOGRAM",
       "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/RBMK_Reactor_ChNPP-4.svg",
-      "quote": "The panel draws 127 manual rods in one fill (#0067ce); the regulation splits them into РР 103 + ПК-РР 12 + ЛАР 12.",
-      "note": "The cartogram can place 24 ПК-АЗ (they have their own fill) but not the 12 ПК-РР, and not the 12 ЛАР. Both are carried in the model as sub-populations with the correct counts and the correct per-type geometry, but their individual channel positions are NOT guessed. Resolving this needs the plant's техническое описание or a SUZ panel photo with the sub-types distinguishable."
+      "quote": "The panel draws 127 manual rods in one fill (#0067ce); the regulation splits them into \u0420\u0420 103 + \u041f\u041a-\u0420\u0420 12 + \u041b\u0410\u0420 12.",
+      "note": "The cartogram can place 24 \u041f\u041a-\u0410\u0417 (they have their own fill) but not the 12 \u041f\u041a-\u0420\u0420, and not the 12 \u041b\u0410\u0420. Both are carried in the model as sub-populations with the correct counts and the correct per-type geometry, but their individual channel positions are NOT guessed. Resolving this needs the plant's \u0442\u0435\u0445\u043d\u0438\u0447\u0435\u0441\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 or a SUZ panel photo with the sub-types distinguishable."
     },
     "xsec.control_hole_fraction": {
       "value": 0.16331,
       "unit": "fraction of the 250 mm lattice cell",
       "status": "to_verify",
       "source": "Channel geometry, not a fit: a control channel is a 114 mm bore in a 250 mm-pitch graphite cell (RbmkGeometry.CHANNEL_HOLE_M / LATTICE_PITCH_M), so the hole is (pi/4)*114^2/250^2 = 16.331% of the cell area and the graphite outside it is the other 83.669%.",
-      "note": "This is the BORE fraction - an UPPER BOUND on how much of the cell any rod can occupy, NOT the rod fraction. The rod itself is Ø70 mm (DOE Table G-2), only 6.16% of the cell; the remaining 10.17% of the cell inside the bore is water in the annular gap. See xsec.control_cell_split for the three-region split actually used. History: this entry replaced a hand-set 0.75/0.25 graphite/rod split that implied a Ø141 mm rod in a Ø114 mm hole (1.24x the bore, impossible, 53% overstatement); treating the bore AS the rod then replaced that, but was itself 2.65x too strong. The 114 mm bore and 250 mm pitch are still sourced only to EN Wikipedia and want a NIKIET/drawing confirmation."
+      "note": "This is the BORE fraction - an UPPER BOUND on how much of the cell any rod can occupy, NOT the rod fraction. The rod itself is \u00d870 mm (DOE Table G-2), only 6.16% of the cell; the remaining 10.17% of the cell inside the bore is water in the annular gap. See xsec.control_cell_split for the three-region split actually used. History: this entry replaced a hand-set 0.75/0.25 graphite/rod split that implied a \u00d8141 mm rod in a \u00d8114 mm hole (1.24x the bore, impossible, 53% overstatement); treating the bore AS the rod then replaced that, but was itself 2.65x too strong. The 114 mm bore and 250 mm pitch are still sourced only to EN Wikipedia and want a NIKIET/drawing confirmation."
     },
     "rod.diameters": {
       "value": {
@@ -354,12 +354,12 @@
         "displacer_section_cm": 100.0,
         "absorber_density_g_cm3": 1.65
       },
-      "unit": "mm / cm / g·cm-3",
+      "unit": "mm / cm / g\u00b7cm-3",
       "status": "to_verify",
       "source": "DOE/NE-0076 (Nov 1986), Appendix G, Table G-2 'Control Rod Specifications', PDF p. 177",
       "sourceUrl": "https://www.osti.gov/biblio/7037704",
       "quote": "Outer B4C Diameter 6.5 cm; Inner B4C Diameter 5.75 cm; Outer Clad Diameter 7.0 cm; Outer Clad Thickness 0.2 cm; Inner Clad Diameter 5.0 cm; Inner Clad Thickness 0.2 cm; Absorber Length/Section 98.4 cm; Total Length/Section 102.4 cm; Absorber Density 1.65 gm/CC; Displacer Clad Diameter 7.4 cm; Clad Thickness 0.25 cm.",
-      "note": "WESTERN SOURCE — REPLACEABLE, and only PARTLY corroborated. What survives: the DIAMETERS. Table G-2 is internally consistent as an annulus (B4C 65 mm OD / 57.5 mm ID inside a 70 mm clad, 50 mm bore cooling passage) and all three rod envelopes (Ø70 absorber, Ø74 displacer, 79 mm post-Chernobyl KRO sleeve) fit the 114 mm channel bore, so the diameter set is mutually consistent and physically coherent. What does NOT survive: the LENGTHS. The same page says the rod is five absorber sections of 102.4 cm = 5.12 m total with a 5 x 1 m = 5.0 m displacer, but the Russian panel table gives RR/PK-AZ 6.772 m absorber and 4.56 m displacer. That is a 24 % disagreement on absorber length and 10 % on displacer. The DOE report describes an earlier or different rod build, so its lengths must NOT be adopted; the panel lengths stay authoritative. Only the diameters are used from this source, because no Russian source for them has been obtained yet. Recorded in rod.length_conflict."
+      "note": "WESTERN SOURCE \u2014 REPLACEABLE, and only PARTLY corroborated. What survives: the DIAMETERS. Table G-2 is internally consistent as an annulus (B4C 65 mm OD / 57.5 mm ID inside a 70 mm clad, 50 mm bore cooling passage) and all three rod envelopes (\u00d870 absorber, \u00d874 displacer, 79 mm post-Chernobyl KRO sleeve) fit the 114 mm channel bore, so the diameter set is mutually consistent and physically coherent. What does NOT survive: the LENGTHS. The same page says the rod is five absorber sections of 102.4 cm = 5.12 m total with a 5 x 1 m = 5.0 m displacer, but the Russian panel table gives RR/PK-AZ 6.772 m absorber and 4.56 m displacer. That is a 24 % disagreement on absorber length and 10 % on displacer. The DOE report describes an earlier or different rod build, so its lengths must NOT be adopted; the panel lengths stay authoritative. Only the diameters are used from this source, because no Russian source for them has been obtained yet. Recorded in rod.length_conflict."
     },
     "xsec.control_cell_split": {
       "value": {
@@ -370,7 +370,7 @@
       },
       "unit": "volume fraction of the 250 mm lattice cell",
       "status": "to_verify",
-      "source": "Derived: DOE/NE-0076 Table G-2 rod diameters (Ø70 mm absorber, Ø74 mm displacer) inside the 114 mm channel bore of the 250 mm lattice cell",
+      "source": "Derived: DOE/NE-0076 Table G-2 rod diameters (\u00d870 mm absorber, \u00d874 mm displacer) inside the 114 mm channel bore of the 250 mm lattice cell",
       "sourceUrl": "https://www.osti.gov/biblio/7037704",
       "quote": "Outer Clad Diameter 7.0 cm ... Displacer Clad Diameter 7.4 cm (DOE/NE-0076 Table G-2); bore 114 mm and pitch 250 mm from RbmkGeometry.",
       "note": "The ROBUST part: the rod is much smaller than the bore it sits in, so water fills the annular gap and the old model's 'rod = whole bore' was wrong by a large factor. Every candidate diameter (65-80 mm) is far below the 114 mm bore, so the DIRECTION of this correction does not depend on which source is right. The UNCERTAIN part: the exact fractions follow the DOE diameters, which are to_verify (no Russian source yet). If the true absorber OD were 80 mm the absorber fraction would be 0.0804 rather than 0.0616 - a 30 % difference in rod strength. So the magnitude stays flagged until a Russian drawing fixes the diameter. The 2.65x figure quoted above is DOE-specific."
@@ -423,7 +423,7 @@
       "unit": "cm",
       "status": "to_verify",
       "source": "openmc/control_rod_test.py, channel_universe(): rod_r defaults to 2.5 cm, rodclad = rod_r + 0.4",
-      "note": "The OpenMC model already treats the rod as a THIN absorber in a water-filled bore rather than a plug - the same correction just made in the Java control cell - so the two now agree in structure. But its radius is wrong: rod_r=2.5 cm is the 50 mm INNER CLAD bore, not the absorber. Per DOE Table G-2 the B4C is a 65 mm OD / 57.5 mm ID annulus (r 2.875-3.25 cm) and the outer clad is 70 mm (r 3.5 cm). The model's 'b4c' cylinder therefore sits in the cooling passage and its 'clad' shell at 2.9 cm is inside where the real B4C starts. Not yet fixed: the script has not been re-run against the corrected radii, so any control-rod result it produced so far describes a Ø50 mm solid absorber, which is physically not the RBMK rod."
+      "note": "The OpenMC model already treats the rod as a THIN absorber in a water-filled bore rather than a plug - the same correction just made in the Java control cell - so the two now agree in structure. But its radius is wrong: rod_r=2.5 cm is the 50 mm INNER CLAD bore, not the absorber. Per DOE Table G-2 the B4C is a 65 mm OD / 57.5 mm ID annulus (r 2.875-3.25 cm) and the outer clad is 70 mm (r 3.5 cm). The model's 'b4c' cylinder therefore sits in the cooling passage and its 'clad' shell at 2.9 cm is inside where the real B4C starts. Not yet fixed: the script has not been re-run against the corrected radii, so any control-rod result it produced so far describes a \u00d850 mm solid absorber, which is physically not the RBMK rod."
     },
     "test.scram_rate": {
       "value": {
@@ -454,7 +454,10 @@
         "fresh_k_eff_excess_pcm": 21359,
         "burned_10.3_k_eff_excess_pcm": 6500,
         "burned_10.3_rods": 120,
-        "regulation_band_pcm": [1408, 1625],
+        "regulation_band_pcm": [
+          1408,
+          1625
+        ],
         "residual_gap_pcm": 4875
       },
       "unit": "pcm and equivalent manual rods, k_eff including bare-cylinder leakage",
@@ -474,7 +477,7 @@
       "value": 47.1,
       "unit": "rods (model ORM at a plausible operating point, ~31% insertion)",
       "status": "to_verify",
-      "source": "MEASURED from OrmSelfTest against the shipped cartogram; the regulation target is ГЛАВА 9 of 1Э-С-II (26-30 rods).",
+      "source": "MEASURED from OrmSelfTest against the shipped cartogram; the regulation target is \u0413\u041b\u0410\u0412\u0410 9 of 1\u042d-\u0421-II (26-30 rods).",
       "note": "ROOT CAUSE FOUND 2026-11-18 (supersedes the 'rod-worth scale is 1.6x high' guess below). It is NOT a rod-worth calibration error and must NOT be 'fixed' by retuning the rod-worth scale: that scale is anchored to a sourced figure (24 AZ rods = 2 beta_eff -> one manual rod = 0.000536 dk/k, provenance rod.worth_group) and agrees with the anchor. The defect is MISSING PHYSICS: the lattice table is FRESH fuel (k_inf = 1.2893), and RbmkTransientSolver has no burnup and no fission-product inventory, so it forces the reference state critical by rescaling the fission source (nsfScale = 1/k) at a hand-chosen NOMINAL_INSERTION = 0.80. A fresh core therefore needs ~29% dk/k of rod worth to be subcritical, where the regulation's 26-30 rods is only 1.4-1.6% dk/k. Measured at the model's own critical point: ORM = 202 rods = 10.8% dk/k held in the rods. The gap (10.8% - 1.5% = ~9.3% dk/k) is exactly the burnup/fission-product reactivity a real equilibrium core has already spent. CONSEQUENCE: ORM in-game is not comparable to the regulation until burnup is modelled; the 26/15 LIMITS are correct and stay. FIX = model burnup (or seed an equilibrium fission-product inventory), not a retune. The 45-48 figure from the SKALA walkthrough is also consistent with a low-burnup core, which is why the model matched the video and not the regulation."
     },
     "trip.az1_az5_setpoints": {
@@ -493,10 +496,25 @@
       },
       "unit": "mixed, as the regulation states them (see quote)",
       "status": "verified",
-      "source": "ТЕХНОЛОГИЧЕСКИЙ РЕГЛАМЕНТ 1Э-С-II (1983), ГЛАВА 3 «ПЕРЕЧЕНЬ АВАРИЙНЫХ ЗАЩИТ РЕАКТОРА», items АЗ-1 .. АЗ-5. Repo: docs/primary-sources/reglament-1E-S-II-1983.txt lines 977-1046",
-      "quote": "АЗ-1: «снижение расхода питательной воды до 0,75 текущего»; «снижение расхода воды в КМПЦ … через любой из 3-х ГЦН … до 5000 м3/ч». АЗ-5: «уменьшение периода разгона до 10±2 сек при мощности … до 160 мВт(т) … и до 20 сек в остальном диапазоне»; «повышение уровня мощности на 0,5% Nном … при мощности до 160 Мвт(т)»; «повышение уровня мощности на 10% Nном над заданным при мощности 160÷3200 мВт(т)»; «повышение давления в реакторном пространстве до аварийной уставки – 0,15 кгс/см2»; «повышение давления в барабан-сепараторах до 75 кгс/см2 (абсолютного)»; «снижение уровней в барабан-сепараторах … до величины -1100 мм»; «повышение уровней … до +250 мм»; «снижение расхода воды в напорный коллектор СУЗ до аварийной уставки (800 м3/ч)».",
-      "note": "These are the PROTECTION SETPOINTS, from the plant's own regulation, so they replace the earlier 'setpoint to be read from the regulation' placeholders. Note the regulation has NO single '104% overpower' number: the power protection is a MARGIN over the setpoint (10% Nnom over the заданный level in the 5-100% range, 0.5% below 5%), plus a period (rate) protection at 20 s. So a '104% trip' was the wrong shape; the real protection is a rate trip and a margin trip. IMPLEMENTATION GAP: PlantSystem.checkTrips currently trips feedwater at 0.1 of nominal, not at the regulation's 0.75 of CURRENT flow, and implements none of the period, power-margin, pressure or separator-pressure trips.",
+      "source": "\u0422\u0415\u0425\u041d\u041e\u041b\u041e\u0413\u0418\u0427\u0415\u0421\u041a\u0418\u0419 \u0420\u0415\u0413\u041b\u0410\u041c\u0415\u041d\u0422 1\u042d-\u0421-II (1983), \u0413\u041b\u0410\u0412\u0410 3 \u00ab\u041f\u0415\u0420\u0415\u0427\u0415\u041d\u042c \u0410\u0412\u0410\u0420\u0418\u0419\u041d\u042b\u0425 \u0417\u0410\u0429\u0418\u0422 \u0420\u0415\u0410\u041a\u0422\u041e\u0420\u0410\u00bb, items \u0410\u0417-1 .. \u0410\u0417-5. Repo: docs/primary-sources/reglament-1E-S-II-1983.txt lines 977-1046",
+      "quote": "\u0410\u0417-1: \u00ab\u0441\u043d\u0438\u0436\u0435\u043d\u0438\u0435 \u0440\u0430\u0441\u0445\u043e\u0434\u0430 \u043f\u0438\u0442\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0439 \u0432\u043e\u0434\u044b \u0434\u043e 0,75 \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e\u00bb; \u00ab\u0441\u043d\u0438\u0436\u0435\u043d\u0438\u0435 \u0440\u0430\u0441\u0445\u043e\u0434\u0430 \u0432\u043e\u0434\u044b \u0432 \u041a\u041c\u041f\u0426 \u2026 \u0447\u0435\u0440\u0435\u0437 \u043b\u044e\u0431\u043e\u0439 \u0438\u0437 3-\u0445 \u0413\u0426\u041d \u2026 \u0434\u043e 5000 \u043c3/\u0447\u00bb. \u0410\u0417-5: \u00ab\u0443\u043c\u0435\u043d\u044c\u0448\u0435\u043d\u0438\u0435 \u043f\u0435\u0440\u0438\u043e\u0434\u0430 \u0440\u0430\u0437\u0433\u043e\u043d\u0430 \u0434\u043e 10\u00b12 \u0441\u0435\u043a \u043f\u0440\u0438 \u043c\u043e\u0449\u043d\u043e\u0441\u0442\u0438 \u2026 \u0434\u043e 160 \u043c\u0412\u0442(\u0442) \u2026 \u0438 \u0434\u043e 20 \u0441\u0435\u043a \u0432 \u043e\u0441\u0442\u0430\u043b\u044c\u043d\u043e\u043c \u0434\u0438\u0430\u043f\u0430\u0437\u043e\u043d\u0435\u00bb; \u00ab\u043f\u043e\u0432\u044b\u0448\u0435\u043d\u0438\u0435 \u0443\u0440\u043e\u0432\u043d\u044f \u043c\u043e\u0449\u043d\u043e\u0441\u0442\u0438 \u043d\u0430 0,5% N\u043d\u043e\u043c \u2026 \u043f\u0440\u0438 \u043c\u043e\u0449\u043d\u043e\u0441\u0442\u0438 \u0434\u043e 160 \u041c\u0432\u0442(\u0442)\u00bb; \u00ab\u043f\u043e\u0432\u044b\u0448\u0435\u043d\u0438\u0435 \u0443\u0440\u043e\u0432\u043d\u044f \u043c\u043e\u0449\u043d\u043e\u0441\u0442\u0438 \u043d\u0430 10% N\u043d\u043e\u043c \u043d\u0430\u0434 \u0437\u0430\u0434\u0430\u043d\u043d\u044b\u043c \u043f\u0440\u0438 \u043c\u043e\u0449\u043d\u043e\u0441\u0442\u0438 160\u00f73200 \u043c\u0412\u0442(\u0442)\u00bb; \u00ab\u043f\u043e\u0432\u044b\u0448\u0435\u043d\u0438\u0435 \u0434\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432 \u0440\u0435\u0430\u043a\u0442\u043e\u0440\u043d\u043e\u043c \u043f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u0435 \u0434\u043e \u0430\u0432\u0430\u0440\u0438\u0439\u043d\u043e\u0439 \u0443\u0441\u0442\u0430\u0432\u043a\u0438 \u2013 0,15 \u043a\u0433\u0441/\u0441\u043c2\u00bb; \u00ab\u043f\u043e\u0432\u044b\u0448\u0435\u043d\u0438\u0435 \u0434\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0432 \u0431\u0430\u0440\u0430\u0431\u0430\u043d-\u0441\u0435\u043f\u0430\u0440\u0430\u0442\u043e\u0440\u0430\u0445 \u0434\u043e 75 \u043a\u0433\u0441/\u0441\u043c2 (\u0430\u0431\u0441\u043e\u043b\u044e\u0442\u043d\u043e\u0433\u043e)\u00bb; \u00ab\u0441\u043d\u0438\u0436\u0435\u043d\u0438\u0435 \u0443\u0440\u043e\u0432\u043d\u0435\u0439 \u0432 \u0431\u0430\u0440\u0430\u0431\u0430\u043d-\u0441\u0435\u043f\u0430\u0440\u0430\u0442\u043e\u0440\u0430\u0445 \u2026 \u0434\u043e \u0432\u0435\u043b\u0438\u0447\u0438\u043d\u044b -1100 \u043c\u043c\u00bb; \u00ab\u043f\u043e\u0432\u044b\u0448\u0435\u043d\u0438\u0435 \u0443\u0440\u043e\u0432\u043d\u0435\u0439 \u2026 \u0434\u043e +250 \u043c\u043c\u00bb; \u00ab\u0441\u043d\u0438\u0436\u0435\u043d\u0438\u0435 \u0440\u0430\u0441\u0445\u043e\u0434\u0430 \u0432\u043e\u0434\u044b \u0432 \u043d\u0430\u043f\u043e\u0440\u043d\u044b\u0439 \u043a\u043e\u043b\u043b\u0435\u043a\u0442\u043e\u0440 \u0421\u0423\u0417 \u0434\u043e \u0430\u0432\u0430\u0440\u0438\u0439\u043d\u043e\u0439 \u0443\u0441\u0442\u0430\u0432\u043a\u0438 (800 \u043c3/\u0447)\u00bb.",
+      "note": "These are the PROTECTION SETPOINTS, from the plant's own regulation, so they replace the earlier 'setpoint to be read from the regulation' placeholders. Note the regulation has NO single '104% overpower' number: the power protection is a MARGIN over the setpoint (10% Nnom over the \u0437\u0430\u0434\u0430\u043d\u043d\u044b\u0439 level in the 5-100% range, 0.5% below 5%), plus a period (rate) protection at 20 s. So a '104% trip' was the wrong shape; the real protection is a rate trip and a margin trip. IMPLEMENTATION GAP: PlantSystem.checkTrips currently trips feedwater at 0.1 of nominal, not at the regulation's 0.75 of CURRENT flow, and implements none of the period, power-margin, pressure or separator-pressure trips.",
       "sourceUrl": "docs/primary-sources/Reglament-1E-S-II-1983-ChAES-RBMK-1000.pdf"
+    },
+    "radiology.isotope_data": {
+      "value": "54 nuclides",
+      "unit": "nuclide records",
+      "status": "verified",
+      "source": "IAEA Nuclear Data Services, ENSDF-derived decay radiations and level data, https://nds.iaea.org/relnsd/v1/data (queried per nuclide via tools/radiology/fetch_decay_data.py).",
+      "sourceUrl": "https://nds.iaea.org/relnsd/v1/data",
+      "note": "Half-lives, decay modes with branching ratios, gamma/alpha/beta/X-ray emission energies and intensities, and decay daughters are all evaluated measurements. Each isotope in src/main/resources/data/csp/radiology/isotopes.json carries its own ENSDF publication date and author string. Verified independently by IsotopeDataSelfTest against literature values (Cs-137 30.08 y, I-131 8.0252 d, Co-60 1925.28 d, Tc-99m 6.0067 h; Cs-137 661.657 keV at 85.1%; Co-60 1173.228/1332.492 keV at 99.85/99.98%; Cs-137 specific activity 3.2 TBq/g). NO activity, release fraction or dose value is included: those depend on inventory and transport and belong to later layers."
+    },
+    "radiology.release_groups": {
+      "value": "6 groups",
+      "unit": "release classes",
+      "status": "to_verify",
+      "source": "Noble gas / volatile / semi-volatile / particulate classes follow how release physics groups fission products; the assignment of individual nuclides to a class is this project's own, not a quoted table.",
+      "note": "The CLASSES are standard release chemistry. The per-nuclide assignment has not been checked against a Soviet primary source and should be, because caesium and iodine retention depend on the plant. Do not treat the grouping as sourced."
     }
   }
 }
