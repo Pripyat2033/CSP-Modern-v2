@@ -175,6 +175,9 @@ class Cell:
                      "cool": self.areas["coolant"] + self.areas["gap"]}
         self.total = sum(self.vols.values())
 
+        # Fission tally per nuclide, accumulated over the burn. Reset by burn().
+        self.fissions = {}
+
     def fresh(self):
         comp = {l: 0.0 for l in self.data}
         comp["U235"] = self.n5
@@ -233,7 +236,9 @@ class Cell:
         f9 = self.collapse(phi, "Pu239", 18)
         c9 = self.collapse_capture(phi, "Pu239")
         c0 = self.collapse_capture(phi, "Pu240")
-        a1 = self.collapse(phi, "Pu241", 18) + self.collapse_capture(phi, "Pu241")
+        f1 = self.collapse(phi, "Pu241", 18)
+        c1 = self.collapse_capture(phi, "Pu241")
+        a1 = f1 + c1
 
         denom = f5 * comp["U235"] + f9 * comp["Pu239"]
         if denom <= 0:
@@ -250,7 +255,15 @@ class Cell:
         a9r = comp["Pu239"] * (f9 + c9) * phi_th * dt
         c9r = comp["Pu239"] * c9 * phi_th * dt
         c0r = comp["Pu240"] * c0 * phi_th * dt
+        f1r = comp["Pu241"] * f1 * phi_th * dt
         a1r = comp["Pu241"] * a1 * phi_th * dt
+
+        # Fissions per nuclide, in the same barn-cm units as comp. The inventory
+        # needs the split, not just the total: each fissile nuclide has its own
+        # yield curve, and Pu-239 makes more Cs-137 per fission than U-235 does.
+        self.fissions["U235"] = self.fissions.get("U235", 0.0) + f5r
+        self.fissions["Pu239"] = self.fissions.get("Pu239", 0.0) + f9r
+        self.fissions["Pu241"] = self.fissions.get("Pu241", 0.0) + f1r
 
         comp["U235"] -= f5r + c5r
         comp["U238"] -= c8r
@@ -262,6 +275,7 @@ class Cell:
 
     def burn(self, target=TARGET_BURNUP, step_days=2):
         comp = self.fresh()
+        self.fissions = {}
         flux = 0.0
         day = 0
         while day * self.burn_rate < target:
