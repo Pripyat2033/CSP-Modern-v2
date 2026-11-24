@@ -47,7 +47,6 @@ import urllib.request
 
 
 import numpy as np
-from scipy.linalg import expm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -496,9 +495,9 @@ def main() -> int:
           f"{sum(1 for v in decay.values() if v.get('halfLifeSeconds'))}/{len(nodes)}")
     src = {k: ind.get(k, {}).get("yield", 0.0) * F for k in nodes}
     atoms, residual = solve_all(nodes, src, decay, T)
-    # expm round-off alone puts the residual near zero; a real loss (a daughter
-    # with no independent yield, hence no node to land on) shows up as a
-    # positive fraction. The gate is the physical bound, not an exact zero.
+    # Round-off alone puts the residual at ~0; a real loss (a daughter with no
+    # independent yield, hence no node to land on) shows up as a positive
+    # fraction. The gate is the physical bound, not an exact zero.
     if not (-1e-3 <= residual <= 0.05):
         raise SystemExit(
             f"mass balance residual {residual:.4f} outside [-1e-3, 0.05]; "
