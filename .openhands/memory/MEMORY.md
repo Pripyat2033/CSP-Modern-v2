@@ -26,53 +26,40 @@ The 686 files in `/workspace/rosfond_uploads` are NEUTRON XS, NOT decay data.
 max; 8 of 28 initial radiology files were ZERO-LINE stubs. Layers 3-4 are
 therefore a NEW build, not a reconnection.
 
-## REKORD LAYER 4 — transport + dose (62422a2, 2026-11-18)
-`docs/REKORD-LAYER-4-TRANSPORT-DOSE.md`. Source = **IAEA-TECDOC-1162** (2000),
-the emergency assessor's handbook: fetch with curl from
-`https://www-pub.iaea.org/MTCD/Publications/PDF/te_1162_prn.pdf` (reachable;
-iaea.org root and EPA FGR are 403, Tavily is over quota). It tabulates exactly
-the 4 things needed: **E3** ground (dose rate + 1mo/2mo/50y per kBq/m2), **E6**
-inhalation, **E7** thyroid (adult+10y), **E13** ingestion, **E8** Pasquill
-dilution factors 0.5-30 km.
-**NOTHING IS TYPED BY HAND** — `tools/radiology/extract_tecdoc1162.py` reads the
-PDF into `tecdoc1162-tables.json`; `build_dose_data.py` emits
-`resources/data/csp/radiology/dose-data.json` (25 nuclides x 4 pathways).
-Extraction verified against published ICRP adult ingestion coefficients —
-including **Co-60/Ra-226/Th-232, which appear NOWHERE else in the project**, so
-agreement can only come from reading the table right.
-**CONSERVATIVE IS LABELLED.** E6/E7 are the TECDOC's "highest value from IAEA
-BSS" = an UPPER BOUND; E13 reproduces ICRP adult exactly; E3 is unshielded.
-The data carries `basis: conservative|adult` because presenting a bound as a
-best estimate is the same lie as a guessed number.
-**BUG THE TEST CAUGHT:** TECDOC shielding formula is `E*(SF*OF + (1-OF))`, NOT
-`E*(SF+OF*(1-SF))` — they agree at OF=0/1 so it survived; "full shielding gives
-zero" failed at 0.13 mSv.
-**PDF-table trap:** pypdf returns parent+daughter on ONE row ("Cs-137+Ba-137m",
-"Ru-106+Rh-106", "Mo-99+Tc-99m", "Ce-144+Pr-144"). Dropping those rows silently
-LOSES 4 major nuclides; `get()` tries the chained key then the bare symbol.
-**Refuses rather than invents:** dilution outside 0.5-30 km = NaN; noble gas
-inhalation = NaN not 0.0 ("not credited" != "zero").
-Tests: DoseSelfTest 27/27, test_build_dose_data.py 17/17.
+## REKORD LAYER 4 — transport + dose (62422a2) — see log 2026-11-18 for detail
+`docs/REKORD-LAYER-4-TRANSPORT-DOSE.md`. Source **IAEA-TECDOC-1162** (2000):
+curl `https://www-pub.iaea.org/MTCD/Publications/PDF/te_1162_prn.pdf` (the
+iaea.org root and EPA FGR are 403; Tavily over quota). Tables E3 ground, E6
+inhalation, E7 thyroid, E13 ingestion, E8 Pasquill 0.5-30 km.
+**NOTHING TYPED BY HAND** — `extract_tecdoc1162.py` reads the PDF,
+`build_dose_data.py` emits `resources/data/csp/radiology/dose-data.json`
+(25 nuclides x 4 pathways). Verified against ICRP adult ingestion values,
+including Co-60/Ra-226/Th-232 which appear NOWHERE else here.
+**CONSERVATIVE IS LABELLED** (`basis: conservative|adult`): E6/E7 are the
+TECDOC's "highest value from IAEA BSS" = an UPPER BOUND; E13 = ICRP adult.
+**BUG THE TEST CAUGHT:** shielding is `E*(SF*OF + (1-OF))`, NOT
+`E*(SF+OF*(1-SF))` — identical at OF=0/1, so it survived 26/27 checks.
+**PDF trap:** pypdf puts parent+daughter on ONE row (Cs-137+Ba-137m,
+Ru-106+Rh-106, Mo-99+Tc-99m, Ce-144+Pr-144); dropping them silently LOSES
+Cs-137. Lookup tries chained key then bare symbol.
+**Refuses rather than invents:** dilution outside 0.5-30 km = NaN; noble-gas
+inhalation = NaN not 0.0. Tests: DoseSelfTest 27/27, py 17/17.
 
 ## REKORD LAYERS 1 & 2 — DONE (dde2d7f, d3b5a8f, c3a4ca6)
-Accounts: `docs/REKORD-LAYER-{1-NUCLIDE-DATA,2-INVENTORY}.md`. Neither stores
+`docs/REKORD-LAYER-{1-NUCLIDE-DATA,2-INVENTORY}.md`. Neither stores
 activity/release/dose; layer 2 is atoms only and REJECTS a file with activity.
 **Layer 2 had 7 bugs, each producing a plausible WRONG number — do not
-"simplify" the code back.** The 3 found 2026-11-18: (a) **a failed fetch read
-as "stable"** — an error record has no half-life, so `if not hl: stable` froze
-it (0.75% of the inventory, Nb-102m alone 5.1e25); `_decay_state` tests `error`
-FIRST and the generator REFUSES to write such a file. (b) **Isomers at E=0**
-(Nb-102, Rh-110, Sb-128, Pm-154): never select one by `energy > 0`.
-(c) **blank mode column**: take the route from `decay_rads` `bm`, else derive
-from yields. 21 nuclides have NO ENSDF evaluation (`unevaluated` state).
-**L1 (54 nuclides):** isomer = the level whose `decay` column is `IT`; gamma
-lines are not strength-ordered (keep STRONGEST); X-rays sit in the gamma list;
-beta `bm` = MEAN.
-**L2 (1130 nuclides, mass balance 0.000%):** half-lives span 1e-11..1e22 s, so
-use `solve_ivp(method="Radau", rtol=1e-9, jac=M)` — `expm` loses 27% of Ru-106,
-`expm_multiply` HANGS. Delayed neutron is a SUB-branch (I-137 = 92.86% Xe-137 +
-7.14% Xe-136); blank B-N % = "not tabulated"; solve per CONNECTED COMPONENT, not
-per mass chain; `2B+` is Z-2; loader keys by SYMBOL (`Ce144`).
+"simplify" the code back.** (a) a failed fetch has no half-life, so
+`if not hl: stable` FROZE it (Nb-102m alone 5.1e25); `_decay_state` tests
+`error` FIRST and the generator REFUSES to write such a file. (b) isomers at
+E=0 (Nb-102, Rh-110, Sb-128, Pm-154): never select by `energy > 0`. (c) blank
+mode column: take the route from `decay_rads` `bm`, else derive from yields.
+**L1:** isomer = the level whose `decay` column is `IT`; keep the STRONGEST
+gamma line (they are not strength-ordered); beta `bm` = MEAN.
+**L2 (1130 nuclides, mass balance 0.000%):** use `solve_ivp(method="Radau",
+rtol=1e-9, jac=M)` — `expm` loses 27% of Ru-106, `expm_multiply` HANGS.
+Delayed neutron is a SUB-branch; solve per CONNECTED COMPONENT, not per mass
+chain; loader keys by SYMBOL (`Ce144`).
 
 ## TWO ABSOLUTE RULES (cc2b88a) — ONE CORE, NO FLAG
 No accident flag may decide the outcome; emergent physics only. Self-tests must
@@ -103,9 +90,9 @@ IsotopeRegistry/RadiationType + tests. **Two pre-existing failures, NOT yours**:
   clean worktree — `2026-11-15.md`.
 
 ## SOURCES ON HAND
-INSAG-7 `www-pub.iaea.org/MTCD/Publications/PDF/Pub913e_web.pdf` (Table II-II =
-equipment list spine); NUREG-1250 `/workspace/tools/nureg1250.pdf`; ENDF/B-VIII.0
-HDF5 `/workspace/tools/openmc_data/endfb-viii.0-hdf5`; IAEA NDS
+INSAG-7 `.../Pub913e_web.pdf` (Table II-II = equipment spine); NUREG-1250
+`/workspace/tools/nureg1250.pdf`; Pub1239 (layer 3); **TECDOC-1162** (layer 4,
+`te_1162_prn.pdf`); ENDF/B-VIII.0 HDF5 `/workspace/tools/openmc_data/`; IAEA NDS
 `nds.iaea.org/relnsd/v1/data` (one nuclide at a time, needs a User-Agent).
 
 ## ALREADY SOLVED — don't redo or re-research
@@ -126,10 +113,9 @@ HDF5 `/workspace/tools/openmc_data/endfb-viii.0-hdf5`; IAEA NDS
   JDK 22). See `docs/ENGINE-DECISION.md`.
 
 ## EQUIPMENT REGISTER (f4829e9)
-`equipment-register.json` (106 items) + `EquipmentRegister` gate + test +
-`/rbmk register`. 25 modelled, 78 named-only, 3 unsourced (compressed air,
-generator H2 cooling, fire suppression — flagged, NOT guessed). Not wired to the
-SGB "done" rule.
+`equipment-register.json` (106 items) + `EquipmentRegister` gate + `/rbmk
+register`. 25 modelled, 78 named-only, 3 unsourced (flagged, NOT guessed). Not
+yet wired to the SGB "done" rule.
 
 ## VERIFIED PHYSICS RESULTS (do not re-derive)
 - **Derived void, not fitted** (0d67c7d): channel energy balance gives outlet
