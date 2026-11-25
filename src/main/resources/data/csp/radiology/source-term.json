@@ -1,0 +1,276 @@
+{
+ "_layer": "REKORD layer 3: source term / release to atmosphere",
+ "_note": "A RANGE, not a number. Every entry carries the released activity as quoted and, where layer 2 can support it, the fraction of the core inventory that represents. Where the fraction is not derivable the entry says so instead of guessing.",
+ "_method": "Released activities are quoted from IAEA Pub1239 Table 3.1, not modelled. Release fractions are released_activity / core_activity, with core_activity computed from layer-2 atoms and the layer-1 decay constant. No release fraction is fitted to anything.",
+ "_sourcePolicy": "Russian/Soviet primary sources are preferred. For the release itself no Russian primary tabulation was available in this environment, so the IAEA consolidation is used and labelled. It is a second-best source under this project's policy and should be replaced when a Russian source is obtained.",
+ "_primarySource": {
+  "citation": "International Atomic Energy Agency, Environmental Consequences of the Chernobyl Accident and their Remediation: Twenty Years of Experience, Radiological Assessment Reports Series, IAEA, Vienna (2006), ISBN 92-0-104805-X",
+  "url": "https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1239_web.pdf",
+  "table": "Table 3.1, p.19",
+  "figure": "Fig. 3.1, p.18"
+ },
+ "_underlyingSources": [
+  "UNSCEAR, Sources and Effects of Ionizing Radiation, Vol. II, UN, New York (2000) 451-566 [Pub1239 ref 3.6]",
+  "Dreicer et al., 'Consequences of the Chernobyl accident for the natural and human environments', One Decade after Chernobyl, IAEA (1996) 319-361 [ref 3.7]",
+  "Kashparov et al., Sci. Total Environ. 317 (2003) 105-119 [ref 3.9] -- the 1.5%+/-0.5% fuel-release fraction",
+  "Muck et al., Health Phys. 82 (2002) 141-156 [ref 3.8] -- the Cs-134/Cs-137 ratio of 0.55 at 26 April 1986"
+ ],
+ "_releaseWindow": {
+  "startUtc": "1986-04-26T01:23:00Z",
+  "endUtc": "1986-05-06T00:00:00Z",
+  "durationDays": 10,
+  "uncertainty": 0.5,
+  "uncertaintyMeaning": "each daily release rate is uncertain by +/-50%",
+  "source": "IAEA Pub1239 (2006) s.3.1.1 and Fig. 3.1: releases continued until 6 May 1986; the daily rate is uncertain by +/-50%; the rate falls to 0.002-0.006 EBq/d during the cooldown period"
+ },
+ "_fuelReleaseFraction": {
+  "central": 0.015,
+  "sigma": 0.005,
+  "low": 0.01,
+  "high": 0.02,
+  "earlierEstimate": 0.03,
+  "source": "IAEA Pub1239 (2006) s.3.1.2, quoting Kashparov et al., Sci. Total Environ. 317 (2003) 105-119: release fraction of Sr-90, Eu-154, Pu-238, Pu-239/240 and Am-241, and therefore of the nuclear fuel itself, deposited outside the site = 1.5% +/- 0.5%, 'which is half that of earlier estimates'",
+  "earlierSource": "The earlier estimate the same sentence halves: ~3%, the value used by INSAG-1 (1986) and still quoted in many secondary accounts",
+  "note": "This is the quantity every refractory nuclide's release depends on. It moved by a factor of two between INSAG-1 and Kashparov, which is the single largest reason the source term is a range."
+ },
+ "_caesiumRevision": {
+  "earlierPbq": 40,
+  "currentPbq": 80,
+  "note": "Pub1239 s.3.1.1: the early airborne-radiometric estimate of Cs-137 deposited in the former USSR was about 40 PBq; the current estimate is about twice that, 80 PBq. Recorded because it is a worked example of the source term being revised by 2x on measurement, not on modelling."
+ },
+ "_layer2Limits": [
+  {
+   "nuclide": "Te129m",
+   "problem": "released activity exceeds computed core activity",
+   "releasedPbq": 240.0,
+   "layer2CorePbq": 0.109977,
+   "ratio": 2182.273
+  },
+  {
+   "nuclide": "Cs134",
+   "problem": "released activity exceeds computed core activity",
+   "releasedPbq": 47.0,
+   "layer2CorePbq": 0.062473,
+   "ratio": 752.32
+  },
+  {
+   "nuclide": "Cs136",
+   "problem": "released activity exceeds computed core activity",
+   "releasedPbq": 36.0,
+   "layer2CorePbq": 24.573449,
+   "ratio": 1.465
+  }
+ ],
+ "_layer2LimitsExplained": "Deriving a release fraction needs a correct core activity. The cross-check against Table 3.1 found three classes of nuclide for which layer 2 cannot supply one, and they are listed rather than papered over: (1) ACTIVATION PRODUCTS. Layer 2 is a fission-product inventory; it contains no nuclide above Z=70, so Pu, Np, Am, Cm and Co are absent. Table 3.1's seven actinide entries therefore carry a quoted released activity and no fraction. (2) ISOMER FEEDING. A decay branch records a mode and a branching ratio but not a daughter level, so beta decay into an excited state cannot be represented. Te-129m is fed by Sb-129 and is starved by 3-4 orders of magnitude as a result. (3) NEUTRON CAPTURE. Layer 2 solves decay chains with fission as the source and models no (n,g) reaction, so Cs-134 (made from Cs-133 by capture) and Cs-136 are under-produced. These are layer-2 defects that layer 3 exposes; fixing them belongs to layer 2, not to a fudge factor here.",
+ "_notInThisFile": "No dose, no transport, no deposition, no release rate per nuclide. Those are layer 4. No release fraction is invented for a nuclide that has no quoted released activity.",
+ "_counts": {
+  "tableEntries": 25,
+  "fractionsDerived": 15,
+  "fractionsRefused": 10
+ },
+ "nuclides": {
+  "Kr85": {
+   "releasedPbq": 33.0,
+   "qualifier": null,
+   "volatilityClass": "inert",
+   "coreActivityPbq": 130.361297,
+   "releaseFraction": 0.253143,
+   "fractionStatus": "derived"
+  },
+  "Xe133": {
+   "releasedPbq": 6500.0,
+   "qualifier": null,
+   "volatilityClass": "inert",
+   "coreActivityPbq": 6824.782683,
+   "releaseFraction": 0.952411,
+   "fractionStatus": "derived"
+  },
+  "Te129m": {
+   "releasedPbq": 240.0,
+   "qualifier": null,
+   "volatilityClass": "volatile",
+   "coreActivityPbq": 0.109977,
+   "releaseFraction": null,
+   "fractionStatus": "impossible-gt-1",
+   "note": "released 240.0 PBq exceeds the layer-2 core activity 0.11 PBq by 2182x. A fraction above 1 cannot be quoted; the layer-2 denominator is missing the route that makes this nuclide (see _layer2Limits)."
+  },
+  "Te132": {
+   "releasedPbq": 1150.0,
+   "qualifier": "~",
+   "volatilityClass": "volatile",
+   "coreActivityPbq": 4508.925906,
+   "releaseFraction": 0.25505,
+   "fractionStatus": "derived"
+  },
+  "I131": {
+   "releasedPbq": 1760.0,
+   "qualifier": "~",
+   "volatilityClass": "volatile",
+   "coreActivityPbq": 3116.820106,
+   "releaseFraction": 0.564678,
+   "fractionStatus": "derived"
+  },
+  "I133": {
+   "releasedPbq": 910.0,
+   "qualifier": null,
+   "volatilityClass": "volatile",
+   "coreActivityPbq": 6813.848661,
+   "releaseFraction": 0.133552,
+   "fractionStatus": "derived"
+  },
+  "Cs134": {
+   "releasedPbq": 47.0,
+   "qualifier": "~",
+   "volatilityClass": "volatile",
+   "coreActivityPbq": 0.062473,
+   "releaseFraction": null,
+   "fractionStatus": "impossible-gt-1",
+   "note": "released 47.0 PBq exceeds the layer-2 core activity 0.06247 PBq by 752x. A fraction above 1 cannot be quoted; the layer-2 denominator is missing the route that makes this nuclide (see _layer2Limits)."
+  },
+  "Cs136": {
+   "releasedPbq": 36.0,
+   "qualifier": null,
+   "volatilityClass": "volatile",
+   "coreActivityPbq": 24.573449,
+   "releaseFraction": null,
+   "fractionStatus": "impossible-gt-1",
+   "note": "released 36.0 PBq exceeds the layer-2 core activity 24.57 PBq by 1x. A fraction above 1 cannot be quoted; the layer-2 denominator is missing the route that makes this nuclide (see _layer2Limits)."
+  },
+  "Cs137": {
+   "releasedPbq": 85.0,
+   "qualifier": "~",
+   "volatilityClass": "volatile",
+   "coreActivityPbq": 241.3673,
+   "releaseFraction": 0.35216,
+   "fractionStatus": "derived"
+  },
+  "Sr89": {
+   "releasedPbq": 115.0,
+   "qualifier": "~",
+   "volatilityClass": "intermediate",
+   "coreActivityPbq": 4129.559455,
+   "releaseFraction": 0.027848,
+   "fractionStatus": "derived"
+  },
+  "Sr90": {
+   "releasedPbq": 10.0,
+   "qualifier": "~",
+   "volatilityClass": "intermediate",
+   "coreActivityPbq": 200.339421,
+   "releaseFraction": 0.049915,
+   "fractionStatus": "derived"
+  },
+  "Ru103": {
+   "releasedPbq": 168.0,
+   "qualifier": ">",
+   "volatilityClass": "intermediate",
+   "coreActivityPbq": 3906.907893,
+   "releaseFraction": 0.043001,
+   "fractionStatus": "derived"
+  },
+  "Ru106": {
+   "releasedPbq": 73.0,
+   "qualifier": ">",
+   "volatilityClass": "intermediate",
+   "coreActivityPbq": 866.662674,
+   "releaseFraction": 0.084231,
+   "fractionStatus": "derived"
+  },
+  "Ba140": {
+   "releasedPbq": 240.0,
+   "qualifier": null,
+   "volatilityClass": "intermediate",
+   "coreActivityPbq": 6091.014506,
+   "releaseFraction": 0.039402,
+   "fractionStatus": "derived"
+  },
+  "Zr95": {
+   "releasedPbq": 84.0,
+   "qualifier": null,
+   "volatilityClass": "refractory",
+   "coreActivityPbq": 6183.148473,
+   "releaseFraction": 0.013585,
+   "fractionStatus": "derived"
+  },
+  "Mo99": {
+   "releasedPbq": 72.0,
+   "qualifier": ">",
+   "volatilityClass": "refractory",
+   "coreActivityPbq": 6191.129399,
+   "releaseFraction": 0.01163,
+   "fractionStatus": "derived"
+  },
+  "Ce141": {
+   "releasedPbq": 84.0,
+   "qualifier": null,
+   "volatilityClass": "refractory",
+   "coreActivityPbq": 5766.392309,
+   "releaseFraction": 0.014567,
+   "fractionStatus": "derived"
+  },
+  "Ce144": {
+   "releasedPbq": 50.0,
+   "qualifier": "~",
+   "volatilityClass": "refractory",
+   "coreActivityPbq": 4025.650658,
+   "releaseFraction": 0.01242,
+   "fractionStatus": "derived"
+  },
+  "Np239": {
+   "releasedPbq": 400.0,
+   "qualifier": null,
+   "volatilityClass": "refractory",
+   "releaseFraction": null,
+   "fractionStatus": "no-layer2-atoms",
+   "note": "Released activity is quoted from Table 3.1. No release fraction is derived: layer 2 holds no atoms for this nuclide, because the inventory is fission products only (see _layer2Limits)."
+  },
+  "Pu238": {
+   "releasedPbq": 0.015,
+   "qualifier": null,
+   "volatilityClass": "refractory",
+   "releaseFraction": null,
+   "fractionStatus": "no-layer2-atoms",
+   "note": "Released activity is quoted from Table 3.1. No release fraction is derived: layer 2 holds no atoms for this nuclide, because the inventory is fission products only (see _layer2Limits)."
+  },
+  "Pu239": {
+   "releasedPbq": 0.013,
+   "qualifier": null,
+   "volatilityClass": "refractory",
+   "releaseFraction": null,
+   "fractionStatus": "no-layer2-atoms",
+   "note": "Released activity is quoted from Table 3.1. No release fraction is derived: layer 2 holds no atoms for this nuclide, because the inventory is fission products only (see _layer2Limits)."
+  },
+  "Pu240": {
+   "releasedPbq": 0.018,
+   "qualifier": null,
+   "volatilityClass": "refractory",
+   "releaseFraction": null,
+   "fractionStatus": "no-layer2-atoms",
+   "note": "Released activity is quoted from Table 3.1. No release fraction is derived: layer 2 holds no atoms for this nuclide, because the inventory is fission products only (see _layer2Limits)."
+  },
+  "Pu241": {
+   "releasedPbq": 2.6,
+   "qualifier": "~",
+   "volatilityClass": "refractory",
+   "releaseFraction": null,
+   "fractionStatus": "no-layer2-atoms",
+   "note": "Released activity is quoted from Table 3.1. No release fraction is derived: layer 2 holds no atoms for this nuclide, because the inventory is fission products only (see _layer2Limits)."
+  },
+  "Pu242": {
+   "releasedPbq": 4e-05,
+   "qualifier": null,
+   "volatilityClass": "refractory",
+   "releaseFraction": null,
+   "fractionStatus": "no-layer2-atoms",
+   "note": "Released activity is quoted from Table 3.1. No release fraction is derived: layer 2 holds no atoms for this nuclide, because the inventory is fission products only (see _layer2Limits)."
+  },
+  "Cm242": {
+   "releasedPbq": 0.4,
+   "qualifier": "~",
+   "volatilityClass": "refractory",
+   "releaseFraction": null,
+   "fractionStatus": "no-layer2-atoms",
+   "note": "Released activity is quoted from Table 3.1. No release fraction is derived: layer 2 holds no atoms for this nuclide, because the inventory is fission products only (see _layer2Limits)."
+  }
+ }
+}

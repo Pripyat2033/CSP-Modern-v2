@@ -42,12 +42,6 @@ use `solve_ivp(method="Radau", rtol=1e-9, jac=M)` — `expm` loses 27% of Ru-106
 7.14% Xe-136); blank B-N % = "not tabulated"; solve per CONNECTED COMPONENT, not
 per mass chain; `2B+` is Z-2; loader keys by SYMBOL (`Ce144`).
 
-## FABRIC/MC VERSIONS — there is NO "Fabric 1.16"
-MC **1.20.1**, loader **0.15.11**, yarn 1.20.1+build.10, Fabric API
-**0.91.0+1.20.1**, loom `1.6-SNAPSHOT` (resolves 1.6.12). "Fabric 1.16" means
-*Loom* 1.16 — 1.16.1/.2/.3 exist; **no Fabric Loader 1.16.x was ever
-released** (loaders are 0.15.x/0.16.x). Four distinct numbers; never conflate.
-
 ## TWO ABSOLUTE RULES (cc2b88a) — ONE CORE, NO FLAG
 No accident flag may decide the outcome; emergent physics only. Self-tests must
 show opposite outcomes from one code path. Keystone source = the 1983 regulation
@@ -64,6 +58,8 @@ IsotopeRegistry/RadiationType + tests. **Two pre-existing failures, NOT yours**:
 `zone.MaterialSupplySelfTest`, `physics.SpatialReactorCoreSelfTest`.
 
 ## GOTCHAS THAT COST REAL TIME
+- **Minecraft/Fabric/OpenMC toolchain: SETTLED, do not revisit or report on.**
+  Ben considers dependency talk a waste of time; never raise it unprompted.
 - `tools/gen_*.py` have **no arg parsing** — running one "to see" writes dozens
   of files into `src/main/resources/assets/`. Undo: `git clean -fdq` that dir.
 - The fabric-loom lock can be held by an unreapable zombie gradle → fresh
