@@ -1,0 +1,793 @@
+{
+ "_layer": "REKORD layer 4: transport and dose",
+ "_note": "Dose conversion factors and atmospheric dilution factors, quoted from IAEA-TECDOC-1162. This file turns a release into a dose. It contains no dose itself: a dose needs a release (layer 3), a distance, a weather class and an exposure time, all of which are runtime inputs.",
+ "_method": "Inhalation and ingestion dose = intake x conversion factor, per the TECDOC's own equations (Procedure E5 step 2, Procedure E6). Ground dose = deposition x conversion factor, adjusted by the TECDOC's shielding factor and occupancy fraction (Procedure E3 step 3). Air concentration = release rate x dilution factor / wind speed (Procedure E5a). No equation here is this project's own.",
+ "_source": {
+  "citation": "International Atomic Energy Agency, Generic Procedures for Assessment and Response during a Radiological Emergency, IAEA-TECDOC-1162, IAEA, Vienna (August 2000)",
+  "url": "https://www-pub.iaea.org/MTCD/Publications/PDF/te_1162_prn.pdf",
+  "tables": {
+   "ground": "Table E3, pp. 98-100 (CF3, CF4)",
+   "inhalation": "Table E6, pp. 107-108 (CF2)",
+   "thyroid": "Table E7, p. 109 (CF1)",
+   "ingestion": "Table E13, pp. 116-117 (CF5)",
+   "dilution": "Table E8, p. 111 (DFm)",
+   "stability": "Table E9, p. 111",
+   "windSpeed": "Table E10, p. 111"
+  }
+ },
+ "_basisPolicy": "Each factor is labelled with what it represents. 'conservative' means the source chose the highest value across body types and chemical forms, so a dose computed from it is an upper bound, not a best estimate. 'adult' means the adult value. This distinction is carried into the data because a conservative number presented as a best estimate is a lie of the same kind as a guessed number.",
+ "_dispersion": {
+  "distancesKm": [
+   0.5,
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   15,
+   20,
+   25,
+   30
+  ],
+  "dilutionFactorByStability": {
+   "A": [
+    0.00057,
+    3.3e-05,
+    9.2e-07,
+    7.3e-07,
+    5.6e-07,
+    4.4e-07,
+    2.6e-07,
+    1.8e-07,
+    1.4e-07,
+    1.2e-07,
+    1e-07
+   ],
+   "B": [
+    0.00066,
+    7.9e-05,
+    4.3e-06,
+    1.8e-06,
+    1e-06,
+    6.2e-07,
+    3.5e-07,
+    2.4e-07,
+    1.8e-07,
+    1.5e-07,
+    1.2e-07
+   ],
+   "C": [
+    0.00072,
+    0.00013,
+    1.3e-05,
+    5.9e-06,
+    3.4e-06,
+    2.1e-06,
+    7.2e-07,
+    3.5e-07,
+    2.5e-07,
+    2e-07,
+    1.8e-07
+   ],
+   "D": [
+    0.00079,
+    0.00024,
+    4.2e-05,
+    2.3e-05,
+    1.6e-05,
+    1.1e-05,
+    4e-06,
+    2.3e-06,
+    1.4e-06,
+    9.6e-07,
+    7.7e-07
+   ],
+   "E": [
+    0.00084,
+    0.00034,
+    8.6e-05,
+    4.6e-05,
+    3.2e-05,
+    2.4e-05,
+    9.1e-06,
+    5.6e-06,
+    3.6e-06,
+    2.5e-06,
+    2.1e-06
+   ],
+   "F": [
+    0.00089,
+    0.0005,
+    0.0002,
+    0.00011,
+    7.8e-05,
+    5.7e-05,
+    2.4e-05,
+    1.4e-05,
+    9.2e-06,
+    6.8e-06,
+    5.5e-06
+   ]
+  },
+  "dilutionFactorUnit": "m^-2",
+  "windSpeedUnit": "m/s",
+  "equation": "C_air [kBq/m3] = Q [kBq/s] * DF [1/m2] / u [m/s]",
+  "validity": "constant release rate, wind direction and speed; simple terrain; ground-level release; no rain; single release point. The TECDOC states these conditions explicitly and this project does not extend the factors beyond them.",
+  "belowHalfKm": "the TECDOC uses Fig. E1 below 0.5 km because building wake dominates; the table value at 0.5 km is used here and the limitation is recorded rather than hidden"
+ },
+ "_stabilityClasses": {
+  "scheme": "Pasquill",
+  "classes": [
+   "A",
+   "B",
+   "C",
+   "D",
+   "E",
+   "F"
+  ],
+  "meaning": "A most unstable, F most stable; Table E9 of the TECDOC maps weather to a class and Table E10 maps observable effects to a wind speed"
+ },
+ "_missing": [],
+ "_notInThisFile": "No shielding factor or occupancy fraction (TECDOC Table E4: shielding 0.2-0.5 depending on building, default occupancy 0.6). No resuspension. No aquatic pathway. No internal biokinetics beyond the committed-dose factors themselves.",
+ "nuclides": {
+  "Kr85": {
+   "ground": {
+    "doseRatePerDeposition": 9.3e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": "NC",
+    "secondMonthPerDeposition": "NC",
+    "fiftyYearPerDeposition": "NC",
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "status": "not-credited",
+    "note": "a noble gas: the source records NC, i.e. no dose credited by this pathway"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Xe133": {
+   "ground": {
+    "doseRatePerDeposition": 1.6e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": "NC",
+    "secondMonthPerDeposition": "NC",
+    "fiftyYearPerDeposition": "NC",
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "status": "not-credited",
+    "note": "a noble gas: the source records NC, i.e. no dose credited by this pathway"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Te129m": {
+   "ground": {
+    "doseRatePerDeposition": 1.3e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00011,
+    "secondMonthPerDeposition": 5.4e-05,
+    "fiftyYearPerDeposition": 0.00022,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.012,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.003,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Te132": {
+   "ground": {
+    "doseRatePerDeposition": 8e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00069,
+    "secondMonthPerDeposition": 1.1e-06,
+    "fiftyYearPerDeposition": 0.00069,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.003,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "adultPerHourPerAirConcentration": 0.038,
+    "child10yPerHourPerAirConcentration": 0.068,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "only the iodine and tellurium isotopes carry a thyroid factor, which is why the table is short: these are the nuclides that concentrate in the gland"
+   },
+   "ingestion": {
+    "perIntake": 0.0038,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "I131": {
+   "ground": {
+    "doseRatePerDeposition": 1.3e-06,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00025,
+    "secondMonthPerDeposition": 1.8e-05,
+    "fiftyYearPerDeposition": 0.00027,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.011,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "adultPerHourPerAirConcentration": 0.23,
+    "child10yPerHourPerAirConcentration": 0.41,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "only the iodine and tellurium isotopes carry a thyroid factor, which is why the table is short: these are the nuclides that concentrate in the gland"
+   },
+   "ingestion": {
+    "perIntake": 0.022,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "I133": {
+   "ground": {
+    "doseRatePerDeposition": 2.1e-06,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 4.5e-05,
+    "secondMonthPerDeposition": 0.0,
+    "fiftyYearPerDeposition": 4.5e-05,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0023,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "adultPerHourPerAirConcentration": 0.042,
+    "child10yPerHourPerAirConcentration": 0.083,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "only the iodine and tellurium isotopes carry a thyroid factor, which is why the table is short: these are the nuclides that concentrate in the gland"
+   },
+   "ingestion": {
+    "perIntake": 0.0043,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Cs134": {
+   "ground": {
+    "doseRatePerDeposition": 5.4e-06,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.0027,
+    "secondMonthPerDeposition": 0.0025,
+    "fiftyYearPerDeposition": 0.051,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.03,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.019,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Cs136": {
+   "ground": {
+    "doseRatePerDeposition": 7.4e-06,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.0019,
+    "secondMonthPerDeposition": 0.00036,
+    "fiftyYearPerDeposition": 0.0023,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0042,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0031,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Cs137": {
+   "ground": {
+    "doseRatePerDeposition": 2.1e-06,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00099,
+    "secondMonthPerDeposition": 0.00094,
+    "fiftyYearPerDeposition": 0.13,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.059,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.013,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Sr89": {
+   "ground": {
+    "doseRatePerDeposition": 8e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 1.1e-05,
+    "secondMonthPerDeposition": 6.6e-06,
+    "fiftyYearPerDeposition": 2.8e-05,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.012,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0026,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Sr90": {
+   "ground": {
+    "doseRatePerDeposition": 1e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00017,
+    "secondMonthPerDeposition": 0.00016,
+    "fiftyYearPerDeposition": 0.021,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.24,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.028,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Ru103": {
+   "ground": {
+    "doseRatePerDeposition": 1.6e-06,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00064,
+    "secondMonthPerDeposition": 0.00036,
+    "fiftyYearPerDeposition": 0.0015,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0045,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.00073,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Ru106": {
+   "ground": {
+    "doseRatePerDeposition": 7.5e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00042,
+    "secondMonthPerDeposition": 0.00038,
+    "fiftyYearPerDeposition": 0.0048,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.1,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.007,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Ba140": {
+   "ground": {
+    "doseRatePerDeposition": 6.4e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.002,
+    "secondMonthPerDeposition": 0.0044,
+    "fiftyYearPerDeposition": 0.0025,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0087,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0026,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Zr95": {
+   "ground": {
+    "doseRatePerDeposition": 2.6e-06,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.0014,
+    "secondMonthPerDeposition": 0.0013,
+    "fiftyYearPerDeposition": 0.0068,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0089,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.00095,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Mo99": {
+   "ground": {
+    "doseRatePerDeposition": 9.5e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 6.1e-05,
+    "secondMonthPerDeposition": 3.1e-08,
+    "fiftyYearPerDeposition": 6.1e-05,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0015,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0006,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Ce141": {
+   "ground": {
+    "doseRatePerDeposition": 2.6e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 9.9e-05,
+    "secondMonthPerDeposition": 4.9e-05,
+    "fiftyYearPerDeposition": 0.0002,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0057,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.00071,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Ce144": {
+   "ground": {
+    "doseRatePerDeposition": 2e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00015,
+    "secondMonthPerDeposition": 0.00013,
+    "fiftyYearPerDeposition": 0.0014,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.08,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0052,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Np239": {
+   "ground": {
+    "doseRatePerDeposition": 5.8e-07,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 3.4e-05,
+    "secondMonthPerDeposition": 6.4e-09,
+    "fiftyYearPerDeposition": 3.4e-05,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 0.0015,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0008,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Pu238": {
+   "ground": {
+    "doseRatePerDeposition": 3e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.039,
+    "secondMonthPerDeposition": 0.037,
+    "fiftyYearPerDeposition": 6.6,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 170.0,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.23,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Pu239": {
+   "ground": {
+    "doseRatePerDeposition": 1.3e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.042,
+    "secondMonthPerDeposition": 0.04,
+    "fiftyYearPerDeposition": 8.5,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 180.0,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.25,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Pu240": {
+   "ground": {
+    "doseRatePerDeposition": 2.8e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.042,
+    "secondMonthPerDeposition": 0.04,
+    "fiftyYearPerDeposition": 8.4,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 180.0,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.25,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Pu241": {
+   "ground": {
+    "doseRatePerDeposition": 6.8e-12,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.00076,
+    "secondMonthPerDeposition": 0.00072,
+    "fiftyYearPerDeposition": 0.19,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 3.5,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.0047,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Pu242": {
+   "ground": {
+    "doseRatePerDeposition": 2.4e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.04,
+    "secondMonthPerDeposition": 0.038,
+    "fiftyYearPerDeposition": 8.0,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 170.0,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.24,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  },
+  "Cm242": {
+   "ground": {
+    "doseRatePerDeposition": 3.4e-09,
+    "doseRateUnit": "(mSv/h)/(kBq/m2)",
+    "firstMonthPerDeposition": 0.0042,
+    "secondMonthPerDeposition": 0.0035,
+    "fiftyYearPerDeposition": 0.059,
+    "doseUnit": "mSv/(kBq/m2)",
+    "basis": "open undisturbed ground, no shielding, no occupancy factor"
+   },
+   "inhalation": {
+    "perHourPerAirConcentration": 8.9,
+    "unit": "(mSv/h)/(kBq/m3)",
+    "basis": "conservative",
+    "note": "highest value from the IAEA Basic Safety Standards, per the TECDOC's own note; breathing rate 1.5 m3/h"
+   },
+   "thyroid": {
+    "status": "not-tabulated"
+   },
+   "ingestion": {
+    "perIntake": 0.013,
+    "unit": "mSv/kBq",
+    "basis": "adult",
+    "note": "reproduces the ICRP adult ingestion coefficient exactly, verified in the test"
+   }
+  }
+ }
+}

@@ -600,6 +600,21 @@
    "status": "to_verify",
    "source": "IAEA Pub1239 s.3.1.1 and Fig. 3.1: releases continued until 6 May 1986; daily release rate uncertain by +/-50%, decay-corrected to 6 May 1986.",
    "note": "A total, not a time-resolved rate. Resolving the initial excursion from the graphite-fire phase belongs to layer 4."
+  },
+  "radiology.dose_factors": {
+   "value": "4 pathway tables, 25 nuclides",
+   "unit": "dose conversion factors and dilution factors",
+   "status": "verified",
+   "source": "IAEA-TECDOC-1162, 'Generic procedures for assessment and response during a radiological emergency', IAEA, Vienna (August 2000). Table E3 pp.98-100, E6 pp.107-108, E7 p.109, E13 pp.116-117, E8 p.111.",
+   "sourceUrl": "https://www-pub.iaea.org/MTCD/Publications/PDF/te_1162_prn.pdf",
+   "note": "Every value is EXTRACTED from the PDF by tools/radiology/extract_tecdoc1162.py, not typed. Extraction verified against published ICRP adult ingestion coefficients, including Co-60/Ra-226/Th-232 which appear nowhere else in the project. LABELS MATTER: inhalation (E6) and thyroid (E7) are CONSERVATIVE (the TECDOC's 'highest value from IAEA BSS'), so a dose from them is an upper bound; ingestion (E13) is the adult value and reproduces ICRP exactly; ground (E3) is unshielded open ground with shielding/occupancy applied downstream."
+  },
+  "radiology.dispersion_factors": {
+   "value": "6 Pasquill classes x 11 distances, 0.5-30 km",
+   "unit": "dilution factor, m^-2",
+   "status": "verified",
+   "source": "IAEA-TECDOC-1162 Table E8 p.111, Procedure E5a: C_air [kBq/m3] = Q [kBq/s] * DF [1/m2] / u [m/s].",
+   "note": "Valid ONLY under the TECDOC's stated conditions: constant release rate, wind direction and speed; simple terrain; ground-level release; no rain; single release point. The Chernobyl release violated several (not constant, plume not on one bearing), so a single downwind result is a SCENARIO, not a reconstruction of the actual deposition field. Outside 0.5-30 km the calculator returns NaN rather than extrapolating. Below 0.5 km the TECDOC uses Fig. E1 for building wake."
   }
  }
 }
