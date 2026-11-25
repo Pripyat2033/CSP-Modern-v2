@@ -49,6 +49,8 @@ public final class InventorySelfTest {
         testIsomersKeptSeparate();
         testNoActivityInLayerTwo();
         testMassBalanceResidual();
+        testNoGapNuclideHoldsItsProduction();
+        testEveryInventoryNuclideIsRouted();
         System.out.printf("%nInventorySelfTest: %d checks, %d failures%n", checks, failures);
         if (failures > 0) {
             throw new AssertionError(failures + " check(s) failed");
@@ -266,6 +268,85 @@ public final class InventorySelfTest {
         double residual = readMassBalanceResidual();
         check("generator mass-balance residual is within 0.1%",
             Math.abs(residual) < 1e-3, String.format("%.2e", residual));
+    }
+
+    /**
+     * A nuclide with a sub-second half-life must sit at its saturation value,
+     * not hold 618 days of production.
+     *
+     * <p>I-142 (0.222 s) and I-144 (0.3 us) have no decay mode in ENSDF, so
+     * before the fix they were read as stable and accumulated for the whole
+     * irradiation: I-142 reached 2.8e23 atoms against a true 1.7e15, an
+     * overstatement of 1.7e8. These are the two largest errors the gap caused,
+     * so they are the ones pinned here.
+     */
+    private static void testNoGapNuclideHoldsItsProduction() {
+        // I-142: 0.222 s. Saturation = production x T1/2 / ln2. Its production
+        // rate is set by the yield, so the absolute value is a generator
+        // result; the test is that it is near equilibrium, not 618 days of it.
+        double i142 = InventoryLoader.atoms("I142");
+        check("I-142 sits at saturation, not 618 days of accumulation",
+            i142 > 0 && i142 < 1e18,
+            "I142=" + fmt(i142));
+
+        double i144 = InventoryLoader.atoms("I144");
+        check("I-144 sits at saturation, not 618 days of accumulation",
+            i144 > 0 && i144 < 1e12,
+            "I144=" + fmt(i144));
+
+        // Te-127 is the largest of the four by mass (0.11% of the inventory
+        // before the fix); it must have decayed to I-127, not piled up.
+        double te127 = InventoryLoader.atoms("Te127");
+        double i127 = InventoryLoader.atoms("I127");
+        check("Te-127 is a small transient against its I-127 daughter",
+            te127 < i127,
+            "Te127=" + fmt(te127) + " I127=" + fmt(i127));
+    }
+
+    /**
+     * Every nuclide in the file must be either routed onward or reported as
+     * unrouted. A record that is silently held is how a data failure becomes a
+     * physics result, so the file must say which nuclides are held.
+     */
+    private static void testEveryInventoryNuclideIsRouted() {
+        try (var in = InventorySelfTest.class.getResourceAsStream(InventoryLoader.RESOURCE)) {
+            if (in == null) {
+                check("inventory file is readable", false, "missing");
+                return;
+            }
+            var root = com.google.gson.JsonParser.parseReader(
+                new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8))
+                .getAsJsonObject();
+            // The generator refuses to write a file with a fetch error, so a
+            // clean file must carry no _unassigned mass and must record which
+            // nuclides have no evaluation at all.
+            boolean hasUnassigned = root.has("_unassigned");
+            check("the file declares its unrouted nuclides", hasUnassigned, "");
+            if (hasUnassigned) {
+                var un = root.getAsJsonObject("_unassigned");
+                check("no nuclide is left unrouted for want of a decay mode",
+                    un.size() == 0, un.toString());
+            }
+            // Unevaluated nuclides are a limit of the source. They must be
+            // named, and they must be negligible: above 0.01% the generator
+            // stops rather than write a distorted file.
+            var un = root.has("_unevaluated")
+                ? root.getAsJsonObject("_unevaluated") : null;
+            double held = 0.0, total = 0.0;
+            for (var e : root.getAsJsonObject("nuclides").entrySet()) {
+                total += e.getValue().getAsJsonObject().get("atoms").getAsDouble();
+            }
+            if (un != null) {
+                for (var e : un.entrySet()) {
+                    held += e.getValue().getAsDouble();
+                }
+            }
+            check("unevaluated nuclides hold under 0.01% of the inventory",
+                total > 0 && 100.0 * held / total < 0.01,
+                String.format("%.2e%%", total > 0 ? 100.0 * held / total : -1));
+        } catch (Exception e) {
+            check("inventory provenance is readable", false, e.toString());
+        }
     }
 
     /** Reads the residual the generator recorded, straight from the data file. */

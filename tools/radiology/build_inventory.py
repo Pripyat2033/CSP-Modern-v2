@@ -147,6 +147,74 @@ def _rows(text: str) -> list[dict]:
             if len(v.split(",")) == len(head)]
 
 
+def _bm_branches(key: str, hl_seconds: float):
+    """Decay route from the mean-beta table, or None if it has nothing.
+
+    The levels table gives a half-life with an empty mode column for a handful
+    of nuclides (Cu-68, Te-127). The decay_rads bm table carries the same decay
+    with the mode, the branching percentage and the daughter spelled out, so
+    the route can be read instead of guessed. Rows for every level of the
+    nuclide come back together, so they are matched on the parent half-life.
+    """
+    z, a = key.rstrip("m").split("-")
+    try:
+        rows = _rows(_get({"fields": "decay_rads",
+                           "nuclides": f"{symbol(int(z))}{a}",
+                           "rad_types": "bm"}))
+    except Exception:
+        return None
+    best, best_d = None, float("inf")
+    for r in rows:
+        try:
+            rhl = float((r.get("half_life_sec", "") or "").strip())
+        except ValueError:
+            continue
+        mode = (r.get("decay", "") or "").strip()
+        if not mode or abs(rhl - hl_seconds) > 0.02 * max(hl_seconds, 1e-30):
+            continue
+        d = abs(rhl - hl_seconds)
+        if d < best_d:
+            pct = (r.get("decay_%", "") or "").strip()
+            best, best_d = [mode, float(pct) if pct else None], d
+    return [best] if best else None
+
+
+def derive_gap_routes(decay: dict, yields: dict) -> dict:
+    """Route a short-lived, mode-less nuclide using the evaluated yield chain.
+
+    A fission product with no tabulated decay mode is not necessarily unknown.
+    The evaluated cumulative yields say where the mass in its mass chain ends
+    up: if the daughter one Z higher carries far more cumulative yield than the
+    nuclide itself, matter at this Z must move upward, and the only mode that
+    raises Z at fixed A is beta-minus. This is read from the same evaluated
+    file that supplies the yields, so it is a derivation, not an assumption,
+    and it is recorded as such for audit.
+    """
+    def cum(z: int, a: int) -> float:
+        total = 0.0
+        for table in yields.values():
+            rec = table.get("cumulative", {}).get(f"{z}-{a}")
+            if rec:
+                total += rec.get("cumulative", 0.0)
+        return total
+
+    for key, rec in decay.items():
+        if _decay_state(key, rec) != "gap":
+            continue
+        z, a = (int(x) for x in key.rstrip("m").split("-"))
+        here, down, up = cum(z, a), cum(z + 1, a), cum(z - 1, a)
+        # A tenfold excess is far outside the yield uncertainties (which are
+        # tens of percent), so it cannot be read as noise.
+        if down > 10.0 * max(here, 1e-30):
+            rec["branches"] = [["B-", 100.0]]
+        elif up > 10.0 * max(here, 1e-30):
+            rec["branches"] = [["B+", 100.0]]
+        else:
+            continue
+        rec["provenance"] = "yield-chain-derived"
+    return decay
+
+
 def load_decay(keys: set[str]) -> dict:
     """Half-life and decay branches per node key ('Z-A' ground, 'Z-Am' isomer).
 
@@ -171,32 +239,74 @@ def load_decay(keys: set[str]) -> dict:
             cache[key] = {"error": str(exc)}
             continue
 
+        if not rows:
+            # An empty response means no ENSDF dataset exists for this
+            # nuclide at all -- a real limit of the evaluation, not a failed
+            # fetch. Distinguishing the two matters: a failed fetch must stop
+            # the build, a nuclide nobody has measured must only be reported.
+            cache[key] = {"unevaluated": True}
+            continue
+
+        # The ground state is the level at energy 0; ENSDF lists it first, so
+        # where several share energy 0 the first one is the ground state.
+        ground_rows = [r for r in rows
+                       if (r.get("energy", "") or "").strip() in ("", "0")]
+        if not ground_rows:
+            cache[key] = {"error": "no ground state"}
+            continue
+        ground = ground_rows[0]
+
         if metastable:
             # The isomer is the excited level that de-excites by internal
             # transition; where several do, the longest-lived is the isomer.
+            #
+            # Some evaluations (Nb-102, Rh-110, Sb-128, Pm-154) report the
+            # ground state and the isomer BOTH at energy 0, distinguished only
+            # by spin-parity. Requiring energy > 0 finds nothing there and
+            # writes an error record, which the solver used to read as "stable"
+            # and freeze the isomer's whole yield in place. So: take every
+            # other level that has a half-life, prefer an explicit IT, then a
+            # listed decay mode, then the longest-lived.
             cand = []
             for r in rows:
-                try:
-                    energy = float((r.get("energy", "") or "0").strip() or 0)
-                except ValueError:
+                if r is ground:
                     continue
                 hl = (r.get("half_life_sec", "") or "").strip()
-                if energy <= 0 or not hl:
+                if not hl:
+                    continue
+                try:
+                    hlf = float(hl)
+                except ValueError:
                     continue
                 modes = {(r.get(f"decay_{j}", "") or "").strip() for j in (1, 2, 3, 4)}
-                cand.append((float(hl), "IT" in modes, r))
+                modes.discard("")
+                cand.append((hlf, "IT" in modes, bool(modes), r))
             if not cand:
-                cache[key] = {"error": "no excited level with a half-life"}
+                # The yield library assigns this isomer its own independent
+                # yield, but ENSDF tabulates no level for the nuclide with a
+                # half-life, so the isomer's own half-life is genuinely absent.
+                # Freezing those atoms is wrong (no fission-product isomer
+                # survives 618 days) and inventing a half-life is a guess. The
+                # bounded move is to de-excite the isomer into its own ground
+                # state, which is exact at shutdown whenever the isomer is
+                # short-lived against the irradiation, and to say so.
+                ghl = (ground.get("half_life_sec", "") or "").strip()
+                if not ghl:
+                    cache[key] = {"error": "isomer level unresolved and ground "
+                                           "state has no half-life"}
+                    continue
+                cache[key] = {"nuclide": f"{symbol(int(z))}{a}m",
+                              "halfLifeSeconds": float(ghl),
+                              "branches": [["IT", 100.0]],
+                              "isomer": True,
+                              "provenance": "isomer-level-unresolved"}
                 continue
-            it = [c for c in cand if c[1]] or cand
-            g = max(it, key=lambda c: c[0])[2]
+            it = [c for c in cand if c[1]]
+            decaying = [c for c in cand if c[2]]
+            pool = it or decaying or cand
+            g = max(pool, key=lambda c: c[0])[3]
         else:
-            ground = [r for r in rows
-                      if (r.get("energy", "") or "").strip() in ("", "0")]
-            if not ground:
-                cache[key] = {"error": "no ground state"}
-                continue
-            g = ground[0]
+            g = ground
 
         hl = (g.get("half_life_sec", "") or "").strip()
         branches = []
@@ -209,6 +319,14 @@ def load_decay(keys: set[str]) -> dict:
             # beta-delayed-neutron probability blank for many exotic nuclides,
             # and reading those blanks as 100% claims every decay emits neutrons.
             branches.append([mode, float(pct) if pct else None])
+        provenance = "ensdf-levels"
+        if not branches and hl:
+            # The levels table gave a half-life with no mode. The mean-beta
+            # table carries the same decay with mode and daughter, so read the
+            # route from there rather than leaving the nuclide branchless.
+            bm = _bm_branches(key, float(hl))
+            if bm:
+                branches, provenance = bm, "ensdf-decay_rads-bm"
         # Branches are stored exactly as the evaluation gives them, empty
         # included. What an empty list MEANS depends on the irradiation time,
         # which is a solver input, not a property of the nuclide, so that
@@ -216,7 +334,8 @@ def load_decay(keys: set[str]) -> dict:
         cache[key] = {"nuclide": f"{symbol(int(z))}{a}{'m' if metastable else ''}",
                       "halfLifeSeconds": float(hl) if hl else None,
                       "branches": branches,
-                      "isomer": metastable}
+                      "isomer": metastable,
+                      "provenance": provenance}
         if (i + 1) % 40 == 0:
             with open(DECAY_CACHE, "w") as fh:
                 json.dump(cache, fh)
@@ -229,9 +348,16 @@ def load_decay(keys: set[str]) -> dict:
 def _decay_state(key, rec):
     """What a node does with the atoms in it: decay, or hold them.
 
-    Four outcomes, and the difference between the last two is the reason this
+    Six outcomes, and the difference between the last four is the reason this
     function exists:
 
+      * "error"    -- the fetch or parse failed. NOT the same as stable, and the
+        check is first for exactly that reason: an error record has no
+        half-life, so a "no half-life means stable" test silently freezes every
+        atom in it. That is how 0.75% of the inventory was lost to ten isomers.
+      * "unevaluated" -- no ENSDF dataset exists for the nuclide at all. Real
+        atoms in an exotic corner of the yield distribution, but nobody has
+        measured their decay, so they can only be reported.
       * "stable"   -- no half-life. Holds its atoms. Correct and common.
       * "terminus" -- a half-life far longer than the irradiation, and no listed
         branch. Zr-96 (2e19 y) and Ce-142 (5e16 y) are observationally stable:
@@ -242,6 +368,10 @@ def _decay_state(key, rec):
       * "decay"    -- a half-life and at least one branch, or an isomer (which
         defaults to IT). Decays along its branches.
     """
+    if rec.get("error"):
+        return "error"
+    if rec.get("unevaluated"):
+        return "unevaluated"
     hl = rec.get("halfLifeSeconds")
     if not hl:
         return "stable"
@@ -489,6 +619,7 @@ def main() -> int:
         if not fresh:
             break
         decay = load_decay(set(decay) | set(nodes))
+    decay = derive_gap_routes(decay, yields)
     print(f"nodes: {len(ind)} with an independent yield, {len(nodes)} after "
           f"following the decay graph")
     print(f"decay data resolved: "
@@ -502,25 +633,60 @@ def main() -> int:
         raise SystemExit(
             f"mass balance residual {residual:.4f} outside [-1e-3, 0.05]; "
             f"the decay matrix is wrong.")
-    # Atoms sitting in a node whose decay mode the evaluation does not list.
-    # They are real atoms; they are just not routed onward. Naming them keeps a
-    # data gap from looking like a physics result.
-    unassigned = {k: atoms[k] for k in nodes
-                  if atoms[k] > 0 and _decay_state(k, decay.get(k) or {}) == "gap"}
+    # Atoms sitting in a node the evaluation could not route: a decay mode it
+    # never lists ("gap") or a record whose fetch failed ("error"). They are
+    # real atoms, just not routed onward. Naming them, separately, keeps a data
+    # failure from looking like a physics result.
+    def held(state):
+        return {k: atoms[k] for k in nodes if atoms[k] > 0
+                and _decay_state(k, decay.get(k) or {}) == state}
+
+    unassigned = held("gap")
+    errored = held("error")
+    unevaluated = held("unevaluated")
     print(f"mass balance: {100 * residual:.3f}% of produced atoms left the "
           f"tabulated set")
-    if unassigned:
-        print(f"  {len(unassigned)} nuclide(s) with no listed decay mode hold "
-              f"{sum(unassigned.values()):.3e} atoms (evaluation gap, not a "
-              f"physics result): " + ", ".join(sorted(unassigned)))
+    for label, group in (("have no listed decay mode", unassigned),
+                         ("have no ENSDF evaluation at all", unevaluated),
+                         ("failed to fetch (DATA ERROR)", errored)):
+        if group:
+            print(f"  {len(group)} nuclide(s) {label}, holding "
+                  f"{sum(group.values()):.3e} atoms "
+                  f"({100 * sum(group.values()) / max(sum(atoms.values()), 1):.2e}% "
+                  f"of the inventory): " + ", ".join(sorted(group)))
+    if errored:
+        raise SystemExit(
+            f"{len(errored)} nuclide(s) failed to fetch; that is a data error, "
+            f"not a measurement gap. Delete those keys from decay-cache.json "
+            f"and re-run.")
+    # A nuclide nobody has evaluated is a limit of the source, not of the code.
+    # It may only be held if it is a negligible share of the inventory; above
+    # that it would distort the result and the build must stop.
+    dead = sum(unassigned.values()) + sum(unevaluated.values())
+    share = 100.0 * dead / max(sum(atoms.values()), 1.0)
+    if share > 0.01:
+        raise SystemExit(
+            f"{share:.4f}% of the inventory is held in unrouted nuclides, over "
+            f"the 0.01% limit; that is too much to leave out of the result.")
 
     out = {
         "_layer": "REKORD layer 2: core inventory at shutdown",
         "_note": ("Atoms, not becquerels. Activity = atoms x decay constant (layer 1). "
                   "Nothing here is a release."),
         "_method": ("Bateman chain solve, dn/dt = Y*F - lambda*n + sum(b*lambda*n), "
-                    "constant source F over the irradiation, exact matrix-exponential "
-                    "solution per mass chain."),
+                    "constant source F over the irradiation, solved with a stiff "
+                    "Radau integrator per connected decay component."),
+        "_decayProvenance": {
+            "counts": {p: sum(1 for v in decay.values() if v.get("provenance") == p)
+                       for p in sorted({v.get("provenance") for v in decay.values()
+                                        if v.get("provenance")})},
+            "note": ("ensdf-levels = mode read from the ENSDF levels table; "
+                     "ensdf-decay_rads-bm = levels table had a half-life but no "
+                     "mode, so the mode was read from the mean-beta table; "
+                     "yield-chain-derived = no mode anywhere in the evaluation, "
+                     "so the route was derived from the evaluated cumulative "
+                     "yields (flagged for review, not a tabulated value)."),
+        },
         "_irradiationDays": days,
         "_fissionRatePerSecond": F,
         "_fissionCount": {
@@ -542,6 +708,7 @@ def main() -> int:
         "nuclideCount": len(atoms),
         "massBalanceResidual": round(residual, 8),
         "_unassigned": unassigned,
+        "_unevaluated": unevaluated,
     }
     with open(OUT, "w") as fh:
         json.dump(out, fh, indent=1)

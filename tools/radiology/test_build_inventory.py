@@ -129,6 +129,103 @@ def test_single_mode_blank_means_whole():
           "a single blank-percent mode takes the whole branch", str(shares))
 
 
+def test_error_is_never_stable():
+    """7. A failed fetch must not read as 'stable'.
+
+    An error record has no half-life, so the naive "no half-life means stable"
+    test froze 0.75% of the inventory: ten isomer records whose fetch had
+    failed were held in place for the whole irradiation.
+    """
+    for rec in ({"error": "no ground state"},
+                {"error": "no excited level with a half-life"},
+                {"error": "timed out", "halfLifeSeconds": None}):
+        check(bi._decay_state("41-102m", rec) == "error",
+              "an error record is never 'stable' (%s)" % rec["error"])
+    check(bi._decay_state("41-102m", {"error": "x"}) != "stable",
+          "an error record with no half-life is not stable")
+    # And an errored record must not decay either: there is no route to take.
+    check(bi._decay_state("41-102m", {"error": "x"}) != "decay",
+          "an error record does not decay on an invented route")
+
+
+def test_isomer_at_energy_zero_is_resolved():
+    """8. Ground and isomer can share energy 0, told apart only by spin-parity.
+
+    Nb-102, Rh-110, Sb-128 and Pm-154 are evaluated that way. Selecting the
+    isomer by energy > 0 finds nothing there, and the resulting error record
+    used to freeze the isomer's whole yield.
+    """
+    rows = [
+        {"idx": "0", "energy": "0", "half_life_sec": "4.3",
+         "decay_1": "B-", "decay_1_%": "100"},
+        {"idx": "1", "energy": "0", "half_life_sec": "1.3",
+         "decay_1": "B-", "decay_1_%": "100"},
+    ]
+    ground = [r for r in rows if (r.get("energy") or "").strip() in ("", "0")][0]
+    check(ground["half_life_sec"] == "4.3",
+          "the first energy-0 level is the ground state")
+    cand = [(float(r["half_life_sec"]), False, True, r)
+            for r in rows if r is not ground and r.get("half_life_sec")]
+    check(len(cand) == 1 and cand[0][0] == 1.3,
+          "the isomer is found among the levels even at energy 0")
+    check(max(cand, key=lambda c: c[0])[3]["idx"] == "1",
+          "the isomer keeps its OWN half-life, not the ground state's")
+
+
+def test_yield_chain_derivation():
+    """9. A mode-less nuclide can be routed from the evaluated yield chain.
+
+    The cumulative yields say where the mass in a mass chain ends up. If the
+    daughter one Z higher carries far more cumulative yield, matter must move
+    upward at fixed A, and only beta-minus does that. This is read from the
+    evaluated file, so it is a derivation with provenance, not a guess.
+    """
+    # I-142 sits well below its chain end (Z=58), so the route is beta-minus.
+    yields = {"U235": {"cumulative": {"53-142": {"cumulative": 5.86e-05},
+                                      "54-142": {"cumulative": 4.34e-03},
+                                      "52-142": {"cumulative": 1.0e-9}}}}
+    decay = {"53-142": {"halfLifeSeconds": 0.222, "branches": []}}
+    out = bi.derive_gap_routes(decay, yields)
+    check(out["53-142"]["branches"] == [["B-", 100.0]],
+          "a nuclide below its chain end is routed by beta-minus",
+          str(out["53-142"]["branches"]))
+    check(out["53-142"]["provenance"] == "yield-chain-derived",
+          "the derived route is labelled as derived, not tabulated")
+
+    # A chain end (nothing above it) must be left alone rather than invented.
+    flat = {"U235": {"cumulative": {"53-142": {"cumulative": 5.0e-3},
+                                    "54-142": {"cumulative": 5.1e-3}}}}
+    decay2 = {"53-142": {"halfLifeSeconds": 0.222, "branches": []}}
+    out2 = bi.derive_gap_routes(decay2, flat)
+    check(out2["53-142"]["branches"] == [],
+          "a nuclide at its chain end is NOT given an invented route",
+          str(out2["53-142"]["branches"]))
+
+    # A terminus is not a gap and must not be touched.
+    decay3 = {"40-96": {"halfLifeSeconds": 6.3e26, "branches": []}}
+    out3 = bi.derive_gap_routes(decay3, yields)
+    check(out3["40-96"]["branches"] == [],
+          "a long-lived terminus is not given a derived route")
+
+
+def test_short_lived_gap_does_not_accumulate():
+    """10. A sub-second nuclide must not hold 618 days of production.
+
+    I-142 has a 0.222 s half-life. Held as stable it reached 2.8e23 atoms;
+    decaying, it saturates at production x T1/2/ln2, some eight orders of
+    magnitude lower. This is the size of the error the gap caused.
+    """
+    import math
+    t_half, T = 0.222, 618.0 * 86400.0
+    lam = math.log(2) / t_half
+    n_true = (1.0 - math.exp(-lam * T)) / lam
+    check(abs(n_true - t_half / math.log(2)) < 1e-6,
+          "a sub-second nuclide saturates at its saturation value")
+    check(n_true < 1.0, "the saturation value is far below T days of holding")
+    check(T > 1e6 * n_true,
+          "holding it as stable would overstate it by more than 1e6x")
+
+
 def main() -> int:
     print("=== test_build_inventory: decay-branch parser ===")
     test_neutron_is_sub_branch()
@@ -138,6 +235,10 @@ def main() -> int:
     test_decay_state_classifies_correctly()
     test_fission_is_a_loss()
     test_single_mode_blank_means_whole()
+    test_error_is_never_stable()
+    test_isomer_at_energy_zero_is_resolved()
+    test_yield_chain_derivation()
+    test_short_lived_gap_does_not_accumulate()
     print("\ntest_build_inventory: %d checks, %d failures" % (checks, len(failures)))
     return 1 if failures else 0
 
