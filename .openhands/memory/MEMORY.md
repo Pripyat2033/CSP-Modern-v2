@@ -13,14 +13,46 @@ correctly. **Accuracy is a floor, not a ceiling**; the ARL standard
 (`PROJECT_NOTES.md` line 18) overrides the SGB. April-26-vs-regular-night is a
 *discrimination check*; real validation is humans working the procedure.
 
-## REKORD = 4 layers (the honest build order)
-1. **Decay data** — ENSDF. **DONE.**  2. **Inventory at t=0** — **DONE.**
-3. **Source term / release** — CONTESTED, varies >2x: a sourced range, never an
-   invented number. NOT STARTED.
-4. **Transport + dose** — needs a Linux `librbmk_solver.so` (.dylib only).
+## REKORD = 4 layers — ALL FOUR DATA LAYERS NOW DONE
+1. **Decay data** — ENSDF. **DONE** (dde2d7f).
+2. **Inventory at t=0** — **DONE** (d3b5a8f, c3a4ca6).
+3. **Source term / release** — **DONE** (ce89754). A sourced RANGE, never one
+   invented number.
+4. **Transport + dose** — **DONE** (62422a2).
+The old note "layer 4 needs a Linux librbmk_solver.so" was a CONFLATION: that
+native lib is the 7-point neutronics stencil, nothing to do with radiology.
 The 686 files in `/workspace/rosfond_uploads` are NEUTRON XS, NOT decay data.
 **FORENSICS (2026-11-18): the radiation sim was NEVER written** — 469 lines
-max; 8 of 28 initial radiology files were ZERO-LINE stubs.
+max; 8 of 28 initial radiology files were ZERO-LINE stubs. Layers 3-4 are
+therefore a NEW build, not a reconnection.
+
+## REKORD LAYER 4 — transport + dose (62422a2, 2026-11-18)
+`docs/REKORD-LAYER-4-TRANSPORT-DOSE.md`. Source = **IAEA-TECDOC-1162** (2000),
+the emergency assessor's handbook: fetch with curl from
+`https://www-pub.iaea.org/MTCD/Publications/PDF/te_1162_prn.pdf` (reachable;
+iaea.org root and EPA FGR are 403, Tavily is over quota). It tabulates exactly
+the 4 things needed: **E3** ground (dose rate + 1mo/2mo/50y per kBq/m2), **E6**
+inhalation, **E7** thyroid (adult+10y), **E13** ingestion, **E8** Pasquill
+dilution factors 0.5-30 km.
+**NOTHING IS TYPED BY HAND** — `tools/radiology/extract_tecdoc1162.py` reads the
+PDF into `tecdoc1162-tables.json`; `build_dose_data.py` emits
+`resources/data/csp/radiology/dose-data.json` (25 nuclides x 4 pathways).
+Extraction verified against published ICRP adult ingestion coefficients —
+including **Co-60/Ra-226/Th-232, which appear NOWHERE else in the project**, so
+agreement can only come from reading the table right.
+**CONSERVATIVE IS LABELLED.** E6/E7 are the TECDOC's "highest value from IAEA
+BSS" = an UPPER BOUND; E13 reproduces ICRP adult exactly; E3 is unshielded.
+The data carries `basis: conservative|adult` because presenting a bound as a
+best estimate is the same lie as a guessed number.
+**BUG THE TEST CAUGHT:** TECDOC shielding formula is `E*(SF*OF + (1-OF))`, NOT
+`E*(SF+OF*(1-SF))` — they agree at OF=0/1 so it survived; "full shielding gives
+zero" failed at 0.13 mSv.
+**PDF-table trap:** pypdf returns parent+daughter on ONE row ("Cs-137+Ba-137m",
+"Ru-106+Rh-106", "Mo-99+Tc-99m", "Ce-144+Pr-144"). Dropping those rows silently
+LOSES 4 major nuclides; `get()` tries the chained key then the bare symbol.
+**Refuses rather than invents:** dilution outside 0.5-30 km = NaN; noble gas
+inhalation = NaN not 0.0 ("not credited" != "zero").
+Tests: DoseSelfTest 27/27, test_build_dose_data.py 17/17.
 
 ## REKORD LAYERS 1 & 2 — DONE (dde2d7f, d3b5a8f, c3a4ca6)
 Accounts: `docs/REKORD-LAYER-{1-NUCLIDE-DATA,2-INVENTORY}.md`. Neither stores
